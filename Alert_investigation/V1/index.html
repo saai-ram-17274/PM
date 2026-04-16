@@ -2480,6 +2480,11 @@ a { text-decoration: none; }
             <line x1="310" y1="260" x2="870" y2="400" class="graph-edge-mal" data-source="user-m-henderson" data-target="svc-sharepoint" data-label="ACCESSED (24 files)"/>
             <line x1="910" y1="210" x2="940" y2="550" class="graph-edge-mal" data-source="svc-azure-ad" data-target="proc-oauth" data-label="ISSUED"/>
             <line x1="630" y1="360" x2="870" y2="195" class="graph-edge-norm" data-source="user-admin" data-target="svc-azure-ad" data-label="SIGNED_IN"/>
+            <line x1="120" y1="450" x2="310" y2="560" class="graph-edge-mal" data-source="ip-tor" data-target="dev-ws045" data-label="C2_OUTBOUND"/>
+            <line x1="340" y1="560" x2="870" y2="410" class="graph-edge-mal" data-source="dev-ws045" data-target="svc-sharepoint" data-label="EXFIL_SOURCE"/>
+            <line x1="310" y1="555" x2="580" y2="355" class="graph-edge-norm" data-source="dev-ws045" data-target="user-admin" data-label="" style="display:none"/>
+            <line x1="280" y1="265" x2="320" y2="555" class="graph-edge-norm" data-source="user-m-henderson" data-target="dev-ws045" data-label="LOGGED_ON"/>
+            <line x1="940" y1="570" x2="880" y2="420" class="graph-edge-mal" data-source="proc-oauth" data-target="svc-sharepoint" data-label="TOKEN_USED"/>
             <!-- Edge labels -->
             <text x="425" y="148" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="alert-impossible-travel" data-target="user-m-henderson">TRIGGERED_BY</text>
             <text x="745" y="120" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="alert-impossible-travel" data-target="svc-azure-ad">DETECTED_ON</text>
@@ -2490,6 +2495,10 @@ a { text-decoration: none; }
             <text x="580" y="320" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="svc-sharepoint">ACCESSED (24 files)</text>
             <text x="940" y="385" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="svc-azure-ad" data-target="proc-oauth">ISSUED</text>
             <text x="755" y="268" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-admin" data-target="svc-azure-ad">SIGNED_IN</text>
+            <text x="215" y="510" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="ip-tor" data-target="dev-ws045">C2_OUTBOUND</text>
+            <text x="610" y="500" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="dev-ws045" data-target="svc-sharepoint">EXFIL_SOURCE</text>
+            <text x="285" y="420" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="dev-ws045">LOGGED_ON</text>
+            <text x="920" y="495" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="proc-oauth" data-target="svc-sharepoint">TOKEN_USED</text>
             <!-- Nodes -->
             <g class="graph-node" data-entity="alert-impossible-travel" onclick="openEntitySlider('alert-impossible-travel')" oncontextmenu="showGraphCtx(event,'alert-impossible-travel')">
               <circle cx="580" cy="65" r="24" fill="#ffffff" stroke="#ef4444" stroke-width="2" filter="url(#glow-r)"/>
@@ -2518,9 +2527,9 @@ a { text-decoration: none; }
               <text x="420" y="467" text-anchor="middle" font-size="9.5" fill="#16a34a" font-family="Lato,sans-serif">10.18.1.81</text>
             </g>
             <g class="graph-node" data-entity="dev-ws045" onclick="openEntitySlider('dev-ws045')" oncontextmenu="showGraphCtx(event,'dev-ws045')">
-              <circle cx="320" cy="575" r="20" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+              <circle cx="320" cy="575" r="20" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
               <text x="320" y="580" text-anchor="middle" font-size="14" dominant-baseline="central">🖥</text>
-              <text x="320" y="605" text-anchor="middle" font-size="10" fill="#16a34a" font-family="Lato,sans-serif">CORP-WS-045</text>
+              <text x="320" y="605" text-anchor="middle" font-size="10" fill="#dc2626" font-family="Lato,sans-serif">CORP-WS-045</text>
             </g>
             <g class="graph-node" data-entity="svc-sharepoint" onclick="openEntitySlider('svc-sharepoint')" oncontextmenu="showGraphCtx(event,'svc-sharepoint')">
               <circle cx="890" cy="410" r="20" fill="#ffffff" stroke="#ea580c" stroke-width="2"/>
@@ -3875,6 +3884,26 @@ const ENTITIES = {
   'ip-tor': {
     type: 'ip', modalTitle: 'IP Details · 185.220.101.42',
     sections: {
+      riskSummary: {
+        label: 'Risk Summary', expanded: true, noCollapse: true,
+        summaryCard: {
+          riskScore: 98,
+          maxScore: 100,
+          severity: 'Critical',
+          statusBadge: 'Known Malicious IP',
+          metrics: [
+            { icon:'🌐', label:'Tor Exit Node', value:'Confirmed', color:'#dc2626' },
+            { icon:'⚠', label:'Threat Feeds Flagged', value:'5', color:'#dc2626' },
+            { icon:'🔗', label:'Active Connections', value:'4', color:'#ea580c' },
+            { icon:'🛡', label:'AbuseIPDB Score', value:'98%', color:'#dc2626' },
+            { icon:'📊', label:'VirusTotal Detections', value:'12/89', color:'#ea580c' },
+            { icon:'🎯', label:'Campaign Attribution', value:'Storm-0867', color:'#dc2626' }
+          ],
+          firstSeen: '2025-06-04 14:32 UTC',
+          lastActivity: '2025-06-04 15:37 UTC',
+          investigationStatus: 'Active — Blocked at perimeter'
+        }
+      },
       ipDetails: {
         label: 'IP Details', expanded: true,
         kv: {
@@ -3941,12 +3970,53 @@ const ENTITIES = {
       associatedUsers: {
         label: 'Associated Users', expanded: true,
         kv: { 'User':'m.henderson', 'Action':'Azure AD sign-in', 'Result':'Success (MFA bypassed — token replay suspected)' }
+      },
+      logonActivity: {
+        label: 'Logon Activity', expanded: false, viewAll: true,
+        timeline: [
+          { time:'03 Apr 2026  14:32:10', dot:'red', malicious: true,
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'Azure Portal', 'MFA':'Satisfied via token (replay suspected)', 'Result':'Success', 'Risk Level':'High', 'Location':'Bucharest, Romania' } },
+          { time:'03 Apr 2026  14:33:45', dot:'red', malicious: true,
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'SharePoint Online', 'MFA':'SSO (token reuse)', 'Result':'Success', 'Risk Level':'High', 'Location':'Bucharest, Romania' } },
+          { time:'02 Apr 2026  22:15:33', dot:'orange',
+            details: { 'User':'unknown', 'Logon Type':'Failed Sign-In Attempt', 'Source App':'Azure Portal', 'MFA':'Not reached', 'Result':'Failure — Invalid password', 'Risk Level':'Medium', 'Location':'Bucharest, Romania' } }
+        ],
+        viewAllData: [
+          { time:'03 Apr 2026  14:32:10', dot:'red', malicious: true,
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'Azure Portal', 'MFA':'Satisfied via token (replay suspected)', 'Result':'Success', 'Risk Level':'High', 'Location':'Bucharest, Romania' } },
+          { time:'03 Apr 2026  14:33:45', dot:'red', malicious: true,
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'SharePoint Online', 'MFA':'SSO (token reuse)', 'Result':'Success', 'Risk Level':'High', 'Location':'Bucharest, Romania' } },
+          { time:'03 Apr 2026  15:37:01', dot:'red', malicious: true,
+            details: { 'User':'m.henderson', 'Logon Type':'Outbound C2 Connection', 'Source App':'powershell.exe', 'MFA':'N/A', 'Result':'Connected — 12s', 'Risk Level':'Critical', 'Location':'Bucharest, Romania' } },
+          { time:'02 Apr 2026  22:15:33', dot:'orange',
+            details: { 'User':'unknown', 'Logon Type':'Failed Sign-In Attempt', 'Source App':'Azure Portal', 'MFA':'Not reached', 'Result':'Failure — Invalid password', 'Risk Level':'Medium', 'Location':'Bucharest, Romania' } },
+          { time:'02 Apr 2026  18:40:11', dot:'orange',
+            details: { 'User':'j.williams', 'Logon Type':'Failed Sign-In Attempt', 'Source App':'Exchange Online', 'MFA':'Not reached', 'Result':'Failure — Account locked', 'Risk Level':'Medium', 'Location':'Bucharest, Romania' } }
+        ]
       }
     }
   },
   'ip-internal': {
     type: 'ip', modalTitle: 'IP Details · 10.18.1.81',
     sections: {
+      riskSummary: {
+        label: 'Risk Summary', expanded: true, noCollapse: true,
+        summaryCard: {
+          riskScore: 15,
+          maxScore: 100,
+          severity: 'Low',
+          metrics: [
+            { icon:'🏢', label:'Network Zone', value:'Internal', color:'#16a34a' },
+            { icon:'✓', label:'NAC Status', value:'Compliant', color:'#16a34a' },
+            { icon:'🔗', label:'Unique Destinations', value:'34', color:'#0891b2' },
+            { icon:'⚠', label:'Anomalous Flows', value:'2', color:'#d97706' },
+            { icon:'👤', label:'Assigned User', value:'m.henderson', color:'#7c3aed' },
+            { icon:'📡', label:'Traffic (24h)', value:'1.45 GB', color:'#0891b2' }
+          ],
+          firstSeen: '2024-03-15 09:00 UTC',
+          lastActivity: '2025-06-04 14:20 UTC'
+        }
+      },
       ipDetails: {
         label: 'IP Details', expanded: true,
         kv: {
@@ -4020,12 +4090,55 @@ const ENTITIES = {
           'Anomalous Flows':'2 (to Tor exit relay ⚠)',
           'Blocked Connections':'0'
         }
+      },
+      logonActivity: {
+        label: 'Logon Activity', expanded: false, viewAll: true,
+        timeline: [
+          { time:'03 Apr 2026  14:20:05', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'Outlook Web', 'MFA':'Push notification approved', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, USA' } },
+          { time:'03 Apr 2026  10:15:22', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive Logon', 'Source App':'Windows Logon (CORP-WS-045)', 'MFA':'N/A (domain auth)', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, USA' } },
+          { time:'02 Apr 2026  09:05:11', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Network Logon', 'Source App':'File Share (\\\\fs01)', 'MFA':'N/A', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, USA' } }
+        ],
+        viewAllData: [
+          { time:'03 Apr 2026  14:20:05', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'Outlook Web', 'MFA':'Push notification approved', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, USA' } },
+          { time:'03 Apr 2026  10:15:22', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive Logon', 'Source App':'Windows Logon (CORP-WS-045)', 'MFA':'N/A (domain auth)', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, USA' } },
+          { time:'02 Apr 2026  09:05:11', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Network Logon', 'Source App':'File Share (\\\\fs01)', 'MFA':'N/A', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, USA' } },
+          { time:'02 Apr 2026  08:55:00', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive Logon', 'Source App':'Windows Logon (CORP-WS-045)', 'MFA':'N/A', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, USA' } },
+          { time:'01 Apr 2026  09:10:33', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'SharePoint Online', 'MFA':'Push approved', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, USA' } }
+        ]
       }
     }
   },
   'dev-ws045': {
     type: 'device', modalTitle: 'Device Details · CORP-WS-045',
     sections: {
+      riskSummary: {
+        label: 'Risk Summary', expanded: true, noCollapse: true,
+        summaryCard: {
+          riskScore: 82,
+          maxScore: 100,
+          severity: 'Critical',
+          statusBadge: 'Compromised Host',
+          metrics: [
+            { icon:'🛡', label:'Vulnerabilities', value:'4 (1 Critical)', color:'#dc2626' },
+            { icon:'⚙', label:'Suspicious Processes', value:'2', color:'#ea580c' },
+            { icon:'🔧', label:'Rogue Services', value:'1', color:'#dc2626' },
+            { icon:'⚠', label:'Unpatched Days', value:'7', color:'#d97706' },
+            { icon:'🔒', label:'EDR Status', value:'Healthy', color:'#16a34a' },
+            { icon:'🌐', label:'Tor Connections', value:'2 outbound', color:'#dc2626' }
+          ],
+          firstSeen: '2024-03-15',
+          lastActivity: '03 Apr 2026 15:37:01',
+          investigationStatus: 'Active — Isolation recommended'
+        }
+      },
       deviceDetails: {
         label: 'Device Details', expanded: true,
         kv: {
@@ -4095,16 +4208,31 @@ const ENTITIES = {
         }
       },
       loginActivity: {
-        label: 'Login Activity (7 days)', expanded: false,
-        kv: {
-          'Total Logins On Host':'84',
-          'Unique Users':'3 (m.henderson, admin, SYSTEM)',
-          'Interactive Logins':'22',
-          'Network Logins':'54',
-          'Remote Interactive':'8',
-          'Failed Attempts':'6 (3 by unknown accounts ⚠)',
-          'Off-Hours Logins':'4'
-        }
+        label: 'Login Activity', expanded: false, viewAll: true,
+        timeline: [
+          { time:'03 Apr 2026  15:36:22', dot:'red', malicious: true,
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive', 'Source IP':'192.168.1.22', 'Target':'CORP-WS-045', 'Status':'Success', 'MFA':'N/A', 'Risk':'Critical — Post-compromise session' } },
+          { time:'03 Apr 2026  14:20:05', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive', 'Source IP':'10.18.1.81', 'Target':'CORP-WS-045', 'Status':'Success', 'MFA':'N/A (domain auth)', 'Risk':'None' } },
+          { time:'03 Apr 2026  08:30:22', dot:'green',
+            details: { 'User':'admin', 'Logon Type':'Remote Interactive (RDP)', 'Source IP':'10.0.0.5', 'Target':'CORP-WS-045', 'Status':'Success', 'MFA':'N/A', 'Risk':'None' } }
+        ],
+        viewAllData: [
+          { time:'03 Apr 2026  15:36:22', dot:'red', malicious: true,
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive', 'Source IP':'192.168.1.22', 'Target':'CORP-WS-045', 'Status':'Success', 'MFA':'N/A', 'Risk':'Critical — Post-compromise session' } },
+          { time:'03 Apr 2026  14:20:05', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive', 'Source IP':'10.18.1.81', 'Target':'CORP-WS-045', 'Status':'Success', 'MFA':'N/A (domain auth)', 'Risk':'None' } },
+          { time:'03 Apr 2026  08:30:22', dot:'green',
+            details: { 'User':'admin', 'Logon Type':'Remote Interactive (RDP)', 'Source IP':'10.0.0.5', 'Target':'CORP-WS-045', 'Status':'Success', 'MFA':'N/A', 'Risk':'None' } },
+          { time:'03 Apr 2026  07:55:00', dot:'orange',
+            details: { 'User':'unknown', 'Logon Type':'Network', 'Source IP':'10.112.11.1', 'Target':'CORP-WS-045', 'Status':'Failure — Invalid credentials', 'MFA':'N/A', 'Risk':'Medium' } },
+          { time:'02 Apr 2026  17:45:00', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Network', 'Source IP':'10.18.1.81', 'Target':'CORP-WS-045 → \\\\fs01', 'Status':'Success', 'MFA':'N/A', 'Risk':'None' } },
+          { time:'02 Apr 2026  09:10:00', dot:'green',
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive', 'Source IP':'10.18.1.81', 'Target':'CORP-WS-045', 'Status':'Success', 'MFA':'N/A', 'Risk':'None' } },
+          { time:'01 Apr 2026  22:15:00', dot:'orange',
+            details: { 'User':'admin', 'Logon Type':'Remote Interactive (RDP)', 'Source IP':'10.0.0.5', 'Target':'CORP-WS-045', 'Status':'Success', 'MFA':'N/A', 'Risk':'Medium — Off-hours login' } }
+        ]
       },
       processesOnHost: {
         label: 'Processes Running on Host', expanded: false, viewAll: true,
@@ -4157,6 +4285,26 @@ const ENTITIES = {
   'svc-sharepoint': {
     type: 'service', modalTitle: 'Service Details · SharePoint Online',
     sections: {
+      riskSummary: {
+        label: 'Risk Summary', expanded: true, noCollapse: true,
+        summaryCard: {
+          riskScore: 85,
+          maxScore: 100,
+          severity: 'Critical',
+          statusBadge: 'Data Exfiltration Detected',
+          metrics: [
+            { icon:'📁', label:'Files Exfiltrated', value:'24', color:'#dc2626' },
+            { icon:'⏱', label:'Exfil Duration', value:'3 min', color:'#dc2626' },
+            { icon:'📊', label:'Sensitive Files', value:'8 (Confidential)', color:'#ea580c' },
+            { icon:'🔗', label:'Anomalous Sessions', value:'2', color:'#ea580c' },
+            { icon:'🌐', label:'External Shares', value:'0', color:'#16a34a' },
+            { icon:'⚠', label:'DLP Violations', value:'3', color:'#dc2626' }
+          ],
+          firstSeen: '2024-01-10',
+          lastActivity: '03 Apr 2026 15:35:00',
+          investigationStatus: 'Active — File access revoked'
+        }
+      },
       serviceDetails: {
         label: 'Service Details', expanded: true,
         kv: {
@@ -4212,6 +4360,26 @@ const ENTITIES = {
   'proc-oauth': {
     type: 'process', modalTitle: 'Process Details · OAuth Token',
     sections: {
+      riskSummary: {
+        label: 'Risk Summary', expanded: true, noCollapse: true,
+        summaryCard: {
+          riskScore: 72,
+          maxScore: 100,
+          severity: 'High',
+          statusBadge: 'Suspicious Token Activity',
+          metrics: [
+            { icon:'🔑', label:'Active Tokens', value:'3', color:'#ea580c' },
+            { icon:'⚠', label:'Unregistered App', value:'FileSync Pro', color:'#dc2626' },
+            { icon:'📋', label:'Excessive Scopes', value:'Mail + Files', color:'#ea580c' },
+            { icon:'⏱', label:'Token Age', value:'Post-compromise', color:'#dc2626' },
+            { icon:'🔐', label:'Consent Type', value:'User (no admin)', color:'#d97706' },
+            { icon:'🛡', label:'Publisher Verified', value:'No ✗', color:'#dc2626' }
+          ],
+          firstSeen: '03 Apr 2026 14:35:00',
+          lastActivity: '03 Apr 2026 15:36:22',
+          investigationStatus: 'Active — Token revocation recommended'
+        }
+      },
       processDetails: {
         label: 'Token Details', expanded: true,
         kv: {
@@ -4281,6 +4449,26 @@ const ENTITIES = {
   'proc-powershell': {
     type: 'process', modalTitle: 'Process Details · Powershell.exe',
     sections: {
+      riskSummary: {
+        label: 'Risk Summary', expanded: true, noCollapse: true,
+        summaryCard: {
+          riskScore: 91,
+          maxScore: 100,
+          severity: 'Critical',
+          statusBadge: 'Malicious Execution',
+          metrics: [
+            { icon:'⚠', label:'AMSI Detections', value:'3', color:'#dc2626' },
+            { icon:'🔗', label:'C2 Connection', value:'Active', color:'#dc2626' },
+            { icon:'📦', label:'Payload Downloaded', value:'beacon.dll', color:'#dc2626' },
+            { icon:'🔐', label:'Encoded Commands', value:'2', color:'#ea580c' },
+            { icon:'🧬', label:'Obfuscation', value:'Base64 + IEX', color:'#ea580c' },
+            { icon:'📊', label:'Child Processes', value:'3', color:'#d97706' }
+          ],
+          firstSeen: '03 Apr 2026 15:36:22',
+          lastActivity: '03 Apr 2026 15:37:01',
+          investigationStatus: 'Active — Kill process recommended'
+        }
+      },
       processDetails: {
         label: 'Process Details', expanded: true,
         kv: { 'Process Name':'powershell.exe', 'PID':'4892', 'Parent Process':'powershell.exe (PID: 3104)', 'Command Line':'powershell.exe -nop -w hidden -encodedcommand ...', 'User':'m.henderson', 'Integrity Level':'Medium', 'Start Time':'03 Apr 2026  15:36:22', 'Status':'Running', 'Signature':'Microsoft (Valid)', 'Session ID':'2', 'Thread Count':'14', 'Handle Count':'342' }
@@ -4369,6 +4557,26 @@ const ENTITIES = {
   'svc-winupdatesvc': {
     type: 'service', modalTitle: 'Service Details · WinUpdateSvc',
     sections: {
+      riskSummary: {
+        label: 'Risk Summary', expanded: true, noCollapse: true,
+        summaryCard: {
+          riskScore: 88,
+          maxScore: 100,
+          severity: 'Critical',
+          statusBadge: 'Masquerading Service',
+          metrics: [
+            { icon:'⚠', label:'Binary Signed', value:'No ✗', color:'#dc2626' },
+            { icon:'🔗', label:'C2 Beacon', value:'Active', color:'#dc2626' },
+            { icon:'📁', label:'Binary Path', value:'C:\\Temp (suspicious)', color:'#dc2626' },
+            { icon:'🔧', label:'Startup Type', value:'Automatic', color:'#ea580c' },
+            { icon:'🛡', label:'AV Detection', value:'Trojan.GenericKD', color:'#dc2626' },
+            { icon:'📊', label:'Network Activity', value:'Periodic (5min)', color:'#ea580c' }
+          ],
+          firstSeen: '03 Apr 2026 15:36:22',
+          lastActivity: '03 Apr 2026 15:37:01',
+          investigationStatus: 'Active — Service stop recommended'
+        }
+      },
       serviceInfo: {
         label: 'Service Information', expanded: true,
         kv: { 'Service Name':'WinUpdateSvc', 'Display Name':'Windows Update Helper Service', 'Startup Type':'Automatic', 'Service Account':'NT AUTHORITY\\SYSTEM', 'Binary Path':'C:\\Windows\\Temp\\wuhelper.exe', 'Status':'Running', 'Description':'Provides automated Windows patching (Suspicious)', 'Signature':'Not Signed ⚠', 'Created':'03 Apr 2026  15:35:50', 'Hash (SHA256)':'b7e2a1c4f8d3...9e5b', 'File Size':'1.1 MB', 'Legitimate Windows Service':'No — masquerading ⚠' }
@@ -4916,25 +5124,26 @@ function renderEntitySliderBody(entityId) {
       { id:'threats', label:'Threats & Response', sections:['recentAlerts','threatIntelContext','dlpIncidents','endpointSecurity','complianceImpact','attackPathContext'] }
     ],
     device: [
-      { id:'overview', label:'Overview', sections:['deviceDetails','cloudAsset','loginActivity'] },
+      { id:'overview', label:'Overview', sections:['riskSummary','deviceDetails','cloudAsset','loginActivity'] },
       { id:'host', label:'Host Activity', sections:['processesOnHost','servicesOnHost','usersLoggedOn'] },
       { id:'security', label:'Security', sections:['vulnerabilities','misconfigurations'] },
       { id:'software', label:'Software', sections:['installedSoftware'] },
       { id:'alerts', label:'Alerts', sections:['recentAlerts'] }
     ],
     ip: [
-      { id:'overview', label:'Overview', sections:['ipDetails','geoContext','associatedUsers','associatedDevices'] },
+      { id:'overview', label:'Overview', sections:['riskSummary','ipDetails','geoContext','associatedUsers','associatedDevices'] },
       { id:'threat', label:'Threat Intel', sections:['threatIntelligence','relatedCampaigns'] },
-      { id:'connections', label:'Connections', sections:['connectionHistory','trafficSummary'] }
+      { id:'connections', label:'Connections', sections:['connectionHistory','trafficSummary'] },
+      { id:'logon', label:'Logon Activity', sections:['logonActivity'] }
     ],
     service: [
-      { id:'overview', label:'Overview', sections:['serviceDetails','serviceInfo','serviceDependencies'] },
+      { id:'overview', label:'Overview', sections:['riskSummary','serviceDetails','serviceInfo','serviceDependencies'] },
       { id:'config', label:'Config & Policy', sections:['configurationIssues','conditionalAccess','dlpPolicies'] },
       { id:'activity', label:'Activity', sections:['signInAudit','fileAccessAnomaly','sensitiveFiles','serviceTimeline','networkConnections','fileDrops','processes'] },
       { id:'alerts', label:'Alerts', sections:['recentAlerts','serviceTriggered'] }
     ],
     process: [
-      { id:'overview', label:'Overview', sections:['processDetails','details','processTree'] },
+      { id:'overview', label:'Overview', sections:['riskSummary','processDetails','details','processTree'] },
       { id:'anomaly', label:'Anomalies', sections:['tokenAnomaly','amsiEvents','registryModifications'] },
       { id:'activity', label:'Activity', sections:['tokenUsage','networkActivity','fileOperations','childProcesses','processes'] },
       { id:'related', label:'Related', sections:['relatedTokens','serviceTriggered','recentAlerts'] }
@@ -5859,7 +6068,7 @@ const ENTITY_DISPLAY = {
   'svc-azure-ad':            { icon:'⚙', name:'Azure AD Portal', color:'#0891b2', bg:'#ecfeff' },
   'ip-tor':                  { icon:'◆', name:'185.220.101.42', color:'#ef4444', bg:'#fef2f2' },
   'ip-internal':             { icon:'◆', name:'10.18.1.81', color:'#16a34a', bg:'#f0fdf4' },
-  'dev-ws045':               { icon:'🖥', name:'CORP-WS-045', color:'#16a34a', bg:'#f0fdf4' },
+  'dev-ws045':               { icon:'🖥', name:'CORP-WS-045', color:'#dc2626', bg:'#fef2f2' },
   'svc-sharepoint':          { icon:'📁', name:'SharePoint', color:'#ea580c', bg:'#fff7ed' },
   'proc-oauth':              { icon:'🔑', name:'OAuth Tokens (3)', color:'#d97706', bg:'#fffbeb' },
   'user-admin':              { icon:'👤', name:'Administrator', color:'#0891b2', bg:'#ecfeff' },
@@ -6082,9 +6291,11 @@ function showGraphCtx(evt, entityId) {
       else if (sevStr === 'medium')  { riskLevel = 'medium';   riskLabel = 'Medium'; }
       else if (sevStr === 'low')     { riskLevel = 'low';      riskLabel = 'Low'; }
       else {
-        // Fallback: infer from recentAlerts count
+        // Fallback: infer from recentAlerts, threatIntelligence, or connectionHistory malicious entries
         const alerts = e.sections.recentAlerts?.timeline || [];
-        const malCount = alerts.filter(a => a.malicious || a.dot === 'red').length;
+        const threatEntries = e.sections.threatIntelligence?.timeline || [];
+        const connEntries = e.sections.connectionHistory?.timeline || [];
+        const malCount = [...alerts, ...threatEntries, ...connEntries].filter(a => a.malicious || a.dot === 'red').length;
         if (malCount >= 3)      { riskLevel = 'critical'; riskLabel = 'Critical'; }
         else if (malCount >= 2) { riskLevel = 'high';     riskLabel = 'High'; }
         else if (malCount >= 1) { riskLevel = 'medium';   riskLabel = 'Medium'; }
@@ -6781,7 +6992,14 @@ function ctxUebaTimeline() {
 
 function ctxLoginActivity() {
   hideGraphCtx();
-  if (ctxEntityId) { openEntitySlider(ctxEntityId); showActionPanel('loginActivity', ctxEntityId); }
+  if (!ctxEntityId) return;
+  openEntitySlider(ctxEntityId);
+  const e = ENTITIES[ctxEntityId];
+  if (!e) return;
+  // Determine which tab holds logonActivity for this entity type
+  const tabMap = { user:'activity', device:'overview', ip:'logon' };
+  const tabId = tabMap[e.type] || 'overview';
+  setTimeout(() => navigateToTabSection(ctxEntityId, tabId, 'logonActivity'), 120);
 }
 
 function ctxBlockEntity() {
