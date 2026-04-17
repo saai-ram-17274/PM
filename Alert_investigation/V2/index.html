@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Log360 — Active Alerts</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+<!-- Modular CSS -->
+<link rel="stylesheet" href="css/variables.css"/>
+<link rel="stylesheet" href="css/base.css"/>
+<link rel="stylesheet" href="css/panels.css"/>
+<link rel="stylesheet" href="css/investigation.css"/>
+<link rel="stylesheet" href="css/graph.css"/>
+<link rel="stylesheet" href="css/components.css"/>
+</head>
+<body>
+<!-- ═══ TOAST ══════════════════════════════════════════════════ -->
+<div id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastMsg">Action completed</span>
+</div>
+
+<!-- ═══ TOP NAV ════════════════════════════════════════════════ -->
+<!-- ═══ TOP BAR (dark logo row) ══════════════════════════════════ -->
+<div class="topbar">
+  <div class="logo" onclick="showToast('🏠','Navigating to Dashboard…')">
+    <div class="logo-icon"></div> Log360
+  </div>
+  <div class="topbar-right">
+    <a href="#" class="sub-link" onclick="showToast('✨','Subscription page…');return false;">Subscription</a>
+    <button class="topbar-icon" onclick="showToast('🔔','8 new notifications')">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="badge-num badge-blue">8</span>
+    </button>
+    <button class="topbar-icon" onclick="showToast('⚠','9+ critical alerts')">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span class="badge-num badge-red">9+</span>
+    </button>
+    <button class="topbar-icon" onclick="showToast('💬','Opening messages…')">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </button>
+    <button class="topbar-icon" onclick="showToast('❓','Opening help center…')">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+    </button>
+    <div class="topbar-avatar" onclick="showToast('👤','Opening profile settings…')">JW</div>
+    <div class="topbar-grid" onclick="showToast('📱','Opening app launcher…')">
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NAV ROW ═════════════════════════════════════════════════ -->
+<div class="navrow">
+  <a href="#" onclick="navClick(event,'Dashboard')">Dashboard</a>
+  <a href="#" onclick="navClick(event,'Reports')">Reports</a>
+  <a href="#" onclick="navClick(event,'Compliance')">Compliance</a>
+  <a href="#" onclick="navClick(event,'Search')">Search</a>
+  <a href="#" onclick="navClick(event,'Security')">Security</a>
+  <a href="#" class="active" onclick="navClick(event,'Alerts')">Alerts</a>
+  <a href="#" onclick="navClick(event,'Settings')">Settings</a>
+  <a href="#" onclick="navClick(event,'LogMe')">LogMe</a>
+  <a href="#" onclick="navClick(event,'Support')">Support</a>
+  <div class="navrow-right">
+    <div class="search-bar">
+      <svg width="12" height="12" fill="none" stroke="#8fa0b5" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Log Search" id="globalSearch" onkeydown="handleSearch(event)"/>
+    </div>
+    <button class="btn-add" onclick="showToast('➕','Opening new alert wizard…')">+ Add</button>
+  </div>
+</div>
+
+<!-- ═══ BREADCRUMB ══════════════════════════════════════════════ -->
+<div class="breadcrumb">
+  <a href="#" onclick="showToast('🏠','Going to Explorer…');return false;">Explorer</a>
+  <span class="breadcrumb-sep">›</span>
+  <strong>Active Alerts</strong>
+  <div class="breadcrumb-right">
+    <div class="dropdown">
+      <button class="btn-ghost" onclick="toggleDropdown('exportDd')">Export As ▾</button>
+      <div class="dropdown-menu" id="exportDd">
+        <div class="dropdown-item" onclick="showToast('📄','Exporting as PDF…');closeDropdowns()">📄 PDF</div>
+        <div class="dropdown-item" onclick="showToast('📊','Exporting as CSV…');closeDropdowns()">📊 CSV</div>
+        <div class="dropdown-item" onclick="showToast('📋','Exporting as Excel…');closeDropdowns()">📋 Excel</div>
+      </div>
+    </div>
+    <button class="breadcrumb-icon" onclick="showToast('⚙','Settings…')">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══ MAIN LAYOUT ═════════════════════════════════════════════ -->
+<div class="main-layout" id="mainLayout">
+
+  <!-- ══ LEFT PANEL ══ -->
+  <aside class="alert-list" id="alertList">
+    <!-- alerts rendered by JS -->
+  </aside>
+
+  <!-- ══ CENTER PANEL ══ -->
+  <section class="alert-detail" id="alertDetail">
+    <div class="detail-header" id="detailHeader">
+      <!-- filled by JS -->
+    </div>
+    <div class="tab-bar" id="tabBar">
+      <div class="tab" onclick="switchTab(this,'overview')">Overview</div>
+      <div class="tab active" onclick="switchTab(this,'timeline')">Timeline</div>
+      <div class="tab" onclick="switchTab(this,'remediation')">Remediation</div>
+      <div class="tab" onclick="switchTab(this,'integration')">Integration</div>
+      <div class="tab" onclick="switchTab(this,'activity')">Activity</div>
+    </div>
+    <div id="tabContent" class="events-area">
+      <!-- filled by JS -->
+    </div>
+  </section>
+
+  <!-- ══ RIGHT PANEL — Zia ══ -->
+  <aside class="investigation-panel" id="invPanel">
+    <div class="inv-header">
+      <div class="inv-title">
+        <div class="zia-orb">✦</div>
+        Zia
+        <span class="ai-pill">AI</span>
+      </div>
+      <div class="inv-header-actions">
+        <button class="btn-return-inv" onclick="rerunInvestigation()"><span class="inv-sparkle">✦</span> Rerun Investigation</button>
+        <button class="btn-close-inv" onclick="closeInvestigation()" title="Close">✕</button>
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div class="inv-loading" id="invLoading">
+      <div class="loading-ring"></div>
+      <div class="loading-text">Investigating…</div>
+      <div class="loading-sub">Analyzing 250 alert events</div>
+    </div>
+
+    <!-- Content (hidden until loaded) -->
+    <div class="inv-body" id="invContent" style="display:none;">
+      <!-- Two-column: Confidence gauge + Summary -->
+      <div class="inv-top-row anim-1">
+      <div class="gauge-card">
+        <div class="gauge-lbl">Confidence Level</div>
+        <div class="gauge-wrap">
+          <svg width="160" height="88" viewBox="0 0 160 88">
+            <path d="M 12 82 A 68 68 0 0 1 148 82" stroke="#dfe3eb" stroke-width="14" fill="none" stroke-linecap="round"/>
+            <path d="M 12 82 A 68 68 0 0 1 115 22" stroke="url(#gaugeGrad)" stroke-width="14" fill="none" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#22c55e"/>
+                <stop offset="50%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#ef4444"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div style="position:absolute;bottom:4px;left:50%;transform:translateX(-50%);text-align:center;">
+            <div style="font-size:12px;color:var(--text-dim);margin-bottom:2px;">●</div>
+            <div style="font-size:14px;font-weight:800;color:#d97706;">Medium</div>
+          </div>
+        </div>
+        <div class="verdict-chip verdict-fp">❤ False Positive</div>
+      </div>
+
+      <!-- Summary (right column) -->
+      <div class="inv-card" id="summaryCard">
+        <div class="inv-card-body" style="border-top:none;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:10px;">Summary</div>
+          <p class="summary-text">
+            At 2026-03-24 03:12:44, user <span class="chip chip-blue">corp/m.henderson</span> authenticated
+            successfully from <span class="chip chip-red">185.220.101.42</span> (Romania, Tor exit node) and again
+            from internal IP <span class="chip chip-amber">10.18.1.81</span> within 28 minutes — a physical travel
+            distance that is impossible. This was followed by <span class="chip chip-red">impossible</span>
+            <span class="chip chip-red">travel</span> confirmed with <span class="chip chip-amber">OAuth token generation</span>, <span class="chip chip-red">mailbox access</span> and SharePoint file downloads on sensitive
+            directories. Classified as a <span class="chip chip-green">True Positive</span> — no authorized remote access or travel activity exists. Immediate account suspension, token revocation,
+            and session termination are required.
+          </p>
+        </div>
+      </div>
+      </div><!-- end .inv-top-row -->
+
+      <!-- Insights -->
+      <div class="inv-card anim-2 collapsed" id="insightsCard">
+        <div class="inv-card-header" onclick="toggleCard('insightsCard')">
+          <span class="inv-card-icon">🔍</span>
+          <span class="inv-card-title">Insights</span>
+          <span class="inv-chevron">▾</span>
+        </div>
+        <div class="inv-card-body">
+          <ul class="mitigation-list">
+            <li><div class="mit-num" style="background:#3b82f6;">1</div><span>Tor exit node IP confirmed via threat intel — high-risk source with 97 threat score.</span></li>
+            <li><div class="mit-num" style="background:#3b82f6;">2</div><span>OAuth token generated post-login — indicates potential token theft or session replay.</span></li>
+            <li><div class="mit-num" style="background:#3b82f6;">3</div><span>24 SharePoint files downloaded in 3 minutes — abnormal data exfiltration pattern detected.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Mitigation -->
+      <div class="inv-card anim-3 collapsed" id="mitigCard">
+        <div class="inv-card-header" onclick="toggleCard('mitigCard')">
+          <span class="inv-card-icon">🛡️</span>
+          <span class="inv-card-title">Potential Mitigation Steps</span>
+          <span class="inv-chevron">▾</span>
+        </div>
+        <div class="inv-card-body">
+          <ul class="mitigation-list">
+            <li><div class="mit-num">1</div><span>Immediately suspend <strong>corp/m.henderson</strong> account in Active Directory.</span></li>
+            <li><div class="mit-num">2</div><span>Revoke all active OAuth tokens and invalidate existing sessions.</span></li>
+            <li><div class="mit-num">3</div><span>Block source IP <strong>185.220.101.42</strong> at perimeter firewall.</span></li>
+            <li><div class="mit-num">4</div><span>Audit SharePoint files downloaded — initiate data classification review.</span></li>
+            <li><div class="mit-num">5</div><span>Force MFA reset for user on next login after account is restored.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Timeline / Attack Vector -->
+      <div class="inv-card anim-4" id="timelineCard">
+        <div style="background:var(--surface-3);border-bottom:1px solid var(--border);">
+          <div class="inv-subtabs">
+            <div class="inv-subtab active" onclick="switchInvTab(this,'invTimeline')">Timeline of Investigation</div>
+            <div class="inv-subtab" onclick="switchInvTab(this,'invAttack')">Attack Vector</div>
+          </div>
+        </div>
+
+        <!-- Timeline tab -->
+        <div class="inv-card-body" id="invTimeline">
+          <div class="alert-banner">
+            <span class="b-icon">⚠</span>
+            <div>
+              <strong>Alert Detected</strong><br/>
+              Impossible Travel detected for <span class="chip chip-blue">corp/m.henderson</span> with logins from
+              a Tor IP in Romania and <span class="chip chip-red">CORP-NET</span> within 28 minutes, confirming a
+              true positive. Likely credential Compromise or session hijacking — suspend
+              the account, revoke tokens, and terminate sessions immediately.
+            </div>
+          </div>
+
+          <div style="margin-bottom:12px;margin-top:14px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#2563eb;">
+              <span>🔍</span> Investigation
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="t-icon-wrap">
+              <div class="t-icon purple">🔍</div>
+              <div class="t-line"></div>
+            </div>
+            <div class="t-content">
+              <div class="t-title" onclick="toggleEvidence('ev1')">📋 Impossible Travel Login Detection (Past 7 Days)</div>
+              <div class="t-desc">Count successful login events (Event ID 4624 / Azure AD Sign-In) for corp/m.henderson grouped by source IP and geolocation in the past 7 days.</div>
+              <div class="t-desc" style="color:var(--text-primary);">2 simultaneous active sessions detected for corp/m.henderson: one from <span class="chip chip-red">185.220.101.42</span> (Romania) and one from <span class="chip chip-blue">10.18.1.81</span> (Internal CORP-NET) within a 28-minute window, confirming impossible travel with concurrent access.</div>
+              <div class="evidence-box" id="ev1">
+                <div class="evidence-hdr">
+                  <span class="elbl">Evidence</span>
+                  <span class="evidence-link" onclick="showToast('🔎','Opening evidence details…')">Evidence Details →</span>
+                </div>
+                Evidence: FETCH_LOGS_V2 query for Azure AD Sign-in logs and Windows Event ID 4624 for user corp/m.henderson over the last 7 days grouped by source IP and country returned 2 conflicting active sessions with geolocation distance exceeding 8,000 km within 28 minutes.
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="t-icon-wrap">
+              <div class="t-icon blue">📁</div>
+              <div class="t-line"></div>
+            </div>
+            <div class="t-content">
+              <div class="t-title" onclick="toggleEvidence('ev2')">▼ SharePoint File Access Audit</div>
+              <div class="t-desc">Queried SharePoint audit logs for file access events by corp/m.henderson in the 30-minute window post-login.</div>
+              <div class="t-desc" style="color:var(--text-primary);">24 files downloaded from <span class="chip chip-amber">/Corp/Finance/Sensitive</span> and <span class="chip chip-amber">/Legal/Contracts</span> in 3 minutes — abnormal exfiltration pattern.</div>
+              <div class="evidence-box" id="ev2" style="display:none;">
+                <div class="evidence-hdr">
+                  <span class="elbl">Evidence</span>
+                  <span class="evidence-link" onclick="showToast('🔎','Opening evidence details…')">Evidence Details →</span>
+                </div>
+                FETCH_LOGS: SharePoint Unified Audit Log — FileDownloaded events for corp/m.henderson returned 24 results from 2 sensitive directories between 03:12:44–03:15:12.
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="t-icon-wrap">
+              <div class="t-icon amber">⚡</div>
+            </div>
+            <div class="t-content">
+              <div class="t-title" onclick="toggleEvidence('ev3')">▼ OAuth Token Generation Analysis</div>
+              <div class="t-desc">Checked Azure AD token issuance logs for suspicious OAuth grants post impossible-travel event.</div>
+              <div class="t-desc" style="color:var(--text-primary);">3 new OAuth tokens issued to <span class="chip chip-red">unknown third-party apps</span> — consistent with credential phishing or token theft.</div>
+              <div class="evidence-box" id="ev3" style="display:none;">
+                <div class="evidence-hdr">
+                  <span class="elbl">Evidence</span>
+                  <span class="evidence-link" onclick="showToast('🔎','Opening evidence details…')">Evidence Details →</span>
+                </div>
+                FETCH_LOGS: Azure AD Token issuance audit — 3 OAuth grants to app IDs not registered in corporate AAD tenant. Issued within 4 minutes of suspicious login from Tor IP.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attack Vector tab -->
+        <div class="inv-card-body" id="invAttack" style="display:none;">
+
+          <!-- ── Kill Chain Progression ── -->
+          <div class="atk-section" id="atkKillchain">
+            <div class="atk-section-hdr" onclick="toggleAtkSection('atkKillchain')">
+              <span class="atk-section-icon">⚔</span>
+              <span class="atk-section-title">Attack Progression</span>
+              <span class="atk-badge atk-badge-purple">4 stages</span>
+              <span class="atk-chev">▾</span>
+            </div>
+            <div class="atk-section-body">
+              <div class="atk-section-intro">
+                Based on correlation of <strong>250 events</strong> across Azure AD Sign-In, SharePoint Unified Audit, Windows Security, and Threat Intel feeds, the following attack progression was reconstructed:
+              </div>
+
+              <div class="atk-chain">
+                <!-- Stage 1: Initial Access -->
+                <div class="atk-stage">
+                  <div class="atk-num atk-num-red">1</div>
+                  <div class="atk-stage-body">
+                    <div class="atk-stage-top">
+                      <span class="atk-stage-name" style="color:#dc2626;">Initial Access</span>
+                      <span class="atk-stage-tag" style="background:#fde8e8;color:#dc2626;">Valid Accounts (T1078)</span>
+                      <span class="atk-stage-time">03:12:44 UTC</span>
+                      <span class="atk-stage-conf" style="background:#fde8e8;color:#dc2626;">HIGH CONFIDENCE</span>
+                    </div>
+                    <div class="atk-stage-desc">
+                      Attacker authenticated as <span class="chip chip-blue">m.henderson</span> via Azure AD from
+                      <span class="chip chip-red">185.220.101.42</span> (Tor exit node, Bucharest, Romania).
+                      MFA was not challenged — conditional access policy exemption for "trusted device" was exploited.
+                      No prior login history from Romania or any Tor relay for this account in last 90 days.
+                    </div>
+                    <div class="atk-stage-meta">
+                      <span>Source: <strong>Azure AD Sign-In Logs</strong></span>
+                      <span>Events: <strong>3 matched</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stage 2: Persistence -->
+                <div class="atk-stage">
+                  <div class="atk-num atk-num-amber">2</div>
+                  <div class="atk-stage-body">
+                    <div class="atk-stage-top">
+                      <span class="atk-stage-name" style="color:#d97706;">Persistence</span>
+                      <span class="atk-stage-tag" style="background:#fef3c7;color:#d97706;">App Access Token (T1550.001)</span>
+                      <span class="atk-stage-time">03:14:11 UTC</span>
+                      <span class="atk-stage-conf" style="background:#fef3c7;color:#d97706;">MED CONFIDENCE</span>
+                    </div>
+                    <div class="atk-stage-desc">
+                      Within <strong>87 seconds</strong> of initial login, 3 OAuth tokens were issued to app IDs not registered in
+                      corporate AAD tenant (<span class="chip chip-amber">AppID: 9f2a-xxxx</span>,
+                      <span class="chip chip-amber">AppID: 4c81-xxxx</span>,
+                      <span class="chip chip-amber">AppID: d7e3-xxxx</span>).
+                      All tokens requested <code>Mail.Read</code>, <code>Files.ReadWrite.All</code> scopes.
+                      This pattern matches known AiTM phishing post-compromise playbook (Microsoft Threat Intel ref: DEV-0867).
+                    </div>
+                    <div class="atk-stage-meta">
+                      <span>Source: <strong>Azure AD Audit + Token Issuance</strong></span>
+                      <span>Events: <strong>3 tokens</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stage 3: Collection & Discovery -->
+                <div class="atk-stage">
+                  <div class="atk-num atk-num-blue">3</div>
+                  <div class="atk-stage-body">
+                    <div class="atk-stage-top">
+                      <span class="atk-stage-name" style="color:#2563eb;">Collection &amp; Discovery</span>
+                      <span class="atk-stage-tag" style="background:rgba(59,130,246,.1);color:#2563eb;">Data from Info Repos (T1213)</span>
+                      <span class="atk-stage-time">03:15:02 – 03:18:31 UTC</span>
+                      <span class="atk-stage-conf" style="background:#fde8e8;color:#dc2626;">HIGH CONFIDENCE</span>
+                    </div>
+                    <div class="atk-stage-desc">
+                      Using the stolen session, attacker navigated to SharePoint Online and downloaded
+                      <strong>24 files</strong> from 2 sensitive directories in <strong>3 min 29 sec</strong>:
+                    </div>
+                    <div class="atk-file-block">
+                      /Corp/Finance/Sensitive — <strong style="color:#dc2626;">18 files</strong> (Q3 forecast, payroll, M&amp;A docs)<br/>
+                      /Legal/Contracts — <strong style="color:#d97706;">6 files</strong> (vendor agreements, NDA templates)
+                    </div>
+                    <div class="atk-stage-desc">
+                      Download rate of <strong>6.9 files/min</strong> is 14× above m.henderson's 90-day baseline of 0.5 files/min.
+                      DLP policy "Sensitive File Bulk Download" was triggered but set to <span class="chip chip-amber">Monitor Only</span> (not block).
+                    </div>
+                    <div class="atk-stage-meta">
+                      <span>Source: <strong>SharePoint Unified Audit</strong></span>
+                      <span>Events: <strong>24 FileDownloaded</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stage 4: Impossible Travel Confirmation -->
+                <div class="atk-stage">
+                  <div class="atk-num atk-num-purple">4</div>
+                  <div class="atk-stage-body">
+                    <div class="atk-stage-top">
+                      <span class="atk-stage-name" style="color:#7c3aed;">Impossible Travel Confirmation</span>
+                      <span class="atk-stage-tag" style="background:rgba(124,58,237,.1);color:#7c3aed;">UEBA Anomaly</span>
+                      <span class="atk-stage-time">03:41:22 UTC</span>
+                    </div>
+                    <div class="atk-stage-desc">
+                      Real user <span class="chip chip-blue">m.henderson</span> logged in from internal IP
+                      <span class="chip chip-green">10.18.1.81</span> (New York office, VLAN-120) via Windows Event 4624
+                      (Interactive) on <span class="chip chip-blue">CORP-WS-045</span>.
+                      This confirms two simultaneous active sessions: one in <strong>Romania</strong> and one in
+                      <strong>New York</strong>, 8,073 km apart, 28 minutes apart — physically impossible.
+                      The internal session is the legitimate user; the external session is the attacker.
+                    </div>
+                    <div class="atk-stage-meta">
+                      <span>Source: <strong>Windows Security + Azure AD</strong></span>
+                      <span>Events: <strong>2 concurrent sessions</strong></span>
+                    </div>
+                  </div>
+                </div>
+              </div><!-- /atk-chain -->
+            </div><!-- /atk-section-body -->
+          </div><!-- /atkKillchain -->
+
+          <!-- ── Analyst Verdict ── -->
+          <div class="atk-verdict atk-verdict-tp">
+            <div class="atk-verdict-title" style="color:#dc2626;">
+              <span>🔴</span> Verdict: True Positive — Active Credential Compromise
+            </div>
+            <div class="atk-verdict-body">
+              <strong>Reasoning:</strong> Three independent signals converge: (1) login from a known Tor exit node with zero prior history,
+              (2) immediate OAuth token issuance to unregistered apps matching AiTM playbook, and
+              (3) anomalous bulk file download 14× above baseline. The concurrent internal session at 03:41 definitively rules
+              out legitimate travel. Combined confidence: <strong style="color:#dc2626;">92%</strong>.
+            </div>
+            <div class="atk-verdict-refs">
+              <span class="atk-ref-lbl">Cross-referenced:</span>
+              <span class="atk-ref-chip">AbuseIPDB 98%</span>
+              <span class="atk-ref-chip">VirusTotal 12/89</span>
+              <span class="atk-ref-chip">Microsoft DEV-0867</span>
+              <span class="atk-ref-chip">UEBA Risk Score 94</span>
+            </div>
+          </div>
+
+          <!-- ── Impact Assessment ── -->
+          <div class="atk-section" id="atkImpact">
+            <div class="atk-section-hdr" onclick="toggleAtkSection('atkImpact')">
+              <span class="atk-section-icon">🎯</span>
+              <span class="atk-section-title">Incident Impact</span>
+              <span class="atk-badge atk-badge-red">Severity: Critical</span>
+              <span class="atk-chev">▾</span>
+            </div>
+            <div class="atk-section-body" style="padding:0;">
+
+              <!-- Data Exfiltration -->
+              <div class="atk-impact-row">
+                <div class="atk-impact-hdr" onclick="toggleImpactRow('imp-exfil')">
+                  <span class="atk-impact-icon" style="color:#dc2626;">📁</span>
+                  <span class="atk-impact-text">Data Exfiltration — <span style="color:#dc2626;">24 files</span> from 2 sensitive directories</span>
+                  <span class="atk-badge atk-badge-red">CRITICAL</span>
+                  <span class="atk-chev" id="imp-exfil-chev">▾</span>
+                </div>
+                <div class="atk-impact-detail" id="imp-exfil">
+                  <div style="margin-bottom:6px;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                      <span class="atk-dot" style="background:#dc2626;"></span>
+                      <strong style="color:var(--text-primary);">/Corp/Finance/Sensitive</strong> — 18 files (Q3 forecasts, payroll, M&amp;A docs)
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                      <span class="atk-dot" style="background:#d97706;"></span>
+                      <strong style="color:var(--text-primary);">/Legal/Contracts</strong> — 6 files (vendor agreements, NDA templates)
+                    </div>
+                    <div style="font-size:10.5px;color:#8a94a6;margin-top:4px;">Download rate: 6.9 files/min — <strong>14× above user baseline</strong></div>
+                  </div>
+                  <div class="atk-impact-actions">
+                    <button class="atk-btn atk-btn-outline-blue" onclick="showToast('📋','Generating file inventory report…')">View File List</button>
+                    <button class="atk-btn atk-btn-outline-amber" onclick="showToast('🔒','Requesting DLP classification scan…')">Classify Files</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Token Compromise -->
+              <div class="atk-impact-row">
+                <div class="atk-impact-hdr" onclick="toggleImpactRow('imp-token')">
+                  <span class="atk-impact-icon" style="color:#d97706;">🔑</span>
+                  <span class="atk-impact-text">Token Compromise — <span style="color:#d97706;">3 OAuth tokens</span> to unregistered apps</span>
+                  <span class="atk-badge atk-badge-amber">HIGH</span>
+                  <span class="atk-chev" id="imp-token-chev" style="transform:rotate(-90deg);">▾</span>
+                </div>
+                <div class="atk-impact-detail" id="imp-token" style="display:none;">
+                  <div style="font-family:var(--mono);font-size:10.5px;margin-bottom:6px;line-height:1.7;">
+                    <span style="color:var(--text-dim);">App 1:</span> <strong>9f2a-xxxx</strong> — Mail.Read, Files.ReadWrite.All <span style="color:#dc2626;">● Active</span><br/>
+                    <span style="color:var(--text-dim);">App 2:</span> <strong>4c81-xxxx</strong> — Mail.Read, Files.ReadWrite.All <span style="color:#dc2626;">● Active</span><br/>
+                    <span style="color:var(--text-dim);">App 3:</span> <strong>d7e3-xxxx</strong> — Mail.Read <span style="color:#dc2626;">● Active</span>
+                  </div>
+                  <div style="font-size:10.5px;color:#8a94a6;margin-top:4px;">None of these App IDs are registered in corporate AAD tenant. Matches DEV-0867 AiTM pattern.</div>
+                  <div class="atk-impact-actions">
+                    <button class="atk-btn atk-btn-danger" onclick="showToast('🔒','Revoking all 3 OAuth tokens…')">Revoke All Tokens</button>
+                    <button class="atk-btn atk-btn-outline-blue" onclick="showToast('🔍','Opening token audit in Azure AD…')">Audit Tokens</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mailbox Access -->
+              <div class="atk-impact-row">
+                <div class="atk-impact-hdr" onclick="toggleImpactRow('imp-mail')">
+                  <span class="atk-impact-icon" style="color:#7c3aed;">📧</span>
+                  <span class="atk-impact-text">Mailbox Access — m.henderson inbox via OWA</span>
+                  <span class="atk-badge atk-badge-purple">MEDIUM</span>
+                  <span class="atk-chev" id="imp-mail-chev" style="transform:rotate(-90deg);">▾</span>
+                </div>
+                <div class="atk-impact-detail" id="imp-mail" style="display:none;">
+                  Read-only access confirmed — <strong>47 emails viewed</strong>, no forwarding rules created, no mail sent.
+                  Accessed from Tor session IP. Likely reconnaissance for sensitive conversations or credentials shared over email.
+                  <div class="atk-impact-actions">
+                    <button class="atk-btn atk-btn-outline-purple" onclick="showToast('📧','Scanning mailbox for accessed emails…')">View Accessed Emails</button>
+                    <button class="atk-btn atk-btn-outline" onclick="showToast('🔒','Resetting mailbox permissions…')">Reset Permissions</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dwell Time -->
+              <div class="atk-impact-row">
+                <div style="display:flex;align-items:center;padding:10px 16px;gap:8px;">
+                  <span class="atk-impact-icon" style="color:var(--text-dim);">⏱</span>
+                  <span class="atk-impact-text">Dwell Time — <span style="color:var(--text-secondary);font-weight:400;">28 min (03:12 → 03:41) · Detected on concurrent session</span></span>
+                  <span class="atk-badge atk-badge-green">FAST</span>
+                </div>
+              </div>
+
+              <!-- Lateral Movement -->
+              <div class="atk-impact-row">
+                <div style="display:flex;align-items:center;padding:10px 16px;gap:8px;">
+                  <span class="atk-impact-icon" style="color:#16a34a;">🛡</span>
+                  <span class="atk-impact-text">Lateral Movement — <span style="color:#16a34a;font-weight:400;">None detected · Contained to cloud</span></span>
+                  <span class="atk-badge atk-badge-green">CLEAR</span>
+                </div>
+              </div>
+
+              <!-- DLP Gap -->
+              <div class="atk-impact-row">
+                <div class="atk-impact-hdr" onclick="toggleImpactRow('imp-dlp')">
+                  <span class="atk-impact-icon" style="color:#d97706;">⚙</span>
+                  <span class="atk-impact-text">Security Gap — DLP policy set to <span style="color:#dc2626;">Monitor Only</span></span>
+                  <span class="atk-badge atk-badge-amber">ACTION</span>
+                  <span class="atk-chev" id="imp-dlp-chev" style="transform:rotate(-90deg);">▾</span>
+                </div>
+                <div class="atk-impact-detail" id="imp-dlp" style="display:none;">
+                  Policy "Sensitive File Bulk Download" was triggered during the attack but only logged the event without blocking.
+                  If this had been set to <strong>Block</strong>, exfiltration of all 24 files would have been prevented.
+                  <div class="atk-impact-actions">
+                    <button class="atk-btn atk-btn-primary" onclick="showToast('🛡','Switching DLP policy to Block mode…')">Switch to Block</button>
+                    <button class="atk-btn atk-btn-outline" onclick="showToast('📋','Opening DLP policy settings…')">Review Policy</button>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /atk-section-body -->
+          </div><!-- /atkImpact -->
+
+          <!-- ── MITRE ATT&CK Mapping ── -->
+          <div style="margin-bottom:14px;">
+            <div style="font-size:12.5px;font-weight:700;color:var(--text-primary);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+              🗺 MITRE ATT&amp;CK Mapping
+            </div>
+            <div class="mitre-flow">
+              <div class="mitre-node">
+                <div class="mitre-card" style="background:#fde8e8;border-color:#ef4444;">
+                  <div class="mitre-card-title" style="color:#dc2626;">Initial Access</div>
+                  <div class="mitre-card-sub" style="color:#dc2626;">Valid Accounts (T1078)</div>
+                </div>
+                <div class="mitre-label">Valid Accounts</div>
+              </div>
+              <div class="mitre-arrow" style="background:#d97706;"><span style="position:absolute;right:-4px;top:-3px;font-size:8px;color:#d97706;">▶</span></div>
+              <div class="mitre-node">
+                <div class="mitre-card" style="background:#fef3c7;border-color:#d97706;">
+                  <div class="mitre-card-title" style="color:#d97706;">Persistence</div>
+                  <div class="mitre-card-sub" style="color:#d97706;">Use Alternate Auth (T1550.001)</div>
+                </div>
+                <div class="mitre-label">App Access Token</div>
+              </div>
+              <div class="mitre-arrow" style="background:#3b82f6;"><span style="position:absolute;right:-4px;top:-3px;font-size:8px;color:#3b82f6;">▶</span></div>
+              <div class="mitre-node">
+                <div class="mitre-card" style="background:rgba(59,130,246,.08);border-color:#3b82f6;">
+                  <div class="mitre-card-title" style="color:#2563eb;">Collection</div>
+                  <div class="mitre-card-sub" style="color:#2563eb;">Data from Info Repos (T1213)</div>
+                </div>
+                <div class="mitre-label">Data from Repos</div>
+              </div>
+              <div class="mitre-arrow" style="background:#7c3aed;"><span style="position:absolute;right:-4px;top:-3px;font-size:8px;color:#7c3aed;">▶</span></div>
+              <div class="mitre-node">
+                <div class="mitre-card" style="background:rgba(124,58,237,.08);border-color:#7c3aed;">
+                  <div class="mitre-card-title" style="color:#7c3aed;">Exfiltration</div>
+                  <div class="mitre-card-sub" style="color:#7c3aed;">Exfil to Cloud (T1567.002)</div>
+                </div>
+                <div class="mitre-label">Cloud Storage</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View Investigation Graph Link -->
+          <button class="btn-view-graph" onclick="openInvestigationGraph()">
+            View Investigation Graph <span class="arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Investigation Graph — Full-Width View ══ -->
+    <div class="inv-graph-view" id="invGraphView" style="display:none;">
+      <div class="graph-cmd-bar" id="graphSummaryPanel">
+        <button class="cmd-back" onclick="backToAttackVector()"><span class="cmd-back-arrow">←</span> Investigation</button>
+        <div class="cmd-sep"></div>
+        <div class="cmd-stats">
+          <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#3b82f6;"></span>9 Entities</span>
+          <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#8b5cf6;"></span>9 Edges</span>
+          <span class="cmd-pill cmd-pill-danger cmd-pill-clickable" onclick="toggleCmdPillPopup(event,'malicious')"><span class="cmd-pill-dot" style="background:#ef4444;"></span>5 Malicious<span class="cmd-pill-caret">▾</span></span>
+          <span class="cmd-pill cmd-pill-warn cmd-pill-clickable" onclick="toggleCmdPillPopup(event,'critical')"><span class="cmd-pill-dot" style="background:#f59e0b;"></span>3 Critical<span class="cmd-pill-caret">▾</span></span>
+        </div>
+        <div class="cmd-pill-popup" id="cmdPillPopup"></div>
+        <div class="cmd-spacer"></div>
+        <button class="cmd-findings-toggle" id="summaryToggleBtn" onclick="toggleGraphSummary()">⚠ 4 Findings <span class="cmd-caret" id="findingsCaret">▾</span></button>
+      </div>
+      <div class="graph-findings-drawer" id="graphFindings" style="display:none;">
+        <div class="gf-item"><span class="gf-sev gf-critical">CRIT</span><span class="gf-text">m.henderson → Azure AD → Login from Tor exit node (185.220.101.42, Romania)</span></div>
+        <div class="gf-item"><span class="gf-sev gf-high">HIGH</span><span class="gf-text">3 OAuth tokens issued to unregistered apps within 4 min of suspicious login</span></div>
+        <div class="gf-item"><span class="gf-sev gf-high">HIGH</span><span class="gf-text">24 SharePoint files exfiltrated from /Finance/Sensitive in 3 min</span></div>
+        <div class="gf-item"><span class="gf-sev gf-medium">MED</span><span class="gf-text">4 MITRE ATT&amp;CK techniques: Valid Accounts (T1078), Use Alternate Auth (T1550.001), Data from Info Repos (T1213), Exfil to Cloud (T1567.002)</span></div>
+      </div>
+      <div class="inv-graph-container" id="graphContainer">
+        <div class="inv-graph-canvas" id="graphCanvas">
+          <svg viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" id="graphSvg">
+            <defs>
+              <filter id="glow-r" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="b"/>
+                <feFlood flood-color="#ef4444" flood-opacity=".15" result="c"/>
+                <feComposite in="c" in2="b" operator="in" result="s"/>
+                <feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="glow-p" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="b"/>
+                <feFlood flood-color="#7c3aed" flood-opacity=".12" result="c"/>
+                <feComposite in="c" in2="b" operator="in" result="s"/>
+                <feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <!-- Edges -->
+            <line x1="580" y1="85" x2="280" y2="230" class="graph-edge-mal" data-source="alert-impossible-travel" data-target="user-m-henderson" data-label="TRIGGERED_BY"/>
+            <line x1="600" y1="85" x2="890" y2="175" class="graph-edge-mal" data-source="alert-impossible-travel" data-target="svc-azure-ad" data-label="DETECTED_ON"/>
+            <line x1="250" y1="265" x2="120" y2="410" class="graph-edge-mal" data-source="user-m-henderson" data-target="ip-tor" data-label="LOGIN_FROM"/>
+            <line x1="300" y1="265" x2="420" y2="420" class="graph-edge-norm" data-source="user-m-henderson" data-target="ip-internal" data-label="LOGIN_FROM"/>
+            <line x1="310" y1="240" x2="860" y2="185" class="graph-edge-norm" data-source="user-m-henderson" data-target="svc-azure-ad" data-label="AUTHENTICATED"/>
+            <line x1="420" y1="455" x2="320" y2="560" class="graph-edge-norm" data-source="ip-internal" data-target="dev-ws045" data-label="MAPS_TO"/>
+            <line x1="310" y1="260" x2="870" y2="400" class="graph-edge-mal" data-source="user-m-henderson" data-target="svc-sharepoint" data-label="ACCESSED (24 files)"/>
+            <line x1="910" y1="210" x2="940" y2="550" class="graph-edge-mal" data-source="svc-azure-ad" data-target="proc-oauth" data-label="ISSUED"/>
+            <line x1="630" y1="360" x2="870" y2="195" class="graph-edge-norm" data-source="user-admin" data-target="svc-azure-ad" data-label="SIGNED_IN"/>
+            <line x1="120" y1="450" x2="310" y2="560" class="graph-edge-mal" data-source="ip-tor" data-target="dev-ws045" data-label="C2_OUTBOUND"/>
+            <line x1="340" y1="560" x2="870" y2="410" class="graph-edge-mal" data-source="dev-ws045" data-target="svc-sharepoint" data-label="EXFIL_SOURCE"/>
+            <line x1="310" y1="555" x2="580" y2="355" class="graph-edge-norm" data-source="dev-ws045" data-target="user-admin" data-label="" style="display:none"/>
+            <line x1="280" y1="265" x2="320" y2="555" class="graph-edge-norm" data-source="user-m-henderson" data-target="dev-ws045" data-label="LOGGED_ON"/>
+            <line x1="940" y1="570" x2="880" y2="420" class="graph-edge-mal" data-source="proc-oauth" data-target="svc-sharepoint" data-label="TOKEN_USED"/>
+            <!-- Edge labels -->
+            <text x="425" y="148" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="alert-impossible-travel" data-target="user-m-henderson">TRIGGERED_BY</text>
+            <text x="745" y="120" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="alert-impossible-travel" data-target="svc-azure-ad">DETECTED_ON</text>
+            <text x="175" y="330" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="ip-tor">LOGIN_FROM</text>
+            <text x="370" y="335" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="ip-internal">LOGIN_FROM</text>
+            <text x="570" y="200" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="svc-azure-ad">AUTHENTICATED</text>
+            <text x="360" y="512" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="ip-internal" data-target="dev-ws045">MAPS_TO</text>
+            <text x="580" y="320" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="svc-sharepoint">ACCESSED (24 files)</text>
+            <text x="940" y="385" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="svc-azure-ad" data-target="proc-oauth">ISSUED</text>
+            <text x="755" y="268" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-admin" data-target="svc-azure-ad">SIGNED_IN</text>
+            <text x="215" y="510" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="ip-tor" data-target="dev-ws045">C2_OUTBOUND</text>
+            <text x="610" y="500" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="dev-ws045" data-target="svc-sharepoint">EXFIL_SOURCE</text>
+            <text x="285" y="420" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="dev-ws045">LOGGED_ON</text>
+            <text x="920" y="495" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="IBM Plex Mono,monospace" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="proc-oauth" data-target="svc-sharepoint">TOKEN_USED</text>
+            <!-- Nodes -->
+            <g class="graph-node" data-entity="alert-impossible-travel" onclick="openEntitySlider('alert-impossible-travel')" oncontextmenu="showGraphCtx(event,'alert-impossible-travel')">
+              <circle cx="580" cy="65" r="24" fill="#ffffff" stroke="#ef4444" stroke-width="2" filter="url(#glow-r)"/>
+              <text x="580" y="70" text-anchor="middle" font-size="16" dominant-baseline="central">⚠</text>
+              <text x="580" y="100" text-anchor="middle" font-size="10.5" fill="#dc2626" font-family="Lato,sans-serif" font-weight="600">Impossible Travel</text>
+            </g>
+            <g class="graph-node" data-entity="user-m-henderson" onclick="openEntitySlider('user-m-henderson')" oncontextmenu="showGraphCtx(event,'user-m-henderson')">
+              <circle cx="280" cy="245" r="22" fill="#ffffff" stroke="#7c3aed" stroke-width="2" filter="url(#glow-p)"/>
+              <text x="280" y="250" text-anchor="middle" font-size="15" dominant-baseline="central">👤</text>
+              <text x="280" y="278" text-anchor="middle" font-size="10.5" fill="#6c5ce7" font-family="Lato,sans-serif" font-weight="600">m.henderson</text>
+            </g>
+            <g class="graph-node" data-entity="svc-azure-ad" onclick="openEntitySlider('svc-azure-ad')" oncontextmenu="showGraphCtx(event,'svc-azure-ad')">
+              <circle cx="890" cy="185" r="20" fill="#ffffff" stroke="#0891b2" stroke-width="2"/>
+              <text x="890" y="190" text-anchor="middle" font-size="14" dominant-baseline="central">⚙</text>
+              <text x="890" y="213" text-anchor="middle" font-size="10" fill="#0891b2" font-family="Lato,sans-serif">Azure AD Portal</text>
+            </g>
+            <g class="graph-node" data-entity="ip-tor" onclick="openEntitySlider('ip-tor')" oncontextmenu="showGraphCtx(event,'ip-tor')">
+              <circle cx="120" cy="430" r="20" fill="#ffffff" stroke="#ef4444" stroke-width="2" filter="url(#glow-r)"/>
+              <text x="120" y="435" text-anchor="middle" font-size="14" dominant-baseline="central">◆</text>
+              <text x="120" y="460" text-anchor="middle" font-size="9.5" fill="#dc2626" font-family="Lato,sans-serif" font-weight="600">185.220.101.42</text>
+              <text x="120" y="472" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Lato,sans-serif">(Tor · Romania)</text>
+            </g>
+            <g class="graph-node" data-entity="ip-internal" onclick="openEntitySlider('ip-internal')" oncontextmenu="showGraphCtx(event,'ip-internal')">
+              <circle cx="420" cy="440" r="18" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+              <text x="420" y="445" text-anchor="middle" font-size="13" dominant-baseline="central">◆</text>
+              <text x="420" y="467" text-anchor="middle" font-size="9.5" fill="#16a34a" font-family="Lato,sans-serif">10.18.1.81</text>
+            </g>
+            <g class="graph-node" data-entity="dev-ws045" onclick="openEntitySlider('dev-ws045')" oncontextmenu="showGraphCtx(event,'dev-ws045')">
+              <circle cx="320" cy="575" r="20" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+              <text x="320" y="580" text-anchor="middle" font-size="14" dominant-baseline="central">🖥</text>
+              <text x="320" y="605" text-anchor="middle" font-size="10" fill="#dc2626" font-family="Lato,sans-serif">CORP-WS-045</text>
+            </g>
+            <g class="graph-node" data-entity="svc-sharepoint" onclick="openEntitySlider('svc-sharepoint')" oncontextmenu="showGraphCtx(event,'svc-sharepoint')">
+              <circle cx="890" cy="410" r="20" fill="#ffffff" stroke="#ea580c" stroke-width="2"/>
+              <text x="890" y="415" text-anchor="middle" font-size="14" dominant-baseline="central">📁</text>
+              <text x="890" y="440" text-anchor="middle" font-size="10" fill="#ea580c" font-family="Lato,sans-serif" font-weight="600">SharePoint</text>
+            </g>
+            <g class="graph-node" data-entity="proc-oauth" onclick="openEntitySlider('proc-oauth')" oncontextmenu="showGraphCtx(event,'proc-oauth')">
+              <circle cx="950" cy="565" r="18" fill="#ffffff" stroke="#ef4444" stroke-width="2" filter="url(#glow-r)"/>
+              <text x="950" y="570" text-anchor="middle" font-size="13" dominant-baseline="central">🔑</text>
+              <text x="950" y="593" text-anchor="middle" font-size="9.5" fill="#dc2626" font-family="Lato,sans-serif" font-weight="600">OAuth Tokens (3)</text>
+            </g>
+            <g class="graph-node" data-entity="user-admin" onclick="openEntitySlider('user-admin')" oncontextmenu="showGraphCtx(event,'user-admin')">
+              <circle cx="620" cy="355" r="18" fill="#ffffff" stroke="#0891b2" stroke-width="2"/>
+              <text x="620" y="360" text-anchor="middle" font-size="14" dominant-baseline="central">👤</text>
+              <text x="620" y="381" text-anchor="middle" font-size="10" fill="#0891b2" font-family="Lato,sans-serif">Administrator</text>
+            </g>
+          </svg>
+
+          <div class="graph-canvas-toolbar">
+            <!-- Entity Filter Chip -->
+            <div class="gcb-chip" id="entityChip" onclick="toggleGraphChipMenu('entityChipMenu',this)">
+              <span class="gcb-icon">◉</span>
+              <span class="gcb-label" id="entityChipLabel">All Entities</span>
+              <span class="gcb-caret">▾</span>
+            </div>
+            <div class="gcb-menu" id="entityChipMenu">
+              <div class="gcb-option active" data-val="all" onclick="pickEntityChip(this,'all','All Entities')">All Entities <span class="gcb-count">9</span></div>
+              <div class="gcb-option" data-val="user" onclick="pickEntityChip(this,'user','Users')"><span class="gcb-dot" style="background:#7c3aed;"></span> Users <span class="gcb-count">2</span></div>
+              <div class="gcb-option" data-val="device" onclick="pickEntityChip(this,'device','Devices')"><span class="gcb-dot" style="background:#16a34a;"></span> Devices <span class="gcb-count">1</span></div>
+              <div class="gcb-option" data-val="ip" onclick="pickEntityChip(this,'ip','IPs')"><span class="gcb-dot" style="background:#ef4444;"></span> IPs <span class="gcb-count">2</span></div>
+              <div class="gcb-option" data-val="service" onclick="pickEntityChip(this,'service','Services')"><span class="gcb-dot" style="background:#0891b2;"></span> Services <span class="gcb-count">2</span></div>
+              <div class="gcb-option" data-val="process" onclick="pickEntityChip(this,'process','Processes')"><span class="gcb-dot" style="background:#d97706;"></span> Processes <span class="gcb-count">2</span></div>
+              <div class="gcb-option" data-val="alert" onclick="pickEntityChip(this,'alert','Alerts')"><span class="gcb-dot" style="background:#ef4444;"></span> Alerts <span class="gcb-count">1</span></div>
+            </div>
+
+            <div class="gcb-sep"></div>
+
+            <!-- Time Filter Chip -->
+            <div class="gcb-chip" id="timeChip" onclick="toggleGraphChipMenu('timeChipMenu',this)">
+              <span class="gcb-icon">⏱</span>
+              <span class="gcb-label" id="timeChipLabel">Last 1 Hour</span>
+              <span class="gcb-caret">▾</span>
+            </div>
+            <div class="gcb-menu" id="timeChipMenu">
+              <div class="gcb-option" onclick="pickTimeChip(this,'Last 30 Min')">Last 30 Min</div>
+              <div class="gcb-option active" onclick="pickTimeChip(this,'Last 1 Hour')">Last 1 Hour</div>
+              <div class="gcb-option" onclick="pickTimeChip(this,'Last 6 Hours')">Last 6 Hours</div>
+              <div class="gcb-option" onclick="pickTimeChip(this,'Last 12 Hours')">Last 12 Hours</div>
+              <div class="gcb-option" onclick="pickTimeChip(this,'Last 24 Hours')">Last 24 Hours</div>
+            </div>
+
+            <div class="gcb-sep"></div>
+
+            <!-- Edge Legend -->
+            <span class="canvas-edge-tag"><span class="legend-line-red"></span> Malicious</span>
+            <span class="canvas-edge-tag"><span class="legend-line-blue"></span> Normal</span>
+          </div>
+
+          <div class="graph-zoom">
+            <button onclick="zoomGraph(1.2)" title="Zoom in">+</button>
+            <button onclick="zoomGraph(0.8)" title="Zoom out">−</button>
+            <button onclick="resetGraphView()" title="Reset view" style="font-size:12px;">⟲</button>
+          </div>
+          <div class="zia-float" onclick="showToast('✦','Zia AI: Ask me about this graph…')" title="Ask Zia">✦</div>
+        </div>
+        <!-- Entity Details Slider (inline right panel) -->
+        <div class="entity-details-slider" id="entitySlider">
+          <div class="eds-hdr">
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span id="edsTypeBadge" class="eds-type-badge" style="display:none;"></span>
+                <span class="eds-hdr-title" id="edsTitle">Entity Details</span>
+              </div>
+              <div id="edsDepthBadge" class="eds-depth-badge" style="display:none;"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="dropdown" style="position:relative;">
+                <button id="edsActionsBtn" onclick="toggleDropdown('edsActionsDd')" style="font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--blue);background:var(--surface);color:var(--blue);cursor:pointer;font-family:var(--font);font-weight:600;">Actions ▾</button>
+                <div class="dropdown-menu" id="edsActionsDd" style="min-width:180px;right:0;">
+                  <!-- JS populates based on entity type -->
+                </div>
+              </div>
+              <a class="eds-hide-link" onclick="closeEntitySlider()">Hide Details</a>
+            </div>
+          </div>
+          <div class="eds-body" id="edsBody">
+            <!-- JS populates -->
+          </div>
+          <!-- Action Detail Panel (overlays slider body) -->
+          <div class="action-panel" id="actionPanel">
+            <div class="ap-hdr">
+              <button class="ap-back" onclick="closeActionPanel()">← Back</button>
+              <span class="ap-title" id="apTitle"></span>
+              <span class="ap-badge" id="apBadge" style="display:none;"></span>
+            </div>
+            <div class="ap-body" id="apBody"></div>
+            <div class="ap-confirm-bar" id="apActions" style="display:none;"></div>
+          </div>
+        </div>
+        <!-- Context Menu -->
+        <div class="graph-ctx" id="graphCtxMenu">
+          <!-- JS populates based on entity type -->
+        </div>
+        <!-- Entity Quick Card (Log360-native node info popup) -->
+        <div class="eqc-overlay" id="eqcOverlay">
+          <div class="eqc-card" id="eqcCard"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="inv-footer">
+      <button class="btn-feedback" onclick="showToast('👍','Thank you for your feedback!')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> feedback</button>
+      <div class="zia-orb" style="width:28px;height:28px;font-size:13px;margin-left:8px;cursor:pointer;" title="Zia">✦</div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- ═══ DATA FILES ═══ -->
+<script src="js/data/alerts.js"></script>
+<script src="js/data/display-config.js"></script>
+<script src="js/data/entities.js"></script>
+
+<!-- ═══ MODULES (load order matters) ═══ -->
+<script src="js/modules/utils.js"></script>
+<script src="js/modules/alert-list.js"></script>
+<script src="js/modules/alert-detail.js"></script>
+<script src="js/modules/interactions.js"></script>
+<script src="js/modules/graph-summary.js"></script>
+<script src="js/modules/graph-core.js"></script>
+<script src="js/modules/entity-slider.js"></script>
+<script src="js/modules/entity-quick-card.js"></script>
+<script src="js/modules/graph-filter.js"></script>
+<script src="js/modules/context-menu.js"></script>
+<script src="js/modules/graph-nodes.js"></script>
+<script src="js/modules/action-panel.js"></script>
+
+<!-- ═══ APP INIT ═══ -->
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+/* ═══════════════════════════════════════════════════════════════
+   variables.css — CSS Custom Properties, Resets & Scrollbars
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --navy:       #f5f7fa;
+  --navy-mid:   #ffffff;
+  --navy-light: #eef1f6;
+  --navy-border:#d5dbe5;
+  --blue:       #2b73d2;
+  --blue-dim:   #1a5fb4;
+  --purple:     #6c5ce7;
+  --purple-glow:rgba(108,92,231,0.18);
+  --amber:      #e67e22;
+  --red:        #e53e3e;
+  --green:      #38a169;
+  --text-primary:#1a1a2e;
+  --text-secondary:#555e6e;
+  --text-dim:   #8a94a6;
+  --surface:    #ffffff;
+  --surface-2:  #f5f7fa;
+  --surface-3:  #eef1f6;
+  --border:     #dfe3eb;
+  --border-light:#c8cdd8;
+  --radius:     6px;
+  --font: 'Lato', 'Segoe UI', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  font-size: 13px;
+  background: var(--navy);
+  color: var(--text-primary);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+a { text-decoration: none; }
+
+/* ── Scrollbars ─────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--navy-border); border-radius: 10px; }
