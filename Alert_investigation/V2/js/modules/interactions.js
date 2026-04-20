@@ -8,7 +8,8 @@ function selectAlert(id) {
   document.getElementById('invGraphView').style.display = 'none';
   closeEntityModal();
   document.getElementById('invPanel').classList.remove('open');
-  document.getElementById('mainLayout').classList.remove('inv-active');
+  const backdrop = document.getElementById('invBackdrop');
+  if (backdrop) backdrop.classList.remove('show');
   renderAlertList();
   const a = ALERTS.find(x=>x.id===id);
   renderDetailHeader(a);
@@ -27,8 +28,9 @@ function toggleInvestigation() {
   if (!invOpen) {
     invOpen = true;
     const panel = document.getElementById('invPanel');
+    const backdrop = document.getElementById('invBackdrop');
     panel.classList.add('open');
-    document.getElementById('mainLayout').classList.add('inv-active');
+    if (backdrop) backdrop.classList.add('show');
     renderDetailHeader(ALERTS.find(x=>x.id===activeAlertId)); // refresh button state
     if (!invLoaded) {
       document.getElementById('invLoading').style.display = 'flex';
@@ -56,7 +58,8 @@ function closeInvestigation() {
   document.querySelector('.inv-footer').style.display = 'flex';
   closeEntityModal();
   document.getElementById('invPanel').classList.remove('open');
-  document.getElementById('mainLayout').classList.remove('inv-active');
+  const backdrop = document.getElementById('invBackdrop');
+  if (backdrop) backdrop.classList.remove('show');
   renderDetailHeader(ALERTS.find(x=>x.id===activeAlertId));
 }
 
