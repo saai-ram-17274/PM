@@ -7737,10 +7737,15 @@ function toggleCmdPillPopup(event, type) {
   popup.innerHTML = type === 'malicious' ? buildMaliciousPopup() : buildCriticalPopup();
 
   // Position below the clicked pill (fixed positioning)
+  // NOTE: .investigation-panel uses transform:translateX(0) when open,
+  // which creates a new containing block for position:fixed children.
+  // We compensate by subtracting the panel's own viewport offset.
   const pill = event.currentTarget;
   const pillRect = pill.getBoundingClientRect();
-  popup.style.left = pillRect.left + 'px';
-  popup.style.top = (pillRect.bottom + 4) + 'px';
+  const panel = document.getElementById('invPanel');
+  const panelRect = panel ? panel.getBoundingClientRect() : { left: 0, top: 0 };
+  popup.style.left = (pillRect.left - panelRect.left) + 'px';
+  popup.style.top = (pillRect.bottom - panelRect.top + 4) + 'px';
 
   popup.classList.add('active');
   activePillPopup = type;
