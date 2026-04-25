@@ -2665,8 +2665,9 @@ a { text-decoration: none; }
                   Policy "Sensitive File Bulk Download" was triggered during the attack but only logged the event without blocking.
                   If this had been set to <strong>Block</strong>, exfiltration of all 24 files would have been prevented.
                   <div class="atk-impact-actions">
-                    <button class="atk-btn atk-btn-primary" onclick="showToast('🛡','Switching DLP policy to Block mode…')">Switch to Block</button>
-                    <button class="atk-btn atk-btn-outline" onclick="showToast('📋','Opening DLP policy settings…')">Review Policy</button>
+                    <span style="display:inline-block;font-size:9px;font-weight:700;background:#E3F2FD;color:#1565C0;padding:2px 6px;border-radius:3px;margin-bottom:6px;">DETECTED FROM M365 AUDIT LOGS</span>
+                    <div style="font-size:10.5px;color:#8a94a6;margin-bottom:6px;">This DLP policy gap was identified from M365 audit log data collected by Log360. Update the policy action in your M365 admin console to prevent future exfiltration.</div>
+                    <button class="atk-btn atk-btn-outline" onclick="showToast('📋','Opening DLP audit report…')">View DLP Audit Log</button>
                   </div>
                 </div>
               </div>
@@ -3655,7 +3656,7 @@ const ENTITIES = {
           severity: 'high',
           recommendations: [
             { icon:'🔒', title:'Revoke SharePoint Access', desc:'Remove m.henderson access to all SharePoint sites. 24 files downloaded in 4 minutes from sensitive locations.', priority:'Critical' },
-            { icon:'🛡', title:'Enable Download Blocking', desc:'Switch DLP policy from Alert to Block mode for bulk downloads from /Finance/Sensitive and /HR/Restricted.', priority:'High' }
+            { icon:'🛡', title:'Update DLP Policy Action', desc:'M365 audit logs show the DLP policy for bulk downloads from /Finance/Sensitive and /HR/Restricted is set to Alert-only. Update the policy action to Block in your M365 admin console.', priority:'High' }
           ],
           playbooks: [
             { name:'SharePoint Access Revocation', id:'PB-SP-001', desc:'Revoke permissions → Disable sharing links → Review access logs', status:'Ready', estimatedTime:'2 min' }
@@ -4822,7 +4823,7 @@ const ENTITIES = {
           recommendations: [
             { icon:'🔒', title:'Revoke User Access', desc:'Remove m.henderson access to all SharePoint sites immediately. 24 sensitive files were downloaded in 4 minutes including classified financial and HR documents.', priority:'Critical' },
             { icon:'📁', title:'Enable Versioning & Recovery', desc:'Check if deleted/modified files can be recovered via SharePoint versioning. Review recycle bin for any files moved or deleted during the attack window.', priority:'High' },
-            { icon:'🛡', title:'Apply DLP Policies', desc:'Strengthen DLP policies on /Finance/Sensitive and /HR/Restricted sites. Switch from Alert-only to Block mode for bulk download detection.', priority:'High' },
+            { icon:'🛡', title:'Strengthen DLP Policies', desc:'M365 audit logs indicate DLP policies on /Finance/Sensitive and /HR/Restricted are set to Alert-only. Update the policy action to Block in your M365 admin console to prevent bulk download exfiltration.', priority:'High' },
             { icon:'📊', title:'Classify Exposed Data', desc:'Map all 24 exfiltrated files by classification: 8 Confidential, 4 Highly Confidential, 12 Internal Only. Determine PII/PHI/PCI data exposure scope.', priority:'High' },
             { icon:'📧', title:'Notify Data Owners', desc:'Alert Finance, HR, and Legal teams about unauthorized access to their sensitive documents. GDPR notification may be required for EU employee data.', priority:'Medium' }
           ],
