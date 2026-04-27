@@ -3295,9 +3295,9 @@ const ENTITIES = {
           verdict: 'True Positive — Active Credential Compromise',
           severity: 'critical',
           recommendations: [
-            { icon:'🔒', title:'Disable Affected Account', desc:'Suspend m.henderson immediately. Simultaneous sessions from New York and Bucharest (12 min apart, 7530 km) confirm credential compromise.', priority:'Critical' },
-            { icon:'🔑', title:'Force Credential Reset', desc:'Reset password and revoke all active sessions. Bucharest session used stolen token to bypass MFA.', priority:'Critical' },
-            { icon:'🚫', title:'Block Source IP', desc:'Block 185.220.101.42 (Tor exit node) at perimeter firewall. Associated with APT29 infrastructure.', priority:'High' }
+            { icon:'�', title:'Verify Travel Legitimacy', desc:'Confirm with user/manager whether m.henderson actually traveled. Simultaneous sessions from New York and Bucharest (12 min apart, 7530 km) — physically impossible.', priority:'Critical' },
+            { icon:'🧩', title:'Assess MFA Bypass Method', desc:'Determine how the Bucharest session bypassed MFA. Was a token replayed? Was a session cookie stolen? Check Entra sign-in logs for auth method details.', priority:'High' },
+            { icon:'📊', title:'Scope the Credential Exposure', desc:'Identify all resources accessed from the suspicious Bucharest session. Determine if OAuth tokens were issued, lateral movement occurred, or data was accessed.', priority:'High' }
           ],
           playbooks: [
             { name:'Impossible Travel Response', id:'PB-TRAVEL-001', desc:'Disable account → Block foreign IP → Revoke sessions → Reset credentials → Notify user', status:'Ready', estimatedTime:'3 min' }
@@ -3342,9 +3342,9 @@ const ENTITIES = {
           verdict: 'True Positive — ARP Cache Poisoning',
           severity: 'critical',
           recommendations: [
-            { icon:'🖥', title:'Isolate Source Device', desc:'Network-isolate CORP-WS-045 which is the source of ARP spoofing. MiTM attack in progress on the LAN segment.', priority:'Critical' },
-            { icon:'🛡', title:'Enable Dynamic ARP Inspection', desc:'Configure DAI on the switch port for VLAN 10 to validate ARP packets against DHCP snooping binding table.', priority:'High' },
-            { icon:'🔍', title:'Check for Credential Theft', desc:'ARP spoofing enables credential interception. Review all authentication events on affected VLAN in the last hour.', priority:'High' }
+            { icon:'�', title:'Identify Spoofed Target', desc:'Determine which MAC address is being impersonated. Check if the spoofed MAC belongs to the default gateway or a critical server — this determines MiTM impact.', priority:'Critical' },
+            { icon:'🧩', title:'Assess Credential Interception Risk', desc:'ARP spoofing enables credential capture. Review if any NTLM, Kerberos, or plaintext auth occurred on VLAN 10 during the spoofing window.', priority:'High' },
+            { icon:'📊', title:'Determine if Spoofing Is Tooling or Malware', desc:'Check if ARP spoofing originated from a known pentesting tool (Ettercap, Bettercap) or from the C2 implant on CORP-WS-045.', priority:'High' }
           ],
           playbooks: [
             { name:'ARP Spoofing Containment', id:'PB-ARP-001', desc:'Isolate device → Flush ARP caches → Enable DAI → Scan VLAN for compromised hosts', status:'Ready', estimatedTime:'5 min' }
@@ -3389,8 +3389,8 @@ const ENTITIES = {
           verdict: 'True Positive — ARP Cache Poisoning (Correlated)',
           severity: 'critical',
           recommendations: [
-            { icon:'🖥', title:'Isolate Source Device', desc:'This is a correlated ARP spoofing alert from the same source (CORP-WS-045). Confirms sustained MiTM attack on the network segment.', priority:'Critical' },
-            { icon:'🔄', title:'Flush ARP Caches Network-Wide', desc:'Issue ARP cache flush on all switches and endpoints on VLAN 10. Reconfigure static ARP entries for critical servers.', priority:'High' }
+            { icon:'�', title:'Correlate with First ARP Alert', desc:'This is a second ARP spoofing event from CORP-WS-045 — confirms sustained MiTM. Assess whether traffic interception was successful between the two alerts.', priority:'Critical' },
+            { icon:'🧩', title:'Check for Lateral Movement via Captured Creds', desc:'If credentials were intercepted during the ARP spoofing window, check if pass-the-hash or token replay was attempted against other hosts on VLAN 10.', priority:'High' }
           ],
           playbooks: [
             { name:'ARP Spoofing Containment', id:'PB-ARP-001', desc:'Isolate device → Flush ARP caches → Enable DAI → Scan VLAN for compromised hosts', status:'Ready', estimatedTime:'5 min' }
@@ -3439,8 +3439,8 @@ const ENTITIES = {
           verdict: 'Suspicious — Unauthorized Token Issuance',
           severity: 'high',
           recommendations: [
-            { icon:'🔑', title:'Revoke OAuth Tokens', desc:'Revoke all tokens issued during the suspicious session. Pay attention to tokens from unregistered apps.', priority:'Critical' },
-            { icon:'📋', title:'Review App Consents', desc:'Audit all app consent grants for m.henderson in the last 24 hours.', priority:'High' }
+            { icon:'�', title:'Verify Token Issuance Context', desc:'Determine if tokens were issued via user-initiated consent or silently by the compromised session. Check if the consent prompt was actually displayed.', priority:'Critical' },
+            { icon:'📊', title:'Assess Scope Abuse Potential', desc:'Tokens have Mail.ReadWrite and Files.ReadWrite.All scopes. Evaluate what data could have been accessed — email content, OneDrive/SharePoint files, calendar entries.', priority:'High' }
           ],
           playbooks: [
             { name:'OAuth Token Revocation', id:'PB-OAUTH-001', desc:'Revoke tokens → Force re-auth → Review consented apps → Block suspicious publishers', status:'Ready', estimatedTime:'2 min' }
@@ -3487,8 +3487,8 @@ const ENTITIES = {
           verdict: 'Suspicious — Unverified App Consent',
           severity: 'high',
           recommendations: [
-            { icon:'🚫', title:'Revoke App Consent', desc:'Remove FileSync Pro consent immediately. Unverified publisher with Mail.Read and Files.ReadWrite.All permissions.', priority:'Critical' },
-            { icon:'🛡', title:'Enable Admin Consent Workflow', desc:'Require admin approval for future app consent requests from all users.', priority:'High' }
+            { icon:'�', title:'Investigate App Publisher', desc:'Determine if FileSync Pro is attacker-controlled or a legitimate app abused post-compromise. Check if other users in the tenant also consented to this app.', priority:'Critical' },
+            { icon:'📊', title:'Assess Permission Impact', desc:'FileSync Pro has Mail.ReadWrite + Files.ReadWrite.All. Evaluate whether Graph API calls were made with these permissions — check Azure AD audit logs for app activity.', priority:'High' }
           ],
           playbooks: [
             { name:'App Consent Audit', id:'PB-APPCONSENT-002', desc:'Revoke consent → Review permissions → Block publisher → Enable admin workflow', status:'Ready', estimatedTime:'3 min' }
@@ -3536,8 +3536,8 @@ const ENTITIES = {
           verdict: 'Malicious — Encoded Command Execution',
           severity: 'critical',
           recommendations: [
-            { icon:'⊘', title:'Kill Process Immediately', desc:'Terminate the encoded PowerShell execution. AMSI detected Invoke-Mimikatz and Cobalt Strike loader.', priority:'Critical' },
-            { icon:'🛡', title:'Enable Constrained Language Mode', desc:'Apply CLM via GPO to prevent .NET assembly loading and encoded command execution.', priority:'High' }
+            { icon:'🔍', title:'Decode Base64 Payload', desc:'Decode the -encodedcommand parameter to determine full attack intent. Check ScriptBlock logs for decoded output — was Invoke-Mimikatz successful?', priority:'Critical' },
+            { icon:'🧩', title:'Assess Credential Harvest Success', desc:'Determine if SAM hashes or Kerberos tickets were actually extracted before AMSI intervened. Check if any lateral movement occurred using harvested credentials.', priority:'High' }
           ],
           playbooks: [
             { name:'Malicious Process Termination', id:'PB-PROC-001', desc:'Kill process → Block hash → Clean artifacts → Verify no scheduled task respawn', status:'Ready', estimatedTime:'1 min' }
@@ -3585,8 +3585,8 @@ const ENTITIES = {
           verdict: 'Malicious — SAM Database Access',
           severity: 'critical',
           recommendations: [
-            { icon:'🔒', title:'Lock Down SAM Access', desc:'Restrict SAM database access. This indicates credential harvesting — attacker attempting to dump local account hashes.', priority:'Critical' },
-            { icon:'🔑', title:'Rotate All Local Admin Passwords', desc:'Use LAPS to rotate local administrator passwords across all endpoints immediately.', priority:'High' }
+            { icon:'�', title:'Determine Dump Success', desc:'Assess whether SAM hashes were successfully extracted. Check if the access was blocked by SACL/LSA Protection or if credentials are now in attacker hands.', priority:'Critical' },
+            { icon:'🧩', title:'Hunt for Pass-the-Hash Activity', desc:'If hashes were dumped, search for NTLM relay or pass-the-hash attempts across domain controllers and file servers in the last hour.', priority:'High' }
           ],
           playbooks: [
             { name:'Credential Dump Response', id:'PB-CREDUMP-001', desc:'Block tool execution → Rotate passwords → Deploy LAPS → Hunt for lateral movement', status:'Ready', estimatedTime:'5 min' }
@@ -3634,8 +3634,8 @@ const ENTITIES = {
           verdict: 'Malicious — Active C2 Communication',
           severity: 'critical',
           recommendations: [
-            { icon:'🚫', title:'Block C2 at Perimeter', desc:'Block 185.220.101.42:443 and c2-update.darkoperator.net at firewall/proxy/DNS immediately. Active beacon every 30 seconds.', priority:'Critical' },
-            { icon:'🖥', title:'Isolate Beaconing Endpoint', desc:'Network-isolate CORP-WS-045 to cut C2 communication channel while preserving forensic evidence.', priority:'Critical' }
+            { icon:'�', title:'Identify C2 Framework', desc:'Analyze beacon pattern (30s interval, HTTPS to port 443) to confirm C2 framework. Cobalt Strike, Sliver, and Brute Ratel all use similar profiles — extract watermark for attribution.', priority:'Critical' },
+            { icon:'📊', title:'Assess Data Sent Over C2', desc:'Determine what data was exfiltrated via the C2 channel. Review NDR session logs for volume, duration, and protocol details of outbound traffic to 185.220.101.42.', priority:'High' }
           ],
           playbooks: [
             { name:'C2 Beacon Eradication', id:'PB-C2KILL-002', desc:'Block C2 → Isolate endpoint → Kill beacon → Remove persistence → Verify', status:'Ready', estimatedTime:'5 min' }
@@ -3683,8 +3683,8 @@ const ENTITIES = {
           verdict: 'Malicious — Service Masquerading',
           severity: 'critical',
           recommendations: [
-            { icon:'⊘', title:'Stop Malicious Service', desc:'Stop WinUpdateSvc service. Unsigned binary masquerading as Windows Update — confirmed Cobalt Strike payload.', priority:'Critical' },
-            { icon:'🗑', title:'Delete & Clean Artifacts', desc:'Remove binary, registry keys, and any scheduled tasks associated with WinUpdateSvc persistence.', priority:'High' }
+            { icon:'🔍', title:'Determine Installation Method', desc:'Investigate how WinUpdateSvc was installed — sc.exe create, registry modification, or Group Policy push? This reveals the attacker\'s privilege level at time of persistence.', priority:'Critical' },
+            { icon:'🧩', title:'Check for Other Masquerading Services', desc:'Search the domain for other services with unsigned binaries, recent creation dates, or names mimicking legitimate Windows services (wuauserv, wscsvc, etc.).', priority:'High' }
           ],
           playbooks: [
             { name:'Malicious Service Removal', id:'PB-SVC-001', desc:'Stop → Disable → Delete binary → Clean registry → Re-scan', status:'Ready', estimatedTime:'3 min' }
@@ -3731,8 +3731,8 @@ const ENTITIES = {
           verdict: 'Malicious — Tor Network Connection',
           severity: 'high',
           recommendations: [
-            { icon:'🚫', title:'Block Tor Exit Nodes', desc:'Block known Tor exit nodes at perimeter. Import updated Tor exit list and configure daily refresh.', priority:'Critical' },
-            { icon:'🔍', title:'Investigate User Intent', desc:'Determine if Tor usage is intentional (research) or indicator of compromise (stolen credentials used from Tor).', priority:'High' }
+            { icon:'�', title:'Determine Tor Usage Context', desc:'Assess whether Tor was used as the attack entry point (stolen creds from Tor) or as an exfiltration channel. The direction of C2 traffic determines the threat model.', priority:'Critical' },
+            { icon:'🧩', title:'Check for Other Tor-Connected Users', desc:'Search 90-day firewall and proxy logs for any other corporate users or devices that connected to known Tor exit nodes. This may indicate a broader campaign.', priority:'High' }
           ],
           playbooks: [
             { name:'Tor Network Hunt', id:'PB-TOR-002', desc:'Block Tor nodes → Search logs → Identify affected users → Assess risk', status:'Ready', estimatedTime:'10 min' }
@@ -3780,9 +3780,9 @@ const ENTITIES = {
           verdict: 'Malicious — Data Exfiltration Detected',
           severity: 'critical',
           recommendations: [
-            { icon:'🚫', title:'Block Exfil Channel', desc:'Block outbound connection to 185.220.101.42:443. 4.2 MB already transferred during 2m 18s session.', priority:'Critical' },
-            { icon:'📁', title:'Assess Data Exposure', desc:'Identify all files transferred via the C2 channel. Cross-reference with DLP classification to determine regulatory impact.', priority:'High' },
-            { icon:'📧', title:'Initiate Breach Notification', desc:'If PII/PHI confirmed exfiltrated, start GDPR Art.33 (72h), HIPAA, and state breach notification procedures.', priority:'High' }
+            { icon:'�', title:'Classify Exfiltrated Data', desc:'Determine what was in the 248 MB transferred. Cross-reference with DLP file classification — was it PII, financial data, trade secrets, or source code?', priority:'Critical' },
+            { icon:'📝', title:'Assess Breach Notification Obligations', desc:'If PII/PHI confirmed exfiltrated, evaluate GDPR Art.33 (72h), HIPAA, and state breach notification requirements. Engage Legal and Compliance teams.', priority:'High' },
+            { icon:'🔍', title:'Determine Encryption Status', desc:'Check if the data was encrypted in transit (TLS) or sent in plaintext. HTTP on port 8080 suggests no encryption — data may be fully recoverable by attacker.', priority:'High' }
           ],
           playbooks: [
             { name:'Data Exfiltration Investigation', id:'PB-EXFIL-003', desc:'Block channel → Map files → Classify data → Calculate impact → Notify stakeholders', status:'Ready', estimatedTime:'8 min' }
@@ -3831,8 +3831,8 @@ const ENTITIES = {
           verdict: 'Malicious — Bulk File Download',
           severity: 'high',
           recommendations: [
-            { icon:'🔒', title:'Revoke SharePoint Access', desc:'Remove m.henderson access to all SharePoint sites. 24 files downloaded in 4 minutes from sensitive locations.', priority:'Critical' },
-            { icon:'🛡', title:'Update DLP Policy Action', desc:'M365 audit logs show the DLP policy for bulk downloads from /Finance/Sensitive and /HR/Restricted is set to Alert-only. Update the policy action to Block in your M365 admin console.', priority:'High' }
+            { icon:'�', title:'Verify Download Legitimacy', desc:'Determine if the 24-file bulk download was authorized. Check with m.henderson\'s manager whether this is normal work activity or part of the compromise chain.', priority:'Critical' },
+            { icon:'📊', title:'Assess DLP Policy Gap', desc:'M365 audit logs show the DLP policy for /Finance/Sensitive and /HR/Restricted is set to Alert-only. Evaluate whether upgrading to Block action would have prevented this exfiltration.', priority:'High' }
           ],
           playbooks: [
             { name:'SharePoint Access Revocation', id:'PB-SP-001', desc:'Revoke permissions → Disable sharing links → Review access logs', status:'Ready', estimatedTime:'2 min' }
@@ -4209,12 +4209,11 @@ const ENTITIES = {
           verdict: 'Malicious — Compromised Account',
           severity: 'critical',
           recommendations: [
-            { icon:'🔒', title:'Disable Account Immediately', desc:'Suspend m.henderson in AD and Entra ID to prevent further lateral movement. Account shows active credential compromise with simultaneous sessions from incompatible locations.', priority:'Critical' },
-            { icon:'🔑', title:'Force Credential Reset', desc:'Reset password, revoke all OAuth tokens (5 apps including FileSync Pro), and re-register MFA. Current tokens were issued post-compromise from Bucharest.', priority:'Critical' },
-            { icon:'🖥', title:'Isolate Endpoint CORP-WS-045', desc:'Network-isolate the workstation via EDR agent. Active C2 beacon (WinUpdateSvc.dll — Cobalt Strike) is communicating every 30s to 185.220.101.42.', priority:'Critical' },
-            { icon:'📁', title:'Audit & Recover Exfiltrated Files', desc:'Review SharePoint audit logs for 24 sensitive files downloaded in 4 minutes. Classify data exposure: Q4_Revenue_Forecast.xlsx, Employee_Salary_Data.csv, vendor_contracts_2026.pdf.', priority:'High' },
-            { icon:'🚫', title:'Block Tor Exit Nodes', desc:'Add 185.220.101.42 and 185.220.101.99 to firewall deny list. Block c2-update.darkoperator.net at DNS and proxy level.', priority:'High' },
-            { icon:'📧', title:'Notify Manager & Compliance', desc:'Send investigation summary to j.williams (IT Manager). GDPR Art.33 requires breach notification within 72h — EU employee PII potentially exposed.', priority:'Medium' }
+            { icon:'�', title:'Determine Entry Vector', desc:'Investigate how m.henderson\'s credentials were compromised — phishing email, brute force, token replay, or session hijack? Review email logs and sign-in risk events for the entry point.', priority:'Critical' },
+            { icon:'🧩', title:'Assess Full Compromise Scope', desc:'Map every resource accessed post-compromise: 24 SharePoint files, 3 OAuth tokens, C2 beacon, SAM dump attempt. Determine what data is now in attacker hands.', priority:'Critical' },
+            { icon:'📝', title:'Evaluate Regulatory Impact', desc:'EU employee PII potentially exposed (Employee_Salary_Data.csv). Assess GDPR Art.33 notification requirements (72h deadline). Engage Legal and DPO.', priority:'High' },
+            { icon:'📊', title:'Profile the Attacker', desc:'Tor exit node (Romania), Cobalt Strike C2, service masquerading — assess if this matches known APT TTPs. Cross-reference IOCs with threat intel for campaign identification.', priority:'High' },
+            { icon:'🔍', title:'Check for Insider Threat', desc:'Determine if m.henderson is a compromised victim or a malicious insider. Review HR records, recent behavior changes, and access pattern anomalies prior to the alert.', priority:'Medium' }
           ],
           playbooks: [
             { name:'Credential Compromise Response', id:'PB-CRED-001', desc:'Disable account → Revoke tokens → Reset password → Notify manager → Create incident', status:'Ready', estimatedTime:'2 min' },
@@ -4336,10 +4335,10 @@ const ENTITIES = {
           verdict: 'Suspicious — Anomalous Sign-In Activity',
           severity: 'high',
           recommendations: [
-            { icon:'🔐', title:'Enforce Conditional Access Policies', desc:'Tighten conditional access: block sign-ins from Tor exit nodes, require compliant devices, enforce MFA for all admin portal access.', priority:'Critical' },
-            { icon:'📋', title:'Audit App Registrations', desc:'Review all Azure AD app registrations. Revoke consent for unregistered apps (FileSync Pro). Enable admin consent workflow.', priority:'High' },
-            { icon:'🛡', title:'Enable Risk-Based Policies', desc:'Configure Entra ID Protection sign-in risk policy to block High risk and require MFA for Medium risk sign-ins.', priority:'High' },
-            { icon:'📊', title:'Review Sign-In Logs', desc:'Analyze last 30 days of sign-in logs for anomalous patterns: impossible travel, unfamiliar locations, legacy auth.', priority:'Medium' }
+            { icon:'�', title:'Identify Conditional Access Gaps', desc:'Review which conditional access policies failed to prevent the malicious sign-in. Was location-based blocking configured? Were Tor exit nodes in the named locations list?', priority:'Critical' },
+            { icon:'🧩', title:'Assess Tenant-Wide Impact', desc:'Check if other users show similar anomalous sign-in patterns. The attacker may have compromised additional accounts through the same campaign.', priority:'High' },
+            { icon:'📊', title:'Evaluate Legacy Auth Exposure', desc:'Determine if legacy authentication protocols (IMAP, SMTP, POP3) were used to bypass MFA. Review sign-in logs for non-modern auth client applications.', priority:'High' },
+            { icon:'📝', title:'Review App Registration Abuse', desc:'Investigate if the attacker registered additional apps beyond FileSync Pro. Audit all app registrations from the past 7 days for suspicious publishers.', priority:'Medium' }
           ],
           playbooks: [
             { name:'Azure AD Security Hardening', id:'PB-AAD-001', desc:'Apply conditional access → Block legacy auth → Enable risky sign-in detection → Review app consents', status:'Ready', estimatedTime:'5 min' },
@@ -4473,11 +4472,11 @@ const ENTITIES = {
           verdict: 'Malicious — Known Tor Exit Node / C2 Infrastructure',
           severity: 'critical',
           recommendations: [
-            { icon:'🚫', title:'Block IP at Perimeter', desc:'Add 185.220.101.42 to firewall deny list (inbound + outbound). Also block related IP 185.220.101.99 and ASN AS9009 (M247 Europe).', priority:'Critical' },
-            { icon:'🔍', title:'Hunt for Historical Connections', desc:'Search all firewall, proxy, and VPN logs for any prior connections to this IP in the last 90 days. Check for other affected users.', priority:'Critical' },
-            { icon:'🌐', title:'Block Tor Exit Nodes Network-Wide', desc:'Import Tor exit node list into firewall/proxy. Update daily via automated feed from torproject.org/torbulkexitlist.', priority:'High' },
-            { icon:'📡', title:'Monitor DNS for C2 Domain', desc:'Block and monitor c2-update.darkoperator.net at DNS level. Set alert for any resolution attempts across all endpoints.', priority:'High' },
-            { icon:'🛡', title:'Submit to Threat Intel Platforms', desc:'Report IOC to internal TI platform. Cross-reference with ThreatFox, AbuseIPDB, and VirusTotal community feeds.', priority:'Medium' }
+            { icon:'�', title:'Investigate Historical Connections', desc:'Search 90-day firewall, proxy, and VPN logs for any prior connections to 185.220.101.42. Determine if this is a first-time contact or a long-running C2 channel.', priority:'Critical' },
+            { icon:'🧩', title:'Assess IP Role in Attack Chain', desc:'Determine if this Tor exit node was used as the entry point (stolen creds from Tor), the C2 relay, or the exfiltration destination. The role determines remediation priority.', priority:'Critical' },
+            { icon:'📊', title:'Cross-Reference with Threat Intel', desc:'Check 185.220.101.42 against ThreatFox, AbuseIPDB, VirusTotal, and internal TI platforms. Identify associated campaigns, APT groups, or malware families.', priority:'High' },
+            { icon:'📝', title:'Map the C2 Infrastructure', desc:'Investigate c2-update.darkoperator.net — DNS history, passive DNS, WHOIS. Is there a broader C2 infrastructure with additional domains/IPs?', priority:'High' },
+            { icon:'🔍', title:'Check for Other Affected Users', desc:'Determine if other corporate users or devices connected to any IPs in ASN AS9009 (M247 Europe). This may indicate a wider compromise.', priority:'Medium' }
           ],
           playbooks: [
             { name:'Malicious IP Blocking', id:'PB-IPBLK-001', desc:'Block IP at firewall → Update proxy rules → Add to DNS sinkhole → Verify no active sessions', status:'Ready', estimatedTime:'2 min' },
@@ -4804,12 +4803,11 @@ const ENTITIES = {
           verdict: 'Malicious — Compromised Endpoint',
           severity: 'critical',
           recommendations: [
-            { icon:'🖥', title:'Network Isolate Immediately', desc:'Isolate CORP-WS-045 via EDR agent (ManageEngine Endpoint Central). Active C2 beacon detected — WinUpdateSvc.dll communicating to 185.220.101.42 every 30s.', priority:'Critical' },
-            { icon:'🔍', title:'Full Forensic Capture', desc:'Trigger memory dump + disk image before remediation. Preserve evidence of Cobalt Strike beacon, encoded PowerShell execution, and ARP spoofing artifacts.', priority:'Critical' },
-            { icon:'🛡', title:'Apply Missing Patches', desc:'3 critical patches pending: KB5034441, KB5034123, KB5034765. RDP vulnerability CVE-2026-0178 (CVSS 7.8) is unpatched — potential entry vector.', priority:'High' },
-            { icon:'🗑', title:'Remove Malicious Service', desc:'Delete WinUpdateSvc.dll from quarantine. Remove associated registry keys. Verify no persistence mechanisms remain.', priority:'High' },
-            { icon:'🔄', title:'Reimage if Rootkit Suspected', desc:'If forensic analysis reveals kernel-level compromise, reimage the workstation. Restore user data from last known clean backup.', priority:'Medium' },
-            { icon:'📋', title:'Scan Peer Devices', desc:'Run IOC sweep across all devices on the same VLAN (192.168.1.0/24). ARP spoofing may have captured credentials from neighboring workstations.', priority:'High' }
+            { icon:'�', title:'Determine Initial Access Vector', desc:'Was CORP-WS-045 the initial entry point or was it compromised via lateral movement from m.henderson\'s session? Check the timeline — when did the first malicious activity start?', priority:'Critical' },
+            { icon:'🧩', title:'Assess Forensic Evidence Needs', desc:'Determine if memory dump and disk image are needed for legal/insurance purposes before remediation destroys evidence. Check incident response SLA requirements.', priority:'Critical' },
+            { icon:'📊', title:'Evaluate Rootkit Indicators', desc:'Check for kernel-level hooks, hidden processes, or bootkit artifacts. If rootkit is present, reimaging is the only safe option — patching alone won\'t suffice.', priority:'High' },
+            { icon:'📝', title:'Assess Lateral Movement from This Device', desc:'ARP spoofing from CORP-WS-045 may have captured credentials from neighboring workstations on VLAN 10. Evaluate which hosts were active during the spoofing window.', priority:'High' },
+            { icon:'🔍', title:'Review Patch Status as Entry Vector', desc:'3 critical patches pending including CVE-2026-0178 (RDP, CVSS 7.8). Determine if the unpatched RDP vulnerability was the initial access method.', priority:'High' }
           ],
           playbooks: [
             { name:'Endpoint Isolation & Forensics', id:'PB-ENDPT-001', desc:'Network isolate → Memory capture → Disk image → Preserve chain of custody → Upload to forensics server', status:'Ready', estimatedTime:'3 min' },
@@ -4943,11 +4941,11 @@ const ENTITIES = {
           verdict: 'Compromised — Data Exfiltration Target',
           severity: 'critical',
           recommendations: [
-            { icon:'🔒', title:'Revoke User Access', desc:'Remove m.henderson access to all SharePoint sites immediately. 24 sensitive files were downloaded in 4 minutes including classified financial and HR documents.', priority:'Critical' },
-            { icon:'📁', title:'Enable Versioning & Recovery', desc:'Check if deleted/modified files can be recovered via SharePoint versioning. Review recycle bin for any files moved or deleted during the attack window.', priority:'High' },
-            { icon:'🛡', title:'Strengthen DLP Policies', desc:'M365 audit logs indicate DLP policies on /Finance/Sensitive and /HR/Restricted are set to Alert-only. Update the policy action to Block in your M365 admin console to prevent bulk download exfiltration.', priority:'High' },
-            { icon:'📊', title:'Classify Exposed Data', desc:'Map all 24 exfiltrated files by classification: 8 Confidential, 4 Highly Confidential, 12 Internal Only. Determine PII/PHI/PCI data exposure scope.', priority:'High' },
-            { icon:'📧', title:'Notify Data Owners', desc:'Alert Finance, HR, and Legal teams about unauthorized access to their sensitive documents. GDPR notification may be required for EU employee data.', priority:'Medium' }
+            { icon:'�', title:'Classify All 24 Exfiltrated Files', desc:'Map files by sensitivity: 8 Confidential, 4 Highly Confidential, 12 Internal Only. Determine PII/PHI/PCI data exposure scope and which regulatory frameworks apply.', priority:'Critical' },
+            { icon:'📝', title:'Assess Breach Notification Requirements', desc:'EU employee data (Employee_Salary_Data.csv) triggers GDPR Art.33 (72h). Financial data may trigger SEC disclosure. Engage Legal, DPO, and Compliance teams.', priority:'Critical' },
+            { icon:'🔍', title:'Determine File Integrity', desc:'Check if files were only read/downloaded or also modified/deleted. Review SharePoint versioning and recycle bin for evidence of data tampering during the attack window.', priority:'High' },
+            { icon:'🧩', title:'Evaluate Sharing Link Exposure', desc:'Check if any external sharing links were created during the compromise that could provide ongoing data access even after user revocation.', priority:'High' },
+            { icon:'🔍', title:'Review DLP Policy Effectiveness', desc:'DLP policies on /Finance/Sensitive and /HR/Restricted were Alert-only. Assess whether upgrading to Block action would have prevented the exfiltration without impacting legitimate workflows.', priority:'Medium' }
           ],
           playbooks: [
             { name:'SharePoint Access Revocation', id:'PB-SP-001', desc:'Revoke user permissions → Disable external sharing → Review sharing links → Regenerate access tokens', status:'Ready', estimatedTime:'2 min' },
@@ -5077,11 +5075,10 @@ const ENTITIES = {
           verdict: 'Malicious — Compromised OAuth Tokens',
           severity: 'critical',
           recommendations: [
-            { icon:'🔑', title:'Revoke All OAuth Tokens', desc:'Immediately revoke all active tokens for FileSync Pro. Revoke refresh token to prevent re-issuance. 3 active tokens with Files.ReadWrite.All and Mail.ReadWrite scopes.', priority:'Critical' },
-            { icon:'🚫', title:'Block Unregistered App', desc:'Block FileSync Pro (App ID: 7a3b8c4d) in Azure AD Enterprise Applications. Add to tenant-wide app block list.', priority:'Critical' },
-            { icon:'🛡', title:'Enable Admin Consent Workflow', desc:'Require admin approval for all new app consent requests. Disable user self-consent for unverified publishers.', priority:'High' },
-            { icon:'📊', title:'Audit Token Usage', desc:'Review all Graph API calls made with compromised tokens. 1,247 OneDrive items listed, 500 emails read, sensitive files downloaded.', priority:'High' },
-            { icon:'🔒', title:'Restrict Token Scopes', desc:'Apply least-privilege token scopes. Block Files.ReadWrite.All for non-admin users. Enforce managed device requirement for Mail scopes.', priority:'Medium' }
+            { icon:'�', title:'Determine App Origin', desc:'Investigate if FileSync Pro is attacker-controlled malware or a legitimate app abused via consent phishing. Check app registration date, publisher domain, and whether it appeared in phishing campaigns.', priority:'Critical' },
+            { icon:'📊', title:'Audit Graph API Activity', desc:'Review all Graph API calls made with compromised tokens: 1,247 OneDrive items listed, 500 emails read. Determine what data was actually downloaded vs. merely enumerated.', priority:'Critical' },
+            { icon:'🧩', title:'Assess Token Scope Escalation', desc:'Evaluate whether the 3 active tokens with Files.ReadWrite.All and Mail.ReadWrite were used beyond their stated scopes. Check for privilege escalation attempts via Graph API.', priority:'High' },
+            { icon:'📝', title:'Check for Refresh Token Persistence', desc:'Determine if refresh tokens were stored by the attacker. Even after access token revocation, a stored refresh token could regenerate access unless explicitly revoked.', priority:'High' }
           ],
           playbooks: [
             { name:'OAuth Token Revocation', id:'PB-OAUTH-001', desc:'Revoke tokens → Block app → Disable user consent → Re-register approved apps → Notify user', status:'Ready', estimatedTime:'2 min' },
@@ -5286,11 +5283,10 @@ const ENTITIES = {
           verdict: 'Malicious — Encoded Command Execution & C2',
           severity: 'critical',
           recommendations: [
-            { icon:'⊘', title:'Kill PowerShell Process', desc:'Terminate powershell.exe (PID 7842) immediately. This process is executing Base64-encoded commands, downloading scripts from GitHub, and beaconing to C2 infrastructure.', priority:'Critical' },
-            { icon:'🛡', title:'Enable Constrained Language Mode', desc:'Apply PowerShell Constrained Language Mode via GPO on CORP-WS-045 and all workstations. Block .NET assembly loading and COM object access.', priority:'High' },
-            { icon:'📋', title:'Review AMSI Detections', desc:'3 AMSI events detected: Invoke-Mimikatz (credential dump), Cobalt Strike beacon loader, and encoded reverse shell. Confirm all were blocked.', priority:'High' },
-            { icon:'🔍', title:'Decode & Analyze Commands', desc:'Decode all Base64 commands from ScriptBlock logs. Map full attack chain: script download → credential harvest → C2 establishment → data exfiltration.', priority:'High' },
-            { icon:'🔒', title:'Apply AppLocker Policies', desc:'Create AppLocker rules to restrict PowerShell execution to signed scripts only. Block powershell.exe for non-admin users.', priority:'Medium' }
+            { icon:'🔍', title:'Decode Full Attack Chain', desc:'Decode all Base64 commands from ScriptBlock logs. Map the complete attack chain: script download → credential harvest → C2 establishment → data exfiltration. Identify any MITRE techniques not yet detected.', priority:'Critical' },
+            { icon:'🧩', title:'Assess AMSI Evasion Success', desc:'3 AMSI detections fired but determine if the attacker successfully evaded any. Check if Invoke-Mimikatz completed before AMSI intervened — were credentials actually harvested?', priority:'Critical' },
+            { icon:'📊', title:'Map Parent Process Chain', desc:'Trace the full process tree: who launched the initial PowerShell? Was it user-initiated, scheduled task, or spawned by another exploit? This identifies the initial access method.', priority:'High' },
+            { icon:'📝', title:'Extract IOCs for Detection Rules', desc:'Capture all IOCs from the decoded commands: URLs, file hashes, C2 domains, registry keys. Create custom detection rules to prevent similar attacks across the environment.', priority:'High' }
           ],
           playbooks: [
             { name:'Malicious Process Termination', id:'PB-PROC-001', desc:'Kill process tree → Block parent hash → Clean temp files → Verify no respawn via scheduled task', status:'Ready', estimatedTime:'1 min' },
@@ -5425,11 +5421,10 @@ const ENTITIES = {
           verdict: 'Malicious — Masquerading Service with C2 Beacon',
           severity: 'critical',
           recommendations: [
-            { icon:'⊘', title:'Stop & Disable Service', desc:'Stop WinUpdateSvc immediately and set startup type to Disabled. This is a masquerading service (not legitimate Windows Update) running an unsigned binary with active C2 beacon.', priority:'Critical' },
-            { icon:'🗑', title:'Delete Malicious Binary', desc:'Remove WinUpdateSvc.dll (SHA256: a1b2c3) from disk. Delete registry entry at HKLM SYSTEM CurrentControlSet Services WinUpdateSvc. Clean startup entries.', priority:'Critical' },
-            { icon:'🔍', title:'Analyze Binary in Sandbox', desc:'Submit WinUpdateSvc.dll to sandbox for full analysis. Confirmed Cobalt Strike beacon — extract C2 config, sleep time (30s), and watermark for attribution.', priority:'High' },
-            { icon:'📡', title:'Block C2 Communication', desc:'Block all outbound connections to 185.220.101.42:443 and c2-update.darkoperator.net at firewall and proxy. Sinkhole the DNS record.', priority:'Critical' },
-            { icon:'📋', title:'Hunt for Similar Services', desc:'Search all domain workstations for services with unsigned binaries, recent creation dates, and names mimicking Windows services.', priority:'High' }
+            { icon:'🔍', title:'Analyze Binary for Attribution', desc:'Submit WinUpdateSvc.dll to sandbox. Extract Cobalt Strike beacon config: C2 address, sleep time (30s), watermark, and malleable C2 profile for campaign attribution.', priority:'Critical' },
+            { icon:'🧩', title:'Determine Installation Timeline', desc:'Investigate how and when WinUpdateSvc was installed — sc.exe create, registry modification, or GPO push? Map the exact sequence: PowerShell download → binary drop → service creation.', priority:'Critical' },
+            { icon:'📊', title:'Assess Persistence Depth', desc:'Check if the attacker created additional persistence beyond the service: scheduled tasks, startup registry keys, WMI event subscriptions, or boot/logon autostart entries.', priority:'High' },
+            { icon:'📝', title:'Check Domain-Wide for Similar Services', desc:'Search for other services with unsigned binaries, names mimicking Windows services, or binaries in temp directories across all domain workstations. Could indicate broader compromise.', priority:'High' }
           ],
           playbooks: [
             { name:'Malicious Service Removal', id:'PB-SVC-001', desc:'Stop service → Disable startup → Delete binary → Clean registry → Verify removal → Re-scan endpoint', status:'Ready', estimatedTime:'3 min' },
