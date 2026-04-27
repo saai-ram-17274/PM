@@ -579,6 +579,15 @@ a { text-decoration: none; }
   font-size: 10.5px; font-weight: 700; padding: 2px 7px;
   border-radius: 10px; font-family: var(--mono);
 }
+/* Security Event Summary count pills */
+.sec-evt-pill {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  padding: 1px 8px; border-radius: 10px; min-width: 22px;
+  text-align: center; font-family: var(--mono); line-height: 1.6;
+}
+.sec-evt-pill-flag { background: #FFEBEE; color: #DD1616; }
+.sec-evt-pill-norm { background: #F0F1F3; color: #3D4355; }
+.sec-evt-pill-zero { background: #F5F5F5; color: #9CA3AF; }
 
 .event-card {
   border: 1px solid var(--border); border-radius: var(--radius);
@@ -3940,7 +3949,7 @@ const ENTITIES = {
           metrics: [
             { icon:'⚠', label:'Active Anomalies', value:'7', color:'#DD1616' },
             { icon:'🔐', label:'Failed Logins (24h)', value:'4', color:'#FF5900' },
-            { icon:'⏱', label:'Time Since First Alert', value:'1h 14m', color:'#6366B3' }
+            { icon:'⏱', label:'Time Since First Alert', value:'', color:'#6366B3', dynamic:'timeSinceFirst' }
           ],
           firstSeen: '03 Apr 2026 14:22:45',
           lastActivity: '03 Apr 2026 15:36:22'
@@ -4427,7 +4436,7 @@ const ENTITIES = {
         kv: {
           'Country':'Romania',
           'VPN/Proxy':'Yes — Tor Exit Node',
-          'Blocklist Status':'Listed on 6 threat feeds'
+          'Threat Feed Match':'Listed (Webroot BrightCloud)'
         }
       },
       associatedUsers: {
@@ -4512,7 +4521,7 @@ const ENTITIES = {
         kv: {
           'Network Type':'Corporate LAN',
           'VPN/Proxy':'No',
-          'Blocklist Status':'Not listed (internal)'
+          'Threat Feed Match':'Not listed (internal)'
         }
       },
       associatedUsers: {
@@ -4661,15 +4670,19 @@ const ENTITIES = {
       },
       securityEventSummary: {
         label: 'Security Event Summary (24h)', expanded: false,
-        kv: {
-          'Failed Logons (4625)':'14 ⚠ (3 from unknown sources)',
-          'Privilege Use (4672)':'8',
-          'Object Access (4663)':'247',
-          'Policy Changes (4719)':'0',
-          'Process Creation (4688/Sysmon 1)':'312',
-          'Service Installs (7045)':'1 ⚠ (WinUpdateSvc — unsigned)',
-          'Scheduled Tasks (4698)':'1 ⚠ (new task created during attack window)'
-        }
+        secEventGroups: [
+          { groupLabel:'Needs Review', groupColor:'#DD1616', items: [
+            { label:'Failed Logons', eventId:'4625', count:14, flagged:true },
+            { label:'Service Installs', eventId:'7045', count:1, flagged:true },
+            { label:'Scheduled Tasks', eventId:'4698', count:1, flagged:true }
+          ]},
+          { groupLabel:'Normal', groupColor:'#20A144', items: [
+            { label:'Process Creation', eventId:'4688', count:312 },
+            { label:'Object Access', eventId:'4663', count:247 },
+            { label:'Privilege Use', eventId:'4672', count:8 },
+            { label:'Policy Changes', eventId:'4719', count:0 }
+          ]}
+        ]
       },
       usbDeviceEvents: {
         label: 'USB Device Events', expanded: false, viewAll: true,
@@ -6700,6 +6713,8 @@ function openEntitySlider(entityId) {
   populateActionsDropdown(e.type, e.modalTitle);
   // render body
   renderEntitySliderBody(entityId);
+  // start live updater for any "Time Since" dynamic metrics
+  startTimeSinceUpdater();
   // slide open
   document.getElementById('graphContainer').classList.add('slider-open');
 }
@@ -6917,6 +6932,23 @@ function renderEntitySection(entityId, secKey, sec) {
 
   html += `<div class="em-section-body">`;
 
+  // Security Event Summary grouped renderer
+  if (sec.secEventGroups) {
+    sec.secEventGroups.forEach(grp => {
+      html += `<div style="padding:6px 20px 2px;">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${grp.groupColor};margin-right:6px;vertical-align:middle;"></span>
+        <span style="font-size:11px;font-weight:600;color:${grp.groupColor};text-transform:uppercase;letter-spacing:0.5px;">${grp.groupLabel}</span>
+      </div>`;
+      html += `<table class="em-kv-table" style="margin-bottom:8px;">`;
+      grp.items.forEach(item => {
+        const pillCls = item.flagged ? 'sec-evt-pill-flag' : (item.count === 0 ? 'sec-evt-pill-zero' : 'sec-evt-pill-norm');
+        const eid = `<span style="color:#8a94a6;font-size:11px;margin-left:6px;">${item.eventId}</span>`;
+        html += `<tr><td>${item.label}${eid}</td><td><span class="sec-evt-pill ${pillCls}">${item.count}</span></td></tr>`;
+      });
+      html += `</table>`;
+    });
+  }
+
   // Key-value table
   if (sec.kv) {
     html += `<table class="em-kv-table">`;
@@ -7062,6 +7094,29 @@ function renderAttackPath(ap) {
 }
 
 /* ─── Risk Summary Card ─── */
+/* ─── Dynamic time helper ─── */
+function computeTimeSince(dateStr) {
+  const ts = new Date(dateStr).getTime();
+  if (isNaN(ts)) return '—';
+  const diff = Math.max(0, Date.now() - ts);
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+let _timeSinceInterval = null;
+function startTimeSinceUpdater() {
+  if (_timeSinceInterval) clearInterval(_timeSinceInterval);
+  _timeSinceInterval = setInterval(() => {
+    document.querySelectorAll('[data-time-since]').forEach(el => {
+      el.textContent = computeTimeSince(el.getAttribute('data-time-since'));
+    });
+  }, 60000); // update every 60 s
+}
+
 function renderSummaryCard(card) {
   let html = '<div class="em-summary-card">';
 
@@ -7103,7 +7158,12 @@ function renderSummaryCard(card) {
     html += `<div class="em-sc-metric">`;
     html += `<span class="em-sc-metric-dot" style="background:${m.color};"></span>`;
     html += `<div class="em-sc-metric-body">`;
-    html += `<span class="em-sc-metric-val" style="color:${m.color};">${m.value}</span>`;
+    if (m.dynamic === 'timeSinceFirst' && card.firstSeen) {
+      const live = computeTimeSince(card.firstSeen);
+      html += `<span class="em-sc-metric-val" style="color:${m.color};" data-time-since="${card.firstSeen}">${live}</span>`;
+    } else {
+      html += `<span class="em-sc-metric-val" style="color:${m.color};">${m.value}</span>`;
+    }
     html += `<span class="em-sc-metric-lbl">${m.label}</span>`;
     html += `</div></div>`;
   });
@@ -7296,6 +7356,20 @@ function viewAllSection(entityId, secKey) {
     html += `<div style="padding:0 20px 14px;">`;
     html += renderTimelineEntries(data);
     html += `</div>`;
+  } else if (sec.secEventGroups) {
+    sec.secEventGroups.forEach(grp => {
+      html += `<div style="padding:10px 20px 4px;">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${grp.groupColor};margin-right:6px;vertical-align:middle;"></span>
+        <span style="font-size:11px;font-weight:600;color:${grp.groupColor};text-transform:uppercase;letter-spacing:0.5px;">${grp.groupLabel}</span>
+      </div>`;
+      html += `<div style="padding:0 20px 8px;"><table class="em-kv-table">`;
+      grp.items.forEach(item => {
+        const pillCls = item.flagged ? 'sec-evt-pill-flag' : (item.count === 0 ? 'sec-evt-pill-zero' : 'sec-evt-pill-norm');
+        const eid = `<span style="color:#8a94a6;font-size:11px;margin-left:6px;">${item.eventId}</span>`;
+        html += `<tr><td>${item.label}${eid}</td><td><span class="sec-evt-pill ${pillCls}">${item.count}</span></td></tr>`;
+      });
+      html += `</table></div>`;
+    });
   } else if (sec.kv) {
     html += `<div style="padding:12px 20px;">`;
     html += `<table class="em-kv-table">`;
@@ -7605,7 +7679,7 @@ function buildQuickCardRows(e, entityId) {
     rows.push({ icon:'🔧', label:'Services on Host', count: count(sec.servicesOnHost), tabId:'host', secKey:'servicesOnHost' });
     rows.push({ icon:'👤', label:'Users Logged On', count: count(sec.usersLoggedOn), tabId:'host', secKey:'usersLoggedOn' });
     rows.push({ divider:true });
-    rows.push({ icon:'📊', label:'Security Summary', count: kvCount(sec.securityEventSummary), tabId:'overview', secKey:'securityEventSummary' });
+    rows.push({ icon:'📊', label:'Security Summary', count: sec.securityEventSummary?.secEventGroups ? sec.securityEventSummary.secEventGroups.reduce((s,g) => s + g.items.length, 0) : kvCount(sec.securityEventSummary), tabId:'overview', secKey:'securityEventSummary' });
     rows.push({ icon:'📅', label:'Scheduled Tasks', count: count(sec.scheduledTasks), critical: count(sec.scheduledTasks)>=1, tabId:'persistence', secKey:'scheduledTasks' });
     rows.push({ icon:'🔌', label:'USB Events', count: count(sec.usbDeviceEvents), tabId:'persistence', secKey:'usbDeviceEvents' });
   } else if (e.type === 'ip') {

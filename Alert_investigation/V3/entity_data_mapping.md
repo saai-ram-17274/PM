@@ -351,17 +351,26 @@
 > **Implementation**: 1) Find device OU from `APFDiscADComputerDetails.PARENT` 2) Read `GP_LINK` from OU chain 3) Resolve GPO DNs to `APFDiscADGPODetails`
 
 ### 2.15 Security Event Summary (24h Counters)
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Failed Logons (4625) | 🔧 | ES aggregation | `EVENTID=4625 AND HOSTNAME=<device> AND TIME>now-24h` → count |
-| Privilege Use (4672) | 🔧 | ES aggregation | `EVENTID=4672 AND HOSTNAME=<device>` → count |
-| Object Access (4663) | 🔧 | ES aggregation | `EVENTID=4663 AND HOSTNAME=<device>` → count |
-| Policy Changes (4719) | 🔧 | ES aggregation | `EVENTID=4719 AND HOSTNAME=<device>` → count |
-| Process Creation (4688/Sysmon 1) | 🔧 | ES aggregation | `EVENTID IN [4688,1] AND HOSTNAME=<device>` → count |
-| Service Installs (7045) | 🔧 | ES aggregation | `EVENTID=7045 AND HOSTNAME=<device>` → count |
-| Scheduled Tasks (4698) | 🔧 | ES aggregation | `EVENTID=4698 AND HOSTNAME=<device>` → count |
 
-> **Implementation**: Single ES multi-aggregation query with `HOSTNAME=<device> AND TIME>now-24h`, group by `EVENTID` buckets
+Grouped by risk relevance. Event IDs shown as secondary detail per row (visible but non-dominant).
+
+**Needs Review** (any count > 0 is actionable):
+| Field | Event ID | Status | Source | How to Get |
+|-------|----------|--------|--------|------------|
+| Failed Logons | 4625 | 🔧 | ES aggregation | `EVENTID=4625 AND HOSTNAME=<device> AND TIME>now-24h` → count |
+| Service Installs | 7045 | 🔧 | ES aggregation | `EVENTID=7045 AND HOSTNAME=<device>` → count |
+| Scheduled Tasks | 4698 | 🔧 | ES aggregation | `EVENTID=4698 AND HOSTNAME=<device>` → count |
+
+**Normal** (volume counters for context):
+| Field | Event ID | Status | Source | How to Get |
+|-------|----------|--------|--------|------------|
+| Process Creation | 4688 | 🔧 | ES aggregation | `EVENTID=4688 AND HOSTNAME=<device>` → count |
+| Object Access | 4663 | 🔧 | ES aggregation | `EVENTID=4663 AND HOSTNAME=<device>` → count |
+| Privilege Use | 4672 | 🔧 | ES aggregation | `EVENTID=4672 AND HOSTNAME=<device>` → count |
+| Policy Changes | 4719 | 🔧 | ES aggregation | `EVENTID=4719 AND HOSTNAME=<device>` → count |
+
+> **Implementation**: Single ES multi-aggregation query with `HOSTNAME=<device> AND TIME>now-24h`, group by `EVENTID` buckets.  
+> **UI**: Grouped by risk — "Needs Review" (red dot) and "Normal" (green dot). Event IDs shown as subtle secondary text next to each label. Flagged rows show count in red. No editorial annotations (removed `⚠`, `"unsigned"`, `"from unknown sources"` etc).
 
 ### 2.16 USB Device Events
 | Field | Status | Source | How to Get |
@@ -394,7 +403,7 @@
 |-------|--------|--------|------------|
 | Risk Score | 🟡 | Threat reputation enrichment | Available for external IPs via threat feeds; no score for internal IPs |
 | Tor Exit Node | ✅ | `ADSThreatAnalyticsFeeds` — Tor exit list | Enriched during ingestion |
-| Threat Feeds Flagged | ✅ | `THREAT_SOURCE`, `THREAT_CATEGORIES` | Count of feeds that flagged IP |
+| Threat Feeds Flagged | 🟡 | Query-time lookup across all feed stores | **Not available from ingestion**: `THREAT_SERVER` only records first matching feed (`findAny()`). Needs new query-time method that checks Webroot + each STIX/TAXII server + file import and counts all hits. Show binary `Flagged` / `Not flagged` until implemented |
 | Active Connections | ✅ | ES connection count | Aggregated from FW/proxy logs |
 | AbuseIPDB Score | ❌ | **Not integrated** | Need new connector (ThreatTPIVendors ID=4) |
 | VirusTotal Detections | ✅ | `VirusTotalActionHandler` | External API call |
@@ -456,14 +465,16 @@
 | ~~Timezone~~ | ❌ | ~~GeoIP derived~~ | **Removed v3**: Derived from unreliable city-level data |
 | ~~Hosting (Datacenter/Residential)~~ | ❌ | **Not available** | No IP classification service |
 | VPN/Proxy detection | ✅ | Threat feed categories | `THREAT_CATEGORIES` |
-| Blocklist Status | ✅ | `ADSThreatAnalyticsFeeds` | Count of feeds listing the IP (e.g. `Listed on 6 threat feeds`) |
+| Threat Feed Match | 🟡 | Query-time lookup across all feed stores | **Renamed from "Blocklist Status"**. Current ingestion records only first matching feed (`findAny()` in `checkAndAddIsMaliciousFieldToLog`). To show a count, need new query-time method: `countFeedsForIP(ip)` that checks (1) Webroot via `getIPDataInThreatAnalyticsFeeds()`, (2) each enabled STIX/TAXII server via loop in `getSTIXTAXIIServerNameOfFlaggedIP()`, (3) file import via `isIPFlaggedInThreatImportFeeds()`. Until built, show `Listed` / `Not listed` (binary) |
 | ~~VLAN (internal IPs)~~ | ❌ | ~~Network device logs~~ | **Removed v3**: No IP→VLAN mapping table. Event-level field not reliable |
 | ~~NAC Status~~ | ❌ | **Not available** | No NAC parser |
 | DHCP Lease | ✅ | `DHCP_WINDOWS`/`DHCP_LINUX` log formats | If DHCP logs collected |
 | ~~Subnet~~ | ❌ | ~~Derived from IP + known network config~~ | **Removed v3**: No subnet table — would require manual config with no API |
 
-> **External IP (`ip-tor`) geoContext**: Country, VPN/Proxy, Blocklist Status (3 fields).  
-> **Internal IP (`ip-internal`) geoContext**: Network Type, VPN/Proxy, Blocklist Status (3 fields). Country/City/Building/Timezone/Corporate Location all removed in v3.
+> **External IP (`ip-tor`) geoContext**: Country, VPN/Proxy, Threat Feed Match (3 fields).  
+> **Internal IP (`ip-internal`) geoContext**: Network Type, VPN/Proxy, Threat Feed Match (3 fields). Country/City/Building/Timezone/Corporate Location all removed in v3.
+>
+> **Why "Threat Feed Match" instead of "Blocklist Status"**: The original label "Blocklist Status" implied the IP is checked against external public blocklists (e.g., Spamhaus, DNSBL, AbuseIPDB). The product does **not** query external blocklists. It checks against its own internal threat feed stores (Webroot BrightCloud, configured STIX/TAXII servers, imported threat indicator files). "Threat Feed Match" accurately describes what the system actually does — it tells the analyst whether the IP appears in the product's configured threat intelligence feeds.
 
 ### 3.7 Associated Users
 | Field | Status | Source | How to Get |
@@ -969,17 +980,27 @@
 **Why SOC needs this**: GPOs enforce security — shows if password policies, audit policies, AppLocker, or firewall rules are applied.
 
 #### 6.2.3 Security Event Summary (24h Counters)
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Failed Logons (4625) | 🔧 | ES aggregation | `EVENTID=4625 AND HOSTNAME=<device> AND TIME>now-24h` → count | Brute force indicator |
-| Privilege Use (4672) | 🔧 | ES aggregation | `EVENTID=4672 AND HOSTNAME=<device>` → count | Admin activity volume |
-| Object Access (4663) | 🔧 | ES aggregation | `EVENTID=4663 AND HOSTNAME=<device>` → count | Data access volume |
-| Policy Changes (4719) | 🔧 | ES aggregation | `EVENTID=4719 AND HOSTNAME=<device>` → count | Tampering indicator |
-| Process Creation (4688) | 🔧 | ES aggregation | `EVENTID=4688 AND HOSTNAME=<device>` → count | Execution volume |
 
-**Implementation**: Single ES multi-aggregation query with `HOSTNAME=<device> AND TIME>now-24h`, group by `EVENTID` buckets
+Grouped by risk relevance. Event IDs shown as secondary detail per row.
 
-**Why SOC needs this**: At-a-glance security heatmap — high 4625 count = active brute force; high 4719 = audit tampering.
+**Needs Review** (any count > 0 is actionable):
+| Field | Event ID | Status | Source | How to Get | SOC Value |
+|-------|----------|--------|--------|------------|-----------|
+| Failed Logons | 4625 | 🔧 | ES aggregation | `EVENTID=4625 AND HOSTNAME=<device> AND TIME>now-24h` → count | Brute force indicator |
+| Service Installs | 7045 | 🔧 | ES aggregation | `EVENTID=7045 AND HOSTNAME=<device>` → count | Rogue service / persistence |
+| Scheduled Tasks | 4698 | 🔧 | ES aggregation | `EVENTID=4698 AND HOSTNAME=<device>` → count | Persistence mechanism |
+
+**Normal** (volume counters for context):
+| Field | Event ID | Status | Source | How to Get | SOC Value |
+|-------|----------|--------|--------|------------|-----------|
+| Process Creation | 4688 | 🔧 | ES aggregation | `EVENTID=4688 AND HOSTNAME=<device>` → count | Execution volume |
+| Object Access | 4663 | 🔧 | ES aggregation | `EVENTID=4663 AND HOSTNAME=<device>` → count | Data access volume |
+| Privilege Use | 4672 | 🔧 | ES aggregation | `EVENTID=4672 AND HOSTNAME=<device>` → count | Admin activity volume |
+| Policy Changes | 4719 | 🔧 | ES aggregation | `EVENTID=4719 AND HOSTNAME=<device>` → count | Tampering indicator |
+
+**Implementation**: Single ES multi-aggregation query with `HOSTNAME=<device> AND TIME>now-24h`, group by `EVENTID` buckets.
+
+**Why SOC needs this**: At-a-glance security heatmap grouped by risk. "Needs Review" items (failed logons, service installs, scheduled tasks) are always worth investigating if count > 0. "Normal" items provide execution volume context.
 
 #### 6.2.4 USB Device Events
 | Field | Status | Source | How to Get | SOC Value |
@@ -1208,3 +1229,6 @@
 | 25 Apr 2026 | Removed all `Note` fields from account change sections (accountLockouts, passwordHistory, groupMembershipChanges, mailboxForwarding) — fabricated analyst commentary | User |
 | 25 Apr 2026 | Removed editorial annotations: `⚠`, `(Tor proxy)`, `(compromised session)` from data fields | User |
 | 25 Apr 2026 | Added `emptyText` renderer support for sections with no data; used in `privilegedRoleChanges` | User |
+| 26 Apr 2026 | Renamed `Blocklist Status` → `Threat Feed Match` — product checks internal feed stores (Webroot, STIX/TAXII, file import), not external blocklists. Label was misleading | IP |
+| 26 Apr 2026 | Downgraded `Threat Feeds Flagged` and `Threat Feed Match` from ✅ to 🟡 — ingestion uses `findAny()` (records only first match). Count requires new query-time `countFeedsForIP()` method. Show binary until built | IP |
+| 27 Apr 2026 | Restructured Security Event Summary from flat KV to risk-grouped format: "Needs Review" (4625, 7045, 4698) and "Normal" (4688, 4663, 4672, 4719). Event IDs shown as subtle secondary text. Removed editorial annotations (`⚠`, `"unsigned"`, `"from unknown sources"`, `"during attack window"`) | Device |
