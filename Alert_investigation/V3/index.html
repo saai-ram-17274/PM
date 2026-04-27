@@ -2925,13 +2925,13 @@ a { text-decoration: none; }
             <line x1="310" y1="240" x2="860" y2="185" class="graph-edge-norm" data-source="user-m-henderson" data-target="svc-azure-ad" data-label="AUTHENTICATED"/>
             <line x1="420" y1="455" x2="320" y2="560" class="graph-edge-norm" data-source="ip-internal" data-target="dev-ws045" data-label="MAPS_TO"/>
             <line x1="310" y1="260" x2="870" y2="400" class="graph-edge-mal" data-source="user-m-henderson" data-target="svc-sharepoint" data-label="ACCESSED (24 files)"/>
-            <line x1="910" y1="210" x2="940" y2="550" class="graph-edge-mal" data-source="svc-azure-ad" data-target="proc-oauth" data-label="ISSUED"/>
+            <line x1="910" y1="210" x2="940" y2="550" class="graph-edge-mal" data-source="svc-azure-ad" data-target="svc-oauth" data-label="ISSUED"/>
             <line x1="630" y1="360" x2="870" y2="195" class="graph-edge-norm" data-source="user-admin" data-target="svc-azure-ad" data-label="SIGNED_IN"/>
             <line x1="120" y1="450" x2="310" y2="560" class="graph-edge-mal" data-source="ip-tor" data-target="dev-ws045" data-label="C2_OUTBOUND"/>
             <line x1="340" y1="560" x2="870" y2="410" class="graph-edge-mal" data-source="dev-ws045" data-target="svc-sharepoint" data-label="EXFIL_SOURCE"/>
             <line x1="310" y1="555" x2="580" y2="355" class="graph-edge-norm" data-source="dev-ws045" data-target="user-admin" data-label="" style="display:none"/>
             <line x1="280" y1="265" x2="320" y2="555" class="graph-edge-norm" data-source="user-m-henderson" data-target="dev-ws045" data-label="LOGGED_ON"/>
-            <line x1="940" y1="570" x2="880" y2="420" class="graph-edge-mal" data-source="proc-oauth" data-target="svc-sharepoint" data-label="TOKEN_USED"/>
+            <line x1="940" y1="570" x2="880" y2="420" class="graph-edge-mal" data-source="svc-oauth" data-target="svc-sharepoint" data-label="TOKEN_USED"/>
             <!-- Edge labels -->
             <text x="425" y="148" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="alert-impossible-travel" data-target="user-m-henderson">TRIGGERED_BY</text>
             <text x="745" y="120" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="alert-impossible-travel" data-target="svc-azure-ad">DETECTED_ON</text>
@@ -2940,12 +2940,12 @@ a { text-decoration: none; }
             <text x="570" y="200" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="svc-azure-ad">AUTHENTICATED</text>
             <text x="360" y="512" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="ip-internal" data-target="dev-ws045">MAPS_TO</text>
             <text x="580" y="320" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="svc-sharepoint">ACCESSED (24 files)</text>
-            <text x="940" y="385" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="svc-azure-ad" data-target="proc-oauth">ISSUED</text>
+            <text x="940" y="385" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="svc-azure-ad" data-target="svc-oauth">ISSUED</text>
             <text x="755" y="268" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-admin" data-target="svc-azure-ad">SIGNED_IN</text>
             <text x="215" y="510" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="ip-tor" data-target="dev-ws045">C2_OUTBOUND</text>
             <text x="610" y="500" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="dev-ws045" data-target="svc-sharepoint">EXFIL_SOURCE</text>
             <text x="285" y="420" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="user-m-henderson" data-target="dev-ws045">LOGGED_ON</text>
-            <text x="920" y="495" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="proc-oauth" data-target="svc-sharepoint">TOKEN_USED</text>
+            <text x="920" y="495" text-anchor="middle" font-size="8" fill="#8a94a6" font-family="Zoho Puvi,sans-serif" style="paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;" data-source="svc-oauth" data-target="svc-sharepoint">TOKEN_USED</text>
             <!-- Nodes -->
             <g class="graph-node" data-entity="alert-impossible-travel" onclick="openEntitySlider('alert-impossible-travel')" oncontextmenu="showGraphCtx(event,'alert-impossible-travel')">
               <circle cx="580" cy="65" r="24" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
@@ -2983,7 +2983,7 @@ a { text-decoration: none; }
               <text x="890" y="415" text-anchor="middle" font-size="14" dominant-baseline="central">📁</text>
               <text x="890" y="440" text-anchor="middle" font-size="10" fill="#DD1616" font-family="Zoho Puvi,sans-serif" font-weight="600">SharePoint</text>
             </g>
-            <g class="graph-node" data-entity="proc-oauth" onclick="openEntitySlider('proc-oauth')" oncontextmenu="showGraphCtx(event,'proc-oauth')">
+            <g class="graph-node" data-entity="svc-oauth" onclick="openEntitySlider('svc-oauth')" oncontextmenu="showGraphCtx(event,'svc-oauth')">
               <circle cx="950" cy="565" r="18" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
               <text x="950" y="570" text-anchor="middle" font-size="13" dominant-baseline="central">🔑</text>
               <text x="950" y="593" text-anchor="middle" font-size="9.5" fill="#DD1616" font-family="Zoho Puvi,sans-serif" font-weight="600">OAuth Tokens (3)</text>
@@ -3007,8 +3007,7 @@ a { text-decoration: none; }
               <div class="gcb-option" data-val="user" onclick="pickEntityChip(this,'user','Users')"><span class="gcb-dot" style="background:#6366B3;"></span> Users <span class="gcb-count">2</span></div>
               <div class="gcb-option" data-val="device" onclick="pickEntityChip(this,'device','Devices')"><span class="gcb-dot" style="background:#198019;"></span> Devices <span class="gcb-count">1</span></div>
               <div class="gcb-option" data-val="ip" onclick="pickEntityChip(this,'ip','IPs')"><span class="gcb-dot" style="background:#DD1616;"></span> IPs <span class="gcb-count">2</span></div>
-              <div class="gcb-option" data-val="service" onclick="pickEntityChip(this,'service','Services')"><span class="gcb-dot" style="background:#0891b2;"></span> Services <span class="gcb-count">2</span></div>
-              <div class="gcb-option" data-val="process" onclick="pickEntityChip(this,'process','Processes')"><span class="gcb-dot" style="background:#D14900;"></span> Processes <span class="gcb-count">2</span></div>
+              <div class="gcb-option" data-val="service" onclick="pickEntityChip(this,'service','Services')"><span class="gcb-dot" style="background:#0891b2;"></span> Services <span class="gcb-count">3</span></div>
               <div class="gcb-option" data-val="alert" onclick="pickEntityChip(this,'alert','Alerts')"><span class="gcb-dot" style="background:#DD1616;"></span> Alerts <span class="gcb-count">1</span></div>
             </div>
 
@@ -3208,7 +3207,7 @@ var ENTITY_DISPLAY = {
   'ip-internal':             { icon:'◆', name:'10.18.1.81', color:'#198019', bg:'#E8F5E9' },
   'dev-ws045':               { icon:'🖥', name:'CORP-WS-045', color:'#DD1616', bg:'#FFEBEE' },
   'svc-sharepoint':          { icon:'📁', name:'SharePoint', color:'#FF5900', bg:'#FFF3E0' },
-  'proc-oauth':              { icon:'🔑', name:'OAuth Tokens (3)', color:'#D14900', bg:'#FFFDE7' },
+  'svc-oauth':              { icon:'🔑', name:'OAuth Tokens (3)', color:'#0891b2', bg:'#ecfeff' },
   'user-admin':              { icon:'👤', name:'Administrator', color:'#0891b2', bg:'#ecfeff' },
   'proc-powershell':         { icon:'⚙', name:'PowerShell.exe', color:'#D14900', bg:'#FFFDE7' },
   'svc-winupdatesvc':        { icon:'⚙', name:'WinUpdateSvc', color:'#FF5900', bg:'#FFF3E0' },
@@ -3225,7 +3224,7 @@ var CRITICAL_REASONS = {
   'ip-tor': 'Known Tor exit node · AbuseIPDB confidence 100% · 5 threat feeds flagged',
   'dev-ws045': 'Active C2 outbound to Tor node · Exfiltration source · Compromised endpoint',
   'user-m-henderson': 'UEBA Risk Score 94/100 · Compromised account',
-  'proc-oauth': 'Unregistered app tokens · Issued post-compromise',
+  'svc-oauth': 'Unregistered app tokens · Issued post-compromise',
   'svc-sharepoint': '24 files exfiltrated in 3 min from /Finance/Sensitive',
   'proc-powershell': 'Encoded command execution · AMSI detections · C2 communication',
   'svc-winupdatesvc': 'Masquerading service · Unsigned binary · C2 beacon active'
@@ -3434,7 +3433,7 @@ const ENTITIES = {
       },
       affectedEntities: {
         label: 'Affected Entities', expanded: false,
-        kv: { 'User':'m.henderson', 'App':'FileSync Pro', 'Service':'Azure AD Portal', 'Token Type':'OAuth 2.0 Bearer', 'Process':'proc-oauth' }
+        kv: { 'User':'m.henderson', 'App':'FileSync Pro', 'Service':'Azure AD Portal', 'Token Type':'OAuth 2.0 Bearer', 'Token':'OAuth Tokens (FileSync Pro)' }
       },
       remediationGuide: {
         label: 'Recommendations & Remediation', expanded: false,
@@ -4314,7 +4313,7 @@ const ENTITIES = {
         label: 'Related Processes', expanded: false, viewAll: true,
         timeline: [
           { time:'03 Apr 2026  14:33:15', dot:'red', malicious: true,
-            viewOnGraph: { nodeId:'proc-oauth', label:'OAuth Token (FileSync Pro)', icon:'⚙', sourceEntity:'svc-azure-ad' },
+            viewOnGraph: { nodeId:'svc-oauth', label:'OAuth Token (FileSync Pro)', icon:'⚙', sourceEntity:'svc-azure-ad' },
             details: { 'Process Name':'OAuth Token (FileSync Pro)', 'Type':'Bearer Token', 'Grant':'Authorization Code', 'Scope':'Mail.ReadWrite, Files.ReadWrite.All', 'Status':'Active — Revocation recommended' } },
           { time:'03 Apr 2026  14:32:10', dot:'red', malicious: true,
             viewOnGraph: { nodeId:'proc-powershell', label:'powershell.exe', icon:'⚙', sourceEntity:'svc-azure-ad' },
@@ -4897,7 +4896,7 @@ const ENTITIES = {
         label: 'Related Processes', expanded: false, viewAll: true,
         timeline: [
           { time:'03 Apr 2026  14:33:15', dot:'red', malicious: true,
-            viewOnGraph: { nodeId:'proc-oauth', label:'OAuth Token (FileSync Pro)', icon:'⚙', sourceEntity:'svc-sharepoint' },
+            viewOnGraph: { nodeId:'svc-oauth', label:'OAuth Token (FileSync Pro)', icon:'⚙', sourceEntity:'svc-sharepoint' },
             details: { 'Process Name':'OAuth Token (FileSync Pro)', 'Type':'Bearer Token', 'Action':'Files.ReadWrite.All — used to bulk download', 'Files Accessed':'142', 'Data Volume':'2.3 GB' } },
           { time:'03 Apr 2026  15:34:00', dot:'red', malicious: true,
             viewOnGraph: { nodeId:'proc-powershell', label:'powershell.exe', icon:'⚙', sourceEntity:'svc-sharepoint' },
@@ -4959,8 +4958,8 @@ const ENTITIES = {
       }
     }
   },
-  'proc-oauth': {
-    type: 'process', modalTitle: 'Process Details · OAuth Token',
+  'svc-oauth': {
+    type: 'service', modalTitle: 'Service Details · OAuth Token',
     sections: {
       riskSummary: {
         label: 'Risk Summary', expanded: true, noCollapse: true,
@@ -5040,10 +5039,10 @@ const ENTITIES = {
         label: 'Related Services', expanded: false, viewAll: true,
         timeline: [
           { time:'03 Apr 2026  14:34:00', dot:'red', malicious: true,
-            viewOnGraph: { nodeId:'svc-sharepoint', label:'SharePoint Online', icon:'🔧', sourceEntity:'proc-oauth' },
+            viewOnGraph: { nodeId:'svc-sharepoint', label:'SharePoint Online', icon:'🔧', sourceEntity:'svc-oauth' },
             details: { 'Service Name':'SharePoint Online', 'Relationship':'Token used for Files.ReadWrite.All — 142 files downloaded', 'Action':'Bulk file download via Graph API', 'Status':'Active — Access revoked' } },
           { time:'03 Apr 2026  14:33:15', dot:'red', malicious: true,
-            viewOnGraph: { nodeId:'svc-azure-ad', label:'Azure AD Portal', icon:'🔧', sourceEntity:'proc-oauth' },
+            viewOnGraph: { nodeId:'svc-azure-ad', label:'Azure AD Portal', icon:'🔧', sourceEntity:'svc-oauth' },
             details: { 'Service Name':'Azure AD Portal', 'Relationship':'Token issued via Azure AD consent flow', 'App':'FileSync Pro (unregistered)', 'Status':'Active — Token revocation recommended' } }
         ]
       },
@@ -5051,7 +5050,7 @@ const ENTITIES = {
         label: 'Related Processes', expanded: false, viewAll: true,
         timeline: [
           { time:'03 Apr 2026  15:36:22', dot:'red', malicious: true,
-            viewOnGraph: { nodeId:'proc-powershell', label:'powershell.exe', icon:'⚙', sourceEntity:'proc-oauth' },
+            viewOnGraph: { nodeId:'proc-powershell', label:'powershell.exe', icon:'⚙', sourceEntity:'svc-oauth' },
             details: { 'Process Name':'powershell.exe', 'Relationship':'Used token scope to execute file operations', 'PID':'4892', 'User':'m.henderson', 'Status':'Running — Kill recommended' } }
         ]
       },
@@ -5059,13 +5058,13 @@ const ENTITIES = {
         label: 'Recent Alerts', expanded: false, viewAll: true,
         timeline: [
           { time:'03 Apr 2026  14:33:15', dot:'red', malicious: true,
-            viewOnGraph: { nodeId:'alert-oauth-token', label:'Suspicious OAuth Token', icon:'🔔', sourceEntity:'proc-oauth' },
+            viewOnGraph: { nodeId:'alert-oauth-token', label:'Suspicious OAuth Token', icon:'🔔', sourceEntity:'svc-oauth' },
             alertProfileId: 'alert-oauth-token',
             detailsGrid: [
               { label:'14:33:15 Suspicious OAuth Token', value:'Broad Scope', tag:'Type', tagVal:'Cloud Security', mitre:'T1550.001 (Application Access Token)', source:'Azure AD', status:'Open', severity:'High' }
             ] },
           { time:'03 Apr 2026  14:35:00', dot:'orange',
-            viewOnGraph: { nodeId:'alert-app-consent', label:'New App Consent', icon:'🔔', sourceEntity:'proc-oauth' },
+            viewOnGraph: { nodeId:'alert-app-consent', label:'New App Consent', icon:'🔔', sourceEntity:'svc-oauth' },
             alertProfileId: 'alert-app-consent',
             detailsGrid: [
               { label:'14:35:00 New App Consent — FileSync Pro', value:'Unregistered App', tag:'Type', tagVal:'App Governance', mitre:'T1098.003 (Additional Cloud Roles)', source:'Azure AD', status:'Open', severity:'Medium' }
@@ -7988,7 +7987,7 @@ var ENTITY_DISPLAY = {
   'ip-internal':             { icon:'◆', name:'10.18.1.81', color:'#198019', bg:'#E8F5E9' },
   'dev-ws045':               { icon:'🖥', name:'CORP-WS-045', color:'#DD1616', bg:'#FFEBEE' },
   'svc-sharepoint':          { icon:'📁', name:'SharePoint', color:'#FF5900', bg:'#FFF3E0' },
-  'proc-oauth':              { icon:'🔑', name:'OAuth Tokens (3)', color:'#D14900', bg:'#FFFDE7' },
+  'svc-oauth':              { icon:'🔑', name:'OAuth Tokens (3)', color:'#0891b2', bg:'#ecfeff' },
   'user-admin':              { icon:'👤', name:'Administrator', color:'#0891b2', bg:'#ecfeff' },
   'proc-powershell':         { icon:'⚙', name:'PowerShell.exe', color:'#D14900', bg:'#FFFDE7' },
   'svc-winupdatesvc':        { icon:'⚙', name:'WinUpdateSvc', color:'#FF5900', bg:'#FFF3E0' },
@@ -8005,7 +8004,7 @@ var CRITICAL_REASONS = {
   'ip-tor': 'Known Tor exit node · AbuseIPDB confidence 100% · 5 threat feeds flagged',
   'dev-ws045': 'Active C2 outbound to Tor node · Exfiltration source · Compromised endpoint',
   'user-m-henderson': 'UEBA Risk Score 94/100 · Compromised account',
-  'proc-oauth': 'Unregistered app tokens · Issued post-compromise',
+  'svc-oauth': 'Unregistered app tokens · Issued post-compromise',
   'svc-sharepoint': '24 files exfiltrated in 3 min from /Finance/Sensitive',
   'proc-powershell': 'Encoded command execution · AMSI detections · C2 communication',
   'svc-winupdatesvc': 'Masquerading service · Unsigned binary · C2 beacon active'
