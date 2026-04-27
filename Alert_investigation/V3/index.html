@@ -2885,7 +2885,7 @@ a { text-decoration: none; }
           <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#2C66DD;"></span>9 Entities</span>
           <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#8b5cf6;"></span>9 Edges</span>
           <span class="cmd-pill cmd-pill-danger cmd-pill-clickable" id="cmdPillMalCount" onclick="toggleCmdPillPopup(event,'malicious')"><span class="cmd-pill-dot" style="background:#DD1616;"></span><span class="cmd-pill-num"></span> Malicious<span class="cmd-pill-caret">▾</span></span>
-          <span class="cmd-pill cmd-pill-warn cmd-pill-clickable" onclick="toggleCmdPillPopup(event,'critical')"><span class="cmd-pill-dot" style="background:#FABB34;"></span>3 Critical<span class="cmd-pill-caret">▾</span></span>
+          <span class="cmd-pill cmd-pill-warn cmd-pill-clickable" id="cmdPillCritCount" onclick="toggleCmdPillPopup(event,'critical')"><span class="cmd-pill-dot" style="background:#FABB34;"></span><span class="cmd-pill-num"></span> Critical<span class="cmd-pill-caret">▾</span></span>
         </div>
         <div class="cmd-pill-popup" id="cmdPillPopup"></div>
         <div class="cmd-spacer"></div>
@@ -2950,9 +2950,9 @@ a { text-decoration: none; }
               <text x="580" y="100" text-anchor="middle" font-size="10.5" fill="#DD1616" font-family="Zoho Puvi,sans-serif" font-weight="600">Impossible Travel</text>
             </g>
             <g class="graph-node" data-entity="user-m-henderson" onclick="openEntitySlider('user-m-henderson')" oncontextmenu="showGraphCtx(event,'user-m-henderson')">
-              <circle cx="280" cy="245" r="22" fill="#ffffff" stroke="#6366B3" stroke-width="2" filter="url(#glow-p)"/>
+              <circle cx="280" cy="245" r="22" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
               <text x="280" y="250" text-anchor="middle" font-size="15" dominant-baseline="central">👤</text>
-              <text x="280" y="278" text-anchor="middle" font-size="10.5" fill="#6c5ce7" font-family="Zoho Puvi,sans-serif" font-weight="600">m.henderson</text>
+              <text x="280" y="278" text-anchor="middle" font-size="10.5" fill="#DD1616" font-family="Zoho Puvi,sans-serif" font-weight="600">m.henderson</text>
             </g>
             <g class="graph-node" data-entity="svc-azure-ad" onclick="openEntitySlider('svc-azure-ad')" oncontextmenu="showGraphCtx(event,'svc-azure-ad')">
               <circle cx="890" cy="185" r="20" fill="#ffffff" stroke="#0891b2" stroke-width="2"/>
@@ -2971,14 +2971,14 @@ a { text-decoration: none; }
               <text x="420" y="467" text-anchor="middle" font-size="9.5" fill="#198019" font-family="Zoho Puvi,sans-serif">10.18.1.81</text>
             </g>
             <g class="graph-node" data-entity="dev-ws045" onclick="openEntitySlider('dev-ws045')" oncontextmenu="showGraphCtx(event,'dev-ws045')">
-              <circle cx="320" cy="575" r="20" fill="#ffffff" stroke="#DD1616" stroke-width="2"/>
+              <circle cx="320" cy="575" r="20" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
               <text x="320" y="580" text-anchor="middle" font-size="14" dominant-baseline="central">🖥</text>
-              <text x="320" y="605" text-anchor="middle" font-size="10" fill="#DD1616" font-family="Zoho Puvi,sans-serif">CORP-WS-045</text>
+              <text x="320" y="605" text-anchor="middle" font-size="10" fill="#DD1616" font-family="Zoho Puvi,sans-serif" font-weight="600">CORP-WS-045</text>
             </g>
             <g class="graph-node" data-entity="svc-sharepoint" onclick="openEntitySlider('svc-sharepoint')" oncontextmenu="showGraphCtx(event,'svc-sharepoint')">
-              <circle cx="890" cy="410" r="20" fill="#ffffff" stroke="#FF5900" stroke-width="2"/>
+              <circle cx="890" cy="410" r="20" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
               <text x="890" y="415" text-anchor="middle" font-size="14" dominant-baseline="central">📁</text>
-              <text x="890" y="440" text-anchor="middle" font-size="10" fill="#FF5900" font-family="Zoho Puvi,sans-serif" font-weight="600">SharePoint</text>
+              <text x="890" y="440" text-anchor="middle" font-size="10" fill="#DD1616" font-family="Zoho Puvi,sans-serif" font-weight="600">SharePoint</text>
             </g>
             <g class="graph-node" data-entity="proc-oauth" onclick="openEntitySlider('proc-oauth')" oncontextmenu="showGraphCtx(event,'proc-oauth')">
               <circle cx="950" cy="565" r="18" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
@@ -3220,6 +3220,7 @@ var ENTITY_DISPLAY = {
 var CRITICAL_REASONS = {
   'alert-impossible-travel': 'Critical severity alert · UEBA Engine triggered · Confidence 92%',
   'ip-tor': 'Known Tor exit node · AbuseIPDB confidence 100% · 5 threat feeds flagged',
+  'dev-ws045': 'Active C2 outbound to Tor node · Exfiltration source · Compromised endpoint',
   'user-m-henderson': 'UEBA Risk Score 94/100 · Compromised account',
   'proc-oauth': 'Unregistered app tokens · Issued post-compromise',
   'svc-sharepoint': '24 files exfiltrated in 3 min from /Finance/Sensitive',
@@ -6293,7 +6294,7 @@ function updateGraphSummary() {
       <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#2C66DD;"></span>${totalEntities} Entities</span>
       <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#8b5cf6;"></span>${totalConnections} Edges</span>
       <span class="cmd-pill cmd-pill-danger cmd-pill-clickable" id="cmdPillMalCount" onclick="toggleCmdPillPopup(event,'malicious')"><span class="cmd-pill-dot" style="background:#DD1616;"></span><span class="cmd-pill-num">${malCount}</span> Malicious<span class="cmd-pill-caret">▾</span></span>
-      <span class="cmd-pill cmd-pill-warn cmd-pill-clickable" onclick="toggleCmdPillPopup(event,'critical')"><span class="cmd-pill-dot" style="background:#FABB34;"></span>${critCount} Critical<span class="cmd-pill-caret">▾</span></span>
+      <span class="cmd-pill cmd-pill-warn cmd-pill-clickable" id="cmdPillCritCount" onclick="toggleCmdPillPopup(event,'critical')"><span class="cmd-pill-dot" style="background:#FABB34;"></span><span class="cmd-pill-num">${critCount}</span> Critical<span class="cmd-pill-caret">▾</span></span>
     `;
   }
 
@@ -6442,10 +6443,17 @@ function openInvestigationGraph() {
   document.getElementById('invBcInvestigation').style.display = '';
   document.getElementById('invBcGraphSep').style.display = '';
   document.getElementById('invBcGraphTitle').style.display = '';
-  // Dynamically update malicious edge count in command bar chip
+  // Dynamically update malicious edge count and critical node count in command bar chips
   const malEdges = document.querySelectorAll('#graphSvg line.graph-edge-mal').length;
   const malChip = document.querySelector('#cmdPillMalCount .cmd-pill-num');
   if (malChip) malChip.textContent = malEdges;
+  let critNodes = 0;
+  document.querySelectorAll('#graphSvg g.graph-node').forEach(n => {
+    const c = n.querySelector('circle:not(.expand-indicator)');
+    if (c && (c.getAttribute('filter') || '').includes('glow-r')) critNodes++;
+  });
+  const critChip = document.querySelector('#cmdPillCritCount .cmd-pill-num');
+  if (critChip) critChip.textContent = critNodes;
   showToast('✦', 'Investigation Graph loaded — 9 entities, 12 connections');
 }
 
@@ -7993,6 +8001,7 @@ var ENTITY_DISPLAY = {
 var CRITICAL_REASONS = {
   'alert-impossible-travel': 'Critical severity alert · UEBA Engine triggered · Confidence 92%',
   'ip-tor': 'Known Tor exit node · AbuseIPDB confidence 100% · 5 threat feeds flagged',
+  'dev-ws045': 'Active C2 outbound to Tor node · Exfiltration source · Compromised endpoint',
   'user-m-henderson': 'UEBA Risk Score 94/100 · Compromised account',
   'proc-oauth': 'Unregistered app tokens · Issued post-compromise',
   'svc-sharepoint': '24 files exfiltrated in 3 min from /Finance/Sensitive',
