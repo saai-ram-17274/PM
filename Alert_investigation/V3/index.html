@@ -7879,20 +7879,15 @@ function legendFilter(type) {
     if (c) posMap.push({ eid, cx: parseFloat(c.getAttribute('cx')), cy: parseFloat(c.getAttribute('cy')) });
   });
 
-  // Find connected neighbors
+  // Find connected neighbors using data-source / data-target attributes
   const connectedIds = new Set(matchingIds);
   const svgLines = document.querySelectorAll('#graphSvg > line');
   svgLines.forEach(line => {
-    const x1 = parseFloat(line.getAttribute('x1')), y1 = parseFloat(line.getAttribute('y1'));
-    const x2 = parseFloat(line.getAttribute('x2')), y2 = parseFloat(line.getAttribute('y2'));
-    let end1 = null, end2 = null;
-    for (const p of posMap) {
-      if (Math.abs(x1 - p.cx) < 30 && Math.abs(y1 - p.cy) < 30) end1 = p.eid;
-      if (Math.abs(x2 - p.cx) < 30 && Math.abs(y2 - p.cy) < 30) end2 = p.eid;
-    }
-    if (end1 && end2) {
-      if (matchingIds.has(end1) && !matchingIds.has(end2)) connectedIds.add(end2);
-      if (matchingIds.has(end2) && !matchingIds.has(end1)) connectedIds.add(end1);
+    const src = line.getAttribute('data-source');
+    const tgt = line.getAttribute('data-target');
+    if (src && tgt) {
+      if (matchingIds.has(src) && !matchingIds.has(tgt)) connectedIds.add(tgt);
+      if (matchingIds.has(tgt) && !matchingIds.has(src)) connectedIds.add(src);
     }
   });
 
@@ -7904,24 +7899,24 @@ function legendFilter(type) {
     else { n.style.opacity = '0.08'; n.style.pointerEvents = 'none'; }
   });
 
-  // Apply opacity to edges
+  // Apply opacity to edges using data-source / data-target
   svgLines.forEach(line => {
-    const x1 = parseFloat(line.getAttribute('x1')), y1 = parseFloat(line.getAttribute('y1'));
-    const x2 = parseFloat(line.getAttribute('x2')), y2 = parseFloat(line.getAttribute('y2'));
-    let touchesMatch = false;
-    for (const p of posMap) {
-      if (!matchingIds.has(p.eid)) continue;
-      if ((Math.abs(x1 - p.cx) < 30 && Math.abs(y1 - p.cy) < 30) ||
-          (Math.abs(x2 - p.cx) < 30 && Math.abs(y2 - p.cy) < 30)) { touchesMatch = true; break; }
-    }
+    const src = line.getAttribute('data-source');
+    const tgt = line.getAttribute('data-target');
+    const touchesMatch = matchingIds.has(src) || matchingIds.has(tgt);
     line.style.opacity = touchesMatch ? '0.8' : '0.05';
   });
 
-  // Edge labels (direct SVG children only)
+  // Edge labels — show labels for edges touching matched entities
   const svg = document.getElementById('graphSvg');
   if (svg) {
     Array.from(svg.children).forEach(child => {
-      if (child.tagName === 'text') child.style.opacity = '0.08';
+      if (child.tagName === 'text') {
+        const src = child.getAttribute('data-source');
+        const tgt = child.getAttribute('data-target');
+        const touches = (src && matchingIds.has(src)) || (tgt && matchingIds.has(tgt));
+        child.style.opacity = touches ? '0.7' : '0.08';
+      }
     });
   }
 
