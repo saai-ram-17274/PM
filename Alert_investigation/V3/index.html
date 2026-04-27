@@ -2884,7 +2884,7 @@ a { text-decoration: none; }
         <div class="cmd-stats">
           <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#2C66DD;"></span>9 Entities</span>
           <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#8b5cf6;"></span>9 Edges</span>
-          <span class="cmd-pill cmd-pill-danger cmd-pill-clickable" onclick="toggleCmdPillPopup(event,'malicious')"><span class="cmd-pill-dot" style="background:#DD1616;"></span>5 Malicious<span class="cmd-pill-caret">▾</span></span>
+          <span class="cmd-pill cmd-pill-danger cmd-pill-clickable" id="cmdPillMalCount" onclick="toggleCmdPillPopup(event,'malicious')"><span class="cmd-pill-dot" style="background:#DD1616;"></span><span class="cmd-pill-num"></span> Malicious<span class="cmd-pill-caret">▾</span></span>
           <span class="cmd-pill cmd-pill-warn cmd-pill-clickable" onclick="toggleCmdPillPopup(event,'critical')"><span class="cmd-pill-dot" style="background:#FABB34;"></span>3 Critical<span class="cmd-pill-caret">▾</span></span>
         </div>
         <div class="cmd-pill-popup" id="cmdPillPopup"></div>
@@ -6292,7 +6292,7 @@ function updateGraphSummary() {
     statsDiv.innerHTML = `
       <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#2C66DD;"></span>${totalEntities} Entities</span>
       <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#8b5cf6;"></span>${totalConnections} Edges</span>
-      <span class="cmd-pill cmd-pill-danger cmd-pill-clickable" onclick="toggleCmdPillPopup(event,'malicious')"><span class="cmd-pill-dot" style="background:#DD1616;"></span>${malCount} Malicious<span class="cmd-pill-caret">▾</span></span>
+      <span class="cmd-pill cmd-pill-danger cmd-pill-clickable" id="cmdPillMalCount" onclick="toggleCmdPillPopup(event,'malicious')"><span class="cmd-pill-dot" style="background:#DD1616;"></span><span class="cmd-pill-num">${malCount}</span> Malicious<span class="cmd-pill-caret">▾</span></span>
       <span class="cmd-pill cmd-pill-warn cmd-pill-clickable" onclick="toggleCmdPillPopup(event,'critical')"><span class="cmd-pill-dot" style="background:#FABB34;"></span>${critCount} Critical<span class="cmd-pill-caret">▾</span></span>
     `;
   }
@@ -6442,6 +6442,10 @@ function openInvestigationGraph() {
   document.getElementById('invBcInvestigation').style.display = '';
   document.getElementById('invBcGraphSep').style.display = '';
   document.getElementById('invBcGraphTitle').style.display = '';
+  // Dynamically update malicious edge count in command bar chip
+  const malEdges = document.querySelectorAll('#graphSvg line.graph-edge-mal').length;
+  const malChip = document.querySelector('#cmdPillMalCount .cmd-pill-num');
+  if (malChip) malChip.textContent = malEdges;
   showToast('✦', 'Investigation Graph loaded — 9 entities, 12 connections');
 }
 
