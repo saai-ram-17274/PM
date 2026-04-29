@@ -799,57 +799,76 @@ a { text-decoration: none; }
   overflow: hidden; padding: 0; min-height: 0;
 }
 
-/* Elegant drawer__header */
+/* Elegant drawer__header — V4 Figma bar */
 .inv-header {
-  padding: 12px 20px;
+  padding: 0 16px;
+  height: 40px;
   border-bottom: 1px solid #E9E9E9;
   background: #FFFFFF;
   display: flex; align-items: center; justify-content: space-between;
   flex-shrink: 0;
-  min-height: 48px;
 }
-.inv-title {
-  font-size: 16px; font-weight: 600; color: #000000;
+.inv-header-left {
   display: flex; align-items: center; gap: 8px;
 }
-.zia-orb {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: #2C66DD;
+.inv-back-btn {
+  width: 24px; height: 23px; border-radius: 4px;
+  border: 1px solid #DCDCDC; background: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; animation: orb-spin 6s linear infinite;
-  flex-shrink: 0;
+  cursor: pointer; color: #000; transition: all .15s;
+  padding: 0; flex-shrink: 0;
 }
-@keyframes orb-spin {
-  from { filter: hue-rotate(0deg); }
-  to   { filter: hue-rotate(360deg); }
+.inv-back-btn:hover { border-color: #aaa; background: #f5f5f5; }
+.inv-header-zia {
+  font-size: 14px; font-weight: 600; color: #000;
+  font-family: var(--font);
 }
-.ai-pill {
-  background: var(--purple); color: #fff; font-size: 9px;
-  font-weight: 700; padding: 2px 6px; border-radius: 3px;
-  letter-spacing: 0.07em;
-}
-.inv-header-actions { display: flex; align-items: center; gap: 6px; }
-.btn-rerun {
-  background: var(--surface-2); color: var(--text-secondary);
-  border: 1px solid var(--border-light); padding: 4px 10px;
-  border-radius: var(--radius); font-size: 11.5px; cursor: pointer;
-  font-family: var(--font); font-weight: 500;
-  display: flex; align-items: center; gap: 4px;
-  transition: all 0.15s;
-}
-.btn-rerun:hover { background: var(--navy-light); color: var(--text-primary); }
-.btn-return-inv {
-  display: none;
-}
-.btn-return-inv:hover {
-  background: #2458C5; border-color: #2458C5;
-}
-.btn-close-inv {
+.inv-help-btn {
   background: none; border: none; cursor: pointer;
-  color: var(--text-dim); font-size: 16px; line-height: 1;
-  transition: color 0.15s; padding: 2px;
+  display: flex; align-items: center; padding: 0;
+  color: #626262; transition: color .15s;
 }
-.btn-close-inv:hover { color: var(--text-primary); }
+.inv-help-btn:hover { color: #333; }
+.inv-header-right {
+  display: flex; align-items: center;
+}
+/* Gradient pill — "Rerun Investigation" */
+.inv-rerun-pill {
+  display: flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 14px;
+  border-radius: 13px; cursor: pointer;
+  border: 1px solid transparent;
+  background: linear-gradient(#fff, #fff) padding-box,
+              linear-gradient(135deg, #0085D0, #8158DA 48%, #CA23E3) border-box;
+  position: relative; overflow: visible;
+  font-family: var(--font); transition: all .2s;
+}
+.inv-rerun-pill::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #0085D0, #8158DA 48%, #CA23E3);
+  opacity: 0.1;
+  pointer-events: none;
+}
+.inv-rerun-pill:hover { box-shadow: 0 2px 8px rgba(129,88,218,.25); transform: translateY(-1px); }
+.inv-rerun-pill:active { transform: scale(0.97); }
+.inv-rerun-text {
+  font-size: 12px; font-weight: 500;
+  background: linear-gradient(135deg, #0085D0, #8158DA 48%, #CA23E3);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+}
+.inv-rerun-icon { display: flex; align-items: center; flex-shrink: 0; }
+.inv-rerun-sparkle-green { position: absolute; top: -2px; left: 28px; }
+.inv-rerun-sparkle-red { position: absolute; top: -4px; left: 44px; }
+.inv-rerun-star { position: absolute; right: -6px; top: -8px; filter: drop-shadow(0 2px 2px rgba(255,180,0,.25)); }
+/* Zia orb — used in footer */
+.zia-orb {
+  border-radius: 50%; background: #2C66DD;
+  display: flex; align-items: center; justify-content: center;
+}
 
 /* ── Loading state ──────────────────────────────────────────── */
 .inv-loading {
@@ -2319,8 +2338,8 @@ a { text-decoration: none; }
   </div>
 </div>
 
-<!-- ═══ Investigation Breadcrumb (shown when investigation is open) ═══ -->
-<div class="breadcrumb" id="invBreadcrumbBar" style="display:none;">
+<!-- ═══ Investigation Breadcrumb (hidden in V4 — tabs handle navigation) ═══ -->
+<div class="breadcrumb" id="invBreadcrumbBar" style="display:none !important;">
   <a href="#" onclick="showToast('🏠','Going to Explorer…');return false;">Explorer</a>
   <span class="breadcrumb-sep">›</span>
   <a href="#" onclick="closeInvestigation();return false;">Active Alerts</a>
@@ -2362,20 +2381,38 @@ a { text-decoration: none; }
   <!-- ══ FULL-PAGE — Zia Investigation (V3) ══ -->
   <aside class="investigation-panel" id="invPanel">
 
-    <!-- Zia header with actions -->
+    <!-- V4 Header bar — matches Figma design -->
     <div class="inv-header">
-      <div class="inv-title">
-        <div class="zia-orb"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
-        Zia
-        <span class="ai-pill">AI</span>
-      </div>
-      <div class="inv-header-actions">
-        <button class="btn-ai" onclick="rerunInvestigation()">
-          <span class="ai-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="aiIcGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7"/><stop offset="50%" stop-color="#6366f1"/><stop offset="100%" stop-color="#2C66DD"/></linearGradient></defs><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z" stroke="url(#aiIcGrad2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span class="ai-inner">Rerun Investigation</span>
-          <span class="ai-sparkle-float"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.5 4.5a1 1 0 0 0 .6.6L18.5 9.5l-4.4 1.4a1 1 0 0 0-.6.6L12 16l-1.5-4.5a1 1 0 0 0-.6-.6L5.5 9.5l4.4-1.4a1 1 0 0 0 .6-.6L12 3z" fill="#f59e0b"/></svg></span>
+      <div class="inv-header-left">
+        <button class="inv-back-btn" onclick="closeInvestigation()" title="Back to alerts">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 15L7 10M7 10L12 5M7 10H17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <button class="btn-close-inv" onclick="closeInvestigation()" title="Close Investigation"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1.75 1.75L12.25 12.25M12.25 1.75L1.75 12.25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="inv-header-zia">Zia</span>
+        <button class="inv-help-btn" onclick="showToast('❓','Zia AI automatically investigates alerts by correlating entities across log sources.')" title="What is Zia Investigation?">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6.5" stroke="#626262"/><path d="M8.55 7.79c.15-.43.45-.79.84-1.02.39-.23.85-.31 1.3-.24.45.08.86.31 1.15.66.29.35.45.79.45 1.24 0 1.28-1.92 1.93-1.92 1.93M10.37 12.55v-1.06M10.37 14.82v-.02" stroke="#626262" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="inv-header-right">
+        <button class="inv-rerun-pill" onclick="rerunInvestigation()">
+          <span class="inv-rerun-icon">
+            <!-- Zia mascot -->
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6.65 11h-4.19c-.27 0-.54-.08-.77-.22a1.42 1.42 0 0 1-.69-1.27c.01-.27.09-.53.24-.76L4.58 3.64c.14-.2.15-.45.03-.66a.82.82 0 0 0-.57-.33H1.41c-.23 0-.41-.18-.41-.41s.18-.41.41-.41h2.66c.54 0 1.01.28 1.27.75.26.47.24 1.05-.06 1.5L1.93 9.2c-.13.2-.14.44-.03.65.12.21.32.33.56.33h4.19c.19 0 .36-.09.46-.25l.89-1.37-.86-.31c-.45-.13-.8-.45-.97-.89-.16-.44-.11-.92.15-1.31l1.66-2.54a.41.41 0 0 1 .56-.14c.19.12.25.38.12.57L7.01 6.49c-.12.17-.14.38-.07.58.08.19.23.33.43.39h.03l1.05.38 2.63-4.05c.29-.45.8-.68 1.33-.61.53.07.96.44 1.12.95l1.4 4.47c.08.26.09.54.03.8-.07.24-.19.47-.37.65-.18.18-.4.32-.64.39-.25.08-.53.08-.79.01l-4.34-1.59-.99 1.54c-.25.39-.68.62-1.15.62z" fill="#226DB4"/>
+            </svg>
+          </span>
+          <span class="inv-rerun-sparkle-green">
+            <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><path d="M1.12 2.47c1.48-.33 1.92-.77 2.25-2.24.01-.08.08-.13.16-.13s.14.05.16.13c.33 1.47.77 1.91 2.24 2.24.08.02.13.08.13.16s-.05.14-.13.16c-1.47.33-1.91.77-2.24 2.24-.02.08-.08.13-.16.13s-.14-.05-.16-.13C3.04 3.6 2.6 3.16 1.12 2.83a.16.16 0 0 1-.12-.16c0-.08.05-.14.12-.16z" fill="#089949"/></svg>
+          </span>
+          <span class="inv-rerun-sparkle-red">
+            <svg width="5" height="5" viewBox="0 0 5 5" fill="none"><path d="M.77 1.52c.76-.17.99-.4 1.16-1.16.01-.04.04-.07.08-.07s.07.03.08.07c.17.76.4.99 1.16 1.16.04.01.07.04.07.08s-.03.07-.07.08C2.49 1.85 2.25 2.08 2.09 2.84c-.01.04-.04.07-.08.07s-.07-.03-.08-.07C1.76 2.08 1.53 1.85.77 1.68A.08.08 0 0 1 .7 1.6c0-.04.03-.07.07-.08z" fill="#E42527"/></svg>
+          </span>
+          <span class="inv-rerun-text">Rerun Investigation</span>
+          <span class="inv-rerun-star">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M12.16 12.03l-2.44-7.97a.22.22 0 0 1 .14-.27l7.97-2.44a.22.22 0 0 1 .27.14l2.44 7.97a.22.22 0 0 1-.14.27l-7.97 2.44a.22.22 0 0 1-.27-.14z" fill="#FABB34" stroke="#FFD9A5" stroke-width="0.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
       </div>
     </div>
 
@@ -5827,9 +5864,8 @@ function toggleInvestigation() {
     // Show the investigation panel inside main-layout
     const panel = document.getElementById('invPanel');
     panel.classList.add('open');
-    // Switch breadcrumbs
+    // V4: Hide alert breadcrumb (inv breadcrumb removed)
     document.getElementById('alertBreadcrumb').style.display = 'none';
-    document.getElementById('invBreadcrumbBar').style.display = 'flex';
     renderDetailHeader(ALERTS.find(x=>x.id===activeAlertId)); // refresh button state
     if (!invLoaded) {
       document.getElementById('invLoading').style.display = 'flex';
@@ -5857,9 +5893,8 @@ function closeInvestigation() {
   // Show back the alert page
   document.getElementById('alertList').style.display = '';
   document.getElementById('alertDetail').style.display = '';
-  // Switch breadcrumbs back
+  // V4: Restore alert breadcrumb
   document.getElementById('alertBreadcrumb').style.display = 'flex';
-  document.getElementById('invBreadcrumbBar').style.display = 'none';
   renderDetailHeader(ALERTS.find(x=>x.id===activeAlertId));
 }
 
@@ -5898,7 +5933,12 @@ function switchInvPageTab(el, targetId) {
   el.classList.add('active');
   ['invTimelinePage','invAttackPage'].forEach(id => {
     const el2 = document.getElementById(id);
-    if (el2) el2.style.display = id===targetId ? 'flex' : 'none';
+    if (!el2) return;
+    if (id === targetId) {
+      el2.style.display = id === 'invAttackPage' ? 'flex' : '';
+    } else {
+      el2.style.display = 'none';
+    }
   });
   // V4: When graph tab is shown, update chip counts
   if (targetId === 'invAttackPage') {
