@@ -793,9 +793,10 @@ a { text-decoration: none; }
   font-size: 11.5px; color: var(--text-secondary); line-height: 1.55;
 }
 
-/* ── Attack Vector tab wrapper (full-page) ──────────────────── */
+/* ── Attack Vector tab wrapper (V4: embedded graph) ─────────── */
 .inv-attack-content {
-  flex: 1; overflow-y: auto; padding: 24px 32px;
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; padding: 0; min-height: 0;
 }
 
 /* Elegant drawer__header */
@@ -2572,19 +2573,11 @@ a { text-decoration: none; }
 
       </div><!-- end invTimelinePage -->
 
-      <!-- ═══ TAB 2: Investigation Graph (V4 — graph loads directly) ═══ -->
+
+      <!-- ═══ TAB 2: Investigation Graph (V4 — embedded) ═══ -->
       <div class="inv-attack-content" id="invAttackPage" style="display:none;">
-        <!-- Content removed in V4: graph opens full-width via openInvestigationGraph() -->
-      </div><!-- end invAttackPage -->
-    </div><!-- end inv-body / invContent -->
-
-    <!-- ══ Investigation Graph — Full-Width View ══ -->
-    
-
-    <div class="inv-graph-view" id="invGraphView" style="display:none;">
+        <div class="inv-graph-view" id="invGraphView">
       <div class="graph-cmd-bar" id="graphSummaryPanel">
-        <button class="cmd-back" onclick="backToAttackVector()"><span class="cmd-back-arrow">←</span> Investigation</button>
-        <div class="cmd-sep"></div>
         <div class="cmd-stats">
           <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#2C66DD;"></span>9 Entities</span>
           <span class="cmd-pill"><span class="cmd-pill-dot" style="background:#8b5cf6;"></span>9 Edges</span>
@@ -2785,7 +2778,10 @@ a { text-decoration: none; }
           <div class="eqc-card" id="eqcCard"></div>
         </div>
       </div>
-    </div>
+        </div>
+      </div><!-- end invAttackPage -->
+
+    </div><!-- end inv-body / invContent -->
 
     <div class="inv-footer">
       <button class="btn-feedback" onclick="showToast('👍','Thank you for your feedback!')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> feedback</button>
@@ -5801,7 +5797,6 @@ function selectAlert(id) {
   invOpen = false;
   invLoaded = false;
   graphViewActive = false;
-  document.getElementById('invGraphView').style.display = 'none';
   closeEntityModal();
   document.getElementById('invPanel').classList.remove('open');
   // Restore alert page visibility
@@ -5852,11 +5847,7 @@ function toggleInvestigation() {
 
 function closeInvestigation() {
   invOpen = false;
-  if (graphViewActive) {
-    graphViewActive = false;
-    document.getElementById('invGraphView').style.display = 'none';
-    if (invLoaded) document.getElementById('invContent').style.display = 'flex';
-  }
+  graphViewActive = false;
   // Restore Zia header and footer
   document.querySelector('.inv-header').style.display = 'flex';
   document.querySelector('.inv-footer').style.display = 'flex';
@@ -5905,15 +5896,14 @@ function switchInvTab(el, targetId) {
 function switchInvPageTab(el, targetId) {
   document.querySelectorAll('.inv-page-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  if (targetId === 'invAttackPage') {
-    // V4: Attack Vector tab opens the investigation graph directly
-    openInvestigationGraph();
-    return;
-  }
   ['invTimelinePage','invAttackPage'].forEach(id => {
     const el2 = document.getElementById(id);
-    if (el2) el2.style.display = id===targetId ? '' : 'none';
+    if (el2) el2.style.display = id===targetId ? 'flex' : 'none';
   });
+  // V4: When graph tab is shown, update chip counts
+  if (targetId === 'invAttackPage') {
+    initGraphChips();
+  }
 }
 
 function toggleCard(id) {
@@ -6134,19 +6124,9 @@ function initNodeRegistry() {
 
 /* ── RENDER ALERT LIST ───────────────────────────────────────── */
 
-function openInvestigationGraph() {
+/* V4: Graph is embedded in tab — just update chip counts */
+function initGraphChips() {
   graphViewActive = true;
-  document.getElementById('invContent').style.display = 'none';
-  document.getElementById('invGraphView').style.display = 'flex';
-  // Hide Zia header and footer in graph view
-  document.querySelector('.inv-header').style.display = 'none';
-  document.querySelector('.inv-footer').style.display = 'none';
-  // Update breadcrumb: Explorer > Active Alerts > Investigation (link) > Investigate Graph
-  document.getElementById('invBcInvestigationStrong').style.display = 'none';
-  document.getElementById('invBcInvestigation').style.display = '';
-  document.getElementById('invBcGraphSep').style.display = '';
-  document.getElementById('invBcGraphTitle').style.display = '';
-  // Dynamically update malicious edge count and critical node count in command bar chips
   const malEdges = document.querySelectorAll('#graphSvg line.graph-edge-mal').length;
   const malChip = document.querySelector('#cmdPillMalCount .cmd-pill-num');
   if (malChip) malChip.textContent = malEdges;
@@ -6157,23 +6137,14 @@ function openInvestigationGraph() {
   });
   const critChip = document.querySelector('#cmdPillCritCount .cmd-pill-num');
   if (critChip) critChip.textContent = critNodes;
-  showToast('✦', 'Investigation Graph loaded — 9 entities, 12 connections');
 }
+/* Keep alias for backward compat */
+function openInvestigationGraph() { initGraphChips(); }
 
 function backToAttackVector() {
+  /* V4: Switch back to Timeline tab */
   graphViewActive = false;
   closeEntityModal();
-  document.getElementById('invGraphView').style.display = 'none';
-  document.getElementById('invContent').style.display = 'flex';
-  // Restore Zia header and footer
-  document.querySelector('.inv-header').style.display = 'flex';
-  document.querySelector('.inv-footer').style.display = 'flex';
-  // Restore breadcrumb: Explorer > Active Alerts > Investigation
-  document.getElementById('invBcInvestigationStrong').style.display = '';
-  document.getElementById('invBcInvestigation').style.display = 'none';
-  document.getElementById('invBcGraphSep').style.display = 'none';
-  document.getElementById('invBcGraphTitle').style.display = 'none';
-  // V4: Return to Timeline tab (graph is accessed via Investigation Graph tab)
   document.querySelectorAll('.inv-page-tab').forEach(t => t.classList.remove('active'));
   const pageTabs = document.querySelectorAll('.inv-page-tab');
   if (pageTabs.length > 0) pageTabs[0].classList.add('active');
