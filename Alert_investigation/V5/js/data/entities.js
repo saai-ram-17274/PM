@@ -2006,7 +2006,7 @@ const ENTITIES = {
     }
   },
   'domain-c2': {
-    type: 'ip', modalTitle: 'Domain Details · c2-update.darkoperator.net',
+    type: 'domain', modalTitle: 'Domain Details · c2-update.darkoperator.net',
     sections: {
       riskSummary: {
         label: 'Risk Summary', expanded: true, noCollapse: true,

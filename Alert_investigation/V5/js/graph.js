@@ -251,6 +251,34 @@ function initGraphChips() {
   });
   const critChip = document.querySelector('#cmdPillCritCount .cmd-pill-num');
   if (critChip) critChip.textContent = critNodes;
+
+  /* Update entity-type dropdown counts based on currently visible nodes */
+  const typeCounts = { user:0, device:0, ip:0, service:0, process:0, alert:0, domain:0 };
+  let total = 0;
+  document.querySelectorAll('#graphSvg g.graph-node').forEach(n => {
+    if (n.style.display === 'none') return;
+    total++;
+    const eid = n.getAttribute('data-entity') || '';
+    const ent = (typeof ENTITIES !== 'undefined') ? ENTITIES[eid] : null;
+    const t = ent && ent.type;
+    if (t && typeCounts.hasOwnProperty(t)) { typeCounts[t]++; return; }
+    if (eid.startsWith('user-'))   typeCounts.user++;
+    else if (eid.startsWith('dev-'))    typeCounts.device++;
+    else if (eid.startsWith('ip-'))     typeCounts.ip++;
+    else if (eid.startsWith('svc-'))    typeCounts.service++;
+    else if (eid.startsWith('proc-'))   typeCounts.process++;
+    else if (eid.startsWith('alert-'))  typeCounts.alert++;
+    else if (eid.startsWith('domain-')) typeCounts.domain++;
+  });
+  const countMap = { all:total, user:typeCounts.user, asset:typeCounts.device, ip:typeCounts.ip, account:typeCounts.service, process:typeCounts.process, alert:typeCounts.alert, domain:typeCounts.domain, location:0 };
+  const menu = document.getElementById('entityChipMenu');
+  if (menu) {
+    menu.querySelectorAll('.gcb-option').forEach(opt => {
+      const v = opt.getAttribute('data-val');
+      const cEl = opt.querySelector('.gcb-count');
+      if (cEl && countMap.hasOwnProperty(v)) cEl.textContent = countMap[v];
+    });
+  }
 }
 function openInvestigationGraph() { initGraphChips(); }
 
