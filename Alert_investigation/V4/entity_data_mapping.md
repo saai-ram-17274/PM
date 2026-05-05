@@ -1,8 +1,8 @@
-# V3 Entity Slider — Data Source Mapping & Feasibility
+# V4 Entity & Edge Relation Slider — Data Source Mapping & Feasibility
 
-> **Generated**: 24 Apr 2026 | **Updated**: 25 Apr 2026 (v3 — field-level validation pass)  
-> **Purpose**: Maps every field in the V3 Alert Investigation prototype to its backend source. Fields marked ❌ have been removed from the prototype. Section 6 documents **new SOC enrichments** — all 21 items are now implemented in the prototype across all applicable entities.  
-> **v3 Note**: Every field in the prototype was audited against backend code/parsers. Fabricated, unreliable, or unachievable fields were removed. See Section 7 changelog for details.
+> **Generated**: 24 Apr 2026 | **Updated**: 05 May 2026 (v4 — edge relation slider data mapping)  
+> **Purpose**: Maps every field in the V4 Alert Investigation prototype to its backend source. Fields marked ❌ have been removed from the prototype. Section 6 documents **fields to remove**. **Section 7** documents the **Edge Relation Slider**. Section 8 documents **new SOC enrichments**.  
+> **v4 Note**: Edge relation slider added with 7 data-enriched sections. All fields validated against backend code. See Section 9 changelog for details.
 
 ---
 
@@ -805,7 +805,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 ---
 
-## Summary: What to Remove from Prototype
+## 6. Summary: What to Remove from Prototype
 
 ### DEVICE Entity — Remove These Sections
 - ❌ **Vulnerabilities** (entire section) — no vulnerability scanner
@@ -838,7 +838,164 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 ---
 
-## 6. NEW SOC Enrichments — Additions to Prototype
+## 7. Edge Relation Slider — Data Source Mapping
+
+> **Added**: 05 May 2026  
+> **What it is**: When a user clicks an edge icon on the attack graph, a right-side slider opens showing enriched connection details between two entities (e.g., User → AccessedFile → SharePoint). This section maps every field in the edge relation slider to its backend source.
+>
+> **Interaction Model**:
+> - Click edge icon on graph → slider opens with edge-specific data
+> - Source/Target entity nodes in the flow diagram are **clickable** → opens entity detail slider
+> - Edge slider reuses the same `entity-details-slider` panel (shared DOM element)
+>
+> **Data Store**: `EDGE_ATTRIBUTES` (15 edges with structured data objects)
+
+---
+
+### 7.1 Flow Diagram (Source → Relation → Target)
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Source Entity Icon | ✅ | `ENTITY_DISPLAY[source]` | Lookup from graph node data |
+| Source Entity Name | ✅ | Node ID → `fmtName()` | Strips prefix, formats display name |
+| Relation Label | ✅ | `EDGE_ATTRIBUTES[key].relation` | Stored per edge |
+| Relation Color | ✅ | `REL_GUIDE[relation].color` | 28 relation types defined |
+| Target Entity Icon | ✅ | `ENTITY_DISPLAY[target]` | Lookup from graph node data |
+| Target Entity Name | ✅ | Node ID → `fmtName()` | Same formatting |
+| **Clickable** | ✅ | `openEntitySlider(id)` | Click source/target to open entity slider |
+
+### 7.2 Relation Description
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Description Text | ✅ | `REL_GUIDE[relation].desc` | 28 relation types, each with human-readable description |
+| Relation Icon | ✅ | `REL_GUIDE[relation].icon` | Category-specific icon |
+
+### 7.3 MITRE ATT&CK Mapping
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Tactic Name | ✅ | `ITSDetectionRuleVsMitre.TACTIC` | Mapped from detection rule |
+| Tactic ID | ✅ | `ITSDetectionRuleVsMitre.TACTIC_ID` | e.g., `TA0001` |
+| Technique Name | ✅ | `ITSDetectionRuleVsMitre.TECHNIQUE_NAME` | e.g., `Valid Accounts` |
+| Technique ID | ✅ | `ITSDetectionRuleVsMitre.TECHNIQUE_ID` | e.g., `T1078` |
+
+> **Backend**: Only RULE-type alerts have MITRE mapping. Correlation and anomaly alerts may not have MITRE tags — field is conditionally rendered.
+
+### 7.4 Detection Rule
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Rule Name | ✅ | `ITSAlertProfileConfigurations.DISPLAY_NAME` | DB lookup by alert ID |
+| Rule Type | ✅ | `ITSAlertProfileConfigurations.ALERT_TYPE` | Correlation / Anomaly (UEBA) / Threat Intel |
+| Rule ID | ✅ | `ITSAlertProfileConfigurations.ALERT_PROFILE_ID` | Internal ID |
+
+### 7.5 Connection Properties
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Event Count | ✅ | ZLogs `COUNT(*)` | `SELECT COUNT(*) FROM logs WHERE src_entity=? AND tgt_entity=? AND time BETWEEN ? AND ?` |
+| Risk Score (0–100) | ✅ | `ITSEntityRiskScoreDetails.RISK_SCORE` | Combined score of source + target entities |
+| Risk Bar (visual) | ✅ | Computed from risk score | Color-coded: green (<40), yellow (<70), orange (<90), red (≥90) |
+| Data Volume | 🟡 | ZLogs `SUM(BYTES_SENT + BYTES_RECEIVED)` | Available for FW/proxy logs; not all log types have byte counts |
+| First Seen | ✅ | ZLogs `MIN(_zl_timestamp)` | Earliest event between the two entities |
+| Last Seen | ✅ | ZLogs `MAX(_zl_timestamp)` | Latest event between the two entities |
+
+### 7.6 Event Distribution Chart
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Sparkline Bars (12 buckets) | ✅ | ZLogs `COUNT(*) GROUP BY time_bucket` | 1-hour window divided into 12 × 5-minute buckets |
+| Total Events | ✅ | `SUM(all buckets)` | Computed client-side from sparkline array |
+| Time Axis Labels | ✅ | Computed from `lastSeen` | Exact clock times (HH:MM) derived by subtracting bucket intervals from lastSeen |
+| Average Line | ✅ | Computed: `total / buckets` | Client-side computation |
+| Peak Marker | ✅ | `MAX(buckets)` | Client-side — highlights the tallest bar |
+| Bar Color | ✅ | `#FFC600` (Graph.svg style) | Single yellow color, consistent with product chart style |
+| Hover Tooltip | ✅ | Per-bar event count + time | Client-side interaction |
+
+> **Backend API needed**: Single endpoint accepting `(source_entity, target_entity, relation_type, time_range)` returning `{ count, buckets[] }`. No new backend infrastructure required — standard ZLogs aggregation query.
+
+### 7.7 Behavioral Baseline
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Expected (baseline count) | ✅ | `DashBoardAnomalyDataProvider` | UEBA learned baseline over 30/90-day rolling window |
+| Actual (observed count) | ✅ | ZLogs `COUNT(*)` for current window | Same as event count |
+| Deviation | ✅ | Computed: `actual / expected` | Client-side ratio computation |
+| Severity Classification | ✅ | Computed from deviation | Normal (≤1.3×), Warning (1.3–2×), Danger (>2×), First Occurrence (no baseline) |
+| Visual Bars | ✅ | Dual progress bars | Expected (blue) vs Actual (color-coded by severity) |
+| Pulsing Dot | ✅ | CSS animation | Severity indicator in the deviation badge |
+
+> **Backend**: UEBA module (`AnomalyDetectionDataImpl`) computes behavioral baselines per entity-pair over rolling windows. The `expected` value comes from the learned model; `actual` is the current query result. When `expected = 0` (first occurrence), the system flags it as a novel connection.
+
+### 7.8 Threat Intelligence
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Vendor | ✅ | `ThreatAnalyticsIntermediateProcessor` | Webroot / file-import / STIX feed |
+| Reputation Score | ✅ | `ES THREAT_REPUTATION` | 1=Critical, 2=Malicious, 3=Suspicious |
+| Label | ✅ | Derived from reputation | Critical / Malicious / Suspicious |
+| VirusTotal Detection | ✅ | `VirusTotalActionHandler` | Format: `18/94` (detections/total engines) |
+
+> **Conditional**: Only shown for edges involving threat-intel-enriched entities (malicious IPs, C2 domains). Not applicable for internal-only connections.
+
+### 7.9 Geo Context
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Country Flag | ✅ | GeoIP → emoji mapping | Lookup from MaxMind DB |
+| Country | ✅ | `ES GEO_COUNTRY` | From firewall/proxy/VPN logs |
+| City | 🟡 | `MaxMind GeoLite2-City` | City-level accuracy varies — reliable for known exit nodes |
+| IP Address | ✅ | `ES REMOTEIP` / `SrcIP` | Raw from log source |
+
+> **Conditional**: Only shown for edges with external IP entities. Internal-only edges don't show geo context.
+
+### 7.10 Evidence
+
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Summary | ✅ | Alert description + enrichment | Composite from `ITSAlertProfileConfigurations.DESCRIPTION` + context |
+| Key Findings (chips) | ✅ | Parsed from detection context | Extracted key facts: distances, counts, protocols, anomalies |
+| Confidence Score (%) | 🟡 | Combined signal scoring | **New**: Aggregation of detection rule confidence + UEBA anomaly score + threat intel match. Logic needs building |
+| Confidence Bar | ✅ | Visual from confidence % | Color-coded: green (≥90%), yellow (≥70%), orange (≥40%), gray (<40%) |
+| Severity Bar | ✅ | Derived from edge risk score | Critical (≥90) / High (≥70) / Medium (≥40) / Low (<40) |
+| Source Badge | ✅ | `EDGE_ATTRIBUTES.source` | Log source name: "Azure AD Sign-in Logs", "Firewall Logs", etc. |
+| Event Count Badge | ✅ | `EDGE_ATTRIBUTES.count` | Same as Connection Properties count |
+
+> **Note**: ~~Sample Log Entry~~ and ~~View in Log Search~~ button were removed from the prototype. The `rawLog` field data is retained in EDGE_ATTRIBUTES but not rendered.
+
+---
+
+### 7.11 Removed Sections
+
+| Section | Reason for Removal |
+|---------|--------------------|
+| ~~View in Log Search~~ | Prototype scope — would need deep-link integration with Log Search module |
+| ~~Sample Log Entry~~ | Mock raw log preview — not useful in prototype context |
+| ~~Connected Entities~~ | Redundant — flow diagram at top already shows source/target entities with clickable navigation |
+
+---
+
+### 7.12 Summary — Edge Data Sources
+
+| Data Type | Primary Source | Availability |
+|-----------|---------------|---------------|
+| Event Count | ZLogs `COUNT(*)` aggregation | ✅ Exists |
+| Event Distribution | ZLogs `COUNT(*) GROUP BY time_bucket` | ✅ Exists |
+| Behavioral Baseline | UEBA `DashBoardAnomalyDataProvider` | ✅ Exists |
+| Risk Score | `ITSEntityRiskScoreDetails` | ✅ Exists |
+| First/Last Seen | ZLogs `MIN/MAX(_zl_timestamp)` | ✅ Exists |
+| MITRE Mapping | `ITSDetectionRuleVsMitre` | 🟡 RULE-type alerts only |
+| Detection Rule | `ITSAlertProfileConfigurations` | ✅ Exists |
+| Threat Intel | `ThreatAnalyticsIntermediateProcessor` + VirusTotal API | ✅ Exists |
+| Geo Context | MaxMind GeoIP + `ES GEO_COUNTRY` | 🟡 Country reliable, city varies |
+| Evidence Summary | Alert description + enriched context | ✅ Exists |
+| Confidence Score | Multi-signal aggregation | 🟡 Needs new scoring logic |
+| Data Volume | ZLogs `SUM(BYTES)` | 🟡 Only for FW/proxy logs |
+
+---
+
+## 8. NEW SOC Enrichments — Additions to Prototype
 
 > All items below are **verified as implementable** with existing backend data and are now **implemented in the V3 prototype**.
 >
@@ -869,7 +1026,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 ---
 
-### 6.1 USER Entity — New Sections
+### 8.1 USER Entity — New Sections
 
 #### 6.1.1 Account Lockout History
 | Field | Status | Source | How to Get | SOC Value |
@@ -954,7 +1111,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 ---
 
-### 6.2 DEVICE Entity — New Sections
+### 8.2 DEVICE Entity — New Sections
 
 #### 6.2.1 Agent Status & Health
 | Field | Status | Source | How to Get | SOC Value |
@@ -1029,7 +1186,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 
 ---
 
-### 6.3 IP Entity — New Sections
+### 8.3 IP Entity — New Sections
 
 #### 6.3.1 Firewall Action Summary
 | Field | Status | Source | How to Get | SOC Value |
@@ -1086,7 +1243,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 
 ---
 
-### 6.4 SERVICE Entity — New Sections
+### 8.4 SERVICE Entity — New Sections
 
 #### 6.4.1 OAuth App Consent Grants
 | Field | Status | Source | How to Get | SOC Value |
@@ -1114,7 +1271,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 
 ---
 
-### 6.5 PROCESS Entity — New Sections
+### 8.5 PROCESS Entity — New Sections
 
 #### 6.5.1 DLL/Module Loads (Sysmon Event 7)
 | Field | Status | Source | How to Get | SOC Value |
@@ -1166,7 +1323,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 
 ---
 
-### 6.6 Summary — New Enrichment Additions
+### 8.6 Summary — New Enrichment Additions
 
 | # | Entity | Section | Status | Priority | MITRE |
 |---|--------|---------|--------|----------|-------|
@@ -1196,7 +1353,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 
 ---
 
-## 7. Implementation Changelog
+## 9. Implementation Changelog
 
 | Date | Change | Entities Affected |
 |------|--------|-------------------|
@@ -1236,3 +1393,18 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 | 27 Apr 2026 | Reclassified OAuth Tokens from `process` to `service` entity (`proc-oauth` → `svc-oauth`). Updated display color, modal title, graph filter counts. Removed empty Processes filter from dropdown | Service |
 | 27 Apr 2026 | Fixed entity filter connection matching: replaced coordinate proximity logic (`< 30px` threshold) with `data-source`/`data-target` attribute lookup. Users filter now correctly shows Azure AD, ip-tor, SharePoint as connected neighbors. Edge labels also light up for connected edges | Graph |
 | 29 Apr 2026 | **Design note — Response actions must be alert-contextual**: Right-click actions on graph entities (Revoke Tokens, Block IP, Isolate Host, etc.) are currently based on entity type alone. In the real product, actions must be dynamically surfaced based on the **alert type, MITRE techniques, and the entity's role in the attack chain**. Example: "Revoke Tokens" is relevant for OAuth abuse alerts but not for a brute-force or malware alert. The action set should be determined by the investigation context, not hardcoded per entity type | All |
+| 05 May 2026 | **V4 — Edge Relation Slider**: Added edge click behavior — clicking edge icons on graph opens right-side slider with enriched connection details | Graph/Edge |
+| 05 May 2026 | Added MITRE ATT&CK mapping section to edge slider — tactic/technique chips from `ITSDetectionRuleVsMitre` | Edge |
+| 05 May 2026 | Added Detection Rule card to edge slider — rule name, type badge, rule ID | Edge |
+| 05 May 2026 | Added Connection Properties section — event count, risk score with bar, data volume, first/last seen | Edge |
+| 05 May 2026 | Added Event Distribution chart — 12-bucket sparkline with `#FFC600` bars (Graph.svg style), exact clock time labels, average line, peak marker, hover tooltips | Edge |
+| 05 May 2026 | Added Behavioral Baseline card — dual progress bars (expected vs actual), severity classification, pulsing deviation badge | Edge |
+| 05 May 2026 | Added Threat Intelligence section — vendor badge, reputation score, VirusTotal detection ratio | Edge |
+| 05 May 2026 | Added Geo Context section — country flag, city, IP address | Edge |
+| 05 May 2026 | Added Evidence panel — severity bar, summary, key findings chips, confidence meter with progress bar, source/count badges | Edge |
+| 05 May 2026 | Converted evidence data from flat strings to structured objects: `{ summary, findings[], confidence, rawLog }` for all 15 edges | Edge |
+| 05 May 2026 | Made flow diagram entity nodes clickable — click source/target opens entity detail slider | Edge |
+| 05 May 2026 | Removed ~~View in Log Search~~ button — prototype scope | Edge |
+| 05 May 2026 | Removed ~~Sample Log Entry~~ section — not useful in prototype | Edge |
+| 05 May 2026 | Removed ~~Connected Entities~~ section — redundant with clickable flow diagram at top | Edge |
+| 05 May 2026 | Updated entity_data_mapping.md — added Section 8 (Edge Relation Slider) with 12 subsections | Doc |

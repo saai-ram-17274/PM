@@ -1755,6 +1755,23 @@ a { text-decoration: none; }
 .gcb-option.active { color:var(--blue); font-weight:700; background:#eef4ff; }
 .gcb-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 .gcb-count { margin-left:auto; font-size:10px; color:var(--text-dim); font-weight:400; }
+/* Relation description inside dropdown */
+.gcb-rel-desc { display:none; font-size:10px; color:var(--text-dim); line-height:1.35; padding:2px 0 2px 16px; font-weight:400; }
+.gcb-option:hover .gcb-rel-desc, .gcb-option.active .gcb-rel-desc { display:block; }
+.gcb-rel-row { display:flex; align-items:center; gap:8px; width:100%; }
+/* Relation guide popup */
+.rel-guide-popup { display:none; position:fixed; z-index:10000; min-width:340px; max-width:400px; background:#fff; border:1px solid var(--border); border-radius:10px; box-shadow:0 8px 32px rgba(0,0,0,.15); padding:0; animation:gcbSlideDown .15s ease-out; }
+.rel-guide-popup.show { display:block; }
+.rel-guide-hdr { padding:12px 16px 8px; font-size:13px; font-weight:700; color:var(--text-primary); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+.rel-guide-hdr .rg-close { margin-left:auto; cursor:pointer; color:var(--text-dim); font-size:16px; line-height:1; }
+.rel-guide-hdr .rg-close:hover { color:var(--text-primary); }
+.rel-guide-list { padding:8px 0; max-height:340px; overflow-y:auto; }
+.rel-guide-item { padding:8px 16px; display:flex; gap:10px; align-items:flex-start; transition:background .12s; cursor:default; }
+.rel-guide-item:hover { background:#f8fafc; }
+.rel-guide-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+.rel-guide-name { font-size:12px; font-weight:600; color:var(--text-primary); }
+.rel-guide-text { font-size:11px; color:var(--text-secondary); line-height:1.4; margin-top:2px; }
+.rel-guide-count { font-size:10px; color:var(--text-dim); margin-left:auto; flex-shrink:0; margin-top:2px; }
 .gcb-sep { width:1px; height:18px; background:var(--border); flex-shrink:0; }
 .canvas-edge-tag {
   display:inline-flex; align-items:center; gap:5px;
@@ -1809,6 +1826,360 @@ a { text-decoration: none; }
 .erp-attr-value { color:#e2e8f0; font-weight:600; text-align:right; }
 .erp-evidence { grid-column:1/-1; color:#cbd5e1; font-style:italic; margin-top:2px; white-space:normal; line-height:1.3; }
 @keyframes edgePopIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+/* ── Edge Relation Slider Content ── */
+.ers-flow {
+  display:flex; align-items:center; gap:10px; padding:16px 18px;
+  background:var(--surface-3); border-bottom:1px solid var(--border);
+}
+.ers-flow-node {
+  display:flex; align-items:center; gap:6px; padding:6px 10px;
+  background:var(--surface); border:1px solid var(--border); border-radius:8px;
+  font-size:11px; font-weight:600; color:var(--text-primary); min-width:0;
+  cursor:pointer; transition:border-color .15s, background .15s, box-shadow .15s;
+}
+.ers-flow-node:hover {
+  border-color:#3b82f6; background:rgba(59,130,246,.08);
+  box-shadow:0 0 0 2px rgba(59,130,246,.15);
+}
+.ers-flow-node .ers-node-icon {
+  width:24px; height:24px; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-size:12px; flex-shrink:0;
+}
+.ers-flow-node .ers-node-name {
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.ers-flow-arrow {
+  display:flex; flex-direction:column; align-items:center; gap:2px; flex-shrink:0;
+}
+.ers-flow-arrow .ers-arrow-line {
+  width:32px; height:2px; position:relative;
+}
+.ers-flow-arrow .ers-arrow-line::after {
+  content:''; position:absolute; right:-1px; top:-3px;
+  border:4px solid transparent; border-left-width:6px;
+}
+.ers-flow-arrow .ers-arrow-label {
+  font-size:9px; font-weight:700; letter-spacing:.3px;
+}
+.ers-desc {
+  padding:14px 18px; font-size:12px; line-height:1.55; color:var(--text-secondary);
+  border-bottom:1px solid var(--border); background:var(--surface);
+}
+.ers-desc-icon { font-size:16px; margin-right:6px; vertical-align:middle; }
+.ers-section {
+  padding:14px 18px; border-bottom:1px solid var(--border);
+}
+.ers-section-title {
+  font-size:10px; font-weight:700; color:var(--text-dim); text-transform:uppercase;
+  letter-spacing:.6px; margin-bottom:10px;
+}
+.ers-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+}
+.ers-metric {
+  background:var(--surface-3); border:1px solid var(--border); border-radius:8px;
+  padding:10px 12px;
+}
+.ers-metric-label {
+  font-size:9.5px; color:var(--text-dim); text-transform:uppercase;
+  letter-spacing:.4px; margin-bottom:4px;
+}
+.ers-metric-value {
+  font-size:16px; font-weight:700; color:var(--text-primary);
+}
+/* ── Evidence Panel ── */
+.ers-evidence-panel {
+  margin-top:8px; border:1px solid var(--border); border-radius:10px;
+  overflow:hidden; background:var(--surface-3);
+}
+.ers-evp-header {
+  display:flex; align-items:center; gap:8px; padding:10px 14px;
+  border-bottom:1px solid var(--border);
+}
+.ers-evp-sev {
+  width:4px; height:32px; border-radius:2px; flex-shrink:0;
+}
+.ers-evp-sev.critical { background:linear-gradient(to bottom, #ef4444, #dc2626); }
+.ers-evp-sev.high { background:linear-gradient(to bottom, #f97316, #ea580c); }
+.ers-evp-sev.medium { background:linear-gradient(to bottom, #eab308, #ca8a04); }
+.ers-evp-sev.low { background:linear-gradient(to bottom, #22c55e, #16a34a); }
+.ers-evp-summary {
+  font-size:12px; font-weight:600; color:var(--text-primary); line-height:1.45;
+  flex:1;
+}
+.ers-evp-body {
+  padding:10px 14px;
+}
+.ers-evp-findings {
+  display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;
+}
+.ers-evp-finding {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 9px; border-radius:6px; font-size:10px; font-weight:600;
+  border:1px solid var(--border); background:var(--surface-2);
+  color:var(--text-secondary);
+}
+.ers-evp-finding .evf-dot {
+  width:5px; height:5px; border-radius:50%; flex-shrink:0;
+}
+.ers-evp-confidence {
+  display:flex; align-items:center; gap:8px; margin-bottom:10px;
+}
+.ers-evp-conf-label {
+  font-size:9.5px; color:var(--text-dim); text-transform:uppercase;
+  letter-spacing:.4px; font-weight:600; min-width:68px;
+}
+.ers-evp-conf-track {
+  flex:1; height:6px; background:var(--surface-2); border-radius:3px;
+  overflow:hidden;
+}
+.ers-evp-conf-fill {
+  height:100%; border-radius:3px; transition:width .5s ease;
+}
+.ers-evp-conf-val {
+  font-size:11px; font-weight:700; min-width:32px; text-align:right;
+}
+.ers-evp-source-row {
+  display:flex; align-items:center; gap:6px; margin-top:10px;
+  padding-top:10px; border-top:1px solid var(--border);
+}
+.ers-evp-source-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 10px; border-radius:20px; font-size:10px; font-weight:600;
+  background:rgba(59,130,246,.1); color:#60a5fa; border:1px solid rgba(59,130,246,.2);
+}
+.ers-evp-count-badge {
+  display:inline-flex; align-items:center; gap:3px;
+  padding:3px 8px; border-radius:20px; font-size:10px; font-weight:600;
+  background:rgba(168,85,247,.1); color:#c084fc; border:1px solid rgba(168,85,247,.2);
+}
+.ers-risk-bar {
+  width:100%; height:6px; background:var(--border); border-radius:3px;
+  overflow:hidden; margin-top:6px;
+}
+.ers-risk-fill {
+  height:100%; border-radius:3px; transition:width .4s ease;
+}
+/* ── Edge Slider: MITRE, Detection, Threat Intel, Sparkline, Geo ── */
+.ers-mitre-row {
+  display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;
+}
+.ers-mitre-chip {
+  display:inline-flex; align-items:center; gap:4px; padding:3px 8px;
+  background:#fef3c7; color:#92400e; border:1px solid #fde68a; border-radius:6px;
+  font-size:10px; font-weight:600; letter-spacing:.2px;
+}
+.ers-mitre-chip.tech { background:#ede9fe; color:#5b21b6; border-color:#ddd6fe; }
+.ers-detect-card {
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  background:var(--surface-3); border:1px solid var(--border); border-radius:8px;
+}
+.ers-detect-icon {
+  width:32px; height:32px; border-radius:8px; display:flex; align-items:center;
+  justify-content:center; font-size:15px; flex-shrink:0;
+}
+.ers-detect-name { font-size:12px; font-weight:600; color:var(--text-primary); }
+.ers-detect-type { font-size:9.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.3px; margin-top:1px; }
+.ers-ti-row {
+  display:flex; gap:8px; flex-wrap:wrap;
+}
+.ers-ti-badge {
+  display:inline-flex; align-items:center; gap:5px; padding:5px 10px;
+  border-radius:8px; font-size:11px; font-weight:600;
+  border:1px solid var(--border);
+}
+.ers-ti-score { font-size:14px; font-weight:700; }
+/* ── Event Distribution Chart ── */
+.ers-dist-card {
+  margin-top:12px; padding:14px; background:var(--surface-3);
+  border:1px solid var(--border); border-radius:10px;
+}
+.ers-dist-header {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
+}
+.ers-dist-title {
+  display:flex; align-items:center; gap:6px; font-size:11px;
+  font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:.5px;
+}
+.ers-dist-total {
+  font-size:18px; font-weight:800; color:var(--text-primary);
+  font-variant-numeric:tabular-nums;
+}
+.ers-dist-total-label {
+  font-size:9px; color:var(--text-dim); text-transform:uppercase;
+  letter-spacing:.3px; font-weight:600;
+}
+.ers-dist-chart {
+  position:relative; height:80px; display:flex; align-items:flex-end; gap:6px;
+  padding-bottom:1px;
+}
+.ers-dist-bar-wrap {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  position:relative; cursor:pointer;
+}
+.ers-dist-bar {
+  width:100%; position:relative;
+  transition: height .5s cubic-bezier(.4,0,.2,1), opacity .2s;
+  min-height:2px; display:flex; flex-direction:column; justify-content:flex-end;
+}
+.ers-dist-seg {
+  width:100%; transition: height .4s ease;
+}
+.ers-dist-seg:first-child {
+  border-radius:4px 4px 0 0;
+}
+.ers-dist-seg.seg-low { background:#FFC600; }
+.ers-dist-bar-wrap:hover .ers-dist-bar {
+  filter:brightness(1.15); box-shadow:0 0 10px rgba(255,198,0,.25);
+}
+.ers-dist-bar-wrap:hover .ers-dist-tip {
+  opacity:1; transform:translateX(-50%) translateY(-2px); pointer-events:auto;
+}
+.ers-dist-tip {
+  position:absolute; bottom:calc(100% + 4px); left:50%; transform:translateX(-50%) translateY(4px);
+  background:var(--surface-1); color:var(--text-primary);
+  border:1px solid var(--border); border-radius:6px;
+  padding:3px 7px; font-size:10px; font-weight:700;
+  white-space:nowrap; opacity:0; transition:all .15s ease;
+  pointer-events:none; z-index:10;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.ers-dist-tip::after {
+  content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  border:4px solid transparent; border-top-color:var(--border);
+}
+.ers-dist-avg-line {
+  position:absolute; left:0; right:0; border-top:1.5px dashed rgba(255,255,255,.25);
+  pointer-events:none; z-index:2;
+}
+.ers-dist-avg-label {
+  position:absolute; right:-2px; top:-12px;
+  font-size:8px; color:var(--text-dim); font-weight:600;
+  background:var(--surface-3); padding:0 3px; border-radius:3px;
+}
+.ers-dist-peak {
+  position:absolute; top:-6px; left:50%; transform:translateX(-50%);
+  font-size:7px; color:#f97316; font-weight:700;
+  animation:peak-pulse 2s ease-in-out infinite;
+}
+@keyframes peak-pulse {
+  0%,100% { opacity:.6; } 50% { opacity:1; }
+}
+.ers-dist-axis {
+  display:flex; justify-content:space-between; margin-top:4px;
+  font-size:8px; color:var(--text-dim); font-weight:500;
+  padding:0 2px;
+}
+.ers-dist-axis span { opacity:.7; }
+.ers-dist-legend {
+  display:flex; align-items:center; gap:12px; margin-top:8px;
+  font-size:9px; color:var(--text-dim);
+}
+.ers-dist-legend-dot {
+  width:8px; height:8px; border-radius:2px; display:inline-block; margin-right:3px;
+}
+/* ── Baseline Comparison Card ── */
+.ers-baseline-card {
+  margin-top:10px; padding:12px 14px; background:var(--surface-3);
+  border:1px solid var(--border); border-radius:10px;
+}
+.ers-bl-header {
+  display:flex; align-items:center; gap:6px; font-size:11px;
+  font-weight:700; color:var(--text-dim); text-transform:uppercase;
+  letter-spacing:.5px; margin-bottom:10px;
+}
+.ers-bl-bar-row {
+  display:flex; align-items:center; gap:8px; margin-bottom:6px;
+}
+.ers-bl-label {
+  width:60px; font-size:10px; font-weight:600; color:var(--text-dim);
+  text-transform:uppercase; letter-spacing:.3px;
+}
+.ers-bl-track {
+  flex:1; height:18px; background:var(--surface-2); border-radius:9px;
+  overflow:hidden; position:relative;
+}
+.ers-bl-fill {
+  height:100%; border-radius:9px; transition:width .6s cubic-bezier(.4,0,.2,1);
+  position:relative;
+}
+.ers-bl-fill.expected {
+  background:linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+}
+.ers-bl-fill.actual.normal {
+  background:linear-gradient(90deg, #22c55e 0%, #4ade80 100%);
+}
+.ers-bl-fill.actual.warning {
+  background:linear-gradient(90deg, #f97316 0%, #fb923c 100%);
+}
+.ers-bl-fill.actual.danger {
+  background:linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+}
+.ers-bl-fill.actual.first {
+  background:linear-gradient(90deg, #a855f7 0%, #c084fc 100%);
+}
+.ers-bl-num {
+  min-width:32px; text-align:right; font-size:12px; font-weight:700;
+  color:var(--text-primary); font-variant-numeric:tabular-nums;
+}
+.ers-bl-divider {
+  height:1px; background:var(--border); margin:8px 0;
+}
+.ers-bl-footer {
+  display:flex; align-items:center; justify-content:space-between;
+}
+.ers-bl-dev-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700;
+}
+.ers-bl-dev-badge.normal {
+  background:rgba(34,197,94,.12); color:#22c55e; border:1px solid rgba(34,197,94,.25);
+}
+.ers-bl-dev-badge.warning {
+  background:rgba(249,115,22,.12); color:#f97316; border:1px solid rgba(249,115,22,.25);
+}
+.ers-bl-dev-badge.danger {
+  background:rgba(239,68,68,.12); color:#ef4444; border:1px solid rgba(239,68,68,.25);
+}
+.ers-bl-dev-badge.first {
+  background:rgba(168,85,247,.12); color:#a855f7; border:1px solid rgba(168,85,247,.25);
+}
+.ers-bl-dev-badge .ers-bl-dev-dot {
+  width:6px; height:6px; border-radius:50%; animation:pulse-dot 1.5s ease-in-out infinite;
+}
+.ers-bl-dev-badge.normal .ers-bl-dev-dot { background:#22c55e; }
+.ers-bl-dev-badge.warning .ers-bl-dev-dot { background:#f97316; }
+.ers-bl-dev-badge.danger .ers-bl-dev-dot { background:#ef4444; }
+.ers-bl-dev-badge.first .ers-bl-dev-dot { background:#a855f7; }
+@keyframes pulse-dot {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:.4; transform:scale(1.6); }
+}
+.ers-bl-ratio {
+  font-size:10px; color:var(--text-dim); font-weight:600;
+}
+.ers-geo-row {
+  display:flex; align-items:center; gap:8px; padding:8px 12px;
+  background:var(--surface-3); border:1px solid var(--border); border-radius:8px;
+  margin-top:6px;
+}
+.ers-geo-flag { font-size:18px; }
+.ers-geo-loc { font-size:12px; font-weight:600; color:var(--text-primary); }
+.ers-geo-ip { font-size:10px; color:var(--text-dim); }
+.ers-time-range {
+  display:flex; gap:8px; margin-top:10px;
+}
+.ers-time-card {
+  flex:1; padding:8px 12px; background:var(--surface-3);
+  border:1px solid var(--border); border-radius:8px;
+}
+.ers-time-card-label {
+  font-size:9.5px; color:var(--text-dim); text-transform:uppercase;
+  letter-spacing:.4px; margin-bottom:3px;
+}
+.ers-time-card-value {
+  font-size:11.5px; font-weight:600; color:var(--text-primary);
+}
 .graph-ctx {
   position:fixed; z-index:300;
   background:var(--surface); border:1px solid var(--border-light);
@@ -3127,11 +3498,14 @@ a { text-decoration: none; }
               <span class="gcb-caret">▾</span>
             </div>
             <div class="gcb-menu" id="entityChipMenu">
-              <div class="gcb-option active" data-val="all" onclick="pickEntityChip(this,'all','All Entities')">All Entities <span class="gcb-count">9</span></div>
-              <div class="gcb-option" data-val="user" onclick="pickEntityChip(this,'user','Users')"><span class="gcb-dot" style="background:#6366B3;"></span> Users <span class="gcb-count">2</span></div>
-              <div class="gcb-option" data-val="device" onclick="pickEntityChip(this,'device','Devices')"><span class="gcb-dot" style="background:#198019;"></span> Devices <span class="gcb-count">1</span></div>
-              <div class="gcb-option" data-val="ip" onclick="pickEntityChip(this,'ip','IPs')"><span class="gcb-dot" style="background:#DD1616;"></span> IPs <span class="gcb-count">2</span></div>
-              <div class="gcb-option" data-val="service" onclick="pickEntityChip(this,'service','Services')"><span class="gcb-dot" style="background:#0891b2;"></span> Services <span class="gcb-count">3</span></div>
+              <div class="gcb-option active" data-val="all" onclick="pickEntityChip(this,'all','All Entities')">All Entities <span class="gcb-count">10</span></div>
+              <div class="gcb-option" data-val="user" onclick="pickEntityChip(this,'user','Users')"><span class="gcb-dot" style="background:#2C66DD;"></span> Users <span class="gcb-count">2</span></div>
+              <div class="gcb-option" data-val="asset" onclick="pickEntityChip(this,'asset','Assets')"><span class="gcb-dot" style="background:#198019;"></span> Assets <span class="gcb-count">2</span></div>
+              <div class="gcb-option" data-val="ip" onclick="pickEntityChip(this,'ip','IP Addresses')"><span class="gcb-dot" style="background:#f97316;"></span> IP Addresses <span class="gcb-count">2</span></div>
+              <div class="gcb-option" data-val="domain" onclick="pickEntityChip(this,'domain','Domains')"><span class="gcb-dot" style="background:#DD1616;"></span> Domains <span class="gcb-count">1</span></div>
+              <div class="gcb-option" data-val="account" onclick="pickEntityChip(this,'account','Accounts')"><span class="gcb-dot" style="background:#0891b2;"></span> Accounts <span class="gcb-count">2</span></div>
+              <div class="gcb-option" data-val="process" onclick="pickEntityChip(this,'process','File/Process')"><span class="gcb-dot" style="background:#7c3aed;"></span> File/Process <span class="gcb-count">0</span></div>
+              <div class="gcb-option" data-val="location" onclick="pickEntityChip(this,'location','Location')"><span class="gcb-dot" style="background:#eab308;"></span> Location <span class="gcb-count">0</span></div>
               <div class="gcb-option" data-val="alert" onclick="pickEntityChip(this,'alert','Alerts')"><span class="gcb-dot" style="background:#DD1616;"></span> Alerts <span class="gcb-count">1</span></div>
             </div>
           </div>
@@ -3313,19 +3687,12 @@ a { text-decoration: none; }
           </svg>
 
           <div class="graph-canvas-toolbar">
-            <!-- Node Type Legend -->
-            <span class="canvas-edge-tag"><span class="legend-dot" style="background:#2C66DD;"></span> User</span>
-            <span class="canvas-edge-tag"><span class="legend-dot" style="background:#198019;"></span> Asset</span>
-            <span class="canvas-edge-tag"><span class="legend-dot" style="background:#f97316;"></span> IP Address</span>
-            <span class="canvas-edge-tag"><span class="legend-dot" style="background:#DD1616;"></span> Domain</span>
-            <span class="canvas-edge-tag"><span class="legend-dot" style="background:#7c3aed;"></span> File/Process</span>
-            <span class="canvas-edge-tag"><span class="legend-dot" style="background:#0891b2;"></span> Account</span>
-            <span class="canvas-edge-tag"><span class="legend-dot" style="background:#eab308;"></span> Location</span>
-            <span style="margin:0 4px;border-left:1px solid #e2e8f0;height:14px;align-self:center;"></span>
-            <!-- Edge Legend -->
             <span class="canvas-edge-tag"><span class="legend-line-red"></span> Malicious</span>
             <span class="canvas-edge-tag"><span class="legend-line-blue"></span> Normal</span>
+            <span style="margin:0 4px;border-left:1px solid #e2e8f0;height:14px;align-self:center;"></span>
+            <span class="canvas-edge-tag" style="cursor:pointer;" onclick="toggleRelGuide(event)" title="Relationship Guide">⟷ Relations</span>
           </div>
+          <div class="rel-guide-popup" id="relGuidePopup"></div>
 
           <div class="graph-zoom">
             <button onclick="zoomGraph(1.2)" title="Zoom in">+</button>
@@ -7786,56 +8153,582 @@ function viewAllSection(entityId, secKey) {
 let edgeRelTimer = null;
 /* ── Edge Attributes Data ── */
 var EDGE_ATTRIBUTES = {
-  'alert-impossible-travel→user-m-henderson': { relation:'TRIGGERED_BY', count:1, timestamp:'03 Apr 2026 14:22:45', risk:95, evidence:'Impossible travel detected: Romania → New York in 28 min' },
-  'alert-impossible-travel→svc-azure-ad': { relation:'DETECTED_ON', count:1, timestamp:'03 Apr 2026 14:22:45', risk:95, evidence:'Azure AD sign-in logs flagged anomalous authentication' },
-  'user-m-henderson→ip-tor': { relation:'AccessedFrom', count:3, timestamp:'03 Apr 2026 14:22:45', risk:92, evidence:'Tor exit node (Romania), 3 successful logons in 24h' },
-  'user-m-henderson→ip-internal': { relation:'AccessedFrom', count:12, timestamp:'03 Apr 2026 14:50:30', risk:15, evidence:'Internal VPN IP, routine access from corp network' },
-  'user-m-henderson→svc-azure-ad': { relation:'LoginTo', count:5, timestamp:'03 Apr 2026 15:02:18', risk:78, evidence:'MFA bypassed via legacy auth protocol' },
-  'ip-internal→dev-ws045': { relation:'ResolvedTo', count:1, timestamp:'03 Apr 2026 14:41:10', risk:10, evidence:'DHCP lease mapping, IP assigned to CORP-WS-045' },
-  'user-m-henderson→svc-sharepoint': { relation:'AccessedFile', count:24, timestamp:'03 Apr 2026 15:36:22', risk:88, evidence:'24 sensitive files downloaded from /finance/ and /hr/' },
-  'svc-azure-ad→svc-oauth': { relation:'ISSUED', count:3, timestamp:'03 Apr 2026 15:10:00', risk:85, evidence:'3 OAuth refresh tokens issued, unusual scope elevation' },
-  'user-admin→svc-azure-ad': { relation:'LoginTo', count:2, timestamp:'03 Apr 2026 15:18:44', risk:25, evidence:'Admin signed in from known IP, MFA verified' },
-  'ip-tor→dev-ws045': { relation:'CommunicatedWith', count:47, timestamp:'03 Apr 2026 15:25:10', risk:96, evidence:'Reverse shell traffic, 47 C2 beacon attempts detected' },
-  'dev-ws045→svc-sharepoint': { relation:'AccessedFile', count:24, timestamp:'03 Apr 2026 15:36:22', risk:90, evidence:'Bulk file exfiltration via WebDAV, 4.2 MB transferred' },
-  'user-m-henderson→dev-ws045': { relation:'LoginTo', count:8, timestamp:'03 Apr 2026 14:41:10', risk:45, evidence:'Primary workstation, 8 interactive logon sessions' },
-  'svc-oauth→svc-sharepoint': { relation:'AccessedFile', count:24, timestamp:'03 Apr 2026 15:28:33', risk:88, evidence:'OAuth token used to access SharePoint API, 24 file downloads' },
-  'ip-tor→domain-c2': { relation:'CommunicatedWith', count:142, timestamp:'03 Apr 2026 15:35:44', risk:98, evidence:'142 DNS queries + TLS sessions to c2-update.darkoperator.net' },
-  'dev-ws045→domain-c2': { relation:'CommunicatedWith', count:23, timestamp:'03 Apr 2026 15:30:22', risk:97, evidence:'PowerShell.exe initiated 23 TLS connections, 4.2 MB outbound' }
+  'alert-impossible-travel→user-m-henderson': {
+    relation:'TRIGGERED_BY', count:1, risk:95,
+    firstSeen:'03 Apr 2026 14:22:45', lastSeen:'03 Apr 2026 14:22:45',
+    evidence:{
+      summary:'Impossible travel detected: Romania → New York in 28 min',
+      findings:['Geo distance: 8,847 km','Travel time: 28 min (impossible)','Source IP: Tor exit node'],
+      confidence:96,
+      rawLog:'EventID=4624 | User=m.henderson | SrcIP=185.220.101.42 | Auth=NTLM | Status=Success | Geo=RO→US'
+    },
+    detectionRule:{ name:'Impossible Travel Detection', type:'Correlation', id:'CR-0042' },
+    mitre:{ tactic:'Initial Access', tacticId:'TA0001', technique:'Valid Accounts', techId:'T1078' },
+    sparkline:[0,0,0,0,0,0,0,0,0,0,0,1],
+    baseline:{ expected:0, actual:1, deviation:null }
+  },
+  'alert-impossible-travel→svc-azure-ad': {
+    relation:'DETECTED_ON', count:1, risk:95,
+    firstSeen:'03 Apr 2026 14:22:45', lastSeen:'03 Apr 2026 14:22:45',
+    evidence:{
+      summary:'Azure AD sign-in logs flagged anomalous authentication',
+      findings:['Sign-in risk: High','Location anomaly flagged','Conditional access policy bypassed'],
+      confidence:92,
+      rawLog:'AuditLog | Action=UserLoggedIn | UserId=m.henderson@corp | ClientIP=185.220.101.42 | RiskLevel=High'
+    },
+    detectionRule:{ name:'Impossible Travel Detection', type:'Correlation', id:'CR-0042' },
+    mitre:{ tactic:'Initial Access', tacticId:'TA0001', technique:'Valid Accounts', techId:'T1078' },
+    source:'Azure AD Sign-in Logs'
+  },
+  'user-m-henderson→ip-tor': {
+    relation:'AccessedFrom', count:3, risk:92,
+    firstSeen:'03 Apr 2026 14:18:02', lastSeen:'03 Apr 2026 14:22:45',
+    evidence:{
+      summary:'Tor exit node (Romania), 3 successful logons in 24h',
+      findings:['Tor exit node confirmed','3 logons from same IP','All logons successful (no failures)'],
+      confidence:98,
+      rawLog:'SignInLog | IP=185.220.101.42 | TorExitNode=true | Logons=3/3 Success | Country=RO'
+    },
+    detectionRule:{ name:'Tor Exit Node Login', type:'Threat Intel', id:'TI-0117' },
+    mitre:{ tactic:'Defense Evasion', tacticId:'TA0005', technique:'Proxy: Multi-hop Proxy', techId:'T1090.003' },
+    threatIntel:{ vendor:'Webroot', reputation:2, label:'Malicious', virusTotal:'18/94' },
+    geo:{ flag:'🇷🇴', country:'Romania', city:'Bucharest', ip:'185.220.101.42' },
+    sparkline:[0,0,0,0,0,0,0,0,1,1,0,1],
+    baseline:{ expected:0, actual:3, deviation:null },
+    source:'Azure AD Sign-in Logs'
+  },
+  'user-m-henderson→ip-internal': {
+    relation:'AccessedFrom', count:12, risk:15,
+    firstSeen:'03 Apr 2026 08:02:10', lastSeen:'03 Apr 2026 14:50:30',
+    evidence:{
+      summary:'Internal VPN IP, routine access from corp network',
+      findings:['VPN IP in corp range','Access during business hours','Standard auth pattern'],
+      confidence:35,
+      rawLog:'VPNLog | User=m.henderson | SrcIP=10.18.1.81 | Tunnel=IPSec | Duration=8h12m'
+    },
+    geo:{ flag:'🇺🇸', country:'United States', city:'New York (Corp)', ip:'10.18.1.81' },
+    sparkline:[1,2,1,1,1,2,1,0,1,1,0,1],
+    baseline:{ expected:10, actual:12, deviation:1.2 },
+    source:'VPN Gateway Logs'
+  },
+  'user-m-henderson→svc-azure-ad': {
+    relation:'LoginTo', count:5, risk:78,
+    firstSeen:'03 Apr 2026 14:18:02', lastSeen:'03 Apr 2026 15:02:18',
+    evidence:{
+      summary:'MFA bypassed via legacy auth protocol',
+      findings:['IMAP legacy auth used','MFA not enforced on protocol','5 sessions in 47 min'],
+      confidence:89,
+      rawLog:'SignInLog | Protocol=IMAP | MFAResult=notApplicable | ClientApp=OtherClients | Status=Success'
+    },
+    detectionRule:{ name:'Legacy Auth Protocol Usage', type:'Anomaly (UEBA)', id:'UE-0033' },
+    mitre:{ tactic:'Credential Access', tacticId:'TA0006', technique:'MFA Interception', techId:'T1111' },
+    sparkline:[0,1,0,0,1,0,0,0,1,1,0,1],
+    baseline:{ expected:2, actual:5, deviation:2.5 },
+    source:'Azure AD Sign-in Logs'
+  },
+  'ip-internal→dev-ws045': {
+    relation:'ResolvedTo', count:1, risk:10,
+    firstSeen:'03 Apr 2026 14:41:10', lastSeen:'03 Apr 2026 14:41:10',
+    evidence:{
+      summary:'DHCP lease mapping, IP assigned to CORP-WS-045',
+      findings:['DHCP lease confirmed','MAC: 00:1A:2B:3C:4D:5E','Lease active since 08:00'],
+      confidence:100,
+      rawLog:'DHCPLog | IP=10.18.1.81 | MAC=00:1A:2B:3C:4D:5E | Hostname=CORP-WS-045 | LeaseStart=08:00'
+    },
+    geo:{ flag:'🇺🇸', country:'United States', city:'New York (Corp)', ip:'10.18.1.81' },
+    source:'DHCP Server Logs'
+  },
+  'user-m-henderson→svc-sharepoint': {
+    relation:'AccessedFile', count:24, risk:88,
+    firstSeen:'03 Apr 2026 15:28:00', lastSeen:'03 Apr 2026 15:36:22',
+    evidence:{
+      summary:'24 sensitive files downloaded from /finance/ and /hr/',
+      findings:['24 files in 8 min','Sensitive folders targeted','Download rate 14× above baseline'],
+      confidence:94,
+      rawLog:'SPAudit | Op=FileDownloaded | User=m.henderson | Path=/finance/*,/hr/* | Count=24 | Duration=8min'
+    },
+    detectionRule:{ name:'Bulk Sensitive File Download', type:'Anomaly (UEBA)', id:'UE-0071' },
+    mitre:{ tactic:'Collection', tacticId:'TA0009', technique:'Data from Information Repositories', techId:'T1213' },
+    sparkline:[0,0,0,0,0,0,0,0,2,4,8,10],
+    baseline:{ expected:3, actual:24, deviation:8.0 },
+    source:'SharePoint Audit Logs'
+  },
+  'svc-azure-ad→svc-oauth': {
+    relation:'ISSUED', count:3, risk:85,
+    firstSeen:'03 Apr 2026 15:08:12', lastSeen:'03 Apr 2026 15:10:00',
+    evidence:{
+      summary:'3 OAuth refresh tokens issued, unusual scope elevation',
+      findings:['Scope: Files.ReadWrite.All added','3 tokens in 2 min','Consent granted without admin review'],
+      confidence:91,
+      rawLog:'AuditLog | Op=Consent | AppId=a3e2f… | Scope=Files.ReadWrite.All | GrantedBy=m.henderson'
+    },
+    detectionRule:{ name:'OAuth Scope Elevation', type:'Correlation', id:'CR-0088' },
+    mitre:{ tactic:'Persistence', tacticId:'TA0003', technique:'Account Manipulation: Additional Cloud Credentials', techId:'T1098.001' },
+    sparkline:[0,0,0,0,0,0,0,0,0,1,1,1],
+    baseline:{ expected:0, actual:3, deviation:null },
+    source:'Azure AD Audit Logs'
+  },
+  'user-admin→svc-azure-ad': {
+    relation:'LoginTo', count:2, risk:25,
+    firstSeen:'03 Apr 2026 15:15:00', lastSeen:'03 Apr 2026 15:18:44',
+    evidence:{
+      summary:'Admin signed in from known IP, MFA verified',
+      findings:['Known admin IP','MFA completed (push)','Standard admin session'],
+      confidence:20,
+      rawLog:'SignInLog | User=admin | SrcIP=10.0.0.1 | MFA=Completed | Method=PushNotification'
+    },
+    sparkline:[0,0,0,0,0,0,0,0,0,0,1,1],
+    baseline:{ expected:2, actual:2, deviation:1.0 },
+    source:'Azure AD Sign-in Logs'
+  },
+  'ip-tor→dev-ws045': {
+    relation:'CommunicatedWith', count:47, risk:96,
+    firstSeen:'03 Apr 2026 15:20:05', lastSeen:'03 Apr 2026 15:25:10',
+    evidence:{
+      summary:'Reverse shell traffic, 47 C2 beacon attempts detected',
+      findings:['47 beacons in 5 min','Fixed interval: 6.3s ±0.2s','Payload: encrypted binary'],
+      confidence:99,
+      rawLog:'IDS | Alert=ReverseShell | SrcIP=185.220.101.42 | DstIP=10.18.1.81 | Beacons=47 | Interval=6.3s'
+    },
+    detectionRule:{ name:'C2 Beacon Pattern Detection', type:'Correlation', id:'CR-0101' },
+    mitre:{ tactic:'Command and Control', tacticId:'TA0011', technique:'Application Layer Protocol', techId:'T1071' },
+    threatIntel:{ vendor:'Webroot', reputation:2, label:'Malicious', virusTotal:'18/94' },
+    geo:{ flag:'🇷🇴', country:'Romania', city:'Bucharest', ip:'185.220.101.42' },
+    sparkline:[0,0,0,0,0,0,0,0,5,12,18,12],
+    baseline:{ expected:0, actual:47, deviation:null },
+    source:'Firewall Logs + IDS'
+  },
+  'dev-ws045→svc-sharepoint': {
+    relation:'AccessedFile', count:24, risk:90,
+    firstSeen:'03 Apr 2026 15:30:00', lastSeen:'03 Apr 2026 15:36:22',
+    evidence:{
+      summary:'Bulk file exfiltration via WebDAV, 4.2 MB transferred',
+      findings:['WebDAV protocol used','4.2 MB outbound','24 files in single session'],
+      confidence:95,
+      rawLog:'SPAudit | Op=FileDownloaded | Protocol=WebDAV | Size=4.2MB | Files=24 | Session=single'
+    },
+    detectionRule:{ name:'Bulk File Exfiltration', type:'Correlation', id:'CR-0055' },
+    mitre:{ tactic:'Exfiltration', tacticId:'TA0010', technique:'Exfiltration Over Web Service', techId:'T1567' },
+    sparkline:[0,0,0,0,0,0,0,0,0,4,10,10],
+    baseline:{ expected:2, actual:24, deviation:12.0 },
+    dataVolume:'4.2 MB',
+    source:'SharePoint Audit Logs'
+  },
+  'user-m-henderson→dev-ws045': {
+    relation:'LoginTo', count:8, risk:45,
+    firstSeen:'03 Apr 2026 08:15:00', lastSeen:'03 Apr 2026 14:41:10',
+    evidence:{
+      summary:'Primary workstation, 8 interactive logon sessions',
+      findings:['Interactive logon type (2)','Consistent 8h usage','No remote sessions'],
+      confidence:15,
+      rawLog:'WinSec | EventID=4624 | LogonType=2 | User=m.henderson | Workstation=CORP-WS-045'
+    },
+    sparkline:[1,1,1,1,0,1,0,1,0,1,0,1],
+    baseline:{ expected:6, actual:8, deviation:1.3 },
+    source:'Windows Security Event Logs'
+  },
+  'svc-oauth→svc-sharepoint': {
+    relation:'AccessedFile', count:24, risk:88,
+    firstSeen:'03 Apr 2026 15:25:00', lastSeen:'03 Apr 2026 15:28:33',
+    evidence:{
+      summary:'OAuth token used to access SharePoint API, 24 file downloads',
+      findings:['Graph API calls detected','Token scope: Files.ReadWrite.All','24 sequential downloads'],
+      confidence:93,
+      rawLog:'APILog | App=GraphAPI | Token=OAuth_refresh | Op=DriveItem.Content | Count=24 | Scope=Files.ReadWrite.All'
+    },
+    detectionRule:{ name:'Suspicious OAuth API Access', type:'Anomaly (UEBA)', id:'UE-0089' },
+    mitre:{ tactic:'Collection', tacticId:'TA0009', technique:'Data from Information Repositories', techId:'T1213' },
+    sparkline:[0,0,0,0,0,0,0,0,0,6,10,8],
+    baseline:{ expected:0, actual:24, deviation:null },
+    source:'SharePoint API Audit'
+  },
+  'ip-tor→domain-c2': {
+    relation:'CommunicatedWith', count:142, risk:98,
+    firstSeen:'03 Apr 2026 14:45:00', lastSeen:'03 Apr 2026 15:35:44',
+    evidence:{
+      summary:'142 DNS queries + TLS sessions to c2-update.darkoperator.net',
+      findings:['Known C2 domain','142 DNS queries','TLS cert: self-signed, CN=randomstring'],
+      confidence:99,
+      rawLog:'DNS | Query=c2-update.darkoperator.net | Type=A | Count=142 | TLS=self-signed'
+    },
+    detectionRule:{ name:'Known C2 Domain Communication', type:'Threat Intel', id:'TI-0203' },
+    mitre:{ tactic:'Command and Control', tacticId:'TA0011', technique:'Application Layer Protocol: DNS', techId:'T1071.004' },
+    threatIntel:{ vendor:'Webroot', reputation:1, label:'Critical', virusTotal:'62/94' },
+    geo:{ flag:'🇷🇺', country:'Russia', city:'Moscow', ip:'185.220.101.99' },
+    sparkline:[0,2,4,6,8,10,12,14,16,18,24,28],
+    baseline:{ expected:0, actual:142, deviation:null },
+    dataVolume:'6.8 MB',
+    source:'DNS Logs + Firewall'
+  },
+  'dev-ws045→domain-c2': {
+    relation:'CommunicatedWith', count:23, risk:97,
+    firstSeen:'03 Apr 2026 15:22:00', lastSeen:'03 Apr 2026 15:30:22',
+    evidence:{
+      summary:'PowerShell.exe initiated 23 TLS connections, 4.2 MB outbound',
+      findings:['PowerShell.exe (PID 4812)','23 TLS conns to C2 domain','4.2 MB exfiltrated outbound'],
+      confidence:97,
+      rawLog:'Sysmon | EventID=3 | Process=PowerShell.exe | PID=4812 | DstIP=185.220.101.99 | Bytes=4404019'
+    },
+    detectionRule:{ name:'Process C2 Outbound Traffic', type:'Correlation', id:'CR-0101' },
+    mitre:{ tactic:'Exfiltration', tacticId:'TA0010', technique:'Exfiltration Over C2 Channel', techId:'T1041' },
+    threatIntel:{ vendor:'Webroot', reputation:1, label:'Critical', virusTotal:'62/94' },
+    sparkline:[0,0,0,0,0,0,0,0,3,5,8,7],
+    baseline:{ expected:0, actual:23, deviation:null },
+    dataVolume:'4.2 MB',
+    source:'Sysmon + Firewall'
+  }
 };
 
 function showEdgeRelation(evt, el) {
   evt.stopPropagation();
-  const popup = document.getElementById('edgeRelPopup');
   const label = el.getAttribute('data-label');
   const source = el.getAttribute('data-source');
   const target = el.getAttribute('data-target');
+
+  const srcD = ENTITY_DISPLAY[source] || {};
+  const tgtD = ENTITY_DISPLAY[target] || {};
   const fmtName = (id) => {
     const d = ENTITY_DISPLAY[id];
-    return d ? d.name : id.replace(/^(user-|ip-|dev-|svc-|alert-|proc-)/, '').replace(/-/g,' ');
+    return d ? d.name : id.replace(/^(user-|ip-|dev-|svc-|alert-|proc-|domain-)/, '').replace(/-/g,' ');
   };
-  // Lookup edge attributes
+
+  // Lookup edge attributes & relation guide
   const key = source + '→' + target;
   const attr = EDGE_ATTRIBUTES[key] || {};
-  const riskColor = (attr.risk||0) >= 80 ? '#ef4444' : (attr.risk||0) >= 50 ? '#f97316' : (attr.risk||0) >= 30 ? '#eab308' : '#22c55e';
+  const risk = attr.risk || 0;
+  const riskColor = risk >= 80 ? '#ef4444' : risk >= 50 ? '#f97316' : risk >= 30 ? '#eab308' : '#22c55e';
+  const riskLabel = risk >= 80 ? 'Critical' : risk >= 50 ? 'High' : risk >= 30 ? 'Medium' : 'Low';
+  const relGuide = REL_GUIDE.find(r => r.key === label);
+  const edgeColor = relGuide ? relGuide.color : '#64748b';
+  const edgeIcon = relGuide ? relGuide.icon : '🔗';
 
-  let html = `<div class="erp-header"><span style="font-weight:600;color:#93c5fd;">${fmtName(source)}</span> <span style="color:#94a3b8;">→</span> <span style="font-weight:700;color:#fbbf24;">${label}</span> <span style="color:#94a3b8;">→</span> <span style="font-weight:600;color:#86efac;">${fmtName(target)}</span></div>`;
+  // Type labels
+  const typeLabel = (d) => {
+    const m = {user:'User',asset:'Device',ip:'IP Address',account:'Service',alert:'Alert',process:'Process',domain:'Domain'};
+    return m[d.type] || 'Entity';
+  };
+
+  // Highlight the edge on graph
+  document.querySelectorAll('.graph-node').forEach(n => n.style.opacity = '0.35');
+  const srcNode = document.querySelector(`.graph-node[data-entity="${source}"]`);
+  const tgtNode = document.querySelector(`.graph-node[data-entity="${target}"]`);
+  if (srcNode) srcNode.style.opacity = '1';
+  if (tgtNode) tgtNode.style.opacity = '1';
+
+  // Set slider header
+  document.getElementById('edsTitle').textContent = label;
+  const badge = document.getElementById('edsTypeBadge');
+  badge.textContent = edgeIcon + ' Relationship';
+  badge.className = 'eds-type-badge';
+  badge.style.cssText = `display:inline-flex;background:${edgeColor}20;color:${edgeColor};border:1px solid ${edgeColor}40;`;
+  const depthBadge = document.getElementById('edsDepthBadge');
+  if (depthBadge) depthBadge.style.display = 'none';
+
+  // Build slider body
+  let html = '';
+
+  // ── Flow diagram: Source → Relation → Target ──
+  html += `<div class="ers-flow">`;
+  html += `<div class="ers-flow-node" onclick="openEntitySlider('${source}')" title="View ${fmtName(source)} details">`;
+  html += `<span class="ers-node-icon" style="background:${srcD.bg||'#f1f5f9'};color:${srcD.color||'#334155'};">${srcD.icon||'●'}</span>`;
+  html += `<span class="ers-node-name">${fmtName(source)}</span></div>`;
+  html += `<div class="ers-flow-arrow">`;
+  html += `<span class="ers-arrow-label" style="color:${edgeColor};">${label}</span>`;
+  html += `<div class="ers-arrow-line" style="background:${edgeColor};"><span style="position:absolute;right:-1px;top:-3px;border:4px solid transparent;border-left:6px solid ${edgeColor};"></span></div>`;
+  html += `</div>`;
+  html += `<div class="ers-flow-node" onclick="openEntitySlider('${target}')" title="View ${fmtName(target)} details">`;
+  html += `<span class="ers-node-icon" style="background:${tgtD.bg||'#f1f5f9'};color:${tgtD.color||'#334155'};">${tgtD.icon||'●'}</span>`;
+  html += `<span class="ers-node-name">${fmtName(target)}</span></div>`;
+  html += `</div>`;
+
+  // ── Relation description ──
+  if (relGuide) {
+    html += `<div class="ers-desc"><span class="ers-desc-icon">${relGuide.icon}</span>${relGuide.desc}</div>`;
+  }
+
+  // ── MITRE ATT&CK Mapping ──
+  if (attr.mitre) {
+    html += `<div class="ers-section">`;
+    html += `<div class="ers-section-title">MITRE ATT&CK</div>`;
+    html += `<div class="ers-mitre-row">`;
+    html += `<span class="ers-mitre-chip">${attr.mitre.tacticId} · ${attr.mitre.tactic}</span>`;
+    html += `<span class="ers-mitre-chip tech">${attr.mitre.techId} · ${attr.mitre.technique}</span>`;
+    html += `</div></div>`;
+  }
+
+  // ── Detection Rule ──
+  if (attr.detectionRule) {
+    html += `<div class="ers-section">`;
+    html += `<div class="ers-section-title">Detection Rule</div>`;
+    html += `<div class="ers-detect-card">`;
+    const drIcon = attr.detectionRule.type === 'Correlation' ? '🔗' : attr.detectionRule.type === 'Threat Intel' ? '🛡' : '📊';
+    const drBg = attr.detectionRule.type === 'Correlation' ? '#dbeafe' : attr.detectionRule.type === 'Threat Intel' ? '#fee2e2' : '#ede9fe';
+    html += `<span class="ers-detect-icon" style="background:${drBg};">${drIcon}</span>`;
+    html += `<div><div class="ers-detect-name">${attr.detectionRule.name}</div>`;
+    html += `<div class="ers-detect-type">${attr.detectionRule.type} · ${attr.detectionRule.id}</div></div>`;
+    html += `</div></div>`;
+  }
+
+  // ── Connection Properties section ──
   if (attr.count != null) {
-    html += `<div class="erp-attrs">`;
-    html += `<span class="erp-attr-label">Count</span><span class="erp-attr-value">${attr.count}</span>`;
-    html += `<span class="erp-attr-label">Risk</span><span class="erp-attr-value" style="color:${riskColor};">${attr.risk}/100</span>`;
-    html += `<span class="erp-attr-label">Timestamp</span><span class="erp-attr-value">${attr.timestamp}</span>`;
-    if (attr.evidence) html += `<div class="erp-evidence">📋 ${attr.evidence}</div>`;
+    html += `<div class="ers-section">`;
+    html += `<div class="ers-section-title">Connection Properties</div>`;
+    html += `<div class="ers-grid">`;
+    // Count metric
+    html += `<div class="ers-metric">`;
+    html += `<div class="ers-metric-label">Event Count</div>`;
+    html += `<div class="ers-metric-value">${attr.count}</div></div>`;
+    // Risk metric
+    html += `<div class="ers-metric">`;
+    html += `<div class="ers-metric-label">Risk Score</div>`;
+    html += `<div class="ers-metric-value" style="color:${riskColor};">${risk}<span style="font-size:11px;font-weight:400;color:var(--text-dim);">/100</span></div>`;
+    html += `<div class="ers-risk-bar"><div class="ers-risk-fill" style="width:${risk}%;background:${riskColor};"></div></div></div>`;
+    html += `</div>`; // close grid
+
+    // Data volume (if available)
+    if (attr.dataVolume) {
+      html += `<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;background:var(--surface-3);border:1px solid var(--border);border-radius:8px;">`;
+      html += `<span style="font-size:12px;">📦</span>`;
+      html += `<div><div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.4px;">Data Transferred</div>`;
+      html += `<div style="font-size:13px;font-weight:700;color:var(--text-primary);">${attr.dataVolume}</div></div></div>`;
+    }
+
+    // First Seen / Last Seen
+    if (attr.firstSeen || attr.lastSeen) {
+      html += `<div class="ers-time-range">`;
+      if (attr.firstSeen) {
+        html += `<div class="ers-time-card"><div class="ers-time-card-label">First Seen</div>`;
+        html += `<div class="ers-time-card-value">${attr.firstSeen}</div></div>`;
+      }
+      if (attr.lastSeen) {
+        html += `<div class="ers-time-card"><div class="ers-time-card-label">Last Seen</div>`;
+        html += `<div class="ers-time-card-value">${attr.lastSeen}</div></div>`;
+      }
+      html += `</div>`;
+    }
+
+    // Event Distribution Chart — enhanced
+    if (attr.sparkline && attr.sparkline.length) {
+      const sp = attr.sparkline;
+      const total = sp.reduce((a,b) => a + b, 0);
+      const maxS = Math.max(...sp, 1);
+      const avg = total / sp.length;
+      const peakIdx = sp.indexOf(maxS);
+      const chartH = 54;
+      const avgY = chartH - Math.max(2, (avg / maxS) * chartH);
+
+      // Time labels — compute exact clock times from lastSeen
+      const buckets = sp.length;
+      const minutesPerBucket = Math.round(60 / buckets);
+      let endTime = null;
+      if (attr.lastSeen) {
+        const parsed = new Date(attr.lastSeen.replace(/(\d{2}) (\w{3}) (\d{4})/, '$2 $1, $3'));
+        if (!isNaN(parsed)) endTime = parsed;
+      }
+      if (!endTime) endTime = new Date();
+      const timeLabels = sp.map((_, i) => {
+        const minAgo = (buckets - 1 - i) * minutesPerBucket;
+        const t = new Date(endTime.getTime() - minAgo * 60000);
+        const hh = String(t.getHours()).padStart(2, '0');
+        const mm = String(t.getMinutes()).padStart(2, '0');
+        return `${hh}:${mm}`;
+      });
+
+      html += `<div class="ers-dist-card">`;
+      html += `<div class="ers-dist-header">`;
+      html += `  <div class="ers-dist-title"><span style="font-size:14px;">📊</span> Event Distribution</div>`;
+      html += `  <div style="text-align:right;"><div class="ers-dist-total">${total.toLocaleString()}</div>`;
+      html += `  <div class="ers-dist-total-label">Total Events</div></div>`;
+      html += `</div>`;
+
+      html += `<div class="ers-dist-chart" style="height:${chartH}px;">`;
+
+      // Average line
+      if (avg > 0) {
+        html += `<div class="ers-dist-avg-line" style="bottom:${Math.max(2,(avg/maxS)*chartH)}px;">`;
+        html += `<span class="ers-dist-avg-label">avg ${avg.toFixed(1)}</span></div>`;
+      }
+
+      sp.forEach((v, i) => {
+        const h = Math.max(2, (v / maxS) * chartH);
+        const isPeak = i === peakIdx && v > 0;
+        html += `<div class="ers-dist-bar-wrap">`;
+        if (isPeak) html += `<div class="ers-dist-peak">▼</div>`;
+        html += `<div class="ers-dist-tip">${v} events<br><span style="font-size:8px;opacity:.7;">${timeLabels[i]}</span></div>`;
+        if (v === 0) {
+          html += `<div class="ers-dist-bar" style="height:2px;background:var(--border);border-radius:4px 4px 0 0;"></div>`;
+        } else {
+          html += `<div class="ers-dist-bar" style="height:${h}px;background:#FFC600;border-radius:4px 4px 0 0;"></div>`;
+        }
+        html += `</div>`;
+      });
+      html += `</div>`;
+
+      // Time axis
+      html += `<div class="ers-dist-axis">`;
+      const axisLabels = [0, Math.floor(buckets/4), Math.floor(buckets/2), Math.floor(3*buckets/4), buckets-1];
+      const uniqueAxis = [...new Set(axisLabels)];
+      uniqueAxis.forEach(i => {
+        html += `<span>${timeLabels[i]}</span>`;
+      });
+      html += `</div>`;
+
+      // Legend
+      html += `<div class="ers-dist-legend">`;
+      html += `<span><span class="ers-dist-legend-dot" style="background:#FFC600;"></span>Events</span>`;
+      html += `<span>Avg: ${avg.toFixed(1)}/interval</span>`;
+      html += `<span style="margin-left:auto;font-weight:600;">Peak: ${maxS} at ${timeLabels[peakIdx]}</span>`;
+      html += `</div>`;
+
+      html += `</div>`;
+    }
+
+    // Baseline comparison — visual dual-bar design
+    if (attr.baseline) {
+      const b = attr.baseline;
+      const maxVal = Math.max(b.expected, b.actual, 1);
+      const expPct = Math.min((b.expected / maxVal) * 100, 100);
+      const actPct = Math.min((b.actual / maxVal) * 100, 100);
+      let severity, devLabel, devIcon;
+      if (b.expected === 0 || b.deviation === null) {
+        severity = 'first'; devLabel = 'First occurrence'; devIcon = '✦';
+      } else if (b.deviation > 2) {
+        severity = 'danger'; devLabel = `${b.deviation}× above normal`; devIcon = '▲';
+      } else if (b.deviation > 1.3) {
+        severity = 'warning'; devLabel = `${b.deviation}× above normal`; devIcon = '▲';
+      } else {
+        severity = 'normal'; devLabel = 'Within normal range'; devIcon = '●';
+      }
+      html += `<div class="ers-baseline-card">`;
+      html += `<div class="ers-bl-header"><span style="font-size:13px;">📊</span> Behavioral Baseline</div>`;
+      html += `<div class="ers-bl-bar-row">`;
+      html += `  <span class="ers-bl-label">Expected</span>`;
+      html += `  <div class="ers-bl-track"><div class="ers-bl-fill expected" style="width:${expPct}%"></div></div>`;
+      html += `  <span class="ers-bl-num">${b.expected}</span>`;
+      html += `</div>`;
+      html += `<div class="ers-bl-bar-row">`;
+      html += `  <span class="ers-bl-label">Actual</span>`;
+      html += `  <div class="ers-bl-track"><div class="ers-bl-fill actual ${severity}" style="width:${actPct}%"></div></div>`;
+      html += `  <span class="ers-bl-num">${b.actual}</span>`;
+      html += `</div>`;
+      html += `<div class="ers-bl-divider"></div>`;
+      html += `<div class="ers-bl-footer">`;
+      html += `  <span class="ers-bl-dev-badge ${severity}"><span class="ers-bl-dev-dot"></span>${devIcon} ${devLabel}</span>`;
+      if (b.expected > 0 && b.deviation !== null) {
+        html += `<span class="ers-bl-ratio">${b.expected} → ${b.actual} events</span>`;
+      }
+      html += `</div>`;
+      html += `</div>`;
+    }
+
     html += `</div>`;
   }
-  popup.innerHTML = html;
-  const rect = el.getBoundingClientRect();
-  popup.style.left = (rect.left + rect.width/2) + 'px';
-  popup.style.top = (rect.top - 36) + 'px';
-  popup.style.transform = 'translateX(-50%) translateY(-100%)';
-  popup.classList.add('show');
-  if (edgeRelTimer) clearTimeout(edgeRelTimer);
-  edgeRelTimer = setTimeout(() => popup.classList.remove('show'), 5000);
+
+  // ── Threat Intelligence ──
+  if (attr.threatIntel) {
+    const ti = attr.threatIntel;
+    const tiBg = ti.reputation <= 2 ? '#fee2e2' : ti.reputation <= 30 ? '#fff7ed' : '#f0fdf4';
+    const tiColor = ti.reputation <= 2 ? '#991b1b' : ti.reputation <= 30 ? '#9a3412' : '#166534';
+    html += `<div class="ers-section">`;
+    html += `<div class="ers-section-title">Threat Intelligence</div>`;
+    html += `<div class="ers-ti-row">`;
+    html += `<div class="ers-ti-badge" style="background:${tiBg};color:${tiColor};border-color:${tiColor}20;">`;
+    html += `<span>🛡</span> <span>${ti.vendor}</span> <span class="ers-ti-score">${ti.label}</span></div>`;
+    if (ti.virusTotal) {
+      const vtParts = ti.virusTotal.split('/');
+      const vtRatio = parseInt(vtParts[0]) / parseInt(vtParts[1]);
+      const vtBg = vtRatio > 0.3 ? '#fee2e2' : vtRatio > 0.1 ? '#fff7ed' : '#f0fdf4';
+      const vtColor = vtRatio > 0.3 ? '#991b1b' : vtRatio > 0.1 ? '#9a3412' : '#166534';
+      html += `<div class="ers-ti-badge" style="background:${vtBg};color:${vtColor};border-color:${vtColor}20;">`;
+      html += `<span>🔬</span> <span>VirusTotal</span> <span class="ers-ti-score">${ti.virusTotal}</span></div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  // ── Geo Context ──
+  if (attr.geo) {
+    html += `<div class="ers-section">`;
+    html += `<div class="ers-section-title">Geo Context</div>`;
+    html += `<div class="ers-geo-row">`;
+    html += `<span class="ers-geo-flag">${attr.geo.flag}</span>`;
+    html += `<div><div class="ers-geo-loc">${attr.geo.city}, ${attr.geo.country}</div>`;
+    html += `<div class="ers-geo-ip">${attr.geo.ip}</div></div></div>`;
+    html += `</div>`;
+  }
+
+  // ── Evidence section ── (enhanced panel)
+  const ev = typeof attr.evidence === 'string' ? { summary: attr.evidence } : attr.evidence;
+  if (ev && ev.summary) {
+    const risk = attr.risk || 0;
+    let sevClass, sevLabel;
+    if (risk >= 90) { sevClass = 'critical'; sevLabel = 'Critical'; }
+    else if (risk >= 70) { sevClass = 'high'; sevLabel = 'High'; }
+    else if (risk >= 40) { sevClass = 'medium'; sevLabel = 'Medium'; }
+    else { sevClass = 'low'; sevLabel = 'Low'; }
+
+    const conf = ev.confidence || 0;
+    let confColor;
+    if (conf >= 90) confColor = '#22c55e';
+    else if (conf >= 70) confColor = '#eab308';
+    else if (conf >= 40) confColor = '#f97316';
+    else confColor = '#64748b';
+
+    html += `<div class="ers-section">`;
+    html += `<div class="ers-section-title">Evidence</div>`;
+    html += `<div class="ers-evidence-panel">`;
+
+    // Header with severity bar + summary
+    html += `<div class="ers-evp-header">`;
+    html += `<div class="ers-evp-sev ${sevClass}" title="Severity: ${sevLabel}"></div>`;
+    html += `<div class="ers-evp-summary">${ev.summary}</div>`;
+    html += `</div>`;
+
+    html += `<div class="ers-evp-body">`;
+
+    // Key findings chips
+    if (ev.findings && ev.findings.length) {
+      html += `<div class="ers-evp-findings">`;
+      const dotColors = ['#ef4444','#f97316','#3b82f6','#8b5cf6','#22c55e','#eab308'];
+      ev.findings.forEach((f, i) => {
+        const dc = dotColors[i % dotColors.length];
+        html += `<span class="ers-evp-finding"><span class="evf-dot" style="background:${dc}"></span>${f}</span>`;
+      });
+      html += `</div>`;
+    }
+
+    // Confidence meter
+    if (ev.confidence !== undefined) {
+      html += `<div class="ers-evp-confidence">`;
+      html += `<span class="ers-evp-conf-label">Confidence</span>`;
+      html += `<div class="ers-evp-conf-track"><div class="ers-evp-conf-fill" style="width:${conf}%;background:${confColor};"></div></div>`;
+      html += `<span class="ers-evp-conf-val" style="color:${confColor};">${conf}%</span>`;
+      html += `</div>`;
+    }
+
+    // Source & count badges
+    if (attr.source || attr.count) {
+      html += `<div class="ers-evp-source-row">`;
+      if (attr.source) {
+        html += `<span class="ers-evp-source-badge">📡 ${attr.source}</span>`;
+      }
+      if (attr.count) {
+        html += `<span class="ers-evp-count-badge"># ${attr.count} events</span>`;
+      }
+      html += `</div>`;
+    }
+
+    html += `</div></div>`;
+    html += `</div>`;
+  }
+
+  // Populate slider body and open
+  document.getElementById('edsBody').innerHTML = html;
+  document.getElementById('graphContainer').classList.add('slider-open');
+  // Close any action panel that might be open
+  closeActionPanel();
 }
+
+/* Legacy popup dismiss (kept for safety) */
 document.addEventListener('click', () => {
   const popup = document.getElementById('edgeRelPopup');
   if (popup) popup.classList.remove('show');
@@ -8284,6 +9177,158 @@ function pickEntityChip(optionEl, val, label) {
   legendFilter(val);
 }
 
+function pickRelChip(optionEl, val, label) {
+  optionEl.closest('.gcb-menu').querySelectorAll('.gcb-option').forEach(o => o.classList.remove('active'));
+  optionEl.classList.add('active');
+  document.getElementById('relChipLabel').textContent = label;
+  closeAllChipMenus();
+  relationFilter(val);
+}
+
+/* ── Relationship Guide ── */
+const REL_GUIDE = [
+  // ── Existing relations in this alert ──
+  { key:'LoginTo',          color:'#2C66DD', icon:'🔐', name:'LoginTo',          desc:'A user or service account authenticated and established a session on a target service, device, or application. This represents an identity-based login event captured from authentication logs.' },
+  { key:'AccessedFrom',     color:'#f97316', icon:'🌐', name:'AccessedFrom',     desc:'A user session or activity originated from this source IP address. This edge traces the network origin of the session, useful for identifying geographic anomalies or VPN/proxy usage.' },
+  { key:'AccessedFile',     color:'#7c3aed', icon:'📁', name:'AccessedFile',     desc:'An entity performed a file operation (read, write, download, upload, or modify) on a file-hosting service such as SharePoint, OneDrive, or a network share. Tracks data access and exfiltration patterns.' },
+  { key:'CommunicatedWith', color:'#DD1616', icon:'📡', name:'CommunicatedWith', desc:'A device or IP address established network communication (TCP/UDP connection, DNS query, or HTTP request) with an external domain or host. This edge is critical for identifying command-and-control (C2) callbacks and data exfiltration channels.' },
+  { key:'ResolvedTo',       color:'#198019', icon:'📌', name:'ResolvedTo',       desc:'An IP address was mapped to a specific device or hostname through DNS resolution or DHCP lease records. This edge links network-layer addresses to physical or virtual endpoints in the environment.' },
+  { key:'TRIGGERED_BY',     color:'#DD1616', icon:'⚡', name:'Triggered By',     desc:'A detection rule or correlation alert was triggered due to the suspicious behavior or anomalous activity of this entity. This edge connects an alert to the primary entity responsible for the triggering event.' },
+  { key:'DETECTED_ON',      color:'#FABB34', icon:'🔍', name:'Detected On',      desc:'The alert or detection event was observed on this service, platform, or system. This edge links an alert to the infrastructure component where the suspicious activity was recorded.' },
+  { key:'ISSUED',           color:'#0891b2', icon:'📜', name:'Issued',           desc:'An identity provider (e.g., Azure AD, Okta) issued an authentication token, OAuth credential, or certificate to an entity, granting it access to downstream services and resources.' },
+  // ── Process relations ──
+  { key:'ExecutedOn',       color:'#7c3aed', icon:'▶️', name:'ExecutedOn',       desc:'A process or binary was executed on a specific device or endpoint. Tracks which programs ran on which hosts, essential for identifying malicious execution chains.' },
+  { key:'SpawnedBy',        color:'#7c3aed', icon:'🔗', name:'SpawnedBy',        desc:'A child process was spawned by a parent process. Maps the process tree to detect suspicious process chains such as Word spawning PowerShell or cmd.exe launching encoded scripts.' },
+  { key:'ParentOf',         color:'#7c3aed', icon:'🌳', name:'ParentOf',         desc:'A parent process created a child process. The inverse of SpawnedBy — used to trace process lineage from the originating process downward through the execution tree.' },
+  // ── Identity & Ownership relations ──
+  { key:'MemberOf',         color:'#2C66DD', icon:'👥', name:'MemberOf',         desc:'A user or service account is a member of a security group, distribution list, or organizational unit. Tracks identity-to-group membership relevant for privilege analysis.' },
+  { key:'BelongsTo',        color:'#2C66DD', icon:'🏷️', name:'BelongsTo',        desc:'An entity (device, IP, service) is owned by or assigned to a specific user, department, or organizational unit. Maps asset ownership for accountability.' },
+  { key:'OwnedBy',          color:'#2C66DD', icon:'👤', name:'OwnedBy',          desc:'A resource, application, or device is owned or managed by a specific user or service account. Identifies the responsible party for an asset.' },
+  // ── Privilege relations ──
+  { key:'EscalatedTo',      color:'#FF5900', icon:'⬆️', name:'EscalatedTo',      desc:'A user or process escalated privileges to a higher-level account or role. Detects lateral movement and privilege escalation attempts such as local admin elevation or token impersonation.' },
+  { key:'GrantedAccess',    color:'#FF5900', icon:'🔓', name:'GrantedAccess',    desc:'An identity provider or administrator granted access permissions, roles, or entitlements to an entity. Tracks permission changes that could indicate unauthorized access provisioning.' },
+  // ── Data Movement relations ──
+  { key:'DownloadedFrom',   color:'#D14900', icon:'⬇️', name:'DownloadedFrom',   desc:'An entity downloaded data or files from an external or internal source. Tracks inbound data transfers that may include malware delivery or unauthorized content retrieval.' },
+  { key:'UploadedTo',       color:'#D14900', icon:'⬆️', name:'UploadedTo',       desc:'An entity uploaded data or files to a cloud service, external server, or removable media. Critical for detecting data exfiltration and unauthorized data transfer to external destinations.' },
+  { key:'ExfiltratedTo',    color:'#DD1616', icon:'🚨', name:'ExfiltratedTo',    desc:'Sensitive data was transferred to an unauthorized external destination. This high-severity edge indicates confirmed or suspected data exfiltration via network, cloud, or physical channels.' },
+  // ── Email relations ──
+  { key:'SentTo',           color:'#0891b2', icon:'📤', name:'SentTo',           desc:'An email was sent from one entity to another. Tracks outbound email communication relevant for phishing campaigns, social engineering, and insider threat email patterns.' },
+  { key:'ReceivedFrom',     color:'#0891b2', icon:'📥', name:'ReceivedFrom',     desc:'An email was received by an entity from a sender. Tracks inbound email for phishing detection, malicious attachment delivery, and business email compromise (BEC) analysis.' },
+  { key:'ContainedAttachment', color:'#0891b2', icon:'📎', name:'ContainedAttachment', desc:'An email contained a file attachment. Links email messages to attached files for tracking malware delivery, macro-enabled documents, and executable payloads.' },
+  // ── System Configuration relations ──
+  { key:'ModifiedRegistry', color:'#D14900', icon:'🔧', name:'ModifiedRegistry', desc:'A process or user modified a Windows registry key or value. Tracks persistence mechanisms, startup entries, and configuration changes commonly used by malware for persistence.' },
+  { key:'CreatedService',   color:'#D14900', icon:'⚙️', name:'CreatedService',   desc:'A process or user installed a new system service or scheduled task. Detects persistence techniques, backdoor installation, and unauthorized service creation on endpoints.' },
+  { key:'InstalledOn',      color:'#D14900', icon:'💿', name:'InstalledOn',      desc:'A software package, driver, or update was installed on a device. Tracks software deployment events for detecting unauthorized installations or trojanized updates.' },
+  // ── Network relations ──
+  { key:'ConnectedVia',     color:'#198019', icon:'🔌', name:'ConnectedVia',     desc:'An entity connected to a network resource through a specific network interface, VPN tunnel, or gateway. Maps the network path used for the connection.' },
+  { key:'TunneledThrough',  color:'#198019', icon:'🕳️', name:'TunneledThrough',  desc:'Network traffic was encapsulated through a tunnel (VPN, SSH tunnel, DNS tunnel, or ICMP tunnel). Detects covert communication channels used to bypass network security controls.' },
+  { key:'ProxiedBy',        color:'#198019', icon:'🔀', name:'ProxiedBy',        desc:'Network traffic was routed through a proxy server, load balancer, or anonymization service. Identifies traffic obfuscation and the actual origin behind proxied connections.' }
+];
+
+function toggleRelGuide(event) {
+  event.stopPropagation();
+  const popup = document.getElementById('relGuidePopup');
+  if (popup.classList.contains('show')) { popup.classList.remove('show'); return; }
+
+  let html = '<div class="rel-guide-hdr">⟷ Relationship Guide <span class="rg-close" onclick="document.getElementById(\'relGuidePopup\').classList.remove(\'show\')">&times;</span></div>';
+  html += '<div class="rel-guide-list">';
+  REL_GUIDE.forEach(r => {
+    html += `<div class="rel-guide-item" style="cursor:default;">
+      <span style="font-size:16px;line-height:1;flex-shrink:0;">${r.icon}</span>
+      <div style="flex:1;min-width:0;">
+        <div class="rel-guide-name">${r.name}</div>
+        <div class="rel-guide-text">${r.desc}</div>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  popup.innerHTML = html;
+
+  // Position above the button, aligned to left edge of button
+  const btn = event.currentTarget;
+  const rect = btn.getBoundingClientRect();
+  popup.style.left = rect.left + 'px';
+  popup.style.right = 'auto';
+  popup.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+  popup.style.top = 'auto';
+  popup.classList.add('show');
+  const popRect = popup.getBoundingClientRect();
+  if (popRect.right > window.innerWidth - 12) {
+    popup.style.left = 'auto';
+    popup.style.right = '12px';
+  }
+  const popRect2 = popup.getBoundingClientRect();
+  if (popRect2.top < 8) {
+    popup.style.bottom = 'auto';
+    popup.style.top = '8px';
+    popup.querySelector('.rel-guide-list').style.maxHeight = (rect.top - 60) + 'px';
+  }
+
+  setTimeout(() => {
+    document.addEventListener('click', function closeGuide(e) {
+      if (!popup.contains(e.target) && e.target !== btn) {
+        popup.classList.remove('show');
+        document.removeEventListener('click', closeGuide);
+      }
+    });
+  }, 10);
+}
+
+function relationFilter(type) {
+  const svgLines = document.querySelectorAll('#graphSvg > line');
+  const edgeBtns = document.querySelectorAll('#graphSvg .edge-info-btn');
+  const allNodes = document.querySelectorAll('#graphSvg g.graph-node');
+
+  if (type === 'all') {
+    svgLines.forEach(l => { l.style.opacity = ''; l.style.pointerEvents = ''; });
+    edgeBtns.forEach(b => { b.style.opacity = ''; b.style.pointerEvents = ''; });
+    allNodes.forEach(n => { n.style.opacity = '1'; n.style.pointerEvents = 'auto'; });
+    showToast('⟷', 'Showing all relations');
+    return;
+  }
+
+  // Collect node IDs connected by matching edges
+  const connectedIds = new Set();
+  svgLines.forEach(line => {
+    const label = line.getAttribute('data-label');
+    const src = line.getAttribute('data-source');
+    const tgt = line.getAttribute('data-target');
+    if (label === type) {
+      line.style.opacity = '1';
+      line.style.pointerEvents = '';
+      if (src) connectedIds.add(src);
+      if (tgt) connectedIds.add(tgt);
+    } else {
+      line.style.opacity = '0.08';
+      line.style.pointerEvents = 'none';
+    }
+  });
+
+  edgeBtns.forEach(btn => {
+    const label = btn.getAttribute('data-label');
+    if (label === type) {
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = '';
+    } else {
+      btn.style.opacity = '0.08';
+      btn.style.pointerEvents = 'none';
+    }
+  });
+
+  allNodes.forEach(n => {
+    const eid = n.getAttribute('data-entity');
+    if (connectedIds.has(eid)) {
+      n.style.opacity = '1';
+      n.style.pointerEvents = 'auto';
+    } else {
+      n.style.opacity = '0.15';
+      n.style.pointerEvents = 'none';
+    }
+  });
+
+  showToast('⟷', 'Filtering: ' + type + ' (' + connectedIds.size + ' nodes)');
+}
+
 function pickTimeChip(optionEl, label) {
   optionEl.closest('.gcb-menu').querySelectorAll('.gcb-option').forEach(o => o.classList.remove('active'));
   optionEl.classList.add('active');
@@ -8305,7 +9350,7 @@ function legendFilter(type) {
   activeLegendType = type;
   // Sync the chip label
   const chipLabel = document.getElementById('entityChipLabel');
-  const labels = { all:'All Entities', user:'Users', device:'Devices', ip:'IPs', service:'Services', process:'Processes', alert:'Alerts' };
+  const labels = { all:'All Entities', user:'Users', asset:'Assets', ip:'IP Addresses', domain:'Domains', process:'File/Process', account:'Accounts', location:'Location', alert:'Alerts' };
   if (chipLabel) chipLabel.textContent = labels[type] || type;
 
   const allNodes = document.querySelectorAll('#graphSvg g.graph-node');
@@ -8327,10 +9372,12 @@ function legendFilter(type) {
   const typeMap = {
     'alert': ['alert-'],
     'user': ['user-'],
-    'device': ['dev-'],
+    'asset': ['dev-'],
     'ip': ['ip-'],
-    'service': ['svc-'],
-    'process': ['proc-']
+    'account': ['svc-'],
+    'domain': ['domain-'],
+    'process': ['proc-'],
+    'location': ['loc-']
   };
   const prefixes = typeMap[type] || [];
 
