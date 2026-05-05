@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Log360 — Alert Investigation V5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/v4-variables.css">
+<link rel="stylesheet" href="css/v4-inline.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/list-view.css">
+<link rel="stylesheet" href="css/detail-view.css">
+<link rel="stylesheet" href="css/tabs.css">
+<link rel="stylesheet" href="css/graph.css">
+<link rel="stylesheet" href="css/entity-slider.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     APP HEADER (Log360 global header — rendered from Header.svg)
+     ═══════════════════════════════════════════════════════════════════════ -->
+<header class="app-header">
+  <img src="SVG/Header.svg" alt="Log360" class="app-header-img"/>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SECONDARY NAV (Alerts module sub-tabs)
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="alerts-subnav">
+  <div class="asn-left">
+    <a class="asn-tab" data-view="list" id="asnSocOverview">SOC Overview</a>
+    <a class="asn-tab active" data-view="list" id="asnExplorer">Explorer</a>
+    <a class="asn-tab" data-view="list" id="asnIncident">Incident</a>
+    <span id="breadcrumb" class="breadcrumb" style="display:none;">
+      <a onclick="showListView()" class="bc-link">Explorer</a>
+      <span class="bc-sep">›</span>
+      <span class="bc-current" id="bcCurrent">Impossible Travel Attack</span>
+    </span>
+  </div>
+  <div class="asn-right">
+    <button class="asn-btn" title="Export As">
+      <svg class="asn-ic" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 11V12.5C2 13.0523 2.44772 13.5 3 13.5H11C11.5523 13.5 12 13.0523 12 12.5V11M7 1V9M7 9L4 6M7 9L10 6" stroke="#272D42" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Export As</span>
+      <span class="asn-caret">▾</span>
+    </button>
+    <button class="asn-btn asn-btn-icon" title="Copy link">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 1.5h5l3 3v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z" stroke="#272D42" stroke-width="1.1" fill="none"/><path d="M8 1.5v3h3" stroke="#272D42" stroke-width="1.1" fill="none"/></svg>
+    </button>
+    <span class="asn-sep"></span>
+    <button class="asn-btn" id="addAlertProfileBtn" title="Add Alert Profile">
+      <svg class="asn-ic" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="#272D42" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span>Add Alert Profile</span>
+    </button>
+    <span class="asn-sep"></span>
+    <button class="asn-btn" id="manageAlertProfilesBtn" title="Manage Alert Profiles">
+      <svg class="asn-ic" width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2" stroke="#272D42" stroke-width="1.1" fill="none"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="#272D42" stroke-width="1.1" stroke-linecap="round"/></svg>
+      <span>Manage Alert Profiles</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     LIST VIEW (Img_1) — landing
+     ═══════════════════════════════════════════════════════════════════════ -->
+<main id="listView" class="app-main list-view">
+  <!-- Left insights sidebar -->
+  <aside class="lv-sidebar" id="lvSidebar"></aside>
+
+  <!-- Right content -->
+  <section class="lv-content">
+    <div class="lv-toolbar-top">
+      <div class="lv-tt-left">
+        <span class="lv-label">Select view</span>
+        <button class="lv-select" id="lvViewSelect">
+          <span>Active Alerts</span>
+          <svg class="lv-caret-ic" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="lv-icon-btn lv-funnel" title="Filter" id="lvFilterBtn" aria-label="Filter">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M5 5h14l-5.5 7v6l-3 1.5v-7.5L5 5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="lv-tt-right">
+        <button class="lv-icon-btn lv-daterange" id="lvDateRangeBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <rect x="2" y="3" width="10" height="9" rx="1.2" stroke="currentColor" stroke-width="1.1" fill="none"/>
+            <path d="M2 6h10M5 1.6v2.4M9 1.6v2.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+          </svg>
+          <span>Last 7 Days</span>
+          <svg class="lv-caret-ic" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="lv-toolbar-actions">
+      <div class="lv-ta-left lv-ta-disabled">
+        <button class="lv-act lv-act-pill" type="button" aria-label="Add to Incident">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M7 1.5V12.5M1.5 7H12.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          </svg>
+          <span>Add to Incident</span>
+        </button>
+        <button class="lv-act lv-act-pill" type="button" aria-label="Assignee">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2.5 12V11.2C2.5 10.2 3.3 9.4 4.3 9.4H9.7C10.7 9.4 11.5 10.2 11.5 11.2V12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Assignee</span>
+        </button>
+        <button class="lv-act lv-act-pill" type="button" aria-label="Delete">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M2.5 3.5h9M5.5 6v4M8.5 6v4M3.5 3.5h7v8.5a.7.7 0 01-.7.7H4.2a.7.7 0 01-.7-.7V3.5zM5.5 2h3a.5.5 0 01.5.5V3.5H5V2.5a.5.5 0 01.5-.5z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Delete</span>
+        </button>
+        <button class="lv-act lv-act-icon" type="button" aria-label="More">
+          <svg width="16" height="4" viewBox="0 0 16 4" fill="currentColor" aria-hidden="true">
+            <circle cx="2" cy="2" r="1.1"/><circle cx="8" cy="2" r="1.1"/><circle cx="14" cy="2" r="1.1"/>
+          </svg>
+        </button>
+      </div>
+      <div class="lv-ta-right">
+        <span class="lv-pager">1 - 25 of 100</span>
+        <button class="lv-nav-btn lv-nav-disabled" type="button" aria-label="Previous">
+          <svg width="8" height="13" viewBox="0 0 8 13" fill="none" aria-hidden="true">
+            <path d="M6.5 1L1 6.5L6.5 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="lv-nav-btn" type="button" aria-label="Next">
+          <svg width="8" height="13" viewBox="0 0 8 13" fill="none" aria-hidden="true">
+            <path d="M1.5 1L7 6.5L1.5 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="lv-vsep"></span>
+        <div class="lv-view-group">
+          <button class="lv-view-btn active" type="button" aria-label="Card view">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <rect x="1" y="1" width="5" height="3.5" rx="0.5" fill="currentColor"/>
+              <rect x="8" y="1" width="5" height="3.5" rx="0.5" fill="currentColor"/>
+              <rect x="1" y="5.5" width="5" height="3" rx="0.5" fill="currentColor"/>
+              <rect x="8" y="5.5" width="5" height="3" rx="0.5" fill="currentColor"/>
+              <rect x="1" y="9.5" width="5" height="3.5" rx="0.5" fill="currentColor"/>
+              <rect x="8" y="9.5" width="5" height="3.5" rx="0.5" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="lv-view-btn" type="button" aria-label="List view">
+            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden="true">
+              <path d="M3 3.5h11M3 7h11M3 10.5h11" stroke="currentColor" stroke-linecap="round"/>
+              <circle cx="1" cy="3.5" r="0.6" fill="currentColor"/>
+              <circle cx="1" cy="7" r="0.6" fill="currentColor"/>
+              <circle cx="1" cy="10.5" r="0.6" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="lv-view-btn" type="button" aria-label="Column view">
+            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden="true">
+              <path d="M7 3.5h8M7 10.5h8M7 6.5h4.5M7 8.5h4.5" stroke="currentColor" stroke-linecap="round"/>
+              <rect x="1" y="2" width="4" height="4" rx="0.5" stroke="currentColor"/>
+              <rect x="1" y="8" width="4" height="4" rx="0.5" stroke="currentColor"/>
+            </svg>
+          </button>
+        </div>
+        <span class="lv-vsep"></span>
+        <button class="lv-nav-btn" type="button" aria-label="Refresh">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M13 7a6 6 0 11-1.76-4.24L13 4.5M13 1v3.5h-3.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="lv-nav-btn" type="button" aria-label="More options">
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Alerts table -->
+    <div class="lv-table-wrap">
+      <table class="lv-table">
+        <thead>
+          <tr>
+            <th class="col-cb"><input type="checkbox" class="lv-cb"/></th>
+            <th class="col-react"><span class="caret-sm">▾</span></th>
+            <th class="col-details">Details <span class="sort-arrow">↑</span></th>
+            <th class="col-time">Time Generated</th>
+            <th class="col-assignee">Assignee</th>
+            <th class="col-status">Status</th>
+            <th class="col-remediation">Remediation</th>
+          </tr>
+        </thead>
+        <tbody id="alertsTableBody"><!-- populated by JS --></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     DETAIL VIEW (Img_2 .. Img_5) — alert investigation
+     ═══════════════════════════════════════════════════════════════════════ -->
+<main id="detailView" class="app-main detail-view" style="display:none;">
+
+  <!-- Left meta panel (sticky) -->
+  <aside class="dv-sidebar" id="dvSidebar"></aside>
+
+  <!-- Right content -->
+  <section class="dv-content">
+    <!-- Tabs row -->
+    <div class="dv-tabs-row">
+      <nav class="dv-tabs" id="dvTabs">
+        <a class="dv-tab active" data-tab="overview">Overview</a>
+        <a class="dv-tab" data-tab="investigation">Investigation</a>
+        <a class="dv-tab" data-tab="attack-vector">Attack Vector</a>
+        <a class="dv-tab" data-tab="timeline">Timeline</a>
+        <a class="dv-tab" data-tab="remediation">Recommendation</a>
+        <a class="dv-tab" data-tab="integration">Investigation Activity</a>
+        <a class="dv-tab" data-tab="activity">Activity</a>
+      </nav>
+      <div class="dv-tabs-actions">
+        <button class="dv-action-icon adopt" title="Mark as adopted" aria-label="Adopt">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 10h3v11H2zM21.5 10.4c-.3-.3-.7-.4-1.1-.4h-5.6l.7-3.2c.2-.8 0-1.6-.5-2.2-.5-.6-1.2-.9-2-.9-.4 0-.8.2-1.1.5-.3.3-.4.7-.4 1.1 0 .8-.2 1.5-.5 2-.4.7-1 1.3-1.6 1.8L7.6 11H7v10h11.4c.5 0 1-.2 1.4-.5.4-.3.6-.8.7-1.3l1.4-7c.1-.6 0-1.2-.4-1.6z"/></svg>
+        </button>
+        <button class="dv-action-btn"><span aria-hidden="true">＋</span> Add to Investigation</button>
+        <button class="dv-action-btn primary">
+          <svg width="12" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+          Run Playbook
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab panels -->
+    <div class="dv-tab-panels">
+      <div class="dv-panel active" id="panel-overview"></div>
+      <div class="dv-panel" id="panel-investigation"></div>
+      <div class="dv-panel" id="panel-attack-vector"></div>
+      <div class="dv-panel" id="panel-timeline"></div>
+      <div class="dv-panel" id="panel-remediation"></div>
+      <div class="dv-panel" id="panel-integration"></div>
+      <div class="dv-panel" id="panel-activity"></div>
+    </div>
+  </section>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script src="js/data.js"></script>
+<!-- V4 attack-vector data + modules (ported) -->
+<script src="js/data/display-config.js"></script>
+<script src="js/data/entities.js"></script>
+<script src="js/v4-extras.js"></script>
+<script src="js/modules/utils.js"></script>
+<script src="js/modules/graph-summary.js"></script>
+<script src="js/modules/graph-core.js"></script>
+<script src="js/modules/entity-slider.js"></script>
+<script src="js/modules/entity-quick-card.js"></script>
+<script src="js/modules/graph-filter.js"></script>
+<script src="js/modules/context-menu.js"></script>
+<script src="js/modules/graph-nodes.js"></script>
+<script src="js/modules/action-panel.js"></script>
+<script src="js/graph.js"></script>
+<script src="js/list-view.js"></script>
+<script src="js/detail-view.js"></script>
+<script src="js/sidebar.js"></script>
+<script src="js/tabs.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
