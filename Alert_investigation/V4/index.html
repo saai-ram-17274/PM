@@ -2582,6 +2582,10 @@ a { text-decoration: none; }
 .entity-risk-card-lbl { font-size:9.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; }
 .graph-node.highlighted circle { stroke-width:4 !important; filter:drop-shadow(0 0 10px var(--purple)); }
 
+/* Active-focus: clearly distinguish the currently-clicked entity from its neighbors */
+.graph-node.active-focus { transform-box: fill-box; transform-origin: center; transform: scale(1.25); transition: transform .25s ease; }
+.graph-node.active-focus circle { stroke:#FFC600 !important; stroke-width:3 !important; }
+
 /* ═══ ENTITY SLIDER — ENHANCED SOC COMPONENTS ═══ */
 
 /* ── Risk Summary Card (Hero) ── */
@@ -7420,9 +7424,29 @@ function openEntitySlider(entityId) {
   const e = ENTITIES[entityId];
   if (!e) return;
   // highlight node
-  document.querySelectorAll('.graph-node').forEach(n => n.style.opacity = '0.4');
+  document.querySelectorAll('.graph-node').forEach(n => { n.style.opacity = '0.4'; n.classList.remove('active-focus'); });
   const activeNode = document.querySelector(`.graph-node[data-entity="${entityId}"]`);
-  if (activeNode) activeNode.style.opacity = '1';
+  if (activeNode) { activeNode.style.opacity = '1'; activeNode.classList.add('active-focus'); }
+  // Dim edges and edge labels not connected to this entity; highlight neighbors
+  document.querySelectorAll('line.graph-edge-mal, line.graph-edge-norm').forEach(line => {
+    // Skip hidden edges so they don't reveal phantom neighbors
+    if (line.style.display === 'none' || line.getAttribute('style')?.includes('display:none')) return;
+    const ls = line.getAttribute('data-source');
+    const lt = line.getAttribute('data-target');
+    if (ls === entityId || lt === entityId) {
+      line.style.opacity = '1';
+      const neighborId = ls === entityId ? lt : ls;
+      const neighbor = document.querySelector(`.graph-node[data-entity="${neighborId}"]`);
+      if (neighbor) neighbor.style.opacity = '1';
+    } else {
+      line.style.opacity = '0.12';
+    }
+  });
+  document.querySelectorAll('.edge-info-btn').forEach(btn => {
+    const bs = btn.getAttribute('data-source');
+    const bt = btn.getAttribute('data-target');
+    btn.style.opacity = (bs === entityId || bt === entityId) ? '1' : '0.2';
+  });
   // set title and type badge
   document.getElementById('edsTitle').textContent = e.modalTitle;
   const badge = document.getElementById('edsTypeBadge');
@@ -7522,8 +7546,42 @@ function populateActionsDropdown(type, name) {
 function closeEntitySlider() {
   closeActionPanel();
   document.getElementById('graphContainer').classList.remove('slider-open');
-  // unhighlight
-  document.querySelectorAll('.graph-node').forEach(n => n.style.opacity = '1');
+  restoreGraphHighlights();
+}
+
+/* Reset all per-element opacity / stroke styles applied by entity / edge focus.
+   If `focusEntityId` is given, dim non-related nodes/edges around that entity
+   (same logic as the entity-click highlight). */
+function restoreGraphHighlights(focusEntityId) {
+  // Always clear residual inline styles first
+  document.querySelectorAll('.graph-node').forEach(n => { n.style.opacity = ''; n.classList.remove('active-focus'); });
+  document.querySelectorAll('line.graph-edge-mal, line.graph-edge-norm').forEach(line => { line.style.opacity = ''; line.style.strokeWidth = ''; });
+  document.querySelectorAll('.edge-info-btn').forEach(btn => { btn.style.opacity = ''; });
+
+  if (!focusEntityId) return;
+
+  // Re-apply entity focus dim
+  document.querySelectorAll('.graph-node').forEach(n => n.style.opacity = '0.4');
+  const activeNode = document.querySelector(`.graph-node[data-entity="${focusEntityId}"]`);
+  if (activeNode) { activeNode.style.opacity = '1'; activeNode.classList.add('active-focus'); }
+  document.querySelectorAll('line.graph-edge-mal, line.graph-edge-norm').forEach(line => {
+    if (line.style.display === 'none' || line.getAttribute('style')?.includes('display:none')) return;
+    const ls = line.getAttribute('data-source');
+    const lt = line.getAttribute('data-target');
+    if (ls === focusEntityId || lt === focusEntityId) {
+      line.style.opacity = '1';
+      const neighborId = ls === focusEntityId ? lt : ls;
+      const neighbor = document.querySelector(`.graph-node[data-entity="${neighborId}"]`);
+      if (neighbor) neighbor.style.opacity = '1';
+    } else {
+      line.style.opacity = '0.12';
+    }
+  });
+  document.querySelectorAll('.edge-info-btn').forEach(btn => {
+    const bs = btn.getAttribute('data-source');
+    const bt = btn.getAttribute('data-target');
+    btn.style.opacity = (bs === focusEntityId || bt === focusEntityId) ? '1' : '0.2';
+  });
 }
 
 function openEntityModal(entityId) {
@@ -8420,12 +8478,33 @@ function showEdgeRelation(evt, el) {
     return m[d.type] || 'Entity';
   };
 
-  // Highlight the edge on graph
-  document.querySelectorAll('.graph-node').forEach(n => n.style.opacity = '0.35');
+  // Highlight the edge on graph — dim other nodes, edges, and edge labels
+  document.querySelectorAll('.graph-node').forEach(n => n.style.opacity = '0.25');
   const srcNode = document.querySelector(`.graph-node[data-entity="${source}"]`);
   const tgtNode = document.querySelector(`.graph-node[data-entity="${target}"]`);
   if (srcNode) srcNode.style.opacity = '1';
   if (tgtNode) tgtNode.style.opacity = '1';
+
+  // Dim all edges (lines) and edge info buttons (labels)
+  document.querySelectorAll('line.graph-edge-mal, line.graph-edge-norm').forEach(line => {
+    const ls = line.getAttribute('data-source');
+    const lt = line.getAttribute('data-target');
+    if (ls === source && lt === target) {
+      line.style.opacity = '1';
+      line.style.strokeWidth = '2.5';
+    } else {
+      line.style.opacity = '0.12';
+    }
+  });
+  document.querySelectorAll('.edge-info-btn').forEach(btn => {
+    const bs = btn.getAttribute('data-source');
+    const bt = btn.getAttribute('data-target');
+    if (bs === source && bt === target) {
+      btn.style.opacity = '1';
+    } else {
+      btn.style.opacity = '0.2';
+    }
+  });
 
   // Set slider header
   document.getElementById('edsTitle').textContent = label;
@@ -10391,6 +10470,10 @@ function collapseCategory(parentEid, category) {
   });
   drillDownGroups[parentEid][category] = [];
   setTimeout(() => updateGraphSummary(), 400);
+  // Restore graph highlight state — if the parent's slider is still open, re-focus it;
+  // otherwise just clear any lingering dim from a previous edge/entity click.
+  const sliderOpen = document.getElementById('graphContainer')?.classList.contains('slider-open');
+  restoreGraphHighlights(sliderOpen && ctxEntityId === parentEid ? parentEid : null);
 }
 
 /* Recursively collapse ALL children of a node (all categories) */
