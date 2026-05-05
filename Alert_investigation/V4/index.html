@@ -1873,6 +1873,18 @@ a { text-decoration: none; }
   font-size:10px; font-weight:700; color:var(--text-dim); text-transform:uppercase;
   letter-spacing:.6px; margin-bottom:10px;
 }
+.ers-time-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px; border-radius:10px;
+  background:rgba(59,130,246,.1); color:#60a5fa;
+  border:1px solid rgba(59,130,246,.2);
+  font-size:9.5px; font-weight:600; letter-spacing:.2px;
+  text-transform:none;
+}
+.ers-dist-window {
+  font-size:9.5px; font-weight:600; color:#60a5fa;
+  margin-top:2px; letter-spacing:.2px;
+}
 .ers-grid {
   display:grid; grid-template-columns:1fr 1fr; gap:10px;
 }
@@ -8472,7 +8484,10 @@ function showEdgeRelation(evt, el) {
   // ── Connection Properties section ──
   if (attr.count != null) {
     html += `<div class="ers-section">`;
-    html += `<div class="ers-section-title">Connection Properties</div>`;
+    html += `<div class="ers-section-title" style="display:flex;align-items:center;justify-content:space-between;">`;
+    html += `  <span>Connection Properties</span>`;
+    html += `  <span class="ers-time-badge">⏱ Last 1 hour</span>`;
+    html += `</div>`;
     html += `<div class="ers-grid">`;
     // Count metric
     html += `<div class="ers-metric">`;
@@ -8536,7 +8551,8 @@ function showEdgeRelation(evt, el) {
 
       html += `<div class="ers-dist-card">`;
       html += `<div class="ers-dist-header">`;
-      html += `  <div class="ers-dist-title"><span style="font-size:14px;">📊</span> Event Distribution</div>`;
+      html += `  <div><div class="ers-dist-title"><span style="font-size:14px;">📊</span> Event Distribution</div>`;
+      html += `  <div class="ers-dist-window">⏱ Last 1 hour</div></div>`;
       html += `  <div style="text-align:right;"><div class="ers-dist-total">${total.toLocaleString()}</div>`;
       html += `  <div class="ers-dist-total-label">Total Events</div></div>`;
       html += `</div>`;
@@ -8600,7 +8616,10 @@ function showEdgeRelation(evt, el) {
         severity = 'normal'; devLabel = 'Within normal range'; devIcon = '●';
       }
       html += `<div class="ers-baseline-card">`;
-      html += `<div class="ers-bl-header"><span style="font-size:13px;">📊</span> Behavioral Baseline</div>`;
+      html += `<div class="ers-bl-header" style="display:flex;align-items:center;justify-content:space-between;">`;
+      html += `  <span><span style="font-size:13px;">📊</span> Behavioral Baseline</span>`;
+      html += `  <span class="ers-time-badge">⏱ Last 1 hour</span>`;
+      html += `</div>`;
       html += `<div class="ers-bl-bar-row">`;
       html += `  <span class="ers-bl-label">Expected</span>`;
       html += `  <div class="ers-bl-track"><div class="ers-bl-fill expected" style="width:${expPct}%"></div></div>`;
