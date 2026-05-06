@@ -2,7 +2,7 @@
 
 > **Generated**: 24 Apr 2026 | **Updated**: 05 May 2026 (v4 — edge relation slider data mapping)  
 > **Purpose**: Maps every field in the V4 Alert Investigation prototype to its backend source. Fields marked ❌ have been removed from the prototype. Section 6 documents **fields to remove**. **Section 7** documents the **Edge Relation Slider**. Section 8 documents **new SOC enrichments**.  
-> **v4 Note**: Edge relation slider added with 7 data-enriched sections. All fields validated against backend code. See Section 9 changelog for details.
+> **v4 Note**: Edge relation slider added with 7 data-enriched sections. All fields validated against backend code. See Section 8 changelog for details.
 
 ---
 
@@ -168,6 +168,8 @@
 
 > **ES Query**: `EVENTID=4740 AND (CALLER=<user> OR USERNAME=<user>)` → order by TIME desc
 
+> **Why SOC needs this**: Repeated lockouts = brute force or misconfigured service account. Source computer reveals lateral movement origin.  ·  **MITRE**: T1110 (Brute Force)
+
 ### 1.16 Password Change / Reset History
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -179,6 +181,8 @@
 
 > **ES Query**: `(EVENTID IN [4723,4724,4726] AND TARGET=<user>) OR (HOSTTYPE=azure_active_directory AND OPERATION IN ['change user password','reset user password'] AND TARGET=<user>)`
 
+> **Why SOC needs this**: Unauthorized password resets are a top account takeover indicator. Correlating AD + M365 gives full hybrid view.  ·  **MITRE**: T1098 (Account Manipulation)
+
 ### 1.17 Group Membership Changes
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -188,6 +192,8 @@
 | Source | ✅ | ES `HOSTNAME` / `IPADDRESS` | Origin |
 
 > **ES Query**: `(CATEGORY='GROUP MODIFIED' AND (USERNAME=<user> OR TARGET=<user>)) OR (HOSTTYPE=azure_active_directory AND OPERATION IN ['Add member to group','Remove member from group'] AND TARGET_NAME=<user>)`
+
+> **Why SOC needs this**: Adding a user to Domain Admins / Global Admins = highest severity privilege escalation.  ·  **MITRE**: T1078 / T1098
 
 ### 1.18 Mailbox Forwarding Rules
 | Field | Status | Source | How to Get |
@@ -200,6 +206,8 @@
 
 > **ES Query**: `HOSTTYPE=exchange_online AND OPERATION IN ['new-inboxrule','set-inboxrule','set-mailbox'] AND (TARGET=<user> OR CALLER=<user>)`
 
+> **Why SOC needs this**: #1 BEC technique — attackers create forwarding rules to silently exfiltrate email. Detection prevents data loss.  ·  **MITRE**: T1114.003 (Email Forwarding Rule)
+
 ### 1.19 Recent Application Access
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -209,6 +217,8 @@
 | Result | ✅ | ES `STATUS` | Success/Failure |
 
 > **ES Query**: `HOSTTYPE=azure_active_directory AND RECORD_TYPE_L=15 AND CALLER=<user>` → group by `APPLICATIONNAME`
+
+> **Why SOC needs this**: Shows which cloud apps a compromised user accessed — critical for understanding blast radius.  ·  **MITRE**: T1550
 
 ### 1.20 Privileged Role Assignment Changes
 | Field | Status | Source | How to Get |
@@ -223,6 +233,8 @@
 > **Prototype**: `user-m-henderson` uses `emptyText` (no role changes); `user-admin` has actual timeline data.
 
 ---
+
+> **Why SOC needs this**: Global Admin assignment = highest severity indicator. PIM events show just-in-time escalation.  ·  **MITRE**: T1098.003
 
 ## 2. DEVICE Entity (`dev-ws045` — CORP-WS-045)
 
@@ -294,6 +306,8 @@
 
 > **Implementation**: Query `ELALogCollectors` table → resolve `STATUS` via `LCStatus` enum → display status badge
 
+> **Why SOC needs this**: A disconnected/crashed agent = blind spot. SOC must know if telemetry from this device is trustworthy and current.  ·  **MITRE**: — (Visibility Gap)
+
 ### 2.9 GPO Applied to Device
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -304,6 +318,8 @@
 | Scope | ✅ | OU chain via `APFDiscADOrganizationalUnitDetails` | GP_LINK resolution |
 
 > **Implementation**: 1) Find device OU from `APFDiscADComputerDetails.PARENT` 2) Read `GP_LINK` from OU chain 3) Resolve GPO DNs to `APFDiscADGPODetails`
+
+> **Why SOC needs this**: GPOs enforce security — shows if password policies, audit policies, AppLocker, or firewall rules are applied.  ·  **MITRE**: T1484
 
 ### 2.10 Security Event Summary (24h Counters)
 
@@ -327,6 +343,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 > **Implementation**: Single ES multi-aggregation query with `HOSTNAME=<device> AND TIME>now-24h`, group by `EVENTID` buckets.  
 > **UI**: Grouped by risk — "Needs Review" (red dot) and "Normal" (green dot). Event IDs shown as subtle secondary text next to each label. Flagged rows show count in red. No editorial annotations (removed `⚠`, `"unsigned"`, `"from unknown sources"` etc).
 
+> **Why SOC needs this**: At-a-glance security heatmap grouped by risk. "Needs Review" items (failed logons, service installs, scheduled tasks) are always worth investigating if count > 0.  ·  **MITRE**: — (Posture Assessment)
+
 ### 2.11 USB Device Events
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -337,6 +355,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | Event ID | ✅ | ES `EVENTID` | Raw |
 
 > **ES Query**: `HOSTNAME=<device> AND EVENTID IN [6416,6420,6422,6423,6424]`
+
+> **Why SOC needs this**: USB exfiltration detection — USB on a server is almost always suspicious. File operations on removable media = data theft.  ·  **MITRE**: T1052 / T1091
 
 ### 2.12 Scheduled Task Events
 | Field | Status | Source | How to Get |
@@ -350,6 +370,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 > **ES Query**: `HOSTNAME=<device> AND EVENTID IN [4698,4699,4700,4701,4702]`
 
 ---
+
+> **Why SOC needs this**: MITRE T1053 — scheduled tasks are the #1 persistence mechanism used by APTs and ransomware.  ·  **MITRE**: T1053
 
 ## 3. IP Entity (`ip-tor`, `ip-internal`)
 
@@ -465,6 +487,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `(SOURCE_IP=<ip> OR DEST_IP=<ip>) AND HOSTTYPE IN [fortinet,paloalto,checkpoint,sonicwall,sophos]` → aggregate by `ACTION`
 
+> **Why SOC needs this**: Shows if an IP is being actively blocked or still allowed — critical for containment verification.  ·  **MITRE**: — (Containment Verification)
+
 ### 3.11 DNS Query History
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -476,6 +500,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `(DNS_QUERY IS NOT NULL AND (SOURCE_IP=<ip> OR DEST_IP=<ip>)) OR (EVENTID=22 AND QueryResults CONTAINS <ip>)`
 
+> **Why SOC needs this**: Connect IPs to domains — reveals C2 domains, DGA patterns, DNS tunneling.  ·  **MITRE**: T1071.004 (DNS C2)
+
 ### 3.12 IDS/IPS Alerts
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -486,6 +512,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | Source | ✅ | ES `HOSTNAME` | Reporting device |
 
 > **ES Query**: `(SOURCE_IP=<ip> OR DEST_IP=<ip>) AND IDS_NAME IS NOT NULL` → aggregate by `IDS_NAME`, `SEVERITYLEVEL`
+
+> **Why SOC needs this**: IDS/IPS hits directly indicate exploit attempts, malware delivery, or C2 communication from this IP.  ·  **MITRE**: — (Attack Detection)
 
 ### 3.13 VPN Session History (`ip-internal` only)
 | Field | Status | Source | How to Get |
@@ -502,6 +530,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 > **ES Query**: `(REMOTE_IP=<ip> OR PRIVATE_IP=<ip> OR SOURCE_IP=<ip>) AND (VPN_NAME IS NOT NULL OR ACTION IN ['tunnel-up','tunnel-down'])`
 
 ---
+
+> **Why SOC needs this**: VPN sessions show if attacker accessed network remotely; data volume reveals exfiltration.  ·  **MITRE**: T1133
 
 ## 4. SERVICE Entity (`svc-azure-ad`, `svc-sharepoint`, `svc-winupdatesvc`, `svc-oauth`)
 
@@ -584,6 +614,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `HOSTTYPE=azure_active_directory AND OPERATION IN ['consent to application','add delegated permission grant']`
 
+> **Why SOC needs this**: Illicit consent grants are the primary OAuth phishing vector — an attacker tricks a user into granting permissions to a malicious app.  ·  **MITRE**: T1550.001
+
 ### 4.14 Admin Activity on Service (`svc-azure-ad`)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -594,6 +626,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | Source IP | ✅ | ES `IPADDRESS` | Origin |
 
 > **ES Query**: Per-workload: `WORKLOAD_S=<service_workload> AND RECORD_TYPE_L IN [1,8]`
+
+> **Why SOC needs this**: Admin-level changes (mailbox delegation, site admin modifications) are high-impact actions attackers use for persistence.  ·  **MITRE**: T1098
 
 ### 4.15 WMI Persistence Events (`svc-winupdatesvc`)
 | Field | Status | Source | How to Get |
@@ -607,6 +641,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 > **ES Query**: `EVENTID IN [19,20,21] AND HOSTTYPE=sysmon AND HOSTNAME=<device>`
 
 ---
+
+> **Why SOC needs this**: MITRE T1546.003 — WMI subscriptions survive reboots, execute on login/boot, and are missed by most analysts.  ·  **MITRE**: T1546.003
 
 ## 5. PROCESS Entity (`proc-powershell`)
 
@@ -704,6 +740,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `EVENTID=7 AND HOSTTYPE=sysmon AND (IMAGE=<process_path> OR PROCESSGUID=<guid>)`
 
+> **Why SOC needs this**: MITRE T1574 (DLL Sideloading/Injection) — unsigned or anomalous DLL loads indicate process hijacking.  ·  **MITRE**: T1574
+
 ### 5.14 DNS Queries by Process (Sysmon Event 22) — `proc-powershell`
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -712,6 +750,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | Query Status | ✅ | ES `QUERY_STATUS` | Success/Failure |
 
 > **ES Query**: `EVENTID=22 AND HOSTTYPE=sysmon AND IMAGE=<process_path>`
+
+> **Why SOC needs this**: Directly shows which domains a suspicious process contacted — reveals C2, DGA, and exfil endpoints by process.  ·  **MITRE**: T1071
 
 ### 5.15 Named Pipe Events (Sysmon Event 17/18) — `proc-powershell`
 | Field | Status | Source | How to Get |
@@ -722,6 +762,8 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 > **ES Query**: `EVENTID IN [17,18] AND HOSTTYPE=sysmon AND IMAGE=<process_path>`
 
 ---
+
+> **Why SOC needs this**: Named pipes are used by Cobalt Strike, PsExec, and Mimikatz for IPC/lateral movement.  ·  **MITRE**: T1570 / T1021
 
 ## 6. Summary: What to Remove from Prototype
 
@@ -913,369 +955,11 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 ---
 
-## 8. NEW SOC Enrichments — Additions to Prototype
-
-> All items below are **verified as implementable** with existing backend data and are now **implemented in the V3 prototype**.
->
-> **Implementation Status (Prototype)**:
-> | Entity Instance | New Sections Added | Status |
-> |---|---|---|
-> | `user-m-henderson` | accountLockouts, passwordHistory, groupMembershipChanges, mailboxForwarding, recentAppAccess, privilegedRoleChanges | ✅ Done |
-> | `user-admin` | accountLockouts, passwordHistory, groupMembershipChanges, mailboxForwarding, recentAppAccess, privilegedRoleChanges | ✅ Done |
-> | `dev-ws045` | agentStatus, gpoApplied, securityEventSummary, usbDeviceEvents, scheduledTasks | ✅ Done |
-> | `ip-tor` | firewallSummary, dnsHistory, idsAlerts | ✅ Done |
-> | `ip-internal` | vpnSessions | ✅ Done |
-> | `svc-azure-ad` | oauthConsentGrants, adminActivity | ✅ Done |
-> | `svc-winupdatesvc` | wmiEvents | ✅ Done |
-> | `proc-powershell` | dllLoads, processDnsQueries, namedPipes | ✅ Done |
-> | `svc-sharepoint` | — (N/A: DLP/file entity, no additional enrichments needed) | — |
-> | `proc-oauth` | — (N/A: token entity, process-level enrichments don't apply) | — |
->
-> **Tab Configuration**: Updated for all 5 entity types. User entity has new "Changes" tab; Device entity has new "Persistence" tab; IP/Service/Process tabs expanded.
-> **Summary Cards**: `buildQuickCardRows()` updated with new enrichment summary rows for all entity types.
-
-### Legend (Additional)
-
-| Symbol | Meaning |
-|--------|---------|
-| ✅ YES | Data exists — ready to implement |
-| 🟡 PARTIAL | Some data available, needs extra parsing or aggregation |
-| 🔧 BUILDABLE | Raw data exists in ES; needs new aggregation query (no new parsing) |
-
----
-
-### 8.1 USER Entity — New Sections
-
-#### 6.1.1 Account Lockout History
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Locked User | ✅ | ES `EVENTID=4740` | Windows-ActiveDirectory.xml → `usr_userMOD` rule | Brute-force indicator |
-| Source Computer | ✅ | ES `CALLER_WORKSTATION` | Windows.xml parser regex for 4740 | Reveals attack origin |
-| Locking DC | ✅ | ES `HOSTNAME` | DC that processed the lockout | Locates domain controller |
-| Time | ✅ | ES `TIME` / `_zl_timestamp` | Raw | Timeline correlation |
-> **v3 Note**: `Note` field removed from prototype — was fabricated analyst commentary, not from any log source.
-**ES Query**: `EVENTID=4740 AND (CALLER=<user> OR USERNAME=<user>)` → order by TIME desc
-
-**Why SOC needs this**: Repeated lockouts = brute force or misconfigured service account. Source computer reveals lateral movement origin.
-
-#### 6.1.2 Password Change / Reset History
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Operation | ✅ | ES `EVENTID` 4723/4724/4726 | Windows-ActiveDirectory.xml dedicated rules | Distinguishes self vs admin reset |
-| Caller | ✅ | ES `CALLER` | Who performed the change | Detects unauthorized resets |
-| Target | ✅ | ES `TARGET` / `USERNAME` | Whose password changed | Identifies victim account |
-| M365 Operations | ✅ | ES M365 Entra audit | `ENTRA_RECENT_PASSWORD_CHANGE_ACTIVITIES` report | Hybrid AD + cloud coverage |
-
-> **v3 Note**: `Note` field removed from prototype — was fabricated analyst commentary.
-
-**ES Query**: `(EVENTID IN [4723,4724,4726] AND TARGET=<user>) OR (HOSTTYPE=azure_active_directory AND OPERATION IN ['change user password','reset user password','reset password (by admin)'] AND TARGET=<user>)`
-
-**Why SOC needs this**: Unauthorized password resets are a top account takeover indicator. Correlating AD + M365 gives full hybrid view.
-
-#### 6.1.3 Group Membership Changes
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Group Name | ✅ | ES `RESOURCE` / `RESOURCE_NAME` | Windows AD events 4728/4732/4756/4729/4733/4757 + Entra_Graph.xml NR8/NR9 | Privilege escalation detection |
-| Operation | ✅ | ES `OPERATION` / `CATEGORY=GROUP MODIFIED` | Parser categorization | Add vs Remove |
-| Caller | ✅ | ES `CALLER` | Who made the change | Attribution |
-| M365 Cloud Groups | ✅ | `ENTRA_RECENTLY_ADDED_MEMBERS_TO_GROUP` report | Entra PredefinedReports.xml | Cloud-native groups |
-
-> **v3 Note**: `Note` field removed from prototype. Editorial annotations like "(compromised session)" also removed — not from log data.
-
-**ES Query**: `(CATEGORY='GROUP MODIFIED' AND (USERNAME=<user> OR TARGET=<user>)) OR (HOSTTYPE=azure_active_directory AND OPERATION IN ['Add member to group','Remove member from group'] AND TARGET_NAME=<user>)`
-
-**Why SOC needs this**: Adding a user to Domain Admins / Global Admins = highest severity privilege escalation.
-
-#### 6.1.4 Mailbox Forwarding Rules
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Rule Operation | ✅ | ES `OPERATION` | new-inboxrule, set-inboxrule, set-mailbox | BEC #1 indicator |
-| Target Mailbox | ✅ | ES `TARGET` (ObjectId) | Exchange.xml parser | Whose mailbox was modified |
-| Parameters (ForwardTo) | ✅ | ES `PARAMETERS` JSON | Raw parameters contain forwarding addresses | Exfiltration destination |
-| Creator IP | ✅ | ES `IPADDRESS` | Source IP of the rule creator | Attribution |
-
-> **v3 Note**: `Note` field removed. Editorial annotations like "⚠" and "(Tor proxy)" suffix removed — not from log data. `Rule Name` and `ForwardTo` are inside `PARAMETERS` JSON — extractable but not top-level indexed fields.
-
-**ES Query**: `HOSTTYPE=exchange_online AND OPERATION IN ['new-inboxrule','set-inboxrule','set-mailbox'] AND (TARGET=<user> OR CALLER=<user>)`
-
-**Why SOC needs this**: #1 BEC technique — attackers create forwarding rules to silently exfiltrate email. Detection prevents data loss.
-
-#### 6.1.5 Recent Application Access
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| App Name | ✅ | ES `APPLICATIONNAME` | Entra_Graph.xml parses `appDisplayName` | Blast radius assessment |
-| Access Time | ✅ | ES `TIME` | Sign-in event timestamp | Timeline |
-| Source IP | ✅ | ES `IPADDRESS` | Sign-in source | Location correlation |
-| Risk Level | ✅ | ES `RISK_LEVEL` | `riskLevelDuringSignIn` from Entra | Auto risk flag |
-
-**ES Query**: `HOSTTYPE=azure_active_directory AND RECORD_TYPE_L=15 AND CALLER=<user>` → group by `APPLICATIONNAME`
-
-**Why SOC needs this**: Shows which cloud apps a compromised user accessed — critical for understanding blast radius.
-
-#### 6.1.6 Privileged Role Assignment Changes
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Role Name | ✅ | ES `RESOURCE` / `RESOURCE_NAME` | Entra_Graph.xml NR6/NR7 extracts `Role.DisplayName` | Privilege escalation |
-| Operation | ✅ | ES `OPERATION` | Add/Remove member to role | Direction of change |
-| Target User | ✅ | ES `TARGET_NAME` | Who was assigned/removed | Identifies elevated user |
-| PIM Activity | ✅ | ES `OPERATION='update role setting in pim'` | Entra PredefinedReports.xml | JIT admin access |
-| IS_PRIVILEGED flag | ✅ | `APFDiscAADRoleDefinitionDetails.IS_PRIVILEGED` | DB table | Built-in privilege classification |
-
-> **v3 Note**: `user-m-henderson` has `emptyText` for this section: "No privileged role changes found — m.henderson has no Azure AD admin role assignments." This demonstrates the empty-state pattern for sections with no data.
-
-**ES Query**: `HOSTTYPE=azure_active_directory AND OPERATION IN ['Add member to role','Remove member from role'] AND (TARGET_NAME=<user> OR CALLER=<user>)`
-
-**Why SOC needs this**: Global Admin assignment = highest severity indicator. PIM events show just-in-time escalation.
-
----
-
-### 8.2 DEVICE Entity — New Sections
-
-#### 6.2.1 Agent Status & Health
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Agent Status | ✅ | `ELALogCollectors.STATUS` | `LCStatus.getLogCollectorStatus()` — 40+ statuses (RUNNING, STOPPED, CRASHED, NOT_COMMUNICATING, etc.) | Visibility gap detection |
-| Collector ID | ✅ | `ELALogCollectors.COLLECTOR_ID` | DB query | Links device to collector |
-| Last Sync | ✅ | Sync timestamp from `L3CSyncServlet` | Derived from last successful sync | Staleness indicator |
-
-**Implementation**: Query `ELALogCollectors` table → resolve `STATUS` via `LCStatus` enum → display status badge
-
-**Why SOC needs this**: A disconnected/crashed agent = blind spot. SOC must know if telemetry from this device is trustworthy and current.
-
-#### 6.2.2 GPO Applied to Device
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| GPO Name | ✅ | `APFDiscADGPODetails.DISPLAY_NAME` | Join: Computer → OU → `GP_LINK` → GPO table | Security policy enforcement |
-| GPO Flags | ✅ | `APFDiscADGPODetails.GPO_FLAGS` | Enabled/Disabled/User-disabled/Computer-disabled | Enforcement status |
-| Created / Changed | ✅ | `APFDiscADGPODetails.WHEN_CREATED` / `WHEN_CHANGED` | Raw DB | Policy freshness |
-| Computer Extensions | ✅ | `APFDiscADGPODetails.GPO_COMP_EXTENSIONS` | Raw DB | Applied policy types |
-
-**Implementation**: 1) Find device OU from `APFDiscADComputerDetails.PARENT` 2) Read `GP_LINK` from `APFDiscADOrganizationalUnitDetails` for OU chain 3) Resolve GPO DNs to `APFDiscADGPODetails`
-
-**Why SOC needs this**: GPOs enforce security — shows if password policies, audit policies, AppLocker, or firewall rules are applied.
-
-#### 6.2.3 Security Event Summary (24h Counters)
-
-Grouped by risk relevance. Event IDs shown as secondary detail per row.
-
-**Needs Review** (any count > 0 is actionable):
-| Field | Event ID | Status | Source | How to Get | SOC Value |
-|-------|----------|--------|--------|------------|-----------|
-| Failed Logons | 4625 | 🔧 | ES aggregation | `EVENTID=4625 AND HOSTNAME=<device> AND TIME>now-24h` → count | Brute force indicator |
-| Service Installs | 7045 | 🔧 | ES aggregation | `EVENTID=7045 AND HOSTNAME=<device>` → count | Rogue service / persistence |
-| Scheduled Tasks | 4698 | 🔧 | ES aggregation | `EVENTID=4698 AND HOSTNAME=<device>` → count | Persistence mechanism |
-
-**Normal** (volume counters for context):
-| Field | Event ID | Status | Source | How to Get | SOC Value |
-|-------|----------|--------|--------|------------|-----------|
-| Process Creation | 4688 | 🔧 | ES aggregation | `EVENTID=4688 AND HOSTNAME=<device>` → count | Execution volume |
-| Object Access | 4663 | 🔧 | ES aggregation | `EVENTID=4663 AND HOSTNAME=<device>` → count | Data access volume |
-| Privilege Use | 4672 | 🔧 | ES aggregation | `EVENTID=4672 AND HOSTNAME=<device>` → count | Admin activity volume |
-| Policy Changes | 4719 | 🔧 | ES aggregation | `EVENTID=4719 AND HOSTNAME=<device>` → count | Tampering indicator |
-
-**Implementation**: Single ES multi-aggregation query with `HOSTNAME=<device> AND TIME>now-24h`, group by `EVENTID` buckets.
-
-**Why SOC needs this**: At-a-glance security heatmap grouped by risk. "Needs Review" items (failed logons, service installs, scheduled tasks) are always worth investigating if count > 0. "Normal" items provide execution volume context.
-
-#### 6.2.4 USB Device Events
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Device Description | ✅ | ES `DEVICEDESCRIPTION` | Windows.xml parses Events 6416/6420/6422/6423/6424 | Device identification |
-| Device Class | ✅ | ES `DEVICECLASSNAME` | Windows.xml parser | USB storage vs HID vs other |
-| User | ✅ | ES `USERNAME` | Who plugged in | Attribution |
-| Time | ✅ | ES `TIME` | When connected | Timeline |
-| File Operations | ✅ | ES `OBJECTTYPE=removable` events | USB file read/write/delete from report definitions | Data exfiltration evidence |
-
-**ES Query**: `HOSTNAME=<device> AND EVENTID IN [6416,6420,6422,6423,6424]` + file-level: `OBJECTTYPE=removable AND HOSTNAME=<device>`
-
-**Why SOC needs this**: USB exfiltration detection — USB on a server is almost always suspicious. File operations on removable media = data theft.
-
-#### 6.2.5 Scheduled Task Events
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Task Name | ✅ | ES `SERVICENAME` | Windows.xml parser for 4698-4702 | Identifies persistence tasks |
-| Task Content (XML) | ✅ | ES `TASKCONTENTNEW` | Full task XML with command/exec action | Reveals malicious commands |
-| Operation | ✅ | ES `EVENTID` | 4698=Created, 4699=Deleted, 4700=Enabled, 4701=Disabled | Action type |
-| User | ✅ | ES `USERNAME` / `SECURITYID` | Who created/modified the task | Attribution |
-
-**ES Query**: `HOSTNAME=<device> AND EVENTID IN [4698,4699,4700,4701,4702]`
-
-**Why SOC needs this**: MITRE T1053 — scheduled tasks are the #1 persistence mechanism used by APTs and ransomware.
-
----
-
-### 8.3 IP Entity — New Sections
-
-#### 6.3.1 Firewall Action Summary
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Allow Count | ✅ | ES `ACTION=allow` aggregation | Fortinet/PaloAlto/CheckPoint/SonicWall — all parse `ACTION` field | Traffic volume |
-| Deny Count | ✅ | ES `ACTION=deny` aggregation | Same | Block effectiveness |
-| Drop Count | ✅ | ES `ACTION=drop` aggregation | PaloAlto: `drop`, `drop-all-packets`, `reset-*` | Active blocking |
-| Top Ports | ✅ | ES `DEST_PORT` aggregation | Per-IP port distribution | Unusual port detection |
-| Protocols | ✅ | ES `PROTOCOL_TR` aggregation | TCP/UDP/ICMP breakdown | Protocol anomaly |
-
-**ES Query**: `(SOURCE_IP=<ip> OR DEST_IP=<ip>) AND HOSTTYPE IN [fortinet,paloalto,checkpoint,sonicwall,sophos]` → aggregate by `ACTION`
-
-**Why SOC needs this**: Shows if an IP is being actively blocked or still allowed — critical for containment verification.
-
-#### 6.3.2 DNS Query History
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Domain Queried | ✅ | ES `DNS_QUERY` / `QueryName` | Fortinet DNS + Windows-DNS-Server + Sysmon Event 22 | C2 domain discovery |
-| Record Type | ✅ | ES `DNS_RECORD_TYPE` | Lookup table in Eventlog-Lookup.xml (A/AAAA/MX/CNAME) | Attack technique id |
-| Resolution | ✅ | ES `QueryResults` / `RESOLVED_IP` | Sysmon Event 22 / DNS server logs | IP-to-domain mapping |
-| Source Process | ✅ | ES `IMAGE` (Sysmon 22) | Process that made the DNS query | Process attribution |
-
-**ES Query**: `(DNS_QUERY IS NOT NULL AND (SOURCE_IP=<ip> OR DEST_IP=<ip>)) OR (EVENTID=22 AND QueryResults CONTAINS <ip>)`
-
-**Why SOC needs this**: Connect IPs to domains — reveals C2 domains, DGA patterns, DNS tunneling.
-
-#### 6.3.3 VPN Session History
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| VPN User | ✅ | ES `VPN_USERNAME` | Fortinet VPN + PaloAlto GlobalProtect + Cisco AnyConnect | Session owner |
-| VPN Name | ✅ | ES `VPN_NAME` | Tunnel/portal name | Tunnel identification |
-| Action | ✅ | ES `ACTION` (tunnel-up/tunnel-down) | Fortinet-Reports.xml filter | Session start/end |
-| Remote IP | ✅ | ES `REMOTE_IP` | Source IP of VPN connection | GeoIP correlation |
-| Assigned IP | ✅ | ES `PRIVATE_IP` | Tunnel IP assigned to client | Internal mapping |
-| Duration | ✅ | ES `DURATION` | Session length | Anomaly detection |
-| Bytes Sent/Received | ✅ | ES `SENT_BYTES` / `RECEIVED_BYTES` | Data transferred | Exfil volume |
-
-**ES Query**: `(REMOTE_IP=<ip> OR PRIVATE_IP=<ip> OR SOURCE_IP=<ip>) AND (VPN_NAME IS NOT NULL OR ACTION IN ['tunnel-up','tunnel-down'])`
-
-**Why SOC needs this**: VPN sessions show if attacker accessed network remotely; data volume reveals exfiltration.
-
-#### 6.3.4 IDS/IPS Alerts
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Signature Name | ✅ | ES `IDS_NAME` | Fortinet/PaloAlto/FirePower — all parse IDS fields | Attack identification |
-| Threat ID | ✅ | ES `THREAT_ID` | PaloAlto unique threat IDs | Signature lookup |
-| Malware Type | ✅ | ES `MALWARETYPE` | PaloAlto classification | Malware family |
-| Severity | ✅ | ES `SEVERITYLEVEL` | IDS severity rating | Prioritization |
-| Action Taken | ✅ | ES `ACTION` | allow/deny/drop/alert/reset | Was it blocked? |
-
-**ES Query**: `(SOURCE_IP=<ip> OR DEST_IP=<ip>) AND IDS_NAME IS NOT NULL` → aggregate by `IDS_NAME`, `SEVERITYLEVEL`
-
-**Why SOC needs this**: IDS/IPS hits directly indicate exploit attempts, malware delivery, or C2 communication from this IP.
-
----
-
-### 8.4 SERVICE Entity — New Sections
-
-#### 6.4.1 OAuth App Consent Grants
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Operation | ✅ | ES `OPERATION` | `Consent to application`, `Add delegated permission grant`, `Remove delegated permission grant` | Consent graph |
-| App Name | ✅ | ES `TARGET` / `TARGET_NAME` | Entra PredefinedReports: `ENTRA_RECENTLY_GRANTED_CONSENT_TO_APPLICATION` | Identifies suspicious apps |
-| Consenting User | ✅ | ES `CALLER` | Who approved the consent | Attribution |
-| Source IP | ✅ | ES `IPADDRESS` | Where consent was granted from | Location verification |
-
-**ES Query**: `HOSTTYPE=azure_active_directory AND OPERATION IN ['consent to application','add delegated permission grant'] AND (CALLER=<user> OR TARGET=<app_name>)`
-
-**Why SOC needs this**: Illicit consent grants are the primary OAuth phishing vector — an attacker tricks a user into granting permissions to a malicious app.
-
-#### 6.4.2 Admin Activity on Service
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Exchange Admin Ops | 🟡 | ES `WORKLOAD_S=ExchangeOnline AND RECORD_TYPE_L=1` | set-mailbox, add-mailboxpermission, etc. | Mailbox privilege changes |
-| SharePoint Admin Ops | ✅ | ES SharePoint admin events | `sitecollectionadminadded`, `sitecollectionadminremoved` | Site takeover detection |
-| Azure AD Admin Ops | ✅ | ES Entra directory audit | `CATEGORY=RoleManagement` | Identity admin changes |
-| Teams Admin Ops | ✅ | ES Teams admin events | `teamsadminaction`, `teamstenantsettingchanged` | Policy changes |
-
-**ES Query**: Per-workload: `WORKLOAD_S=<service_workload> AND RECORD_TYPE_L IN [1,8]`
-
-**Why SOC needs this**: Admin-level changes (mailbox delegation, site admin modifications) are high-impact actions attackers use for persistence.
-
----
-
-### 8.5 PROCESS Entity — New Sections
-
-#### 6.5.1 DLL/Module Loads (Sysmon Event 7)
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| DLL Path | ✅ | ES `IMAGE_LOADED` | Sysmon.xml Event 7 parser | DLL sideloading detection |
-| Signed | ✅ | ES `SIGNED` | Boolean from Sysmon | Unsigned = suspicious |
-| Signature Status | ✅ | ES `SIGNATURE_STATUS` | Valid/Invalid/Expired | Tampered binaries |
-| Hash | ✅ | ES `HASHES` | MD5/SHA1/SHA256 from Sysmon | VirusTotal lookup |
-| Company / Product | ✅ | ES `COMPANY` / `PRODUCT` | PE metadata from Sysmon | Legitimacy check |
-
-**ES Query**: `EVENTID=7 AND HOSTTYPE=sysmon AND (IMAGE=<process_path> OR PROCESSGUID=<guid>)`
-
-**Why SOC needs this**: MITRE T1574 (DLL Sideloading/Injection) — unsigned or anomalous DLL loads indicate process hijacking.
-
-#### 6.5.2 DNS Queries by Process (Sysmon Event 22)
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Domain Queried | ✅ | ES `QUERY_NAME` | Sysmon.xml Event 22 parser | C2 domain identification |
-| Query Results | ✅ | ES `QUERY_RESULTS` | Resolved IPs | IP correlation |
-| Query Status | ✅ | ES `QUERY_STATUS` | Success/Failure | DNS sinkhole detection |
-| Process | ✅ | ES `IMAGE` | Process that made the query | Attribution |
-
-**ES Query**: `EVENTID=22 AND HOSTTYPE=sysmon AND IMAGE=<process_path>`
-
-**Why SOC needs this**: Directly shows which domains a suspicious process contacted — reveals C2, DGA, and exfil endpoints by process.
-
-#### 6.5.3 Named Pipe Events (Sysmon Event 17/18)
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| Pipe Name | ✅ | ES `PIPE_NAME` | Sysmon.xml Event 17/18 parser | C2 channel detection |
-| Event Type | ✅ | ES `EVENT_TYPE` | CreatePipe / ConnectPipe | Lateral movement |
-| Process | ✅ | ES `IMAGE` | Process using the pipe | Attribution |
-
-**ES Query**: `EVENTID IN [17,18] AND HOSTTYPE=sysmon AND IMAGE=<process_path>`
-
-**Why SOC needs this**: Named pipes are used by Cobalt Strike, PsExec, and Mimikatz for IPC/lateral movement.
-
-#### 6.5.4 WMI Persistence Events (Sysmon Event 19/20/21)
-| Field | Status | Source | How to Get | SOC Value |
-|-------|--------|--------|------------|-----------|
-| WMI Name | ✅ | ES `WMI_NAME` | Sysmon.xml Event 19/20/21 parser | Persistence identification |
-| WMI Query | ✅ | ES `WMI_QUERY` | EventFilter trigger condition | Trigger reveal |
-| Destination | ✅ | ES `DESTINATION` | EventConsumer command/script | Payload detection |
-| Operation | ✅ | ES `OPERATION` | Created/Deleted/Modified | Change tracking |
-
-**ES Query**: `EVENTID IN [19,20,21] AND HOSTTYPE=sysmon AND HOSTNAME=<device>`
-
-**Why SOC needs this**: MITRE T1546.003 — WMI subscriptions survive reboots, execute on login/boot, and are missed by most analysts.
-
----
-
-### 8.6 Summary — New Enrichment Additions
-
-| # | Entity | Section | Status | Priority | MITRE |
-|---|--------|---------|--------|----------|-------|
-| 1 | User | Account Lockout History | ✅ | High | T1110 (Brute Force) |
-| 2 | User | Password Change/Reset History | ✅ | High | T1098 (Account Manipulation) |
-| 3 | User | Group Membership Changes | ✅ | Critical | T1078/T1098 |
-| 4 | User | Mailbox Forwarding Rules | ✅ | Critical | T1114.003 (Email Forwarding Rule) |
-| 5 | User | Recent Application Access | ✅ | Medium | T1550 |
-| 6 | User | Privileged Role Assignments | ✅ | Critical | T1098.003 |
-| 7 | Device | Agent Status & Health | ✅ | High | — (Visibility Gap) |
-| 8 | Device | GPO Applied | ✅ | Medium | T1484 |
-| 9 | Device | Security Event Summary (24h) | 🔧 | High | — (Posture Assessment) |
-| 10 | Device | USB Device Events | ✅ | High | T1052/T1091 |
-| 11 | Device | Scheduled Task Events | ✅ | Critical | T1053 |
-| 12 | IP | Firewall Action Summary | ✅ | High | — (Containment Verification) |
-| 13 | IP | DNS Query History | ✅ | High | T1071.004 (DNS C2) |
-| 14 | IP | VPN Session History | ✅ | High | T1133 |
-| 15 | IP | IDS/IPS Alerts | ✅ | Critical | — (Attack Detection) |
-| 16 | Service | OAuth App Consent Grants | ✅ | Critical | T1550.001 |
-| 17 | Service | Admin Activity | 🟡 | Medium | T1098 |
-| 18 | Process | DLL/Module Loads | ✅ | High | T1574 |
-| 19 | Process | DNS Queries by Process | ✅ | High | T1071 |
-| 20 | Process | Named Pipe Events | ✅ | High | T1570/T1021 |
-| 21 | Process | WMI Persistence Events | ✅ | Critical | T1546.003 |
-
-**Total: 21 new enrichments — 18 ✅, 2 🟡, 1 🔧 — all implemented in prototype**
-
----
-
-## 9. ALERT Entity (`alert-impossible-travel` and 13 other alert nodes)
+## 8. ALERT Entity (`alert-impossible-travel` and 13 other alert nodes)
 
 > **Added 06 May 2026**: Documents the alert-as-entity slider that opens when an alert node on the attack graph (or the originating alert chip) is clicked. All 14 alert IDs in `ENTITIES` (alert-impossible-travel, alert-arp-spoofing-1/2, alert-oauth-token, alert-app-consent, alert-enc-powershell, alert-sam-access, alert-c2-conn, alert-sus-service, alert-tor-conn, alert-data-exfil, alert-bulk-download, alert-sensitive-access, alert-admin-offhours) follow the same section schema.
 
-### 9.1 Alert Details
+### 8.1 Alert Details
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Alert Name | ✅ | `ITSAlertProfileConfigurations.DISPLAY_NAME` | DB lookup by alert profile id |
@@ -1286,28 +970,28 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 | MITRE Tactic / Technique | 🟡 | `ITSDetectionRuleVsMitre` | Only RULE-type alerts have MITRE mapping; correlation/anomaly alerts may be empty |
 | Source Device / IP | ✅ | Underlying log event fields | Resolved from triggering events |
 
-### 9.2 Trigger Conditions
+### 8.2 Trigger Conditions
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Rule Logic Summary | ✅ | `ITSAlertProfileConfigurations.RULE_DEFINITION` | Stored rule expression / criteria |
 | Threshold / Window | ✅ | Rule definition fields | e.g., "5 failures in 10 min" |
 | Matched Field Values | ✅ | Triggering event JSON | Raw event payload at alert generation time |
 
-### 9.3 Affected Entities
+### 8.3 Affected Entities
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Entity ID, Type, Display Name | ✅ | Graph node / `ENTITY_DISPLAY` | Same node lookup as edge slider |
 | Role in Alert (source / target / correlated) | ✅ | Edge data + alert metadata | Derived at render time |
 | **Clickable** | ✅ | `openEntitySlider(id)` | Click any affected entity to pivot |
 
-### 9.4 Correlated Alerts
+### 8.4 Correlated Alerts
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Related Alert IDs | ✅ | `ITSAlertCorrelationGroup` | Alerts grouped by correlation rule / shared entity |
 | Time Delta | ✅ | `ITSAlertHistory.LAST_OCCURRED` diff | Computed |
 | Severity / Status of related | ✅ | Same as 9.1 fields | Per-alert lookup |
 
-## 10. Render Status Audit (06 May 2026)
+## 9. Render Status Audit (06 May 2026)
 
 > **Why this section exists**: Prior versions of this doc described several sections (Compliance Impact, Vulnerabilities, CIS Misconfigurations, Installed Software, Cloud Asset & MDM, Related Campaigns & IOCs, Configuration Issues, Service Dependencies, Related Tokens, and per-entity Remediation & Playbooks) that the slider does **not** render. Those subsections have now been deleted from this doc to keep the mapping aligned with what the prototype actually surfaces.
 >
@@ -1317,7 +1001,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 > 2. **Label regex `/recommendation|remediation/i`** — also catches `responseActions` (label "Recommended Response Actions")
 > 3. **Tab routing** — only sections listed in the entity type's `tabConfig` are rendered
 
-### 10.1 Universally filtered (still defined in code, not surfaced)
+### 9.1 Universally filtered (still defined in code, not surfaced)
 
 | Section key | Where defined in code | Why filtered |
 |-------------|----------------------|--------------|
@@ -1325,7 +1009,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 | `responseActions` | `user-m-henderson`, `user-admin`, `alert-impossible-travel` | Label "Recommended Response Actions" matches `/recommendation/i` |
 | `complianceImpact` | `user-m-henderson` only | Not in `tabConfig.user` (orphaned) |
 
-### 10.2 Tab-config sections with no data in any entity (auto-hide)
+### 9.2 Tab-config sections with no data in any entity (auto-hide)
 
 The renderer hides any tab whose sections are all empty. The keys below appear in `tabConfig` but no entity in V4 currently populates them:
 
@@ -1338,7 +1022,7 @@ The renderer hides any tab whose sections are all empty. The keys below appear i
 | process | `details`, `tokenAnomaly`, `tokenUsage`, `namedPipes`, `dllLoads`, `processDnsQueries`, `fileOperations` | Partial population |
 | alert | `details`, `processes`, `serviceTriggered`, `recentAlerts` | Response tab empty for `alert-impossible-travel` |
 
-### 10.3 Effective rendered section count per entity
+### 9.3 Effective rendered section count per entity
 
 | Entity | Sections defined | Sections rendered | Tabs visible |
 |--------|------------------|-------------------|--------------|
@@ -1357,7 +1041,7 @@ The renderer hides any tab whose sections are all empty. The keys below appear i
 
 ---
 
-## 11. Implementation Changelog
+## 10. Implementation Changelog
 
 | Date | Change | Entities Affected |
 |------|--------|-------------------|
@@ -1380,8 +1064,9 @@ The renderer hides any tab whose sections are all empty. The keys below appear i
 | 05 May 2026 | **Edge Relation Slider** — clicking edge icons opens right-side slider with enriched connection details. Added MITRE ATT&CK mapping, Detection Rule card, Connection Properties, Event Distribution chart (12-bucket sparkline, average line, peak marker), Behavioral Baseline (dual progress bars + pulsing deviation badge), Threat Intelligence, Geo Context, and Evidence panel (severity bar, findings chips, confidence meter) | Edge |
 | 05 May 2026 | Edge slider — flow-diagram entity nodes clickable (open entity detail slider); evidence converted from flat strings to structured `{ summary, findings[], confidence, rawLog }` for all 15 edges; removed View in Log Search button, Sample Log Entry section, Connected Entities section | Edge |
 | 05 May 2026 | Doc — added Section 7 (Edge Relation Slider) with 12 subsections | Doc |
-| 06 May 2026 | **ALERT Entity** — added Section 9 covering the 14 alert nodes (alertDetails, triggerConditions, affectedEntities, correlatedAlerts) | Doc/Alert |
+| 06 May 2026 | **ALERT Entity** — added Section 8 covering the 14 alert nodes (alertDetails, triggerConditions, affectedEntities, correlatedAlerts) | Doc/Alert |
 | 06 May 2026 | Section 4 header updated to include `svc-oauth`; added reclassification note above Section 5 (token sub-sections now describe the OAuth service, not a process) | Doc/Service |
 | 06 May 2026 | Removed sections that the slider does not render: Compliance Impact, Vulnerabilities, CIS Misconfigurations, Installed Software, Cloud Asset & MDM, Related Campaigns & IOCs, Configuration Issues, Service Dependencies, Related Tokens, and per-entity Remediation & Playbooks (universally filtered via `skipSections`) | Doc/All |
-| 06 May 2026 | **Render Status Audit** — added Section 10 covering universally filtered keys, tab-config sections with no data, and effective rendered-section counts per entity | Doc |
+| 06 May 2026 | **Render Status Audit** — added Section 9 covering universally filtered keys, tab-config sections with no data, and effective rendered-section counts per entity | Doc |
 | 06 May 2026 | Renumbered all subsections sequentially to fill gaps left by the deletions (Sections 1–5) | Doc |
+| 06 May 2026 | Merged Section 8 NEW SOC Enrichments into the respective entity sections — added "Why SOC needs this" + MITRE technique tag inline under each of the 21 enrichment subsections (1.15–1.20, 2.8–2.12, 3.10–3.13, 4.13–4.15, 5.13–5.15). Section 8 deleted (was pure duplication). Renumbered 9 → 8 (ALERT), 10 → 9 (Render Status Audit), 11 → 10 (Implementation Changelog) | Doc |
