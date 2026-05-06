@@ -560,7 +560,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 ---
 
-## 4. SERVICE Entity (`svc-azure-ad`, `svc-sharepoint`, `svc-winupdatesvc`)
+## 4. SERVICE Entity (`svc-azure-ad`, `svc-sharepoint`, `svc-winupdatesvc`, `svc-oauth`)
 
 ### 4.1 Risk Summary
 | Field | Status | Source | How to Get |
@@ -681,7 +681,9 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 ---
 
-## 5. PROCESS Entity (`proc-powershell`, `proc-oauth`)
+## 5. PROCESS Entity (`proc-powershell`)
+
+> **Note (27 Apr 2026)**: `proc-oauth` was reclassified from `process` to `service` (`svc-oauth`). Token-related sections (5.9–5.12) below remain valid as the field-level data mapping for the OAuth token service — they are now surfaced under the SERVICE entity rather than PROCESS.
 
 ### 5.1 Risk Summary
 | Field | Status | Source | How to Get |
@@ -738,7 +740,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 |-------|--------|--------|------------|
 | Process, PID, Command, MITRE | ✅ | Sysmon Event 1 filtered by `ParentProcessGuid` | Raw |
 
-### 5.9 Token Details (OAuth — `proc-oauth`)
+### 5.9 Token Details (OAuth — `svc-oauth`)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Token Type, Grant Type, Client App | 🟡 | M365 audit log OAuth consent events | Audit log captures consent action |
@@ -1353,7 +1355,54 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 
 ---
 
-## 9. Implementation Changelog
+## 9. ALERT Entity (`alert-impossible-travel` and 13 other alert nodes)
+
+> **Added 06 May 2026**: Documents the alert-as-entity slider that opens when an alert node on the attack graph (or the originating alert chip) is clicked. All 14 alert IDs in `ENTITIES` (alert-impossible-travel, alert-arp-spoofing-1/2, alert-oauth-token, alert-app-consent, alert-enc-powershell, alert-sam-access, alert-c2-conn, alert-sus-service, alert-tor-conn, alert-data-exfil, alert-bulk-download, alert-sensitive-access, alert-admin-offhours) follow the same section schema.
+
+### 9.1 Alert Details
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Alert Name | ✅ | `ITSAlertProfileConfigurations.DISPLAY_NAME` | DB lookup by alert profile id |
+| Alert Type | ✅ | `ITSAlertProfileConfigurations.ALERT_TYPE` | Correlation / Anomaly (UEBA) / Threat Intel / Rule |
+| Severity | ✅ | `ITSAlertProfileConfigurations.SEVERITY` | Critical / High / Medium / Low |
+| Status | ✅ | `ITSAlertHistory.STATUS` | Open / Acknowledged / Resolved / Closed |
+| First/Last Seen | ✅ | `ITSAlertHistory.FIRST_OCCURRED`, `LAST_OCCURRED` | Raw timestamps |
+| MITRE Tactic / Technique | 🟡 | `ITSDetectionRuleVsMitre` | Only RULE-type alerts have MITRE mapping; correlation/anomaly alerts may be empty |
+| Source Device / IP | ✅ | Underlying log event fields | Resolved from triggering events |
+
+### 9.2 Trigger Conditions
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Rule Logic Summary | ✅ | `ITSAlertProfileConfigurations.RULE_DEFINITION` | Stored rule expression / criteria |
+| Threshold / Window | ✅ | Rule definition fields | e.g., "5 failures in 10 min" |
+| Matched Field Values | ✅ | Triggering event JSON | Raw event payload at alert generation time |
+
+### 9.3 Affected Entities
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Entity ID, Type, Display Name | ✅ | Graph node / `ENTITY_DISPLAY` | Same node lookup as edge slider |
+| Role in Alert (source / target / correlated) | ✅ | Edge data + alert metadata | Derived at render time |
+| **Clickable** | ✅ | `openEntitySlider(id)` | Click any affected entity to pivot |
+
+### 9.4 Correlated Alerts
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Related Alert IDs | ✅ | `ITSAlertCorrelationGroup` | Alerts grouped by correlation rule / shared entity |
+| Time Delta | ✅ | `ITSAlertHistory.LAST_OCCURRED` diff | Computed |
+| Severity / Status of related | ✅ | Same as 9.1 fields | Per-alert lookup |
+
+### 9.5 Remediation & Playbooks
+| Field | Status | Source | How to Get |
+|-------|--------|--------|------------|
+| Verdict (Malicious / Suspicious / Benign / Resolved) | ✅ | `ITSAlertHistory.VERDICT` | Analyst classification |
+| Recommendations | ✅ | Static catalog keyed by alert type | `ALERT_REMEDIATION_CATALOG[alertType]` |
+| Playbooks (Run buttons) | ✅ | Static catalog | Same playbook engine as user/device entities |
+
+> **Tab grouping** (per `tabConfig.alert` in `index.html`): `overview` = [alertDetails, triggerConditions, details], `scope` = [affectedEntities, correlatedAlerts, processes], `response` = [serviceTriggered, recentAlerts]. Tabs auto-hide if their sections are empty for that alert.
+
+---
+
+## 10. Implementation Changelog
 
 | Date | Change | Entities Affected |
 |------|--------|-------------------|
@@ -1408,3 +1457,6 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 | 05 May 2026 | Removed ~~Sample Log Entry~~ section — not useful in prototype | Edge |
 | 05 May 2026 | Removed ~~Connected Entities~~ section — redundant with clickable flow diagram at top | Edge |
 | 05 May 2026 | Updated entity_data_mapping.md — added Section 8 (Edge Relation Slider) with 12 subsections | Doc |
+| 06 May 2026 | Doc drift fix: added Section 9 (ALERT Entity) covering the 14 alert nodes (alertDetails, triggerConditions, affectedEntities, correlatedAlerts, remediationGuide); previously undocumented | Doc/Alert |
+| 06 May 2026 | Doc drift fix: updated Section 4 header to include `svc-oauth` and added reclassification note above Section 5 (token sections 5.9–5.12 now describe the OAuth service, not a process) | Doc/Service |
+| 06 May 2026 | Renumbered Implementation Changelog from Section 9 → Section 10 to make room for ALERT Entity section | Doc |
