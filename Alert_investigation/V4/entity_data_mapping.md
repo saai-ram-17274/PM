@@ -141,14 +141,6 @@
 | Method | ✅ | ES `METHOD` | Raw from proxy/IIS |
 | User-Agent | ✅ | ES `USER_AGENT` | Raw from proxy/IIS |
 
-### 1.13 Compliance Impact
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Framework | ✅ | `CompliancePolicy` + `CompliancePolicyAct` | Predefined: PCI-DSS, HIPAA, SOX, GDPR, NIST |
-| Status | ✅ | `ComplianceRuleResultList` | Pass/Fail/High Risk/Manual |
-| Controls | ✅ | `CompliancePolicyAct` rules | Config-driven |
-| Impact (per-alert auto-tag) | 🟡 | Manual mapping only | **Gap**: No auto-tag when alerts fire |
-
 ### 1.14 Threat Intel
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -164,13 +156,6 @@
 | Action | ✅ | M365 audit — Alert/Block | Raw, read-only |
 | File | ✅ | ES `SourceFileName`/`OBJECTNAME` | Raw |
 | Destination | ✅ | ES transfer destination | Raw |
-
-### 1.16 Remediation & Playbooks  ❌ **NOT RENDERED in slider** — the entity slider explicitly drops `remediationGuide` (see `renderEntitySliderBody` `skipSections` at `index.html:7600`) and any section whose label matches `/recommendation|remediation/i`. Data exists in `ENTITIES['user-m-henderson'].sections.remediationGuide` but is not surfaced.
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Verdict | 🟡 | Combined confidence scoring | **New**: Signals exist, aggregation logic needs building |
-| Recommendations | ✅ | `PlayBookRecommendation.xml` | `PlaybookRecommendationEngine` |
-| Playbooks | ✅ | `ADSPlayBookQuickActionBlocks.xml` + `IMWorkflow` | adsf `imworkflow` module |
 
 ### 1.17 Account Lockout History
 | Field | Status | Source | How to Get |
@@ -272,30 +257,6 @@
 | Disk Encryption | ✅ | `APFDiscADComputerDetails.BITLOCKER_STATUS` | AD Sync — BitLocker recovery info |
 | TPM | ❌ | **Not available** | No TPM attribute in AD sync |
 
-### 2.3 Vulnerabilities
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| CVE ID, CVSS, Component, Exploit, Patch, CISA KEV | ❌ | **Not available** | No vulnerability scanner. Would need Vulnerability Manager Plus / Qualys integration |
-
-### 2.4 Misconfigurations (CIS Benchmark)
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| CIS Rule, Status, Expected, Impact | ❌ | **Not available** | No CIS benchmark assessment engine |
-
-### 2.5 Installed Software
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Name, Publisher, Version, Signed, Location | ❌ | **Not available** | No software inventory. Would need Endpoint Central/UEM |
-
-### 2.6 Cloud Asset & MDM
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Intune Device ID | ❌ | **Not available** | No Intune device API |
-| Intune Compliance | ❌ | **Not available** | No MDM compliance data |
-| Azure AD Registered | 🟡 | AAD device discovery exists | Partial — knows device is AAD joined |
-| Autopilot | ❌ | **Not available** | No Autopilot data |
-| Configuration Profiles | ❌ | **Not available** | No Intune config profiles |
-
 ### 2.7 Login Activity (on device)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -321,12 +282,6 @@
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Alert label, Type, MITRE, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` filtered by host | Same as User 1.6 |
-
-### 2.12 Remediation & Playbooks  ❌ **NOT RENDERED in slider** — same `remediationGuide` filter as 1.16. Data exists for `dev-ws045` but is not surfaced.
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Recommendations | ✅ | `PlayBookRecommendation.xml` | Config-driven |
-| Playbooks | ✅ | `IMWorkflow` engine | adsf imworkflow |
 
 ### 2.13 Agent Status & Health
 | Field | Status | Source | How to Get |
@@ -436,12 +391,6 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | ~~AlienVault OTX~~ | ❌ | ~~STIX/TAXII feed integration~~ | **Removed v3**: Product has bulk STIX/TAXII feed download but no live OTX API query. Cannot show pulse counts or enrichment details |
 | ADSThreatAnalyticsFeeds | ✅ | `ADSThreatAnalyticsFeeds` table | Internal threat feed — shows category, confidence, last updated. Prototype shows this as second TI entry |
 
-### 3.4 Related Campaigns & IOCs
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Campaign name, Type, Targets, TTPs | ❌ | **Not available** | No campaign attribution engine |
-| IOC Clusters | ❌ | **Not available** | No IOC clustering |
-
 ### 3.5 Connection History
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -501,12 +450,6 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | User, Logon Type, App, MFA, Result, Location | ✅ | ES 4624/4625 + M365 sign-in filtered by IP | Raw |
-
-### 3.11 Remediation & Playbooks  ❌ **NOT RENDERED in slider** — same `remediationGuide` filter. Data exists for `ip-tor`/`ip-internal` but is not surfaced.
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Recommendations | ✅ | Config-driven | Analyst guidance |
-| Playbooks | ✅ | `IMWorkflow` — firewall IP block actions | `IMPaloAltoActions`, `IMFortigateActions`, `IMCiscoActions`, etc. |
 
 ### 3.12 Firewall Action Summary
 | Field | Status | Source | How to Get |
@@ -578,11 +521,6 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | License | ✅ | `LicenseSKUDetails.json` | License mapping |
 | Status | ✅ | M365 API / last event timestamp | Active if recent events |
 
-### 4.3 Configuration Issues (CIS Benchmark)
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| CIS Rule, Status, Impact, Recommendation | ❌ | **Not available** | No CIS assessment for cloud services |
-
 ### 4.4 Conditional Access Policies
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -624,11 +562,6 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 |-------|--------|--------|------------|
 | Operation, Path, Size, Signed, Hash | ✅ | ES Sysmon 11 (FileCreate) / 23 (FileDelete) | Raw Sysmon events |
 
-### 4.12 Service Dependencies
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Depends On, Required By, Load Order, Recovery | ❌ | **Not available** | No service topology/dependency mapping |
-
 ### 4.13 Related Processes / Services
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
@@ -638,12 +571,6 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Alert label, Type, MITRE, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` | Same as User 1.6 |
-
-### 4.15 Remediation & Playbooks  ❌ **NOT RENDERED in slider** — same `remediationGuide` filter. Data exists per service entity but is not surfaced.
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Recommendations | ✅ | Config-driven | Analyst guidance |
-| Playbooks | ✅ | `IMWorkflow` engine | Available |
 
 ### 4.16 OAuth App Consent Grants (`svc-azure-ad`)
 | Field | Status | Source | How to Get |
@@ -761,21 +688,10 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 |-------|--------|--------|------------|
 | API Call, Purpose, Response, Data Volume | 🟡 | M365 unified audit log | Some API activity in audit, but **no dedicated Graph API call audit** |
 
-### 5.12 Related Tokens
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Refresh Token status, Other Active Tokens | ❌ | **Not available** | No token inventory from Entra API |
-
 ### 5.13 Recent Alerts
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Alert label, Type, MITRE, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` | Same as User 1.6 |
-
-### 5.14 Remediation & Playbooks  ❌ **NOT RENDERED in slider** — same `remediationGuide` filter. Data exists for `proc-powershell`/`svc-oauth` but is not surfaced.
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Recommendations | ✅ | Config-driven | Analyst guidance |
-| Playbooks | ✅ | `IMWorkflow` engine | Available |
 
 ### 5.15 DLL/Module Loads (Sysmon Event 7) — `proc-powershell`
 | Field | Status | Source | How to Get |
@@ -1391,67 +1307,38 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row.
 | Time Delta | ✅ | `ITSAlertHistory.LAST_OCCURRED` diff | Computed |
 | Severity / Status of related | ✅ | Same as 9.1 fields | Per-alert lookup |
 
-### 9.5 Remediation & Playbooks  ❌ **NOT RENDERED in slider** — same `remediationGuide` filter applies to alert entities too. Data is defined per alert ID but the slider drops it.
-| Field | Status | Source | How to Get |
-|-------|--------|--------|------------|
-| Verdict (Malicious / Suspicious / Benign / Resolved) | ✅ | `ITSAlertHistory.VERDICT` | Analyst classification |
-| Recommendations | ✅ | Static catalog keyed by alert type | `ALERT_REMEDIATION_CATALOG[alertType]` |
-| Playbooks (Run buttons) | ✅ | Static catalog | Same playbook engine as user/device entities |
-
-> **Tab grouping** (per `tabConfig.alert` in `index.html`): `overview` = [alertDetails, triggerConditions, details], `scope` = [affectedEntities, correlatedAlerts, processes], `response` = [serviceTriggered, recentAlerts]. Tabs auto-hide if their sections are empty for that alert.
-
----
-
 ## 10. Render Status Audit (06 May 2026)
 
-> **Why this section exists**: Several sections are present in the `ENTITIES` data object but never reach the DOM. Two filters in `renderEntitySliderBody` (`index.html:7595`) drop content silently:
+> **Why this section exists**: Prior versions of this doc described several sections (Compliance Impact, Vulnerabilities, CIS Misconfigurations, Installed Software, Cloud Asset & MDM, Related Campaigns & IOCs, Configuration Issues, Service Dependencies, Related Tokens, and per-entity Remediation & Playbooks) that the slider does **not** render. Those subsections have now been deleted from this doc to keep the mapping aligned with what the prototype actually surfaces.
 >
-> 1. **`skipSections = new Set(['remediationGuide'])`** — universally dropped
-> 2. **Label regex `/recommendation|remediation/i`** — catches `responseActions` (label "Recommended Response Actions") and any future "remediation" label
-> 3. **Tab routing** — only sections listed in the entity type's `tabConfig` are rendered. Anything else is orphaned data.
+> The slider's `renderEntitySliderBody` (`index.html:7595`) applies three filters:
 >
-> The audit below was generated by walking each entity's `sections` keys and cross-referencing against the live `tabConfig`.
+> 1. **`skipSections = new Set(['remediationGuide'])`** — `remediationGuide` is universally dropped
+> 2. **Label regex `/recommendation|remediation/i`** — also catches `responseActions` (label "Recommended Response Actions")
+> 3. **Tab routing** — only sections listed in the entity type's `tabConfig` are rendered
 
-### 10.1 Sections defined in data but NOT rendered (orphaned)
+### 10.1 Universally filtered (still defined in code, not surfaced)
 
-| Entity | Type | Orphaned section keys | Reason |
-|--------|------|-----------------------|--------|
-| `alert-impossible-travel` | alert | `responseActions` | label "Recommended Response Actions" matches regex filter |
-| `user-m-henderson` | user | `attackPathContext`, `geoTravelAnalysis`, `endpointSecurity`, `complianceImpact`, `responseActions`, `peerComparison` | not in `tabConfig.user` (responseActions also label-filtered) |
-| `user-admin` | user | `responseActions` | label-filtered |
-| `dev-ws045` | device | `vulnerabilities`, `misconfigurations`, `installedSoftware`, `cloudAsset` | not in `tabConfig.device` (these were also marked unachievable in 24 Apr removal) |
-| `ip-tor` | ip | `relatedCampaigns` | not in `tabConfig.ip` (also marked unachievable in 24 Apr) |
-| `ip-internal` | ip | — | none |
-| `svc-azure-ad` | service | `configurationIssues` | not in `tabConfig.service` |
-| `svc-sharepoint` | service | — | none |
-| `svc-winupdatesvc` | service | `serviceDependencies` | not in `tabConfig.service` (marked unachievable 24 Apr) |
-| `svc-oauth` (`proc-oauth` in V4 data) | process | `relatedTokens` | not in `tabConfig.process` (marked unachievable 24 Apr) |
-| `proc-powershell` | process | — | none |
-| `domain-c2` | ip | — | none (4 sections, all rendered via IP tabConfig) |
-
-### 10.2 Universally filtered sections
-
-| Section key | Where defined | Why filtered |
-|-------------|---------------|--------------|
+| Section key | Where defined in code | Why filtered |
+|-------------|----------------------|--------------|
 | `remediationGuide` | All 12 graph entities + 13 alert entities | Hard-coded in `skipSections` |
 | `responseActions` | `user-m-henderson`, `user-admin`, `alert-impossible-travel` | Label "Recommended Response Actions" matches `/recommendation/i` |
+| `complianceImpact` | `user-m-henderson` only | Not in `tabConfig.user` (orphaned) |
 
-### 10.3 Tab-config sections with no data in any entity (always auto-hide)
+### 10.2 Tab-config sections with no data in any entity (auto-hide)
 
-| Entity type | Tab-listed key | Status |
-|-------------|----------------|--------|
-| user | `recentAppAccess`, `accountLockouts`, `passwordHistory`, `groupMembershipChanges`, `mailboxForwarding`, `privilegedRoleChanges` | data not present for any user entity in V4 |
-| device | `agentStatus`, `gpoApplied`, `securityEventSummary`, `scheduledTasks`, `usbDeviceEvents` | data not present for `dev-ws045` |
-| ip | `idsAlerts`, `firewallSummary`, `dnsHistory`, `vpnSessions`, `trafficSummary` | only partially present; `ip-tor` has none of these, `ip-internal` only has `trafficSummary` |
-| service | `serviceInfo`, `oauthConsentGrants`, `dlpPolicies`, `adminActivity`, `signInAudit`, `serviceTimeline`, `networkConnections`, `fileDrops`, `wmiEvents` | varies per service entity; many missing |
-| process | `details`, `tokenAnomaly`, `tokenUsage`, `namedPipes`, `dllLoads`, `processDnsQueries`, `fileOperations` | partially present |
-| alert | `details`, `processes`, `serviceTriggered`, `recentAlerts` | not present for `alert-impossible-travel` |
+The renderer hides any tab whose sections are all empty. The keys below appear in `tabConfig` but no entity in V4 currently populates them:
 
-> These auto-hidden tab sections are **not** drift — the renderer hides any tab whose sections are all empty. They're documented here so reviewers know which mapping rows in Sections 1–5 describe data that the prototype intentionally does not populate yet for the demo dataset.
+| Entity type | Tab-listed key with no data | Result |
+|-------------|------------------------------|--------|
+| user | `recentAppAccess`, `accountLockouts`, `passwordHistory`, `groupMembershipChanges`, `mailboxForwarding`, `privilegedRoleChanges` | Account Changes tab is empty for all users |
+| device | `agentStatus`, `gpoApplied`, `securityEventSummary`, `scheduledTasks`, `usbDeviceEvents` | Persistence & Exfil tab empty for `dev-ws045` |
+| ip | `idsAlerts`, `firewallSummary`, `dnsHistory`, `vpnSessions` | Threat Intel / Connections partial |
+| service | `serviceInfo`, `oauthConsentGrants`, `dlpPolicies`, `adminActivity`, `signInAudit`, `serviceTimeline`, `networkConnections`, `fileDrops`, `wmiEvents` | Varies per service |
+| process | `details`, `tokenAnomaly`, `tokenUsage`, `namedPipes`, `dllLoads`, `processDnsQueries`, `fileOperations` | Partial population |
+| alert | `details`, `processes`, `serviceTriggered`, `recentAlerts` | Response tab empty for `alert-impossible-travel` |
 
-### 10.4 Implication for "what the prototype actually shows"
-
-Effective rendered section count per entity (after both filters and tab routing):
+### 10.3 Effective rendered section count per entity
 
 | Entity | Sections defined | Sections rendered | Tabs visible |
 |--------|------------------|-------------------|--------------|
@@ -1531,3 +1418,5 @@ Effective rendered section count per entity (after both filters and tab routing)
 | 06 May 2026 | Marked all 6 "Remediation & Playbooks" subsections (1.16, 2.12, 3.11, 4.15, 5.14, 9.5) as ❌ NOT RENDERED — slider explicitly drops `remediationGuide` via `skipSections` and any label matching `/recommendation|remediation/i`. Data is defined per entity but never reaches the DOM | Doc/All |
 | 06 May 2026 | Added Section 10 Render Status Audit — full per-entity orphaned-section table, label-filter dropouts (`responseActions`), tab-config sections with no data, and effective rendered-section counts per entity | Doc |
 | 06 May 2026 | Renumbered Implementation Changelog 10 → 11 to make room for the audit section | Doc |
+| 06 May 2026 | **Removed 15 not-rendered subsections from doc** (1.13 Compliance Impact, 1.16/2.12/3.11/4.15/5.14/9.5 Remediation & Playbooks, 2.3 Vulnerabilities, 2.4 CIS Misconfigurations, 2.5 Installed Software, 2.6 Cloud Asset & MDM, 3.4 Related Campaigns & IOCs, 4.3 Configuration Issues, 4.12 Service Dependencies, 5.12 Related Tokens) — these described data the slider does not surface | Doc/All |
+| 06 May 2026 | Rewrote Section 10 Render Status Audit — removed the per-entity orphan table (now empty after the deletions) and kept just universally filtered sections, auto-hidden tab keys, and effective rendered-section counts | Doc |
