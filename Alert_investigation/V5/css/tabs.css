@@ -775,6 +775,7 @@
 
 /* ───── Attack Vector: maximize / fullscreen mode ───── */
 body.av-maximized .app-header,
+body.av-maximized .header-wrapper,
 body.av-maximized .alerts-subnav,
 body.av-maximized .dv-sidebar,
 body.av-maximized .dv-tabs-row {

@@ -20,11 +20,61 @@
 <body>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     APP HEADER (Log360 global header — rendered from Header.svg)
+     APP HEADER (Log360 global header — ported from V4)
      ═══════════════════════════════════════════════════════════════════════ -->
-<header class="app-header">
-  <img src="SVG/Header.svg" alt="Log360" class="app-header-img"/>
-</header>
+<div class="header-wrapper">
+  <!-- Row 1 — logo, subscription, icons -->
+  <div class="topbar">
+    <a class="logo" href="#" onclick="if(typeof showToast==='function')showToast('🏠','Going to Dashboard…');return false;">
+      <svg width="26" height="28" viewBox="16 9 24 26" fill="none" aria-hidden="true">
+        <path d="M38.8509 26.0847C38.5583 27.2239 37.505 28.0031 36.3283 28.0031H36.3174C34.5674 31.2266 31.8506 33.2325 28.2113 33.9792C28.143 33.9933 28.0713 34 28.0005 34C27.9296 34 27.8588 33.9933 27.7888 33.9792C24.6679 33.3383 22.2011 31.7474 20.4569 29.2515L22.1744 28.0515C23.5403 30.0057 25.4579 31.2832 27.8796 31.8541C27.9588 31.8724 28.043 31.8724 28.1221 31.8541C30.9264 31.1974 32.9981 29.6482 34.3974 27.1481C33.9749 26.6847 33.7182 26.0697 33.7182 25.3922C33.7182 23.9497 34.8865 22.7813 36.3283 22.7813C37.995 22.7813 39.2975 24.3422 38.8509 26.0839V26.0847Z" fill="#FAA61A"/>
+        <path d="M22.2836 25.3939C22.2836 26.8931 21.0202 28.0965 19.5002 27.9981C18.1768 27.9123 17.1126 26.8156 17.0643 25.4905C17.0334 24.6388 17.4093 23.8755 18.0143 23.3771C17.9726 23.1863 17.9318 22.9946 17.8943 22.7996C17.2751 19.5537 17.3734 16.4511 17.4859 14.8852C17.5118 14.526 17.721 14.2043 18.0401 14.036C19.961 13.0168 22.0278 12.3009 24.182 11.9101L24.557 13.9693C22.9111 14.2693 21.3227 14.7785 19.821 15.486C19.646 15.5685 19.5327 15.7419 19.5243 15.9352C19.4585 17.5169 19.4777 19.9045 19.9385 22.3371C19.9794 22.5454 20.0069 22.6763 20.0352 22.8079C21.3061 22.9821 22.2844 24.073 22.2844 25.3939H22.2836Z" fill="#CE1432"/>
+        <path d="M38.2475 22.0171L36.1799 21.6846C36.5358 19.4753 36.5458 17.3578 36.4874 15.936C36.4799 15.7427 36.3658 15.5685 36.1908 15.486C34.3465 14.6177 32.3606 14.0476 30.3289 13.801C29.8855 14.6668 28.9722 15.2518 27.9255 15.2202C26.5913 15.1802 25.4837 14.111 25.4004 12.7793C25.3054 11.2609 26.5079 10 28.0055 10C29.1297 10 30.0872 10.71 30.4547 11.7059C33.0823 12.0092 35.6432 12.8001 37.9725 14.0351C38.2917 14.2035 38.4992 14.5252 38.5267 14.886C38.6492 16.5919 38.6992 19.2137 38.2475 22.0171Z" fill="#007AC1"/>
+        <path d="M32.454 20.2387L27.8046 24.888L25.1737 22.2571L26.6546 20.7762L27.8046 21.9271L30.9722 18.7578L32.454 20.2387Z" fill="#009D54"/>
+      </svg>
+      Log360 Cloud
+    </a>
+    <div class="topbar-right">
+      <a class="sub-link" href="#" onclick="if(typeof showToast==='function')showToast('🔗','Opening Subscription…');return false;">Subscription</a>
+      <span class="topbar-divider"></span>
+      <button class="topbar-icon" onclick="if(typeof showToast==='function')showToast('📄','Opening Documents…')" title="Documents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span class="badge-num badge-blue">8</span>
+      </button>
+      <button class="topbar-icon" onclick="if(typeof showToast==='function')showToast('🔔','Opening Notifications…')" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="badge-num badge-red">9+</span>
+      </button>
+      <button class="topbar-icon" onclick="if(typeof showToast==='function')showToast('❓','Opening Help…')" title="Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
+      <div class="topbar-avatar" onclick="if(typeof showToast==='function')showToast('👤','Opening Profile…')" title="Profile">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#C4D0F3"/><circle cx="16" cy="13" r="5" fill="#FDBC91"/><path d="M5 30c1.5-5 6-7 11-7s9.5 2 11 7" fill="#FDBC91"/></svg>
+      </div>
+      <button class="topbar-icon" onclick="if(typeof showToast==='function')showToast('⊞','Opening Apps…')" title="Apps" style="width:auto;height:auto;padding:0;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="2.6" cy="2.6" r="1.6" fill="currentColor"/><circle cx="8" cy="2.6" r="1.6" fill="currentColor"/><circle cx="13.4" cy="2.6" r="1.6" fill="currentColor"/><circle cx="2.6" cy="8" r="1.6" fill="currentColor"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><circle cx="13.4" cy="8" r="1.6" fill="currentColor"/><circle cx="2.6" cy="13.4" r="1.6" fill="currentColor"/><circle cx="8" cy="13.4" r="1.6" fill="currentColor"/><circle cx="13.4" cy="13.4" r="1.6" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+  <!-- Row 2 — module nav + search + add -->
+  <div class="navrow">
+    <a href="#" onclick="if(typeof showToast==='function')showToast('📊','Going to Dashboard…');return false;">Dashboard</a>
+    <a href="#" onclick="if(typeof showToast==='function')showToast('📋','Going to Reports…');return false;">Reports</a>
+    <a href="#" onclick="if(typeof showToast==='function')showToast('✅','Going to Compliance…');return false;">Compliance</a>
+    <a href="#" onclick="if(typeof showToast==='function')showToast('🔍','Going to Search…');return false;">Search</a>
+    <a href="#" class="active" onclick="return false;">SOC Center</a>
+    <a href="#" onclick="if(typeof showToast==='function')showToast('⚙','Going to Settings…');return false;">Settings</a>
+    <a href="#" onclick="if(typeof showToast==='function')showToast('📝','Going to LogMe…');return false;">LogMe</a>
+    <a href="#" onclick="if(typeof showToast==='function')showToast('🆘','Going to Support…');return false;">Support</a>
+    <div class="navrow-right">
+      <div class="search-bar" onclick="if(typeof showToast==='function')showToast('🔍','Opening Log Search…')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#8A91A8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span style="color:#8A91A8;font-size:12px;white-space:nowrap;">Log Search</span>
+      </div>
+      <button class="btn-add" onclick="if(typeof showToast==='function')showToast('➕','Add new item…')">+ Add</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      SECONDARY NAV (Alerts module sub-tabs)
