@@ -141,7 +141,7 @@
 | Method | ✅ | ES `METHOD` | Raw from proxy/IIS |
 | User-Agent | ✅ | ES `USER_AGENT` | Raw from proxy/IIS |
 
-### 1.14 Threat Intel
+### 1.13 Threat Intel
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Primary IOC | ✅ | ES `THREAT_REPUTATION`, `THREAT_SOURCE` | `ThreatAnalyticsIntermediateProcessor` enrichment |
@@ -149,7 +149,7 @@
 | First Seen (Global) | ✅ | ES `min(_zl_timestamp)` | Aggregated |
 | MITRE Techniques | 🟡 | `ITSDetectionRuleVsMitre` | Only for RULE-type alerts |
 
-### 1.15 DLP Incidents
+### 1.14 DLP Incidents
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Policy | ✅ | M365 audit `OPERATION` / DSP rules | M365 SharePoint events + `DLPHandler` (117 rules) |
@@ -157,7 +157,7 @@
 | File | ✅ | ES `SourceFileName`/`OBJECTNAME` | Raw |
 | Destination | ✅ | ES transfer destination | Raw |
 
-### 1.17 Account Lockout History
+### 1.15 Account Lockout History
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Locked User | ✅ | ES `EVENTID=4740` | Windows-ActiveDirectory.xml → `usr_userMOD` rule |
@@ -168,7 +168,7 @@
 
 > **ES Query**: `EVENTID=4740 AND (CALLER=<user> OR USERNAME=<user>)` → order by TIME desc
 
-### 1.18 Password Change / Reset History
+### 1.16 Password Change / Reset History
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Operation | ✅ | ES `EVENTID` 4723/4724/4726 | Windows-ActiveDirectory.xml dedicated rules |
@@ -179,7 +179,7 @@
 
 > **ES Query**: `(EVENTID IN [4723,4724,4726] AND TARGET=<user>) OR (HOSTTYPE=azure_active_directory AND OPERATION IN ['change user password','reset user password'] AND TARGET=<user>)`
 
-### 1.19 Group Membership Changes
+### 1.17 Group Membership Changes
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Operation | ✅ | ES `OPERATION` / `CATEGORY=GROUP MODIFIED` | Add vs Remove |
@@ -189,7 +189,7 @@
 
 > **ES Query**: `(CATEGORY='GROUP MODIFIED' AND (USERNAME=<user> OR TARGET=<user>)) OR (HOSTTYPE=azure_active_directory AND OPERATION IN ['Add member to group','Remove member from group'] AND TARGET_NAME=<user>)`
 
-### 1.20 Mailbox Forwarding Rules
+### 1.18 Mailbox Forwarding Rules
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Operation | ✅ | ES `OPERATION` | new-inboxrule, set-inboxrule, set-mailbox |
@@ -200,7 +200,7 @@
 
 > **ES Query**: `HOSTTYPE=exchange_online AND OPERATION IN ['new-inboxrule','set-inboxrule','set-mailbox'] AND (TARGET=<user> OR CALLER=<user>)`
 
-### 1.21 Recent Application Access
+### 1.19 Recent Application Access
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Application | ✅ | ES `APPLICATIONNAME` | Entra_Graph.xml parses `appDisplayName` |
@@ -210,7 +210,7 @@
 
 > **ES Query**: `HOSTTYPE=azure_active_directory AND RECORD_TYPE_L=15 AND CALLER=<user>` → group by `APPLICATIONNAME`
 
-### 1.22 Privileged Role Assignment Changes
+### 1.20 Privileged Role Assignment Changes
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Role Name | ✅ | ES `RESOURCE` / `RESOURCE_NAME` | Entra_Graph.xml NR6/NR7 extracts `Role.DisplayName` |
@@ -257,33 +257,33 @@
 | Disk Encryption | ✅ | `APFDiscADComputerDetails.BITLOCKER_STATUS` | AD Sync — BitLocker recovery info |
 | TPM | ❌ | **Not available** | No TPM attribute in AD sync |
 
-### 2.7 Login Activity (on device)
+### 2.3 Login Activity (on device)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | User, Logon Type, Source IP, Target, Status | ✅ | ES Windows 4624/4625 filtered by `HOSTNAME` | Raw from Windows Security log |
 
-### 2.8 Processes on Host
+### 2.4 Processes on Host
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Process Name, PID, User, Command Line | ✅ | ES Sysmon Event 1 / Windows 4688 | Raw from Sysmon |
 | CPU%, Memory | ❌ | **Not available** | No live telemetry — only launch-time events |
 
-### 2.9 Services on Host
+### 2.5 Services on Host
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Service Name, Display Name, Account, Binary, Signed, Status | ✅ | ES Windows 7045/4697 | Raw from Windows Security/System log |
 
-### 2.10 Users Logged On
+### 2.6 Users Logged On
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | User, Logon Type, Source, Session, Duration | 🟡 | ES 4624 logon + 4634 logoff | Duration requires correlating logon/logoff pairs |
 
-### 2.11 Recent Alerts (on device)
+### 2.7 Recent Alerts (on device)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Alert label, Type, MITRE, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` filtered by host | Same as User 1.6 |
 
-### 2.13 Agent Status & Health
+### 2.8 Agent Status & Health
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Agent Status | ✅ | `ELALogCollectors.STATUS` | `LCStatus.getLogCollectorStatus()` — 40+ statuses (RUNNING, STOPPED, CRASHED, NOT_COMMUNICATING, etc.) |
@@ -294,7 +294,7 @@
 
 > **Implementation**: Query `ELALogCollectors` table → resolve `STATUS` via `LCStatus` enum → display status badge
 
-### 2.14 GPO Applied to Device
+### 2.9 GPO Applied to Device
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | GPO Name | ✅ | `APFDiscADGPODetails.DISPLAY_NAME` | Join: Computer → OU → `GP_LINK` → GPO table |
@@ -305,7 +305,7 @@
 
 > **Implementation**: 1) Find device OU from `APFDiscADComputerDetails.PARENT` 2) Read `GP_LINK` from OU chain 3) Resolve GPO DNs to `APFDiscADGPODetails`
 
-### 2.15 Security Event Summary (24h Counters)
+### 2.10 Security Event Summary (24h Counters)
 
 Grouped by risk relevance. Event IDs shown as secondary detail per row (visible but non-dominant).
 
@@ -327,7 +327,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 > **Implementation**: Single ES multi-aggregation query with `HOSTNAME=<device> AND TIME>now-24h`, group by `EVENTID` buckets.  
 > **UI**: Grouped by risk — "Needs Review" (red dot) and "Normal" (green dot). Event IDs shown as subtle secondary text next to each label. Flagged rows show count in red. No editorial annotations (removed `⚠`, `"unsigned"`, `"from unknown sources"` etc).
 
-### 2.16 USB Device Events
+### 2.11 USB Device Events
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Event | ✅ | ES `EVENTID` 6416/6420/6422/6423/6424 | Windows.xml parser |
@@ -338,7 +338,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `HOSTNAME=<device> AND EVENTID IN [6416,6420,6422,6423,6424]`
 
-### 2.17 Scheduled Task Events
+### 2.12 Scheduled Task Events
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Event | ✅ | ES `EVENTID` 4698-4702 | Operation type |
@@ -391,7 +391,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | ~~AlienVault OTX~~ | ❌ | ~~STIX/TAXII feed integration~~ | **Removed v3**: Product has bulk STIX/TAXII feed download but no live OTX API query. Cannot show pulse counts or enrichment details |
 | ADSThreatAnalyticsFeeds | ✅ | `ADSThreatAnalyticsFeeds` table | Internal threat feed — shows category, confidence, last updated. Prototype shows this as second TI entry |
 
-### 3.5 Connection History
+### 3.4 Connection History
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Direction | ✅ | ES `DIRECTION` or inferred from SRC/DST | Inbound/Outbound |
@@ -405,7 +405,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **v3 Note**: Azure AD sign-in entry removed — cloud identity events are not network connections. Connection history is now firewall-only data.
 
-### 3.6 Geo & Network Context
+### 3.5 Geo & Network Context
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Country | ✅ | ES `GEO_COUNTRY` | GeoIP enrichment — country only |
@@ -425,19 +425,19 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 >
 > **Why "Threat Feed Match" instead of "Blocklist Status"**: The original label "Blocklist Status" implied the IP is checked against external public blocklists (e.g., Spamhaus, DNSBL, AbuseIPDB). The product does **not** query external blocklists. It checks against its own internal threat feed stores (Webroot BrightCloud, configured STIX/TAXII servers, imported threat indicator files). "Threat Feed Match" accurately describes what the system actually does — it tells the analyst whether the IP appears in the product's configured threat intelligence feeds.
 
-### 3.7 Associated Users
+### 3.6 Associated Users
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | User, Action, Result | ✅ | ES logon events filtered by `REMOTEIP` | Aggregated |
 
-### 3.8 Associated Devices
+### 3.7 Associated Devices
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Device | ✅ | ES events filtered by IP for `HOSTNAME` | Aggregated |
 | MAC | 🟡 | DHCP logs `DHCP_MAC` | If DHCP collected |
 | Switch Port | ❌ | **Not available** | No network infrastructure mapping |
 
-### 3.9 Traffic Summary
+### 3.8 Traffic Summary
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Total Flows | ✅ | ES count per IP | Aggregated from FW logs |
@@ -446,12 +446,12 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | Anomalous Flows | 🟡 | Threat-enriched events count | Count of events with `THREAT_REPUTATION` flagged |
 | Internal/External split | 🟡 | IP range classification | Needs private IP range config |
 
-### 3.10 Logon Activity (from IP)
+### 3.9 Logon Activity (from IP)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | User, Logon Type, App, MFA, Result, Location | ✅ | ES 4624/4625 + M365 sign-in filtered by IP | Raw |
 
-### 3.12 Firewall Action Summary
+### 3.10 Firewall Action Summary
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Total Flows | ✅ | ES count per IP | Aggregated from FW logs |
@@ -465,7 +465,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `(SOURCE_IP=<ip> OR DEST_IP=<ip>) AND HOSTTYPE IN [fortinet,paloalto,checkpoint,sonicwall,sophos]` → aggregate by `ACTION`
 
-### 3.13 DNS Query History
+### 3.11 DNS Query History
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Domain | ✅ | ES `DNS_QUERY` / `QueryName` | Fortinet DNS + Windows-DNS-Server + Sysmon Event 22 |
@@ -476,7 +476,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `(DNS_QUERY IS NOT NULL AND (SOURCE_IP=<ip> OR DEST_IP=<ip>)) OR (EVENTID=22 AND QueryResults CONTAINS <ip>)`
 
-### 3.14 IDS/IPS Alerts
+### 3.12 IDS/IPS Alerts
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Signature | ✅ | ES `IDS_NAME` | Fortinet/PaloAlto/FirePower — all parse IDS fields |
@@ -487,7 +487,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `(SOURCE_IP=<ip> OR DEST_IP=<ip>) AND IDS_NAME IS NOT NULL` → aggregate by `IDS_NAME`, `SEVERITYLEVEL`
 
-### 3.15 VPN Session History (`ip-internal` only)
+### 3.13 VPN Session History (`ip-internal` only)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | VPN User | ✅ | ES `VPN_USERNAME` | Fortinet VPN + PaloAlto GlobalProtect + Cisco AnyConnect |
@@ -521,58 +521,58 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 | License | ✅ | `LicenseSKUDetails.json` | License mapping |
 | Status | ✅ | M365 API / last event timestamp | Active if recent events |
 
-### 4.4 Conditional Access Policies
+### 4.3 Conditional Access Policies
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | State, Scope, Conditions, Grant, Exclusions | 🟡 | M365 sign-in logs `conditionalAccessStatus` | Status captured in sign-in events, but **no policy definition sync** |
 
-### 4.5 Sign-in Audit
+### 4.4 Sign-in Audit
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | User, IP, Location, App, MFA, Risk, Result | ✅ | `ENTRA_EVENT_SIGNINS` log format | Full Entra ID sign-in parsing via Graph API |
 
-### 4.6 DLP Policy Status
+### 4.5 DLP Policy Status
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Policy names & status | 🟡 | M365 audit log DLP events | **Events** captured, but no policy config API. Knows DLP fired, not full policy rules |
 
-### 4.7 File Access Anomaly (SharePoint)
+### 4.6 File Access Anomaly (SharePoint)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | User, Action, Files Accessed count, Deviation | 🟡 | M365 audit + alert threshold rules | Bulk detection via alert rules, no ML model |
 
-### 4.8 Sensitive Files Accessed
+### 4.7 Sensitive Files Accessed
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | File, Site, Label, Action | 🟡 | ES M365 audit + `SP_SENSITIVITY_LABEL_ACTIVITY` | Label change audits captured; not deep classification |
 | Classification, Size | ❌ | **Not available** | No Purview classification API |
 
-### 4.9 Service Events (WinUpdateSvc)
+### 4.8 Service Events (WinUpdateSvc)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Binary Dropped, Service Installed, Started, C2 Beacon | ✅ | ES Sysmon 11 (FileCreate) + Windows 7045 + FW logs | Raw from Sysmon/Windows/Firewall events |
 
-### 4.10 Network Connections (per service)
+### 4.9 Network Connections (per service)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Destination, Protocol, Bytes, DNS | ✅ | ES Sysmon Event 3 / FW logs | Per-process network connections |
 
-### 4.11 File Drops (per service)
+### 4.10 File Drops (per service)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Operation, Path, Size, Signed, Hash | ✅ | ES Sysmon 11 (FileCreate) / 23 (FileDelete) | Raw Sysmon events |
 
-### 4.13 Related Processes / Services
+### 4.11 Related Processes / Services
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Process/Service relationships | 🟡 | ES event correlation by time/host | Needs join on `HOSTNAME` + time window |
 
-### 4.14 Recent Alerts
+### 4.12 Recent Alerts
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Alert label, Type, MITRE, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` | Same as User 1.6 |
 
-### 4.16 OAuth App Consent Grants (`svc-azure-ad`)
+### 4.13 OAuth App Consent Grants (`svc-azure-ad`)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Operation | ✅ | ES `OPERATION` | `Consent to application`, `Add delegated permission grant` |
@@ -584,7 +584,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `HOSTTYPE=azure_active_directory AND OPERATION IN ['consent to application','add delegated permission grant']`
 
-### 4.17 Admin Activity on Service (`svc-azure-ad`)
+### 4.14 Admin Activity on Service (`svc-azure-ad`)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Operation | ✅ | ES `OPERATION` | Entra directory audit actions |
@@ -595,7 +595,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: Per-workload: `WORKLOAD_S=<service_workload> AND RECORD_TYPE_L IN [1,8]`
 
-### 4.18 WMI Persistence Events (`svc-winupdatesvc`)
+### 4.15 WMI Persistence Events (`svc-winupdatesvc`)
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Event Type | ✅ | ES `EVENT_TYPE` | Sysmon Event 19/20/21 |
@@ -610,7 +610,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 ## 5. PROCESS Entity (`proc-powershell`)
 
-> **Note (27 Apr 2026)**: `proc-oauth` was reclassified from `process` to `service` (`svc-oauth`). Token-related sections (5.9–5.12) below remain valid as the field-level data mapping for the OAuth token service — they are now surfaced under the SERVICE entity rather than PROCESS.
+> **Note (27 Apr 2026)**: `proc-oauth` was reclassified from `process` to `service` (`svc-oauth`). Token-related sections (5.9–5.11) below remain valid as the field-level data mapping for the OAuth token service — they are now surfaced under the SERVICE entity rather than PROCESS.
 
 ### 5.1 Risk Summary
 | Field | Status | Source | How to Get |
@@ -688,12 +688,12 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 |-------|--------|--------|------------|
 | API Call, Purpose, Response, Data Volume | 🟡 | M365 unified audit log | Some API activity in audit, but **no dedicated Graph API call audit** |
 
-### 5.13 Recent Alerts
+### 5.12 Recent Alerts
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Alert label, Type, MITRE, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` | Same as User 1.6 |
 
-### 5.15 DLL/Module Loads (Sysmon Event 7) — `proc-powershell`
+### 5.13 DLL/Module Loads (Sysmon Event 7) — `proc-powershell`
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | DLL Path | ✅ | ES `IMAGE_LOADED` | Sysmon.xml Event 7 parser |
@@ -704,7 +704,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `EVENTID=7 AND HOSTTYPE=sysmon AND (IMAGE=<process_path> OR PROCESSGUID=<guid>)`
 
-### 5.16 DNS Queries by Process (Sysmon Event 22) — `proc-powershell`
+### 5.14 DNS Queries by Process (Sysmon Event 22) — `proc-powershell`
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Domain | ✅ | ES `QUERY_NAME` | Sysmon.xml Event 22 parser |
@@ -713,7 +713,7 @@ Grouped by risk relevance. Event IDs shown as secondary detail per row (visible 
 
 > **ES Query**: `EVENTID=22 AND HOSTTYPE=sysmon AND IMAGE=<process_path>`
 
-### 5.17 Named Pipe Events (Sysmon Event 17/18) — `proc-powershell`
+### 5.15 Named Pipe Events (Sysmon Event 17/18) — `proc-powershell`
 | Field | Status | Source | How to Get |
 |-------|--------|--------|------------|
 | Event Type | ✅ | ES `EVENT_TYPE` | CreatePipe / ConnectPipe |
@@ -1361,62 +1361,27 @@ The renderer hides any tab whose sections are all empty. The keys below appear i
 
 | Date | Change | Entities Affected |
 |------|--------|-------------------|
+| 24 Apr 2026 | Initial mapping doc generated. Added Section 6 SOC enrichments. Implemented new sections across entities: 6 user (`user-m-henderson` + `user-admin`), 5 device (`dev-ws045`), 3 IP (`ip-tor`) + 1 (`ip-internal`), 2 service (`svc-azure-ad`) + 1 (`svc-winupdatesvc`), 3 process (`proc-powershell`). Updated `tabConfig` (added Changes/Persistence tabs, expanded all entity tabs) and `buildQuickCardRows()` summary rows | All |
 | 24 Apr 2026 | Removed unachievable sections (vulnerabilities, misconfigurations, installedSoftware, cloudAsset, CIS benchmarks, serviceDependencies, relatedCampaigns, relatedTokens) | All |
-| 24 Apr 2026 | Added Section 6 new enrichments to mapping doc | — (doc only) |
-| 24 Apr 2026 | Implemented 6 new user sections in `user-m-henderson` | User |
-| 24 Apr 2026 | Implemented 5 new device sections in `dev-ws045` | Device |
-| 24 Apr 2026 | Implemented 3 new IP sections in `ip-tor`, 1 in `ip-internal` | IP |
-| 24 Apr 2026 | Implemented 2 new service sections in `svc-azure-ad`, 1 in `svc-winupdatesvc` | Service |
-| 24 Apr 2026 | Implemented 3 new process sections in `proc-powershell` | Process |
-| 24 Apr 2026 | Updated tabConfig — added "Changes" tab (user), "Persistence" tab (device), expanded all entity tabs | All |
-| 24 Apr 2026 | Updated `buildQuickCardRows()` summary rows for all entity types | All |
-| 24 Apr 2026 | Implemented 6 new user sections in `user-admin` (admin-context data) | User |
-| 25 Apr 2026 | **v3 field-level validation pass** — audited every field against backend code/parsers | All |
-| 25 Apr 2026 | Removed `investigationStatus` from all entities — entities are not incidents; `ADSIncidentStatus` has only 3 manual statuses | All |
-| 25 Apr 2026 | Removed `Watch List` from UEBA Risk Profile — manual UEBA toggle, not investigation-relevant | User |
-| 25 Apr 2026 | Removed `Peer Group`, `Deviation`, `Risk Trend` from UEBA Risk Profile — no time-series history, peer avg not stored | User |
-| 25 Apr 2026 | Removed `MFA Challenges`, `Unique Geolocations` from Login Statistics — arbitrary mixing of on-prem/cloud; city GeoIP unreliable | User |
-| 25 Apr 2026 | Updated `Unique Source IPs` to show actual IP addresses alongside count | User |
-| 25 Apr 2026 | Removed `ASN`, `ISP` from IP Details — no parser extracts these fields | IP |
-| 25 Apr 2026 | Simplified Geo Location to country-only (`GEO_COUNTRY`) — city/lat-lon unreliable | IP |
-| 25 Apr 2026 | Renamed `Total Connections` → `Firewall Events (24h)` with allow/deny breakdown | IP |
-| 25 Apr 2026 | Removed `City`, `Latitude/Longitude`, `Timezone` from Geo Context — unreliable precision | IP |
-| 25 Apr 2026 | Removed `Subnet`, `VLAN`, `Firewall Zone` from internal IP Details — no mapping tables | IP |
-| 25 Apr 2026 | Removed ip-internal geoContext fields: Country, City, Building, Timezone, Corporate Location | IP |
-| 25 Apr 2026 | Removed `AlienVault OTX` from Threat Intel — bulk STIX feed only, no live API query | IP |
-| 25 Apr 2026 | Removed VT `Community Score` and `Tags` — `VirusTotalActionHandler` only returns detection ratio | IP |
-| 25 Apr 2026 | Added `ADSThreatAnalyticsFeeds` as second TI source in prototype | IP |
-| 25 Apr 2026 | Cleaned Connection History — removed Azure AD sign-in entry (not a network connection); added Dest IP, Action, Device fields | IP |
-| 25 Apr 2026 | Removed all `Note` fields from account change sections (accountLockouts, passwordHistory, groupMembershipChanges, mailboxForwarding) — fabricated analyst commentary | User |
-| 25 Apr 2026 | Removed editorial annotations: `⚠`, `(Tor proxy)`, `(compromised session)` from data fields | User |
-| 25 Apr 2026 | Added `emptyText` renderer support for sections with no data; used in `privilegedRoleChanges` | User |
-| 26 Apr 2026 | Renamed `Blocklist Status` → `Threat Feed Match` — product checks internal feed stores (Webroot, STIX/TAXII, file import), not external blocklists. Label was misleading | IP |
-| 26 Apr 2026 | Downgraded `Threat Feeds Flagged` and `Threat Feed Match` from ✅ to 🟡 — ingestion uses `findAny()` (records only first match). Count requires new query-time `countFeedsForIP()` method. Show binary until built | IP |
-| 27 Apr 2026 | Restructured Security Event Summary from flat KV to risk-grouped format: "Needs Review" (4625, 7045, 4698) and "Normal" (4688, 4663, 4672, 4719). Event IDs shown as subtle secondary text. Removed editorial annotations (`⚠`, `"unsigned"`, `"from unknown sources"`, `"during attack window"`) | Device |
-| 27 Apr 2026 | Added urgency severity chips to playbooks: "Run Immediate" (red — containment: block/kill/isolate/revoke), "High Priority" (orange — investigation/hunt/analysis), "Standard" (green — hardening/monitoring). Applied to all 37 playbook entries | All |
-| 27 Apr 2026 | Reclassified OAuth Tokens from `process` to `service` entity (`proc-oauth` → `svc-oauth`). Updated display color, modal title, graph filter counts. Removed empty Processes filter from dropdown | Service |
-| 27 Apr 2026 | Fixed entity filter connection matching: replaced coordinate proximity logic (`< 30px` threshold) with `data-source`/`data-target` attribute lookup. Users filter now correctly shows Azure AD, ip-tor, SharePoint as connected neighbors. Edge labels also light up for connected edges | Graph |
-| 29 Apr 2026 | **Design note — Response actions must be alert-contextual**: Right-click actions on graph entities (Revoke Tokens, Block IP, Isolate Host, etc.) are currently based on entity type alone. In the real product, actions must be dynamically surfaced based on the **alert type, MITRE techniques, and the entity's role in the attack chain**. Example: "Revoke Tokens" is relevant for OAuth abuse alerts but not for a brute-force or malware alert. The action set should be determined by the investigation context, not hardcoded per entity type | All |
-| 05 May 2026 | **V4 — Edge Relation Slider**: Added edge click behavior — clicking edge icons on graph opens right-side slider with enriched connection details | Graph/Edge |
-| 05 May 2026 | Added MITRE ATT&CK mapping section to edge slider — tactic/technique chips from `ITSDetectionRuleVsMitre` | Edge |
-| 05 May 2026 | Added Detection Rule card to edge slider — rule name, type badge, rule ID | Edge |
-| 05 May 2026 | Added Connection Properties section — event count, risk score with bar, data volume, first/last seen | Edge |
-| 05 May 2026 | Added Event Distribution chart — 12-bucket sparkline with `#FFC600` bars (Graph.svg style), exact clock time labels, average line, peak marker, hover tooltips | Edge |
-| 05 May 2026 | Added Behavioral Baseline card — dual progress bars (expected vs actual), severity classification, pulsing deviation badge | Edge |
-| 05 May 2026 | Added Threat Intelligence section — vendor badge, reputation score, VirusTotal detection ratio | Edge |
-| 05 May 2026 | Added Geo Context section — country flag, city, IP address | Edge |
-| 05 May 2026 | Added Evidence panel — severity bar, summary, key findings chips, confidence meter with progress bar, source/count badges | Edge |
-| 05 May 2026 | Converted evidence data from flat strings to structured objects: `{ summary, findings[], confidence, rawLog }` for all 15 edges | Edge |
-| 05 May 2026 | Made flow diagram entity nodes clickable — click source/target opens entity detail slider | Edge |
-| 05 May 2026 | Removed ~~View in Log Search~~ button — prototype scope | Edge |
-| 05 May 2026 | Removed ~~Sample Log Entry~~ section — not useful in prototype | Edge |
-| 05 May 2026 | Removed ~~Connected Entities~~ section — redundant with clickable flow diagram at top | Edge |
-| 05 May 2026 | Updated entity_data_mapping.md — added Section 8 (Edge Relation Slider) with 12 subsections | Doc |
-| 06 May 2026 | Doc drift fix: added Section 9 (ALERT Entity) covering the 14 alert nodes (alertDetails, triggerConditions, affectedEntities, correlatedAlerts, remediationGuide); previously undocumented | Doc/Alert |
-| 06 May 2026 | Doc drift fix: updated Section 4 header to include `svc-oauth` and added reclassification note above Section 5 (token sections 5.9–5.12 now describe the OAuth service, not a process) | Doc/Service |
-| 06 May 2026 | Renumbered Implementation Changelog from Section 9 → Section 10 to make room for ALERT Entity section | Doc |
-| 06 May 2026 | Marked all 6 "Remediation & Playbooks" subsections (1.16, 2.12, 3.11, 4.15, 5.14, 9.5) as ❌ NOT RENDERED — slider explicitly drops `remediationGuide` via `skipSections` and any label matching `/recommendation|remediation/i`. Data is defined per entity but never reaches the DOM | Doc/All |
-| 06 May 2026 | Added Section 10 Render Status Audit — full per-entity orphaned-section table, label-filter dropouts (`responseActions`), tab-config sections with no data, and effective rendered-section counts per entity | Doc |
-| 06 May 2026 | Renumbered Implementation Changelog 10 → 11 to make room for the audit section | Doc |
-| 06 May 2026 | **Removed 15 not-rendered subsections from doc** (1.13 Compliance Impact, 1.16/2.12/3.11/4.15/5.14/9.5 Remediation & Playbooks, 2.3 Vulnerabilities, 2.4 CIS Misconfigurations, 2.5 Installed Software, 2.6 Cloud Asset & MDM, 3.4 Related Campaigns & IOCs, 4.3 Configuration Issues, 4.12 Service Dependencies, 5.12 Related Tokens) — these described data the slider does not surface | Doc/All |
-| 06 May 2026 | Rewrote Section 10 Render Status Audit — removed the per-entity orphan table (now empty after the deletions) and kept just universally filtered sections, auto-hidden tab keys, and effective rendered-section counts | Doc |
+| 25 Apr 2026 | **Field-level validation pass** — audited every field against backend code/parsers; removed `investigationStatus` from all entities (entities are not incidents) | All |
+| 25 Apr 2026 | UEBA Risk Profile cleanup — removed `Watch List` (manual toggle), `Peer Group` / `Deviation` / `Risk Trend` (no time-series, no peer avg) | User |
+| 25 Apr 2026 | Login Statistics cleanup — removed `MFA Challenges`, `Unique Geolocations` (unreliable city GeoIP); `Unique Source IPs` now shows actual addresses alongside count | User |
+| 25 Apr 2026 | IP Details / Geo cleanup — removed `ASN`, `ISP`, `City`, `Latitude/Longitude`, `Timezone`, `Subnet`, `VLAN`, `Firewall Zone`, `Building`, `Corporate Location`; simplified Geo to country-only (`GEO_COUNTRY`); renamed `Total Connections` → `Firewall Events (24h)` with allow/deny breakdown | IP |
+| 25 Apr 2026 | Threat Intel cleanup — removed `AlienVault OTX` (bulk STIX feed only, no live API), VT `Community Score` and `Tags` (handler returns only detection ratio); added `ADSThreatAnalyticsFeeds` as second TI source | IP |
+| 25 Apr 2026 | Connection History cleanup — removed Azure AD sign-in entry (not a network connection); added Dest IP, Action, Device fields | IP |
+| 25 Apr 2026 | Removed all `Note` fields from account change sections (fabricated analyst commentary) and editorial annotations (`⚠`, `(Tor proxy)`, `(compromised session)`) from data fields | User |
+| 25 Apr 2026 | Added `emptyText` renderer for empty sections (used in `privilegedRoleChanges`) | User |
+| 26 Apr 2026 | Renamed `Blocklist Status` → `Threat Feed Match` (product checks internal feeds, not external blocklists). Downgraded `Threat Feeds Flagged` and `Threat Feed Match` from ✅ to 🟡 — ingestion uses `findAny()`; count requires new `countFeedsForIP()` query | IP |
+| 27 Apr 2026 | Restructured Security Event Summary into "Needs Review" (4625, 7045, 4698) vs "Normal" (4688, 4663, 4672, 4719) groups; event IDs as secondary text; removed editorial annotations | Device |
+| 27 Apr 2026 | Added urgency severity chips to playbooks: "Run Immediate" (red — containment), "High Priority" (orange — investigation/hunt), "Standard" (green — hardening). Applied to all 37 playbook entries | All |
+| 27 Apr 2026 | Reclassified OAuth Tokens from `process` to `service` (`proc-oauth` → `svc-oauth`). Updated display color, modal title, graph filter counts. Removed empty Processes filter | Service |
+| 27 Apr 2026 | Fixed entity filter connection matching — replaced coordinate proximity (`< 30px`) with `data-source`/`data-target` attribute lookup. Edge labels also light up | Graph |
+| 29 Apr 2026 | **Design note — Response actions must be alert-contextual**: right-click actions on graph entities are currently entity-type based; in the real product they must be dynamically surfaced based on alert type, MITRE techniques, and entity role in the attack chain (e.g. "Revoke Tokens" for OAuth abuse but not for brute-force) | All |
+| 05 May 2026 | **Edge Relation Slider** — clicking edge icons opens right-side slider with enriched connection details. Added MITRE ATT&CK mapping, Detection Rule card, Connection Properties, Event Distribution chart (12-bucket sparkline, average line, peak marker), Behavioral Baseline (dual progress bars + pulsing deviation badge), Threat Intelligence, Geo Context, and Evidence panel (severity bar, findings chips, confidence meter) | Edge |
+| 05 May 2026 | Edge slider — flow-diagram entity nodes clickable (open entity detail slider); evidence converted from flat strings to structured `{ summary, findings[], confidence, rawLog }` for all 15 edges; removed View in Log Search button, Sample Log Entry section, Connected Entities section | Edge |
+| 05 May 2026 | Doc — added Section 7 (Edge Relation Slider) with 12 subsections | Doc |
+| 06 May 2026 | **ALERT Entity** — added Section 9 covering the 14 alert nodes (alertDetails, triggerConditions, affectedEntities, correlatedAlerts) | Doc/Alert |
+| 06 May 2026 | Section 4 header updated to include `svc-oauth`; added reclassification note above Section 5 (token sub-sections now describe the OAuth service, not a process) | Doc/Service |
+| 06 May 2026 | Removed sections that the slider does not render: Compliance Impact, Vulnerabilities, CIS Misconfigurations, Installed Software, Cloud Asset & MDM, Related Campaigns & IOCs, Configuration Issues, Service Dependencies, Related Tokens, and per-entity Remediation & Playbooks (universally filtered via `skipSections`) | Doc/All |
+| 06 May 2026 | **Render Status Audit** — added Section 10 covering universally filtered keys, tab-config sections with no data, and effective rendered-section counts per entity | Doc |
+| 06 May 2026 | Renumbered all subsections sequentially to fill gaps left by the deletions (Sections 1–5) | Doc |
