@@ -189,40 +189,45 @@ function renderEntitySliderBody(entityId) {
   // Define tab groupings per entity type
   const tabConfig = {
     user: [
-      { id:'overview', label:'Overview', sections:['riskSummary','usersDetails','responseActions'] },
-      { id:'risk', label:'Risk & Identity', sections:['uebaProfile','loginStatistics','peerComparison','cloudIdentities','identityRisk'] },
-      { id:'activity', label:'Activity', sections:['logonActivity','geoTravelAnalysis','networkActivity','processes','serviceTriggered','resourceFileAccess'] },
-      { id:'threats', label:'Threats & Response', sections:['recentAlerts','threatIntelContext','dlpIncidents','endpointSecurity','complianceImpact','attackPathContext'] }
+      { id:'overview', label:'Overview', sections:['riskSummary','usersDetails'] },
+      { id:'risk', label:'Risk & Identity', sections:['uebaProfile','loginStatistics','cloudIdentities','identityRisk','privilegedRoleChanges','threatIntelContext','dlpIncidents'] },
+      { id:'activity', label:'Activity', sections:['logonActivity','networkActivity','processes','serviceTriggered','resourceFileAccess','recentAppAccess'] },
+      { id:'changes', label:'Account Changes', sections:['accountLockouts','passwordHistory','groupMembershipChanges','mailboxForwarding'] },
+      { id:'recentAlerts', label:'Recent Alerts', sections:['recentAlerts'] }
     ],
     device: [
-      { id:'overview', label:'Overview', sections:['riskSummary','deviceDetails','cloudAsset','loginActivity'] },
-      { id:'host', label:'Host Activity', sections:['processesOnHost','servicesOnHost','usersLoggedOn'] },
-      { id:'security', label:'Security', sections:['vulnerabilities','misconfigurations'] },
-      { id:'software', label:'Software', sections:['installedSoftware'] },
-      { id:'alerts', label:'Alerts', sections:['recentAlerts'] }
+      { id:'overview', label:'Overview', sections:['riskSummary','deviceDetails','agentStatus','gpoApplied','securityEventSummary'] },
+      { id:'host', label:'Host Activity', sections:['processesOnHost','servicesOnHost','usersLoggedOn','loginActivity'] },
+      { id:'persistence', label:'Persistence & Exfil', sections:['scheduledTasks','usbDeviceEvents'] },
+      { id:'alerts', label:'Alerts & Response', sections:['recentAlerts'] }
     ],
     ip: [
       { id:'overview', label:'Overview', sections:['riskSummary','ipDetails','geoContext','associatedUsers','associatedDevices'] },
-      { id:'threat', label:'Threat Intel', sections:['threatIntelligence','relatedCampaigns'] },
-      { id:'connections', label:'Connections', sections:['connectionHistory','trafficSummary'] },
+      { id:'threat', label:'Threat Intel', sections:['threatIntelligence','idsAlerts','firewallSummary'] },
+      { id:'connections', label:'Connections', sections:['connectionHistory','dnsHistory','vpnSessions','trafficSummary'] },
+      { id:'logon', label:'Logon Activity', sections:['logonActivity'] }
+    ],
+    domain: [
+      { id:'overview', label:'Overview', sections:['riskSummary','ipDetails','geoContext','associatedUsers','associatedDevices'] },
+      { id:'threat', label:'Threat Intel', sections:['threatIntelligence','idsAlerts','firewallSummary'] },
+      { id:'connections', label:'Connections', sections:['connectionHistory','dnsHistory','vpnSessions','trafficSummary'] },
       { id:'logon', label:'Logon Activity', sections:['logonActivity'] }
     ],
     service: [
-      { id:'overview', label:'Overview', sections:['riskSummary','serviceDetails','serviceInfo','serviceDependencies'] },
-      { id:'config', label:'Config & Policy', sections:['configurationIssues','conditionalAccess','dlpPolicies'] },
-      { id:'activity', label:'Activity', sections:['signInAudit','fileAccessAnomaly','sensitiveFiles','serviceTimeline','networkConnections','fileDrops','processes'] },
-      { id:'alerts', label:'Alerts', sections:['recentAlerts','serviceTriggered'] }
+      { id:'overview', label:'Overview', sections:['riskSummary','serviceDetails','serviceInfo'] },
+      { id:'config', label:'Config & Policy', sections:['oauthConsentGrants','conditionalAccess','dlpPolicies'] },
+      { id:'activity', label:'Activity', sections:['signInAudit','adminActivity','fileAccessAnomaly','sensitiveFiles','serviceTimeline','networkConnections','fileDrops','wmiEvents','processes'] },
+      { id:'alerts', label:'Alerts & Response', sections:['recentAlerts','serviceTriggered'] }
     ],
     process: [
       { id:'overview', label:'Overview', sections:['riskSummary','processDetails','details','processTree','childProcesses','serviceTriggered','recentAlerts'] },
-      { id:'anomaly', label:'Anomalies', sections:['tokenAnomaly','amsiEvents','registryModifications'] },
-      { id:'activity', label:'Activity', sections:['tokenUsage','networkActivity','fileOperations','processes'] },
-      { id:'related', label:'Related', sections:['relatedTokens'] }
+      { id:'anomaly', label:'Anomalies', sections:['tokenAnomaly','amsiEvents','registryModifications','namedPipes'] },
+      { id:'activity', label:'Activity', sections:['tokenUsage','networkActivity','fileOperations','processes','dllLoads','processDnsQueries'] }
     ],
     alert: [
       { id:'overview', label:'Overview', sections:['alertDetails','triggerConditions','details'] },
       { id:'scope', label:'Scope', sections:['affectedEntities','correlatedAlerts','processes'] },
-      { id:'response', label:'Response', sections:['responseActions','serviceTriggered','recentAlerts'] }
+      { id:'response', label:'Response', sections:['serviceTriggered','recentAlerts'] }
     ]
   };
 
@@ -249,11 +254,28 @@ function renderEntitySliderBody(entityId) {
       if (!hasContent) return;
       const display = i === 0 ? '' : ' style="display:none;"';
       html += `<div class="eds-tab-panel" data-tab="${tab.id}"${display}>`;
-      tab.sections.forEach(secKey => {
-        const sec = e.sections[secKey];
-        if (!sec) return;
-        html += renderEntitySection(entityId, secKey, sec);
-      });
+
+      /* Special flat rendering for Recent Alerts tab — alert list only, no section wrapper */
+      if (tab.id === 'recentAlerts' && e.sections.recentAlerts) {
+        const alertSec = e.sections.recentAlerts;
+        const allEntries = alertSec.viewAllData || alertSec.timeline || [];
+        const maxShow = 10;
+        const visibleEntries = allEntries.slice(0, maxShow);
+        if (visibleEntries.length === 0) {
+          html += `<div style="padding:24px 20px;color:#8a94a6;font-size:12px;text-align:center;">No recent alerts found.</div>`;
+        } else {
+          html += `<div class="em-section-body" style="padding:8px 20px 12px;">`;
+          html += renderTimelineEntries(visibleEntries);
+          html += `</div>`;
+        }
+      } else {
+        tab.sections.forEach(secKey => {
+          const sec = e.sections[secKey];
+          if (!sec) return;
+          html += renderEntitySection(entityId, secKey, sec);
+        });
+      }
+
       html += '</div>';
     });
   } else {
@@ -375,6 +397,11 @@ function renderEntitySection(entityId, secKey, sec) {
   // Peer comparison
   if (sec.peerData) {
     html += renderPeerComparison(sec.peerData);
+  }
+
+  // Remediation guide (verdict + recommendations + playbooks)
+  if (sec.remediationData) {
+    html += renderRemediationGuide(sec.remediationData);
   }
 
   html += `</div>`; // section-body
@@ -645,6 +672,57 @@ function renderPeerComparison(pd) {
     html += '</div></div>';
   });
   html += '</div></div>';
+  return html;
+}
+
+/* ─── Remediation Guide (Verdict + Recommendations + Playbooks) ─── */
+function renderRemediationGuide(rd) {
+  let html = '<div class="em-remediation-guide">';
+  // Verdict banner
+  html += `<div class="em-rg-verdict ${rd.severity}">`;
+  html += `<span class="em-rg-verdict-dot"></span>`;
+  html += `${rd.verdict}`;
+  html += `</div>`;
+  // Recommendations
+  if (rd.recommendations && rd.recommendations.length > 0) {
+    html += `<div class="em-rg-sub-title"><span class="rg-icon">💡</span> Recommendations</div>`;
+    html += '<div class="em-rg-rec-list">';
+    rd.recommendations.forEach(rec => {
+      html += '<div class="em-rg-rec">';
+      html += `<span class="em-rg-rec-icon">${rec.icon}</span>`;
+      html += '<div class="em-rg-rec-body">';
+      html += `<div class="em-rg-rec-title">${rec.title} <span class="em-rg-rec-priority ${rec.priority}">${rec.priority}</span></div>`;
+      html += `<div class="em-rg-rec-desc">${rec.desc}</div>`;
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+  // Playbooks
+  if (rd.playbooks && rd.playbooks.length > 0) {
+    html += `<div class="em-rg-sub-title"><span class="rg-icon">▶</span> Available Playbooks</div>`;
+    html += '<div class="em-rg-playbooks">';
+    rd.playbooks.forEach(pb => {
+      html += '<div class="em-rg-pb">';
+      html += '<div class="em-rg-pb-info">';
+      html += `<div class="em-rg-pb-name">${pb.name} <span class="em-rg-pb-id">${pb.id}</span></div>`;
+      html += `<div class="em-rg-pb-desc">${pb.desc}</div>`;
+      html += '<div class="em-rg-pb-meta">';
+      if (pb.urgency) {
+        const urgCls = pb.urgency === 'Run Immediate' ? 'urg-immediate' : pb.urgency === 'High Priority' ? 'urg-high' : 'urg-standard';
+        html += `<span class="em-rg-pb-badge ${urgCls}">${pb.urgency}</span>`;
+      }
+      html += `<span class="em-rg-pb-badge ready">● ${pb.status}</span>`;
+      html += `<span class="em-rg-pb-badge time">⏱ ${pb.estimatedTime}</span>`;
+      html += '</div></div>';
+      html += `<button class="em-rg-pb-run" onclick="if(typeof showToast==='function')showToast('▶','Running ${pb.name}…')">▶ Run</button>`;
+      html += '</div>';
+    });
+    html += '</div>';
+  } else if (rd.playbooks !== undefined && rd.playbooks.length === 0) {
+    html += `<div class="em-rg-sub-title"><span class="rg-icon">▶</span> Available Playbooks</div>`;
+    html += '<div class="em-rg-no-playbooks">No automated playbooks required for this entity.</div>';
+  }
+  html += '</div>';
   return html;
 }
 
