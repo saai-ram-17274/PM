@@ -15,9 +15,10 @@
   position: relative;
   margin-top: 8px;
 }
-.lv-status-chart {
+.lv-status-card .donut-wrap > svg,
+.lv-status-card .donut-wrap .lv-status-chart {
   width: 100%;
-  max-width: 240px;
+  max-width: 280px;
   height: auto;
   display: block;
 }
@@ -28,9 +29,25 @@
   font-size: 11px;
   color: var(--text-secondary);
   margin-top: 8px;
+  width: 100%;
+}
+.lv-legend-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  width: 100%;
+}
+.lv-legend-col { display: flex; flex-direction: column; gap: 4px; }
+.lv-legend-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin-bottom: 2px;
 }
 .lv-legend-row { display: flex; align-items: center; gap: 6px; }
-.lv-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.lv-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
 /* Insights collapsible groups */
 .lv-insights-head {
