@@ -454,7 +454,7 @@ function applyAttackGraphPartialMode(){
       const note = document.createElement('div');
       note.id = 'avPartialNote';
       note.className = 'av-partial-note';
-      note.innerHTML = '<span class="av-partial-icon">\u2728</span> Partial data shown \u2014 <button class="av-partial-btn inv-ai-cta-btn" onclick="startInvestigation()"><span class="ai-spark">\u2728</span> Start Investigation</button>';
+      note.innerHTML = '<span class="av-partial-icon">\u2728</span> Quick view \u2014 expand with AI <button class="av-partial-btn inv-ai-cta-btn" onclick="startInvestigation()"><span class="ai-spark">\u2728</span> Start Investigation</button>';
       host.appendChild(note);
     }
   }
