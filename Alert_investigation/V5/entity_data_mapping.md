@@ -539,7 +539,185 @@ Same as §1.22 — primarily 🤖✚ AI-generated.
 
 ---
 
-## 8. Cross-Cutting AI-Enrichment Patterns
+## 8. EDGE RELATION Slider — Data Source & AI Enrichment Mapping
+
+> **What it is**: When a user clicks an edge icon (📡 / 🔐 / 📁 / etc.) on the attack graph, a side slider opens with enriched connection details between two entities (e.g., `user-m-henderson → AccessedFile → svc-sharepoint`). This section maps every field shown to its backend source and AI-enrichable extension.
+>
+> **Interaction model**:
+> - Click edge icon on graph → `showEdgeRelation(evt, el)` in [`js/v4-extras.js`](js/v4-extras.js#L341)
+> - Source / target entity pills in the flow header are clickable → `openEntitySlider(id)`
+> - Edge slider reuses the same DOM panel as the entity slider
+>
+> **Data store**: `EDGE_ATTRIBUTES` in [`js/v4-extras.js`](js/v4-extras.js#L82) — keyed by `"source→target"` string; **16 demo edges**.
+> **Catalog**: 24 canonical relations + 7 legacy aliases — see [relation_catalog.md](relation_catalog.md). Relation lookup goes through `canonicalRelation(label)` so legacy `data-label` strings still resolve.
+
+### 8.1 Flow Diagram (Source → Relation → Target)
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| Source/Target Entity Icon | ✅ | `ENTITY_DISPLAY[id].icon` ([display-config.js](js/data/display-config.js)) | Lookup from graph node data | — |
+| Source/Target Entity Name | ✅ | Node ID → `fmtName()` | Strips `user-`/`ip-`/`dev-`/`svc-`/`alert-`/`proc-`/`domain-` prefix and hyphens | — |
+| Relation Label | ✅ | `EDGE_ATTRIBUTES[key].relation` (canonical via `canonicalRelation()`) | Stored per edge | 🤖✚ AI re-labels free-text legacy edges into canonical taxonomy |
+| Relation Color / Icon | ✅ | `REL_GUIDE[relation].color` / `.icon` | 24 canonical relations across 7 categories | — |
+| Source/Target clickable | ✅ | `openEntitySlider(id)` | Same handler as graph node click | — |
+
+### 8.2 Relation Description (`REL_GUIDE`)
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| Description text (1–2 sentences explaining the relation type) | ✅ | `REL_GUIDE[key].desc` | Static catalog (24 entries) | 🤖✚ AI rewrites the description to be **incident-specific** ("In this case, AccessedFile means 24 sensitive files were downloaded in 8 min…") |
+| Category badge (Detection / Identity / Privilege / Data Movement / Network / Process / Email / System Change) | ✅ | `REL_GUIDE[key].category` | Static catalog | — |
+
+### 8.3 MITRE ATT&CK Mapping
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| Tactic Name + ID (e.g. `Initial Access` / `TA0001`) | ✅ | `ITSDetectionRuleVsMitre.TACTIC` / `.TACTIC_ID` | Mapped from triggering detection rule | 🤖✚ AI predicts **next-likely tactic** in the kill chain based on this edge + adjacent edges |
+| Technique Name + ID (e.g. `Valid Accounts` / `T1078`) | ✅ | `ITSDetectionRuleVsMitre.TECHNIQUE_NAME` / `.TECHNIQUE_ID` | Same as above | 🤖 AI fetches the **ATT&CK procedure examples** for this technique to show real-world attacker usage |
+| Sub-technique (e.g. `T1078.004`) | 🟡 | When mapped per-rule | Same source, sub-technique field | — |
+
+> **Conditional**: Only RULE-type alert edges have native MITRE. Correlation/UEBA edges may not — AI can fill gaps by classifying the raw evidence against ATT&CK.
+
+### 8.4 Detection Rule
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| Rule Name (e.g. `Impossible Travel Detection`) | ✅ | `ITSAlertProfileConfigurations.DISPLAY_NAME` | DB lookup by alert ID | 🤖✚ AI explains the rule in **plain English** |
+| Rule Type (`Correlation` / `Anomaly (UEBA)` / `Threat Intel`) | ✅ | `ITSAlertProfileConfigurations.ALERT_TYPE` | Same | — |
+| Rule ID (e.g. `CR-0042`) | ✅ | `ITSAlertProfileConfigurations.ALERT_PROFILE_ID` | Internal ID | — |
+
+### 8.5 Connection Properties
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| Event Count (`count`) | ✅ | `ZLogs COUNT(*)` between source→target in time window | ES range query | 🤖✚ AI compares to **peer-pair baseline** and flags `47 events vs typical 0` |
+| Risk Score (0–100) | ✅ | `ITSEntityRiskScoreDetails.RISK_SCORE` (combined source+target) | Existing scorer | 🤖✚ AI re-ranks considering **path criticality** (edge sits on the kill-chain backbone vs noise) |
+| Risk Bar (color: green/yellow/orange/red) | ✅ | Computed client-side from risk | Threshold mapping | — |
+| Data Volume (e.g. `4.2 MB`) | 🟡 | `ZLogs SUM(BYTES_SENT + BYTES_RECEIVED)` | Available for FW/proxy/DLP logs only | 🤖✚ AI **estimates** when bytes aren't logged (e.g. infer from `24 files × avg size`) |
+| First Seen / Last Seen | ✅ | `ZLogs MIN/MAX(_zl_timestamp)` | ES min/max agg | — |
+
+### 8.6 Event Distribution (Sparkline, 12 buckets)
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| 12-bucket sparkline (`sparkline:[…]`) | ✅ | `ZLogs COUNT(*) GROUP BY time_bucket` | 1-hour window / 12 × 5-min buckets | 🤖✚ AI labels the **shape** ("steady beacon", "burst-then-quiet", "ramp-up") |
+| Total Events | ✅ | `SUM(buckets)` | Client-side | — |
+| Time-axis labels | ✅ | Computed from `lastSeen − N×5min` | Client-side | — |
+| Average line | ✅ | `total / 12` | Client-side | — |
+| Peak marker | ✅ | `MAX(buckets)` | Client-side | 🤖✚ AI explains the peak in context ("15:30 spike correlates with the OAuth consent event") |
+| Hover tooltip (per-bucket count) | ✅ | Same data | Client-side | — |
+
+> **Backend API needed**: One endpoint `(source, target, relation, time_range)` → `{count, buckets[]}`. No new infra — existing ZLogs aggregation.
+
+### 8.7 Behavioral Baseline (UEBA)
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| Expected (learned baseline) | ✅ | `DashBoardAnomalyDataProvider` (UEBA) | 30/90-day rolling-window model | 🤖✚ AI provides **baseline rationale** ("Expected 0–1/day because user has no prior connections to Tor") |
+| Actual (observed in window) | ✅ | Same as event count | ES query | — |
+| Deviation (`actual / expected`) | ✅ | Computed | Client-side | — |
+| Severity classification (Normal ≤ 1.3×, Warning 1.3–2×, Danger > 2×, **First Occurrence**) | ✅ | `AnomalyDetectionDataImpl` thresholds | Existing | 🤖✚ AI rewrites the severity into a **risk-grade narrative** instead of just a multiplier |
+| Visual dual bars (Expected vs Actual) | ✅ | Client-side | Same data | — |
+
+### 8.8 Threat Intelligence (conditional, when edge involves an external IOC)
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| Vendor (`Webroot`, `Anomali`, `OTX`, etc.) | ✅ | `ThreatAnalyticsIntermediateProcessor` | Internal TI aggregator | 🤖 Live fan-out to **VirusTotal, GreyNoise, urlscan, ThreatFox, Censys, Shodan** for fresh reputation |
+| Reputation Score (1=Critical / 2=Malicious / 3=Suspicious) | ✅ | `ES THREAT_REPUTATION` | Existing | — |
+| Label (Critical / Malicious / Suspicious) | ✅ | Derived from score | Client-side | — |
+| VirusTotal Detection (`62/94`) | ❌ | Not in product | — | 🤖 **AI-only** — direct VT API call |
+| Domain Age (WHOIS) | ❌ | Not in product | — | 🤖 **AI-only** — WHOIS lookup |
+| Passive DNS (other historical resolutions) | 🟡 | Internal cache (limited) | Existing partial | 🤖 PassiveTotal / VT passive DNS for full history |
+
+### 8.9 Geo Context (conditional, when edge involves an external IP)
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| Country flag + name | ✅ | MaxMind GeoIP → emoji map | Bundled DB | 🤖 AI cross-checks against **user's historical geo** for impossible-travel context |
+| City | 🟡 | MaxMind GeoLite2-City | City accuracy varies | — |
+| ASN / ISP / Hosting Provider | 🟡 | Optional MaxMind ASN DB | Existing if licensed | 🤖 AI fetches **IPinfo / ipdata.co** for ASN + hosting reputation when not licensed |
+| IP Address | ✅ | `ES REMOTEIP` / `SrcIP` | Raw log | — |
+
+### 8.10 Evidence (the AI-most-valuable section)
+
+| Field | Status | Product Source | How to Get | AI Enrichment |
+|-------|--------|----------------|------------|---------------|
+| Summary (1-line) | ✅ | `EDGE_ATTRIBUTES.evidence.summary` (currently authored) | Composed from `ITSAlertProfileConfigurations.DESCRIPTION` + context | 🤖✚ **High-value AI use case** — AI synthesizes summary from raw logs |
+| Findings (chips: distance, count, protocol, anomaly) | ✅ | `EDGE_ATTRIBUTES.evidence.findings[]` | Authored / extracted | 🤖✚ AI **auto-extracts** the chips from the raw log + alert context |
+| Confidence Score (%) | 🟡 | Multi-signal aggregator (rule + UEBA + TI) | Logic to be built | 🤖✚ AI computes confidence from **agreement across signals** |
+| Confidence Bar (green/yellow/orange/gray) | ✅ | Visual from confidence | Client-side | — |
+| Severity Bar (Critical / High / Medium / Low) | ✅ | Derived from edge `risk` | Client-side | — |
+| Source Badge (`Azure AD Sign-in Logs`, `Firewall + IDS`, …) | ✅ | `EDGE_ATTRIBUTES.source` | Authored per edge | 🤖✚ AI auto-fills from log-source metadata |
+| Event Count Badge | ✅ | `EDGE_ATTRIBUTES.count` | Same as §8.5 | — |
+| Raw Log preview | ✅ (data) / 🟡 (UI) | `EDGE_ATTRIBUTES.evidence.rawLog` | Stored in catalog, currently **not rendered** | 🤖✚ AI **explains the log line** field-by-field on hover |
+
+### 8.11 Per-Edge Authored Properties (for `EDGE_ATTRIBUTES` in V5)
+
+These are the actual fields populated for each of the 16 demo edges in [v4-extras.js](js/v4-extras.js#L82):
+
+| Property | Type | Required? | Example |
+|----------|------|-----------|---------|
+| `relation` | string (canonical) | ✅ | `'CommunicatedWith'` |
+| `count` | number | ✅ | `47` |
+| `risk` | number 0–100 | ✅ | `96` |
+| `firstSeen` / `lastSeen` | ISO-ish string | ✅ | `'03 Apr 2026 15:20:05'` |
+| `evidence.summary` | string | ✅ | `'Reverse shell traffic, 47 C2 beacon attempts detected'` |
+| `evidence.findings[]` | string[] | ✅ | `['47 beacons in 5 min', 'Fixed interval: 6.3s ±0.2s', …]` |
+| `evidence.confidence` | number 0–100 | ✅ | `99` |
+| `evidence.rawLog` | string | optional | `'IDS \| Alert=ReverseShell \| SrcIP=185.220.101.42 \| …'` |
+| `detectionRule.{name,type,id}` | object | optional | `{name:'C2 Beacon Pattern Detection', type:'Correlation', id:'CR-0101'}` |
+| `mitre.{tactic,tacticId,technique,techId}` | object | optional | `{tactic:'Command and Control', tacticId:'TA0011', …}` |
+| `threatIntel.{vendor,reputation,label,virusTotal}` | object | optional | `{vendor:'Webroot', reputation:2, label:'Malicious', virusTotal:'18/94'}` |
+| `geo.{flag,country,city,ip}` | object | optional | `{flag:'🇷🇴', country:'Romania', city:'Bucharest', ip:'185.220.101.42'}` |
+| `sparkline` | number[12] | optional | `[0,0,0,0,0,0,0,0,5,12,18,12]` |
+| `baseline.{expected,actual,deviation}` | object | optional | `{expected:0, actual:47, deviation:null}` (`null` = first occurrence) |
+| `dataVolume` | string | optional | `'4.2 MB'` |
+| `source` | string | optional | `'Firewall Logs + IDS'` |
+
+### 8.12 Demo Edge Inventory (16 in V5)
+
+| `source→target` | Relation | Risk | Source |
+|------------------|----------|------|--------|
+| `alert-impossible-travel → user-m-henderson` | `TriggeredBy` | 95 | (correlation engine) |
+| `alert-impossible-travel → svc-azure-ad` | `DetectedOn` | 95 | Azure AD Sign-in Logs |
+| `user-m-henderson → ip-tor` | `AccessedFrom` | 92 | Azure AD Sign-in Logs |
+| `user-m-henderson → ip-internal` | `AccessedFrom` | 15 | VPN Gateway Logs |
+| `user-m-henderson → svc-azure-ad` | `LoginTo` | 78 | Azure AD Sign-in Logs |
+| `ip-internal → dev-ws045` | `ResolvedTo` | 10 | DHCP Server Logs |
+| `user-m-henderson → svc-sharepoint` | `AccessedFile` | 88 | SharePoint Audit Logs |
+| `svc-azure-ad → svc-oauth` | `IssuedTo` | 85 | Azure AD Audit Logs |
+| `user-admin → svc-azure-ad` | `LoginTo` | 86 | Azure AD Sign-in Logs |
+| `ip-tor → dev-ws045` | `CommunicatedWith` | 96 | Firewall Logs + IDS |
+| `dev-ws045 → svc-sharepoint` | `AccessedFile` | 90 | SharePoint Audit Logs |
+| `user-m-henderson → dev-ws045` | `LoginTo` | 45 | Windows Security Event Logs |
+| `dev-ws045 → user-admin` | `EscalatedTo` | 88 | Windows Security + Sysmon |
+| `svc-oauth → svc-sharepoint` | `AccessedFile` | 88 | SharePoint API Audit |
+| `ip-tor → domain-c2` | `CommunicatedWith` | 98 | DNS Logs + Firewall |
+| `dev-ws045 → domain-c2` | `CommunicatedWith` | 97 | Sysmon + Firewall |
+
+### 8.13 Edge Data Source Summary
+
+| Data Type | Primary Source | Availability | AI Augmentation |
+|-----------|---------------|--------------|------------------|
+| Event Count | `ZLogs COUNT(*)` agg | ✅ Exists | — |
+| Event Distribution (sparkline) | `ZLogs COUNT(*) GROUP BY time_bucket` | ✅ Exists | 🤖✚ Pattern-shape labelling |
+| Behavioral Baseline | UEBA `DashBoardAnomalyDataProvider` | ✅ Exists | 🤖✚ Baseline rationale |
+| Risk Score | `ITSEntityRiskScoreDetails` | ✅ Exists | 🤖✚ Path-criticality rerank |
+| First/Last Seen | `ZLogs MIN/MAX(_zl_timestamp)` | ✅ Exists | — |
+| MITRE Mapping | `ITSDetectionRuleVsMitre` | 🟡 RULE-type only | 🤖 Fill gaps for UEBA/correlation |
+| Detection Rule | `ITSAlertProfileConfigurations` | ✅ Exists | 🤖✚ Plain-English explanation |
+| Threat Intel | `ThreatAnalyticsIntermediateProcessor` + VT | 🟡 Limited vendors | 🤖 VT, GreyNoise, urlscan, ThreatFox, Censys, Shodan |
+| Geo Context | MaxMind + `ES GEO_COUNTRY` | 🟡 Country reliable, city varies | 🤖 IPinfo / ipdata.co for ASN |
+| Evidence Summary | Alert description + context | 🟡 Authored | 🤖✚ **Auto-generated** from raw logs |
+| Evidence Findings | Authored chips | 🟡 Authored | 🤖✚ Auto-extracted |
+| Confidence Score | Multi-signal aggregator | 🟡 Logic TBD | 🤖✚ Cross-signal agreement |
+| Data Volume | `ZLogs SUM(BYTES)` | 🟡 FW/proxy/DLP only | 🤖✚ Estimate from event metadata |
+| Raw Log Explanation | `EDGE_ATTRIBUTES.rawLog` | ✅ Stored | 🤖✚ Field-by-field explainer |
+
+---
+
+## 9. Cross-Cutting AI-Enrichment Patterns
 
 These are patterns **AI can apply to any field**, not specific to one entity:
 
@@ -561,7 +739,7 @@ These are patterns **AI can apply to any field**, not specific to one entity:
 
 ---
 
-## 9. Section → Entity-Type Cross-Reference
+## 10. Section → Entity-Type Cross-Reference
 
 Quick lookup: which sections appear in which entity tab.
 
@@ -594,7 +772,7 @@ Quick lookup: which sections appear in which entity tab.
 
 ---
 
-## 10. Field-Status Summary
+## 11. Field-Status Summary
 
 Across the V5 prototype:
 
@@ -607,7 +785,7 @@ Across the V5 prototype:
 
 ---
 
-## 11. Implementation Priority (AI-First)
+## 12. Implementation Priority (AI-First)
 
 If we ship AI augmentation, the highest-leverage fields to target first:
 
@@ -622,7 +800,7 @@ If we ship AI augmentation, the highest-leverage fields to target first:
 
 ---
 
-## 12. Code References
+## 13. Code References
 
 | Artifact | File | Purpose |
 |----------|------|---------|
@@ -635,8 +813,9 @@ If we ship AI augmentation, the highest-leverage fields to target first:
 
 ---
 
-## 13. Changelog
+## 14. Changelog
 
 | Date | Change |
 |------|--------|
+| 07 May 2026 | Added §8 EDGE RELATION Slider data-source mapping (13 sub-sections covering flow diagram, MITRE, detection rule, connection properties, sparkline, behavioral baseline, threat intel, geo, evidence, per-edge schema, demo inventory of 16 edges, data-source summary). Renumbered subsequent sections 8→13. |
 | 07 May 2026 | Initial V5 mapping. Mirrors V4 structure but adds explicit **AI Enrichment** column showing what AI agents can fetch beyond product backend (live IOC enrichment, WHOIS, MITRE mapping, narrative generation, compliance drafting, script deobfuscation). Covers 8 entity types, ~50 distinct sections. Cross-references the canonical relation catalog. |
