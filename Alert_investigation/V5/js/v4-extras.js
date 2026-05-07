@@ -389,6 +389,9 @@ function showEdgeRelation(evt, el) {
   badge.style.cssText = `display:inline-flex;background:${edgeColor}20;color:${edgeColor};border:1px solid ${edgeColor}40;`;
   const depthBadge = document.getElementById('edsDepthBadge');
   if (depthBadge) depthBadge.style.display = 'none';
+  // Clear any leftover entity tabs (the slider is shared with the entity view)
+  const tabsHost = document.getElementById('edsTabsHost');
+  if (tabsHost) tabsHost.innerHTML = '';
 
   // Build slider body
   let html = '';
