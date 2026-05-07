@@ -81,7 +81,7 @@ const SEV_SHAPE = {
 /* ── EDGE_ATTRIBUTES + showEdgeRelation ── */
 var EDGE_ATTRIBUTES = {
   'alert-impossible-travel→user-m-henderson': {
-    relation:'TRIGGERED_BY', count:1, risk:95,
+    relation:'TriggeredBy', count:1, risk:95,
     firstSeen:'03 Apr 2026 14:22:45', lastSeen:'03 Apr 2026 14:22:45',
     evidence:{
       summary:'Impossible travel detected: Romania → New York in 28 min',
@@ -95,7 +95,7 @@ var EDGE_ATTRIBUTES = {
     baseline:{ expected:0, actual:1, deviation:null }
   },
   'alert-impossible-travel→svc-azure-ad': {
-    relation:'DETECTED_ON', count:1, risk:95,
+    relation:'DetectedOn', count:1, risk:95,
     firstSeen:'03 Apr 2026 14:22:45', lastSeen:'03 Apr 2026 14:22:45',
     evidence:{
       summary:'Azure AD sign-in logs flagged anomalous authentication',
@@ -181,7 +181,7 @@ var EDGE_ATTRIBUTES = {
     source:'SharePoint Audit Logs'
   },
   'svc-azure-ad→svc-oauth': {
-    relation:'ISSUED', count:3, risk:85,
+    relation:'IssuedTo', count:3, risk:85,
     firstSeen:'03 Apr 2026 15:08:12', lastSeen:'03 Apr 2026 15:10:00',
     evidence:{
       summary:'3 OAuth refresh tokens issued, unusual scope elevation',
@@ -342,7 +342,8 @@ function showEdgeRelation(evt, el) {
   const risk = attr.risk || 0;
   const riskColor = risk >= 80 ? '#ef4444' : risk >= 50 ? '#f97316' : risk >= 30 ? '#eab308' : '#22c55e';
   const riskLabel = risk >= 80 ? 'Critical' : risk >= 50 ? 'High' : risk >= 30 ? 'Medium' : 'Low';
-  const relGuide = REL_GUIDE.find(r => r.key === label);
+  const canonicalLabel = (typeof canonicalRelation === 'function') ? canonicalRelation(label) : label;
+  const relGuide = REL_GUIDE.find(r => r.key === canonicalLabel);
   const edgeColor = relGuide ? relGuide.color : '#64748b';
   const edgeIcon = relGuide ? relGuide.icon : '🔗';
 
@@ -707,45 +708,64 @@ document.addEventListener('click', () => {
 });
 
 
-/* ── REL_GUIDE + toggleRelGuide ── */
+/* ── REL_GUIDE + toggleRelGuide ──
+ * Canonical relation catalog — 24 edges across 7 categories.
+ * Conventions:
+ *   • All names are PascalCase (no UPPER_SNAKE, no kebab-case).
+ *   • One direction per relation. Inverses are not added separately
+ *     (e.g. SpawnedBy covers ParentOf; SentTo covers ReceivedFrom).
+ *   • Synonyms are collapsed (OwnedBy absorbs BelongsTo;
+ *     CommunicatedWith absorbs ConnectedVia — transport is a property).
+ *   • `category` groups edges for the legend UI.
+ * Legacy aliases (UPPER_SNAKE / synonyms) are mapped via REL_ALIASES below
+ * so older data still resolves.
+ */
 const REL_GUIDE = [
-  // ── Existing relations in this alert ──
-  { key:'LoginTo',          color:'#2C66DD', icon:'🔐', name:'LoginTo',          desc:'A user or service account authenticated and established a session on a target service, device, or application. This represents an identity-based login event captured from authentication logs.' },
-  { key:'AccessedFrom',     color:'#f97316', icon:'🌐', name:'AccessedFrom',     desc:'A user session or activity originated from this source IP address. This edge traces the network origin of the session, useful for identifying geographic anomalies or VPN/proxy usage.' },
-  { key:'AccessedFile',     color:'#7c3aed', icon:'📁', name:'AccessedFile',     desc:'An entity performed a file operation (read, write, download, upload, or modify) on a file-hosting service such as SharePoint, OneDrive, or a network share. Tracks data access and exfiltration patterns.' },
-  { key:'CommunicatedWith', color:'#DD1616', icon:'📡', name:'CommunicatedWith', desc:'A device or IP address established network communication (TCP/UDP connection, DNS query, or HTTP request) with an external domain or host. This edge is critical for identifying command-and-control (C2) callbacks and data exfiltration channels.' },
-  { key:'ResolvedTo',       color:'#198019', icon:'📌', name:'ResolvedTo',       desc:'An IP address was mapped to a specific device or hostname through DNS resolution or DHCP lease records. This edge links network-layer addresses to physical or virtual endpoints in the environment.' },
-  { key:'TRIGGERED_BY',     color:'#DD1616', icon:'⚡', name:'Triggered By',     desc:'A detection rule or correlation alert was triggered due to the suspicious behavior or anomalous activity of this entity. This edge connects an alert to the primary entity responsible for the triggering event.' },
-  { key:'DETECTED_ON',      color:'#FABB34', icon:'🔍', name:'Detected On',      desc:'The alert or detection event was observed on this service, platform, or system. This edge links an alert to the infrastructure component where the suspicious activity was recorded.' },
-  { key:'ISSUED',           color:'#0891b2', icon:'📜', name:'Issued',           desc:'An identity provider (e.g., Azure AD, Okta) issued an authentication token, OAuth credential, or certificate to an entity, granting it access to downstream services and resources.' },
-  // ── Process relations ──
-  { key:'ExecutedOn',       color:'#7c3aed', icon:'▶️', name:'ExecutedOn',       desc:'A process or binary was executed on a specific device or endpoint. Tracks which programs ran on which hosts, essential for identifying malicious execution chains.' },
-  { key:'SpawnedBy',        color:'#7c3aed', icon:'🔗', name:'SpawnedBy',        desc:'A child process was spawned by a parent process. Maps the process tree to detect suspicious process chains such as Word spawning PowerShell or cmd.exe launching encoded scripts.' },
-  { key:'ParentOf',         color:'#7c3aed', icon:'🌳', name:'ParentOf',         desc:'A parent process created a child process. The inverse of SpawnedBy — used to trace process lineage from the originating process downward through the execution tree.' },
-  // ── Identity & Ownership relations ──
-  { key:'MemberOf',         color:'#2C66DD', icon:'👥', name:'MemberOf',         desc:'A user or service account is a member of a security group, distribution list, or organizational unit. Tracks identity-to-group membership relevant for privilege analysis.' },
-  { key:'BelongsTo',        color:'#2C66DD', icon:'🏷️', name:'BelongsTo',        desc:'An entity (device, IP, service) is owned by or assigned to a specific user, department, or organizational unit. Maps asset ownership for accountability.' },
-  { key:'OwnedBy',          color:'#2C66DD', icon:'👤', name:'OwnedBy',          desc:'A resource, application, or device is owned or managed by a specific user or service account. Identifies the responsible party for an asset.' },
-  // ── Privilege relations ──
-  { key:'EscalatedTo',      color:'#FF5900', icon:'⬆️', name:'EscalatedTo',      desc:'A user or process escalated privileges to a higher-level account or role. Detects lateral movement and privilege escalation attempts such as local admin elevation or token impersonation.' },
-  { key:'GrantedAccess',    color:'#FF5900', icon:'🔓', name:'GrantedAccess',    desc:'An identity provider or administrator granted access permissions, roles, or entitlements to an entity. Tracks permission changes that could indicate unauthorized access provisioning.' },
-  // ── Data Movement relations ──
-  { key:'DownloadedFrom',   color:'#D14900', icon:'⬇️', name:'DownloadedFrom',   desc:'An entity downloaded data or files from an external or internal source. Tracks inbound data transfers that may include malware delivery or unauthorized content retrieval.' },
-  { key:'UploadedTo',       color:'#D14900', icon:'⬆️', name:'UploadedTo',       desc:'An entity uploaded data or files to a cloud service, external server, or removable media. Critical for detecting data exfiltration and unauthorized data transfer to external destinations.' },
-  { key:'ExfiltratedTo',    color:'#DD1616', icon:'🚨', name:'ExfiltratedTo',    desc:'Sensitive data was transferred to an unauthorized external destination. This high-severity edge indicates confirmed or suspected data exfiltration via network, cloud, or physical channels.' },
-  // ── Email relations ──
-  { key:'SentTo',           color:'#0891b2', icon:'📤', name:'SentTo',           desc:'An email was sent from one entity to another. Tracks outbound email communication relevant for phishing campaigns, social engineering, and insider threat email patterns.' },
-  { key:'ReceivedFrom',     color:'#0891b2', icon:'📥', name:'ReceivedFrom',     desc:'An email was received by an entity from a sender. Tracks inbound email for phishing detection, malicious attachment delivery, and business email compromise (BEC) analysis.' },
-  { key:'ContainedAttachment', color:'#0891b2', icon:'📎', name:'ContainedAttachment', desc:'An email contained a file attachment. Links email messages to attached files for tracking malware delivery, macro-enabled documents, and executable payloads.' },
-  // ── System Configuration relations ──
-  { key:'ModifiedRegistry', color:'#D14900', icon:'🔧', name:'ModifiedRegistry', desc:'A process or user modified a Windows registry key or value. Tracks persistence mechanisms, startup entries, and configuration changes commonly used by malware for persistence.' },
-  { key:'CreatedService',   color:'#D14900', icon:'⚙️', name:'CreatedService',   desc:'A process or user installed a new system service or scheduled task. Detects persistence techniques, backdoor installation, and unauthorized service creation on endpoints.' },
-  { key:'InstalledOn',      color:'#D14900', icon:'💿', name:'InstalledOn',      desc:'A software package, driver, or update was installed on a device. Tracks software deployment events for detecting unauthorized installations or trojanized updates.' },
-  // ── Network relations ──
-  { key:'ConnectedVia',     color:'#198019', icon:'🔌', name:'ConnectedVia',     desc:'An entity connected to a network resource through a specific network interface, VPN tunnel, or gateway. Maps the network path used for the connection.' },
-  { key:'TunneledThrough',  color:'#198019', icon:'🕳️', name:'TunneledThrough',  desc:'Network traffic was encapsulated through a tunnel (VPN, SSH tunnel, DNS tunnel, or ICMP tunnel). Detects covert communication channels used to bypass network security controls.' },
-  { key:'ProxiedBy',        color:'#198019', icon:'🔀', name:'ProxiedBy',        desc:'Network traffic was routed through a proxy server, load balancer, or anonymization service. Identifies traffic obfuscation and the actual origin behind proxied connections.' }
+  // ── Detection ──
+  { key:'TriggeredBy',         category:'Detection',         color:'#DD1616', icon:'⚡',  name:'Triggered By',         desc:'A detection rule or correlation alert was triggered due to the suspicious behavior or anomalous activity of this entity. Connects an alert to the primary entity responsible for the triggering event.' },
+  { key:'DetectedOn',          category:'Detection',         color:'#FABB34', icon:'🔍', name:'Detected On',          desc:'The alert or detection event was observed on this service, platform, or system. Links an alert to the infrastructure component where the suspicious activity was recorded.' },
+  // ── Identity & Access ──
+  { key:'LoginTo',             category:'Identity & Access', color:'#2C66DD', icon:'🔐', name:'Login To',             desc:'A user or service account authenticated and established a session on a target service, device, or application. Captured from authentication logs.' },
+  { key:'AccessedFrom',        category:'Identity & Access', color:'#f97316', icon:'🌐', name:'Accessed From',        desc:'A user session or activity originated from this source IP address. Traces the network origin of the session — useful for geographic anomalies or VPN/proxy usage.' },
+  { key:'IssuedTo',            category:'Identity & Access', color:'#0891b2', icon:'📜', name:'Issued To',            desc:'An identity provider (Azure AD, Okta, ADFS) issued an authentication token, OAuth credential, or certificate to an entity, granting it access to downstream services.' },
+  { key:'MemberOf',            category:'Identity & Access', color:'#2C66DD', icon:'👥', name:'Member Of',            desc:'A user or service account is a member of a security group, distribution list, or organizational unit. Tracks identity-to-group membership relevant for privilege analysis.' },
+  { key:'OwnedBy',             category:'Identity & Access', color:'#2C66DD', icon:'👤', name:'Owned By',             desc:'A resource, application, or device is owned, assigned to, or managed by a specific user, service account, or organizational unit. Identifies the responsible party for an asset.' },
+  // ── Privilege ──
+  { key:'EscalatedTo',         category:'Privilege',         color:'#FF5900', icon:'⬆️', name:'Escalated To',         desc:'A user or process escalated privileges to a higher-level account or role. Detects lateral movement and privilege-escalation attempts such as local-admin elevation or token impersonation.' },
+  { key:'GrantedAccess',       category:'Privilege',         color:'#FF5900', icon:'🔓', name:'Granted Access',       desc:'An identity provider or administrator granted access permissions, roles, or entitlements to an entity. Tracks permission changes that could indicate unauthorized access provisioning.' },
+  // ── Data Movement ──
+  { key:'AccessedFile',        category:'Data Movement',     color:'#7c3aed', icon:'📁', name:'Accessed File',        desc:'An entity performed a file operation (read, write, modify) on a file-hosting service such as SharePoint, OneDrive, or a network share. Tracks data access patterns.' },
+  { key:'DownloadedFrom',      category:'Data Movement',     color:'#D14900', icon:'⬇️', name:'Downloaded From',      desc:'An entity downloaded data or files from an external or internal source. Tracks inbound data transfers that may include malware delivery or unauthorized content retrieval.' },
+  { key:'UploadedTo',          category:'Data Movement',     color:'#D14900', icon:'⬆️', name:'Uploaded To',          desc:'An entity uploaded data or files to a cloud service, external server, or removable media. Critical for detecting data exfiltration to external destinations.' },
+  { key:'ExfiltratedTo',       category:'Data Movement',     color:'#DD1616', icon:'🚨', name:'Exfiltrated To',       desc:'Sensitive data was transferred to an unauthorized external destination. High-severity edge indicating confirmed or suspected data exfiltration via network, cloud, or physical channels.' },
+  // ── Network ──
+  { key:'CommunicatedWith',    category:'Network',           color:'#DD1616', icon:'📡', name:'Communicated With',    desc:'A device or IP established network communication (TCP/UDP, DNS query, HTTP request) with an external domain or host. Critical for C2 callback and exfiltration detection. Transport details (VPN/gateway/interface) are carried as edge properties.' },
+  { key:'TunneledThrough',     category:'Network',           color:'#198019', icon:'🕳️', name:'Tunneled Through',     desc:'Network traffic was encapsulated through a tunnel (VPN, SSH, DNS, or ICMP). Detects covert communication channels used to bypass network security controls.' },
+  { key:'ProxiedBy',           category:'Network',           color:'#198019', icon:'🔀', name:'Proxied By',           desc:'Network traffic was routed through a proxy server, load balancer, or anonymization service. Identifies traffic obfuscation and the actual origin behind proxied connections.' },
+  { key:'ResolvedTo',          category:'Network',           color:'#198019', icon:'📌', name:'Resolved To',          desc:'An IP address was mapped to a specific device or hostname through DNS resolution or DHCP lease records. Links network-layer addresses to physical or virtual endpoints.' },
+  // ── Process ──
+  { key:'ExecutedOn',          category:'Process',           color:'#7c3aed', icon:'▶️', name:'Executed On',          desc:'A process or binary was executed on a specific device or endpoint. Tracks which programs ran on which hosts — essential for identifying malicious execution chains.' },
+  { key:'SpawnedBy',           category:'Process',           color:'#7c3aed', icon:'🔗', name:'Spawned By',           desc:'A child process was spawned by a parent process. Maps the process tree to detect suspicious chains such as Word spawning PowerShell or cmd.exe launching encoded scripts. (Inverse "ParentOf" is represented by reversing source/target.)' },
+  // ── Email ──
+  { key:'SentTo',              category:'Email',             color:'#0891b2', icon:'📤', name:'Sent To',              desc:'An email was sent from one entity to another. Tracks outbound email relevant for phishing campaigns, social engineering, and insider-threat patterns. (Inverse "ReceivedFrom" is represented by reversing source/target.)' },
+  { key:'ContainedAttachment', category:'Email',             color:'#0891b2', icon:'📎', name:'Contained Attachment', desc:'An email contained a file attachment. Links email messages to attached files for tracking malware delivery, macro-enabled documents, and executable payloads.' },
+  // ── System Change ──
+  { key:'ModifiedRegistry',    category:'System Change',     color:'#D14900', icon:'🔧', name:'Modified Registry',    desc:'A process or user modified a Windows registry key or value. Tracks persistence mechanisms, startup entries, and configuration changes commonly used by malware.' },
+  { key:'CreatedService',      category:'System Change',     color:'#D14900', icon:'⚙️', name:'Created Service',      desc:'A process or user installed a new system service or scheduled task. Detects persistence techniques, backdoor installation, and unauthorized service creation.' },
+  { key:'InstalledOn',         category:'System Change',     color:'#D14900', icon:'💿', name:'Installed On',         desc:'A software package, driver, or update was installed on a device. Tracks software deployment events for detecting unauthorized installations or trojanized updates.' }
 ];
+
+/* Legacy → canonical mapping for backwards-compat with older data. */
+const REL_ALIASES = {
+  'TRIGGERED_BY': 'TriggeredBy',
+  'DETECTED_ON':  'DetectedOn',
+  'ISSUED':       'IssuedTo',
+  'BelongsTo':    'OwnedBy',
+  'ParentOf':     'SpawnedBy',
+  'ReceivedFrom': 'SentTo',
+  'ConnectedVia': 'CommunicatedWith'
+};
+function canonicalRelation(key) { return REL_ALIASES[key] || key; }
 
 function toggleRelGuide(event) {
   event.stopPropagation();
@@ -754,14 +774,25 @@ function toggleRelGuide(event) {
 
   let html = '<div class="rel-guide-hdr">⟷ Relationship Guide <span class="rg-close" onclick="document.getElementById(\'relGuidePopup\').classList.remove(\'show\')">&times;</span></div>';
   html += '<div class="rel-guide-list">';
-  REL_GUIDE.forEach(r => {
-    html += `<div class="rel-guide-item" style="cursor:default;">
-      <span style="font-size:16px;line-height:1;flex-shrink:0;">${r.icon}</span>
-      <div style="flex:1;min-width:0;">
-        <div class="rel-guide-name">${r.name}</div>
-        <div class="rel-guide-text">${r.desc}</div>
-      </div>
-    </div>`;
+  // Group relations by category for readability
+  const grouped = REL_GUIDE.reduce((acc, r) => {
+    const cat = r.category || 'Other';
+    (acc[cat] = acc[cat] || []).push(r);
+    return acc;
+  }, {});
+  const catOrder = ['Detection','Identity & Access','Privilege','Data Movement','Network','Process','Email','System Change','Other'];
+  catOrder.forEach(cat => {
+    if (!grouped[cat]) return;
+    html += `<div class="rel-guide-cat" style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin:8px 4px 4px;">${cat}</div>`;
+    grouped[cat].forEach(r => {
+      html += `<div class="rel-guide-item" style="cursor:default;">
+        <span style="font-size:16px;line-height:1;flex-shrink:0;">${r.icon}</span>
+        <div style="flex:1;min-width:0;">
+          <div class="rel-guide-name">${r.name}</div>
+          <div class="rel-guide-text">${r.desc}</div>
+        </div>
+      </div>`;
+    });
   });
   html += '</div>';
   popup.innerHTML = html;
