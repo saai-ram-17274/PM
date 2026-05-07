@@ -719,6 +719,13 @@
 }
 .av-partial-note .av-partial-icon { color: #f59e0b; margin-right: 6px; }
 .av-partial-note strong { color: #6d28d9; }
+/* When the entity/edge slider is open it covers the right ~42% of the
+   canvas. Re-anchor the centered banner to the top-left of the still-
+   visible canvas area so the "Start Investigation" pill is not clipped. */
+.inv-graph-container.slider-open .av-partial-note {
+  left: 14px;
+  transform: none;
+}
 
 /* ───── Investigation: AI analyzing loading overlay ───── */
 .inv-ai-loading {
