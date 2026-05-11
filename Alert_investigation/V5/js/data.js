@@ -168,8 +168,8 @@ const ALERT_DETAIL = {
     assignee: 'Johnson Williams',
     status: 'Open', statusClass: 'open',
     severity: 'Critical', severityPillClass: 'crit',
-    createdTime: '07 Jun 2017, 05:02:40',
-    sla: '3 Days 5 Hrs',
+    createdTime: '11 May 2026, 10:04:00',
+    sla: '2 Days 23 Hrs',
     tags: [
       { cat: 'MITRE ATT&CK', label: 'Native API (T1106)' },
       { cat: 'MITRE ATT&CK', label: 'Native API (T1106)' },
@@ -184,7 +184,7 @@ const ALERT_DETAIL = {
     files: [],
 
     /* Overview tab */
-    summary: 'User <strong>corp\\m.henderson</strong> (<strong>10.18.1.81</strong>) authenticated successfully from external IP <strong>185.220.101.42</strong> (Tor exit node, Romania) at <strong>2026-03-24 03:12:44</strong>, and then again from internal IP <strong>10.18.1.81</strong> on <strong>CORP-NET</strong> at <strong>2026-03-24 03:41:22</strong> — a gap of only <strong>28 minutes</strong> across geographically impossible locations. This simultaneous presence indicates active credential compromise or concurrent session hijacking. Following the anomalous logins, the account performed suspicious OAuth token generation, accessed the mailbox, and downloaded files from sensitive SharePoint directories. Classified as a <strong>True Positive</strong> — no authorized remote access or travel activity exists for this user. Immediate account suspension, token revocation, and session termination are required.',
+    summary: 'User <strong>corp\\m.henderson</strong> completed a routine, MFA-satisfied Azure AD cloud sign-in from the corporate VPN egress <strong>10.18.1.81</strong> (Austin, TX) at <strong>2026-05-11 06:42:00</strong> — the baseline last-known-good location. At <strong>2026-05-11 09:56:00</strong>, Azure AD ingested a second successful sign-in for the same identity from <strong>185.220.101.42</strong> (Tor exit node, Bucharest, Romania), and at <strong>2026-05-11 10:04:00</strong> — after the ~6–8 min Sign-in Logs ingest delay — the correlation engine flagged the Austin → Bucharest transition (~9,400 km in <strong>3 h 14 min</strong>) as physically impossible and raised this alert. Following the anomalous sign-in, the account was used to interactively log on to <strong>CORP-WS-045</strong> at 10:28, beacon to a known C2 domain, escalate to Administrator, generate OAuth refresh tokens, and exfiltrate files from sensitive SharePoint libraries. Classified as a <strong>True Positive</strong> — no authorized remote access or travel activity exists for this user. Immediate account suspension, token revocation, and session termination are required.',
     insights: [
       { name: 'Williams', sub: 'zohocorp.com', icon: '👤', score: 92, scoreClass: 'crit', text: '<strong>14 malicious urls</strong> requested by this user in last 7 days' },
       { name: 'jaga-453232', sub: '192.53.61.2', icon: '💻', score: 65, scoreClass: 'high', text: '<strong>6 malicious urls</strong> requested from this device in last 7 days' },
@@ -207,7 +207,7 @@ const ALERT_DETAIL = {
     ],
 
     /* Investigation tab */
-    investSummary: 'At <span class="ent">2026-03-24 03:12:44</span>, user <span class="ent">corp\\m.henderson</span> authenticated successfully from <span class="ent">185.220.101.42</span> (Romania, Tor exit node) and again from internal IP <span class="ent">10.18.1.81</span> within 28 minutes a physical travel distance that is impossible.This was followed by confirmed <span class="ent">Impossible Travel attack</span> with suspicious OAuth token generation, mailbox access, and SharePoint file downloads on sensitive directories. Classified as a True Positive no authorized remote access or travel activity exists. Immediate account suspension, token revocation, and session termination are required.',
+    investSummary: 'At <span class="ent">2026-05-11 06:42:00</span>, user <span class="ent">corp\\m.henderson</span> performed a baseline Azure AD cloud sign-in from <span class="ent">10.18.1.81</span> (Austin corporate VPN egress) — MFA-satisfied, low risk, no anomaly. At <span class="ent">2026-05-11 09:56:00</span>, the same identity authenticated successfully from <span class="ent">185.220.101.42</span> (Tor exit node, Bucharest, Romania), and the correlation engine raised <span class="ent">Impossible Travel</span> at <span class="ent">2026-05-11 10:04:00</span> — Austin → Bucharest in 3 h 14 min is physically impossible. The compromised session was then used for an interactive logon to <span class="ent">CORP-WS-045</span> at 10:28, C2 beaconing, privilege escalation, OAuth token generation, and SharePoint file downloads on sensitive directories. Classified as a True Positive — no authorized remote access or travel activity exists. Immediate account suspension, token revocation, and session termination are required.',
     recommendations: [
       {
         icon: '▶',
@@ -225,7 +225,7 @@ const ALERT_DETAIL = {
     keyFindings: [
       {
         title: 'Alert Detected',
-        text: 'Impossible Travel detected for <span class="ent">corp\\m.henderson</span> with logins from a Tor IP in Romania and <span class="ent">CORP-NET</span> within 28 minutes,  confirming a True positive. Likely credential Compromise or session hijacking; suspend account, revoke tokens, and force password reset immediately.'
+        text: 'Impossible Travel detected for <span class=\"ent\">corp\\m.henderson</span> — successful Azure AD sign-ins from Austin (<span class=\"ent\">10.18.1.81</span>) at 06:42 and from a Tor exit node in Bucharest, Romania (<span class=\"ent\">185.220.101.42</span>) at 09:56 on 11 May 2026, a 3 h 14 min Austin→Bucharest transition that is physically impossible. Likely credential compromise or session hijacking; suspend account, revoke tokens, and force password reset immediately.'
       },
       {
         title: 'Token Abuse Confirmed',
