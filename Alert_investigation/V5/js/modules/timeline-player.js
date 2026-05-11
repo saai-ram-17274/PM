@@ -152,6 +152,25 @@ let _tlAutoTimer = null;
 let _tlOpen = false;
 const _TL_AUTO_MS = 3500;
 
+/* Return the chronological steps appropriate for the current graph mode.
+ * Before "Start Investigation" is clicked, the attack-vector graph hides
+ * AI-discovered entities (PARTIAL_HIDDEN_ENTITIES from graph.js). The
+ * timeline must mirror that — any step involving a hidden entity (as a
+ * node OR an edge endpoint) is suppressed until investigation begins. */
+function _tlVisibleSteps() {
+  const hidden = (typeof PARTIAL_HIDDEN_ENTITIES !== 'undefined')
+    ? new Set(PARTIAL_HIDDEN_ENTITIES) : new Set();
+  const investigated = (typeof isAiInvestigated === 'function') ? isAiInvestigated() : true;
+  if (investigated) return TIMELINE_STEPS;
+  return TIMELINE_STEPS.filter(s => {
+    const ents = s.entities || [];
+    const edges = s.edges || [];
+    if (ents.some(e => hidden.has(e))) return false;
+    if (edges.some(e => hidden.has(e[0]) || hidden.has(e[1]))) return false;
+    return true;
+  });
+}
+
 function openTimelinePlayer() {
   _tlOpen = true;
   if (typeof sliderEntityId !== 'undefined') {
@@ -194,7 +213,8 @@ function closeTimelinePlayer() {
 }
 
 function timelineNext() {
-  if (_tlIndex < TIMELINE_STEPS.length - 1) {
+  const steps = _tlVisibleSteps();
+  if (_tlIndex < steps.length - 1) {
     _tlIndex++;
     _tlRenderSlider();
   } else {
@@ -211,7 +231,8 @@ function timelinePrev() {
 }
 
 function timelineJump(i) {
-  if (i < 0 || i >= TIMELINE_STEPS.length) return;
+  const steps = _tlVisibleSteps();
+  if (i < 0 || i >= steps.length) return;
   _tlIndex = i;
   _tlRenderSlider();
 }
@@ -222,7 +243,8 @@ function timelinePlayPause() {
     _tlRefreshControls();
   } else {
     _tlAutoTimer = setInterval(() => {
-      if (_tlIndex >= TIMELINE_STEPS.length - 1) {
+      const steps = _tlVisibleSteps();
+      if (_tlIndex >= steps.length - 1) {
         _tlClearAuto();
         _tlRefreshControls();
         return;
@@ -249,6 +271,7 @@ function _tlKeyHandler(e) {
 }
 
 function _tlRefreshControls() {
+  const total = _tlVisibleSteps().length;
   const ppIcon = document.getElementById('tlPlayPauseIcon');
   const ppLabel = document.getElementById('tlPlayPauseLabel');
   if (ppIcon)  ppIcon.textContent  = _tlAutoTimer ? '⏸' : '▶';
@@ -256,14 +279,18 @@ function _tlRefreshControls() {
   const prev = document.getElementById('tlPrevBtn');
   const next = document.getElementById('tlNextBtn');
   if (prev) prev.disabled = _tlIndex === 0;
-  if (next) next.disabled = _tlIndex === TIMELINE_STEPS.length - 1;
+  if (next) next.disabled = _tlIndex >= total - 1;
 }
 
 function _tlRenderSlider() {
   const body = document.getElementById('edsBody');
   if (!body) return;
-  const total = TIMELINE_STEPS.length;
-  const current = TIMELINE_STEPS[_tlIndex];
+  const steps = _tlVisibleSteps();
+  const total = steps.length;
+  if (_tlIndex >= total) _tlIndex = Math.max(0, total - 1);
+  const current = steps[_tlIndex];
+  const investigated = (typeof isAiInvestigated === 'function') ? isAiInvestigated() : true;
+  const hiddenCount = TIMELINE_STEPS.length - total;
 
   // Sticky controls header (Prev / counter / Play / Next)
   const controls = `
@@ -276,8 +303,18 @@ function _tlRenderSlider() {
           <span id="tlPlayPauseLabel">${_tlAutoTimer ? 'Pause' : 'Play'}</span>
         </button>
       </div>
-      <button class="tl-btn tl-btn-primary" id="tlNextBtn" onclick="timelineNext()" ${_tlIndex === total - 1 ? 'disabled' : ''}>Next ▶</button>
+      <button class="tl-btn tl-btn-primary" id="tlNextBtn" onclick="timelineNext()" ${_tlIndex >= total - 1 ? 'disabled' : ''}>Next ▶</button>
     </div>`;
+
+  // Optional partial-mode banner inviting the user to unlock the full chain
+  const partialBanner = (!investigated && hiddenCount > 0) ? `
+    <div class="tl-partial-banner">
+      <div class="tl-partial-banner-text">
+        <strong>${hiddenCount} more event${hiddenCount === 1 ? '' : 's'}</strong>
+        in this attack chain are not yet visible. Run AI investigation to expand the kill-chain and surface predicted next steps.
+      </div>
+      <button class="tl-btn tl-btn-primary" onclick="if (typeof startInvestigation === 'function') startInvestigation()">✨ Start Investigation</button>
+    </div>` : '';
 
   // Highlight banner for the active step
   const tierBadge = current.tier === 'predicted'
@@ -295,7 +332,7 @@ function _tlRenderSlider() {
     </div>`;
 
   // Row-style timeline list (one row per event)
-  const rows = TIMELINE_STEPS.map((s, i) => {
+  const rows = steps.map((s, i) => {
     const cls = [
       'tl-row',
       i === _tlIndex ? 'active' : '',
@@ -319,8 +356,9 @@ function _tlRenderSlider() {
   body.innerHTML = `
     ${controls}
     ${activeCard}
-    <div class="tl-section-label">Timeline · ${total} events</div>
+    <div class="tl-section-label">Timeline · ${total} event${total === 1 ? '' : 's'}</div>
     <div class="tl-rows">${rows}</div>
+    ${partialBanner}
   `;
 
   // scroll the active row into view inside the slider body

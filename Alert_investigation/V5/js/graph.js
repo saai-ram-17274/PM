@@ -68,9 +68,9 @@ function attackVectorHTML(){
                 <div class="gcb-option" onclick="pickTimeChip(this,'Last 24 Hours')">Last 24 Hours</div>
               </div>
             </div>
-            <div class="gcb-chip gcb-chip-action" id="tlPlayBtn" onclick="openTimelinePlayer()" title="Replay the attack chronologically">
+            <div class="gcb-chip gcb-chip-action" id="tlPlayBtn" onclick="openTimelinePlayer()" title="Play the attack chronologically">
               <span class="gcb-icon">▶</span>
-              <span class="gcb-label">Replay</span>
+              <span class="gcb-label">Play</span>
             </div>
           </div>
 
