@@ -143,7 +143,7 @@ function closeEntitySlider() {
 function restoreGraphHighlights(focusEntityId) {
   // Always clear residual inline styles first
   document.querySelectorAll('.graph-node').forEach(n => { n.style.opacity = ''; n.classList.remove('active-focus'); });
-  document.querySelectorAll('line.graph-edge-mal, line.graph-edge-norm').forEach(line => { line.style.opacity = ''; line.style.strokeWidth = ''; });
+  document.querySelectorAll('line[data-source]').forEach(line => { line.style.opacity = ''; line.style.strokeWidth = ''; });
   document.querySelectorAll('.edge-info-btn').forEach(btn => { btn.style.opacity = ''; });
 
   if (!focusEntityId) return;
@@ -152,7 +152,7 @@ function restoreGraphHighlights(focusEntityId) {
   document.querySelectorAll('.graph-node').forEach(n => n.style.opacity = '0.4');
   const activeNode = document.querySelector(`.graph-node[data-entity="${focusEntityId}"]`);
   if (activeNode) { activeNode.style.opacity = '1'; activeNode.classList.add('active-focus'); }
-  document.querySelectorAll('line.graph-edge-mal, line.graph-edge-norm').forEach(line => {
+  document.querySelectorAll('line[data-source]').forEach(line => {
     if (line.style.display === 'none' || line.getAttribute('style')?.includes('display:none')) return;
     const ls = line.getAttribute('data-source');
     const lt = line.getAttribute('data-target');

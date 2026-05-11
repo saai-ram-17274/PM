@@ -361,7 +361,7 @@ function showEdgeRelation(evt, el) {
   if (tgtNode) tgtNode.style.opacity = '1';
 
   // Dim all edges (lines) and edge info buttons (labels)
-  document.querySelectorAll('line.graph-edge-mal, line.graph-edge-norm').forEach(line => {
+  document.querySelectorAll('line[data-source]').forEach(line => {
     const ls = line.getAttribute('data-source');
     const lt = line.getAttribute('data-target');
     if (ls === source && lt === target) {
@@ -773,6 +773,9 @@ function showPredictionDetails(entityId) {
   if (!data) return;
   if (typeof event !== 'undefined' && event && event.stopPropagation) event.stopPropagation();
 
+  // Highlight the predicted node and its connected edges/neighbors
+  if (typeof restoreGraphHighlights === 'function') restoreGraphHighlights(entityId);
+
   // Reuse shared slider DOM
   document.getElementById('edsTitle').textContent = data.title;
   const badge = document.getElementById('edsTypeBadge');
@@ -838,6 +841,29 @@ function showEdgePrediction(evt, el) {
   const target = el.getAttribute('data-target');
   const data = PREDICTION_EDGE_DETAILS[source + '\u2192' + target];
   if (!data) return;
+
+  // Highlight the predicted edge: focus source + target, dim everything else
+  document.querySelectorAll('.graph-node').forEach(n => { n.style.opacity = '0.25'; n.classList.remove('active-focus'); });
+  const srcNode = document.querySelector(`.graph-node[data-entity="${source}"]`);
+  const tgtNode = document.querySelector(`.graph-node[data-entity="${target}"]`);
+  if (srcNode) srcNode.style.opacity = '1';
+  if (tgtNode) tgtNode.style.opacity = '1';
+  document.querySelectorAll('line[data-source]').forEach(line => {
+    const ls = line.getAttribute('data-source');
+    const lt = line.getAttribute('data-target');
+    if (ls === source && lt === target) {
+      line.style.opacity = '1';
+      line.style.strokeWidth = '2.5';
+    } else {
+      line.style.opacity = '0.12';
+      line.style.strokeWidth = '';
+    }
+  });
+  document.querySelectorAll('.edge-info-btn').forEach(btn => {
+    const bs = btn.getAttribute('data-source');
+    const bt = btn.getAttribute('data-target');
+    btn.style.opacity = (bs === source && bt === target) ? '1' : '0.2';
+  });
 
   document.getElementById('edsTitle').textContent = data.title;
   const badge = document.getElementById('edsTypeBadge');
