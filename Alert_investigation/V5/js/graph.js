@@ -184,6 +184,8 @@ function attackVectorHTML(){
             <span class="canvas-edge-tag"><span class="legend-line-red"></span> Malicious</span>
             <span class="canvas-edge-tag"><span class="legend-line-blue"></span> Normal</span>
             <span style="margin:0 4px;border-left:1px solid #e2e8f0;height:14px;align-self:center;"></span>
+            <span class="canvas-edge-tag" id="legendAiCorrelated" title="Entities and relationships surfaced by AI from existing log evidence (not predictions)"><span class="legend-ai-spark">\u2728</span> AI-correlated</span>
+            <span style="margin:0 4px;border-left:1px solid #e2e8f0;height:14px;align-self:center;"></span>
             <span class="canvas-edge-tag" style="cursor:pointer;" onclick="toggleRelGuide(event)" title="Relationship Guide">⟷ Relations</span>
           </div>
           <div class="rel-guide-popup" id="relGuidePopup"></div>
@@ -442,6 +444,48 @@ function applyAttackGraphPartialMode(){
     if (partial && edgeTouchesHidden(b)) b.style.display = 'none';
     else if (!partial) b.style.display = '';
   });
+
+  /* Tag AI-correlated nodes/edges with data-ai="1" once the investigation
+     has run, so CSS can render them with a dashed purple halo and a ✨
+     glyph. AI-correlated == any element touching an AI-only entity. */
+  const tagAi = !partial;
+  svg.querySelectorAll('g.graph-node').forEach(n => {
+    const eid = n.getAttribute('data-entity');
+    if (tagAi && hidden.has(eid)) {
+      n.setAttribute('data-ai', '1');
+      /* Inject the ✨ corner glyph exactly once per AI node */
+      if (!n.querySelector('.ai-spark-glyph')) {
+        const c = n.querySelector('circle');
+        if (c) {
+          const cx = parseFloat(c.getAttribute('cx'));
+          const cy = parseFloat(c.getAttribute('cy'));
+          const r  = parseFloat(c.getAttribute('r'));
+          const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          t.setAttribute('class', 'ai-spark-glyph');
+          t.setAttribute('x', cx + r * 0.85);
+          t.setAttribute('y', cy - r * 0.75);
+          t.setAttribute('text-anchor', 'middle');
+          t.setAttribute('font-size', '12');
+          t.setAttribute('pointer-events', 'none');
+          t.textContent = '\u2728';
+          n.appendChild(t);
+        }
+      }
+    } else {
+      n.removeAttribute('data-ai');
+    }
+  });
+  svg.querySelectorAll('line[data-source]').forEach(l => {
+    if (tagAi && edgeTouchesHidden(l)) l.setAttribute('data-ai', '1');
+    else l.removeAttribute('data-ai');
+  });
+  svg.querySelectorAll('g.edge-info-btn').forEach(b => {
+    if (tagAi && edgeTouchesHidden(b)) b.setAttribute('data-ai', '1');
+    else b.removeAttribute('data-ai');
+  });
+
+  /* Toggle a container-level class so the legend chip can show/hide */
+  container.classList.toggle('av-ai-investigated', tagAi);
 
   /* Refresh chip counts to reflect what's visible */
   if (typeof initGraphChips === 'function') initGraphChips();
