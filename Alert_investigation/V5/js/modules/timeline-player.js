@@ -29,26 +29,32 @@ const TIMELINE_STEPS = [
   {
     offsetMin: 0,
     tier: 'observed',
-    title: 'Foreign sign-in from Tor exit node',
-    narrative: 'Azure AD ingests a successful interactive sign-in for m.henderson from 185.220.101.42 — a well-known Tor exit node in Bucharest, Romania, tagged by threat intelligence as actively involved in credential-stuffing campaigns. This is the raw event that downstream correlation will scrutinise.',
+    title: 'Baseline sign-in from corporate office',
+    narrative: 'm.henderson signs into Azure AD from 10.18.1.81 — the Austin corporate office IP. Routine, MFA-satisfied, no risk signals. This is the BEFORE half of the impossible-travel pair: the correlation engine remembers it for ~24 h so future logins can be measured against it.',
+    mitre: 'T1078 · Valid Accounts (baseline)',
+    entities: ['user-m-henderson', 'ip-internal'],
+    edges: [['user-m-henderson', 'ip-internal']]
+  },
+  {
+    offsetMin: 14,
+    tier: 'observed',
+    title: 'Anomalous sign-in from Tor exit node',
+    narrative: 'Only 14 minutes later, Azure AD ingests a second successful sign-in for the same user — this time from 185.220.101.42, a known Tor exit node in Bucharest, Romania, flagged by threat intelligence as a credential-stuffing source. This is the AFTER half of the impossible-travel pair.',
     mitre: 'T1078.004 · Valid Accounts: Cloud',
     entities: ['user-m-henderson', 'ip-tor'],
     edges: [['user-m-henderson', 'ip-tor']]
   },
   {
-    offsetMin: 7,
+    offsetMin: 22,
     tier: 'observed',
     title: 'Impossible Travel alert fires',
-    narrative: 'After Azure AD logs are ingested and the correlation engine finishes its sliding-window evaluation (~7 minutes from event time), the new Bucharest sign-in is compared against m.henderson’s earlier successful login from the corporate office in Austin. The geographic transition is physically impossible, so the Impossible Travel alert is raised against the user identity and the Azure AD source.',
+    narrative: 'After Azure AD diagnostic logs reach the SIEM (~6–8 min ingest delay) and the correlation engine evaluates the new Bucharest sign-in against the prior Austin sign-in within its sliding window, the geographic transition is flagged as physically impossible and the Impossible Travel alert is raised against m.henderson.',
     mitre: 'TA0001 · Initial Access · Detection',
-    entities: ['alert-impossible-travel', 'user-m-henderson', 'svc-azure-ad'],
-    edges: [
-      ['alert-impossible-travel', 'user-m-henderson'],
-      ['alert-impossible-travel', 'svc-azure-ad']
-    ]
+    entities: ['alert-impossible-travel', 'user-m-henderson'],
+    edges: [['alert-impossible-travel', 'user-m-henderson']]
   },
   {
-    offsetMin: 12,
+    offsetMin: 30,
     tier: 'observed',
     title: 'Tor node beacons to C2 infrastructure',
     narrative: 'Firewall logs show 185.220.101.42 establishing outbound HTTPS to c2-update.darkoperator.net — a domain registered 3 days ago and previously linked to FIN-class actors.',
@@ -57,7 +63,7 @@ const TIMELINE_STEPS = [
     edges: [['ip-tor', 'domain-c2']]
   },
   {
-    offsetMin: 18,
+    offsetMin: 38,
     tier: 'observed',
     title: 'Inbound contact to internal workstation',
     narrative: 'CORP-WS-045 receives an inbound SMB session from the Tor exit — an unusual reverse-direction connection that suggests a tunneled remote shell.',
@@ -66,10 +72,10 @@ const TIMELINE_STEPS = [
     edges: [['ip-tor', 'dev-ws045']]
   },
   {
-    offsetMin: 24,
+    offsetMin: 46,
     tier: 'observed',
     title: 'Interactive logon to CORP-WS-045',
-    narrative: 'm.henderson signs into CORP-WS-045 from internal IP 10.18.1.81. The session is interactive (Type 2) \u2014 consistent with the attacker pivoting onto an endpoint after credential reuse.',
+    narrative: 'm.henderson signs into CORP-WS-045 from internal IP 10.18.1.81. The session is interactive (Type 2) — consistent with the attacker pivoting onto an endpoint after credential reuse.',
     mitre: 'T1078 · Valid Accounts',
     entities: ['user-m-henderson', 'ip-internal', 'dev-ws045'],
     edges: [
@@ -79,16 +85,16 @@ const TIMELINE_STEPS = [
     ]
   },
   {
-    offsetMin: 33,
+    offsetMin: 54,
     tier: 'observed',
     title: 'Workstation beacons to C2',
-    narrative: 'CORP-WS-045 establishes its own outbound channel to c2-update.darkoperator.net \u2014 confirming foothold and enabling subsequent hands-on-keyboard activity.',
+    narrative: 'CORP-WS-045 establishes its own outbound channel to c2-update.darkoperator.net — confirming foothold and enabling subsequent hands-on-keyboard activity.',
     mitre: 'T1071.001 · Application Layer Protocol: Web',
     entities: ['dev-ws045', 'domain-c2'],
     edges: [['dev-ws045', 'domain-c2']]
   },
   {
-    offsetMin: 41,
+    offsetMin: 62,
     tier: 'observed',
     title: 'Privilege escalation to Administrator',
     narrative: 'A local privilege-escalation primitive on CORP-WS-045 results in the attacker obtaining a process token impersonating the built-in Administrator account.',
@@ -97,25 +103,25 @@ const TIMELINE_STEPS = [
     edges: [['dev-ws045', 'user-admin']]
   },
   {
-    offsetMin: 49,
+    offsetMin: 70,
     tier: 'observed',
     title: 'Administrator authenticates to Azure AD',
-    narrative: 'The newly-obtained Administrator credentials are exercised against Azure AD \u2014 likely to enumerate available cloud apps and OAuth scopes before exfiltration.',
+    narrative: 'The newly-obtained Administrator credentials are exercised against Azure AD — likely to enumerate available cloud apps and OAuth scopes before exfiltration.',
     mitre: 'T1078.004 · Valid Accounts: Cloud',
     entities: ['user-admin', 'svc-azure-ad'],
     edges: [['user-admin', 'svc-azure-ad']]
   },
   {
-    offsetMin: 56,
+    offsetMin: 78,
     tier: 'observed',
     title: 'OAuth tokens issued',
-    narrative: 'Azure AD issues 3 refresh tokens covering Files.ReadWrite.All and Sites.Read.All \u2014 providing durable, MFA-bypassing access to SharePoint Online.',
+    narrative: 'Azure AD issues 3 refresh tokens covering Files.ReadWrite.All and Sites.Read.All — providing durable, MFA-bypassing access to SharePoint Online.',
     mitre: 'T1528 · Steal Application Access Token',
     entities: ['svc-azure-ad', 'svc-oauth'],
     edges: [['svc-azure-ad', 'svc-oauth']]
   },
   {
-    offsetMin: 64,
+    offsetMin: 86,
     tier: 'observed',
     title: 'SharePoint file access via stolen tokens',
     narrative: 'The OAuth tokens are used to enumerate and download files from the Finance and HR document libraries on SharePoint Online. Both m.henderson and CORP-WS-045 also touch SharePoint directly.',
@@ -128,19 +134,19 @@ const TIMELINE_STEPS = [
     ]
   },
   {
-    offsetMin: 75,
+    offsetMin: 94,
     tier: 'predicted',
     title: '[Predicted] LSASS credential dump on CORP-WS-045',
-    narrative: 'AI projects the attacker will run procdump / comsvcs to extract cleartext credentials and Kerberos tickets from LSASS \u2014 converting the workstation foothold into reusable domain creds.',
+    narrative: 'AI projects the attacker will run procdump / comsvcs to extract cleartext credentials and Kerberos tickets from LSASS — converting the workstation foothold into reusable domain creds.',
     mitre: 'T1003.001 · OS Credential Dumping: LSASS Memory',
     entities: ['dev-ws045', 'proc-credump-predicted'],
     edges: [['dev-ws045', 'proc-credump-predicted']]
   },
   {
-    offsetMin: 86,
+    offsetMin: 102,
     tier: 'predicted',
     title: '[Predicted] Administrator pivots to DC-01',
-    narrative: 'Using the freshly-dumped credentials, AI expects an RDP or SMB login from Administrator to the domain controller DC-01 within ~7 minutes \u2014 the canonical lateral-movement step before domain-wide impact.',
+    narrative: 'Using the freshly-dumped credentials, AI expects an RDP or SMB login from Administrator to the domain controller DC-01 within ~8 minutes — the canonical lateral-movement step before domain-wide impact.',
     mitre: 'T1021.002 · Remote Services: SMB · TA0008 · Lateral Movement',
     entities: ['user-admin', 'dev-dc01-predicted'],
     edges: [['user-admin', 'dev-dc01-predicted']]
