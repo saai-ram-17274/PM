@@ -29,23 +29,23 @@ const TIMELINE_STEPS = [
   {
     offsetMin: 0,
     tier: 'observed',
+    title: 'Foreign sign-in from Tor exit node',
+    narrative: 'Azure AD ingests a successful interactive sign-in for m.henderson from 185.220.101.42 — a well-known Tor exit node in Bucharest, Romania, tagged by threat intelligence as actively involved in credential-stuffing campaigns. This is the raw event that downstream correlation will scrutinise.',
+    mitre: 'T1078.004 · Valid Accounts: Cloud',
+    entities: ['user-m-henderson', 'ip-tor'],
+    edges: [['user-m-henderson', 'ip-tor']]
+  },
+  {
+    offsetMin: 1,
+    tier: 'observed',
     title: 'Impossible Travel alert fires',
-    narrative: 'Azure AD sign-in logs show m.henderson authenticating from Bucharest, Romania only 14 minutes after a successful login from the corporate office in Austin — a geographic transition that is physically impossible.',
-    mitre: 'TA0001 · Initial Access',
+    narrative: 'The correlation engine compares the new Bucharest sign-in against m.henderson\u2019s prior successful login from the corporate office in Austin only 14 minutes earlier. The geographic transition is physically impossible, so the Impossible Travel alert is raised against the user identity and the Azure AD source.',
+    mitre: 'TA0001 · Initial Access · Detection',
     entities: ['alert-impossible-travel', 'user-m-henderson', 'svc-azure-ad'],
     edges: [
       ['alert-impossible-travel', 'user-m-henderson'],
       ['alert-impossible-travel', 'svc-azure-ad']
     ]
-  },
-  {
-    offsetMin: 2,
-    tier: 'observed',
-    title: 'Foreign sign-in from Tor exit node',
-    narrative: 'The Romanian login originates from 185.220.101.42 — a well-known Tor exit node tagged by threat intelligence as actively involved in credential-stuffing campaigns.',
-    mitre: 'T1078.004 · Valid Accounts: Cloud',
-    entities: ['user-m-henderson', 'ip-tor'],
-    edges: [['user-m-henderson', 'ip-tor']]
   },
   {
     offsetMin: 5,
@@ -69,7 +69,7 @@ const TIMELINE_STEPS = [
     offsetMin: 12,
     tier: 'observed',
     title: 'Interactive logon to CORP-WS-045',
-    narrative: 'm.henderson signs into CORP-WS-045 from internal IP 10.18.1.81. The session is interactive (Type 2) — consistent with the attacker pivoting onto an endpoint after credential reuse.',
+    narrative: 'm.henderson signs into CORP-WS-045 from internal IP 10.18.1.81. The session is interactive (Type 2) \u2014 consistent with the attacker pivoting onto an endpoint after credential reuse.',
     mitre: 'T1078 · Valid Accounts',
     entities: ['user-m-henderson', 'ip-internal', 'dev-ws045'],
     edges: [
@@ -82,7 +82,7 @@ const TIMELINE_STEPS = [
     offsetMin: 18,
     tier: 'observed',
     title: 'Workstation beacons to C2',
-    narrative: 'CORP-WS-045 establishes its own outbound channel to c2-update.darkoperator.net — confirming foothold and enabling subsequent hands-on-keyboard activity.',
+    narrative: 'CORP-WS-045 establishes its own outbound channel to c2-update.darkoperator.net \u2014 confirming foothold and enabling subsequent hands-on-keyboard activity.',
     mitre: 'T1071.001 · Application Layer Protocol: Web',
     entities: ['dev-ws045', 'domain-c2'],
     edges: [['dev-ws045', 'domain-c2']]
@@ -100,7 +100,7 @@ const TIMELINE_STEPS = [
     offsetMin: 31,
     tier: 'observed',
     title: 'Administrator authenticates to Azure AD',
-    narrative: 'The newly-obtained Administrator credentials are exercised against Azure AD — likely to enumerate available cloud apps and OAuth scopes before exfiltration.',
+    narrative: 'The newly-obtained Administrator credentials are exercised against Azure AD \u2014 likely to enumerate available cloud apps and OAuth scopes before exfiltration.',
     mitre: 'T1078.004 · Valid Accounts: Cloud',
     entities: ['user-admin', 'svc-azure-ad'],
     edges: [['user-admin', 'svc-azure-ad']]
@@ -109,7 +109,7 @@ const TIMELINE_STEPS = [
     offsetMin: 36,
     tier: 'observed',
     title: 'OAuth tokens issued',
-    narrative: 'Azure AD issues 3 refresh tokens covering Files.ReadWrite.All and Sites.Read.All — providing durable, MFA-bypassing access to SharePoint Online.',
+    narrative: 'Azure AD issues 3 refresh tokens covering Files.ReadWrite.All and Sites.Read.All \u2014 providing durable, MFA-bypassing access to SharePoint Online.',
     mitre: 'T1528 · Steal Application Access Token',
     entities: ['svc-azure-ad', 'svc-oauth'],
     edges: [['svc-azure-ad', 'svc-oauth']]
@@ -131,7 +131,7 @@ const TIMELINE_STEPS = [
     offsetMin: 48,
     tier: 'predicted',
     title: '[Predicted] LSASS credential dump on CORP-WS-045',
-    narrative: 'AI projects the attacker will run procdump / comsvcs to extract cleartext credentials and Kerberos tickets from LSASS — converting the workstation foothold into reusable domain creds.',
+    narrative: 'AI projects the attacker will run procdump / comsvcs to extract cleartext credentials and Kerberos tickets from LSASS \u2014 converting the workstation foothold into reusable domain creds.',
     mitre: 'T1003.001 · OS Credential Dumping: LSASS Memory',
     entities: ['dev-ws045', 'proc-credump-predicted'],
     edges: [['dev-ws045', 'proc-credump-predicted']]
@@ -140,7 +140,7 @@ const TIMELINE_STEPS = [
     offsetMin: 55,
     tier: 'predicted',
     title: '[Predicted] Administrator pivots to DC-01',
-    narrative: 'Using the freshly-dumped credentials, AI expects an RDP or SMB login from Administrator to the domain controller DC-01 within ~7 minutes — the canonical lateral-movement step before domain-wide impact.',
+    narrative: 'Using the freshly-dumped credentials, AI expects an RDP or SMB login from Administrator to the domain controller DC-01 within ~7 minutes \u2014 the canonical lateral-movement step before domain-wide impact.',
     mitre: 'T1021.002 · Remote Services: SMB · TA0008 · Lateral Movement',
     entities: ['user-admin', 'dev-dc01-predicted'],
     edges: [['user-admin', 'dev-dc01-predicted']]
@@ -304,56 +304,57 @@ function _tlRenderSlider() {
       <button class="tl-btn tl-btn-primary" id="tlNextBtn" onclick="timelineNext()" ${_tlIndex >= total - 1 ? 'disabled' : ''}>Next ▶</button>
     </div>`;
 
-
-
-  // Highlight banner for the active step
-  const tierBadge = current.tier === 'predicted'
-    ? '<span class="tl-tier-badge predicted">⏱ PREDICTED</span>'
-    : '<span class="tl-tier-badge observed">● OBSERVED</span>';
-  const activeCard = `
-    <div class="tl-active-card ${current.tier === 'predicted' ? 'predicted' : ''}">
-      <div class="tl-active-row">
-        <span class="tl-active-time">${_tlFormat(current.offsetMin)}</span>
-        ${tierBadge}
-      </div>
-      <div class="tl-active-title">${current.title}</div>
-      <div class="tl-active-mitre">${current.mitre}</div>
-      <div class="tl-active-narrative">${current.narrative}</div>
-    </div>`;
-
-  // Row-style timeline list (one row per event)
+  // Row-style timeline list. The currently-active row expands inline
+  // below itself to show the full narrative + MITRE — so the summary
+  // always stays attached to its event row, even if the user has
+  // scrolled deep into the list.
   const rows = steps.map((s, i) => {
+    const isActive = i === _tlIndex;
     const cls = [
       'tl-row',
-      i === _tlIndex ? 'active' : '',
+      isActive ? 'active' : '',
       i < _tlIndex ? 'past' : '',
       s.tier === 'predicted' ? 'predicted' : ''
     ].filter(Boolean).join(' ');
     const marker = s.tier === 'predicted'
       ? '⏱'
-      : (i < _tlIndex ? '✓' : i === _tlIndex ? '▶' : '•');
+      : (i < _tlIndex ? '✓' : isActive ? '▶' : '•');
+    const tierBadge = s.tier === 'predicted'
+      ? '<span class="tl-tier-badge predicted">⏱ PREDICTED</span>'
+      : '<span class="tl-tier-badge observed">● OBSERVED</span>';
+    const detail = isActive ? `
+      <div class="tl-row-detail ${s.tier === 'predicted' ? 'predicted' : ''}">
+        <div class="tl-detail-row">
+          <span class="tl-detail-time">${_tlFormat(s.offsetMin)}</span>
+          ${tierBadge}
+        </div>
+        <div class="tl-detail-mitre">${s.mitre}</div>
+        <div class="tl-detail-narrative">${s.narrative}</div>
+      </div>` : '';
     return `
-      <button class="${cls}" onclick="timelineJump(${i})" data-idx="${i}">
-        <span class="tl-row-marker">${marker}</span>
-        <span class="tl-row-body">
-          <span class="tl-row-time">${_tlFormat(s.offsetMin)}</span>
-          <span class="tl-row-title">${s.title}</span>
-          <span class="tl-row-mitre">${s.mitre}</span>
-        </span>
-      </button>`;
+      <div class="tl-row-wrap">
+        <button class="${cls}" onclick="timelineJump(${i})" data-idx="${i}">
+          <span class="tl-row-marker">${marker}</span>
+          <span class="tl-row-body">
+            <span class="tl-row-time">${_tlFormat(s.offsetMin)}</span>
+            <span class="tl-row-title">${s.title}</span>
+            <span class="tl-row-mitre">${s.mitre}</span>
+          </span>
+        </button>
+        ${detail}
+      </div>`;
   }).join('');
 
   body.innerHTML = `
     ${controls}
-    ${activeCard}
     <div class="tl-section-label">Timeline · ${total} event${total === 1 ? '' : 's'}</div>
     <div class="tl-rows">${rows}</div>
   `;
 
-  // scroll the active row into view inside the slider body
+  // Scroll the active row into view so its inline detail is fully visible
   const activeRow = body.querySelector('.tl-row.active');
   if (activeRow && typeof activeRow.scrollIntoView === 'function') {
-    activeRow.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
   _tlApplyHighlight(current);
