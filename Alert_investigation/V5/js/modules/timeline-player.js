@@ -27,10 +27,10 @@ function _tlFormat(offsetMin) {
 
 const TIMELINE_STEPS = [
   {
-    offsetMin: 0,
+    offsetMin: -180,
     tier: 'observed',
-    title: 'Baseline sign-in from corporate office',
-    narrative: 'm.henderson signs into Azure AD from 10.18.1.81 — the Austin corporate office IP. Routine, MFA-satisfied, no risk signals. This is the BEFORE half of the impossible-travel pair: the correlation engine remembers it for ~24 h so future logins can be measured against it.',
+    title: 'Morning Azure AD sign-in from corporate IP (baseline)',
+    narrative: 'At 06:42, m.henderson opens Outlook on the web from his home network, which egresses through the corporate VPN gateway 10.18.1.81 (Austin). Azure AD records a successful, MFA-satisfied cloud sign-in. This is a CLOUD sign-in (browser→Azure AD) — not a Windows interactive logon to a workstation. The Azure AD risk engine retains it as the user’s last-known-good location, and it becomes the BEFORE half of any future impossible-travel comparison within the next 24 h.',
     mitre: 'T1078 · Valid Accounts (baseline)',
     entities: ['user-m-henderson', 'ip-internal'],
     edges: [['user-m-henderson', 'ip-internal']]
@@ -38,8 +38,8 @@ const TIMELINE_STEPS = [
   {
     offsetMin: 14,
     tier: 'observed',
-    title: 'Anomalous sign-in from Tor exit node',
-    narrative: 'Only 14 minutes later, Azure AD ingests a second successful sign-in for the same user — this time from 185.220.101.42, a known Tor exit node in Bucharest, Romania, flagged by threat intelligence as a credential-stuffing source. This is the AFTER half of the impossible-travel pair.',
+    title: 'Anomalous Azure AD sign-in from Tor exit node',
+    narrative: 'About 3 h 14 min after the morning baseline, Azure AD ingests a second successful sign-in for the same user — this time from 185.220.101.42, a known Tor exit node in Bucharest, Romania, flagged by threat intelligence as a credential-stuffing source. Same user identity, totally different geography. This is the AFTER half of the impossible-travel pair.',
     mitre: 'T1078.004 · Valid Accounts: Cloud',
     entities: ['user-m-henderson', 'ip-tor'],
     edges: [['user-m-henderson', 'ip-tor']]
@@ -48,7 +48,7 @@ const TIMELINE_STEPS = [
     offsetMin: 22,
     tier: 'observed',
     title: 'Impossible Travel alert fires',
-    narrative: 'After Azure AD diagnostic logs reach the SIEM (~6–8 min ingest delay) and the correlation engine evaluates the new Bucharest sign-in against the prior Austin sign-in within its sliding window, the geographic transition is flagged as physically impossible and the Impossible Travel alert is raised against m.henderson.',
+    narrative: 'After Azure AD diagnostic logs reach the SIEM (~6–8 min ingest delay) and the correlation engine evaluates the new Bucharest sign-in against the morning Austin baseline within its sliding window, the geographic transition is flagged as physically impossible (Austin → Bucharest in <4 h is not feasible) and the Impossible Travel alert is raised against m.henderson.',
     mitre: 'TA0001 · Initial Access · Detection',
     entities: ['alert-impossible-travel', 'user-m-henderson'],
     edges: [['alert-impossible-travel', 'user-m-henderson']]
@@ -74,8 +74,8 @@ const TIMELINE_STEPS = [
   {
     offsetMin: 46,
     tier: 'observed',
-    title: 'Interactive logon to CORP-WS-045',
-    narrative: 'm.henderson signs into CORP-WS-045 from internal IP 10.18.1.81. The session is interactive (Type 2) — consistent with the attacker pivoting onto an endpoint after credential reuse.',
+    title: 'Interactive Windows logon to CORP-WS-045',
+    narrative: 'This is the FIRST time today m.henderson sits at his physical workstation. Windows Security event 4624 logon-type 2 (interactive) is recorded on CORP-WS-045 from internal IP 10.18.1.81. Different log source, different event class than the morning Azure AD cloud sign-in — and consistent with the attacker pivoting onto an endpoint after credential reuse.',
     mitre: 'T1078 · Valid Accounts',
     entities: ['user-m-henderson', 'ip-internal', 'dev-ws045'],
     edges: [
