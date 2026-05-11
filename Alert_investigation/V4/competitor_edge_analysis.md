@@ -20,7 +20,8 @@
 11. [Comparison Matrix](#comparison-matrix)
 12. [Cross-Vendor Pattern Analysis](#cross-vendor-pattern-analysis)
 13. [Recommendations for V5](#recommendations-for-v5)
-14. [References](#references)
+14. [Play-the-Attack Timeline — Competitor Precedent](#play-the-attack-timeline--competitor-precedent)
+15. [References](#references)
 
 ---
 
@@ -445,6 +446,48 @@ CrowdStrike Identity, SentinelOne Identity, and XM Cyber all switch to richer na
 
 ---
 
+## Play-the-Attack Timeline — Competitor Precedent
+
+The **Play** chip we ship in V5 (chronological replay of the kill-chain on the same incident graph the analyst is already looking at) is **not a net-new SOC concept** — it has direct precedent in **Microsoft Defender XDR's Attack Story** and parallels in three other XDR/SecOps suites. This section catalogs who shipped what, so the V5 design is defensible in PM reviews.
+
+### Direct precedent — Microsoft Defender XDR · *Attack Story*
+
+From Microsoft's official *Investigate incidents in the Microsoft Defender portal* documentation, the **Attack story** view on every incident page includes the ability to:
+
+> *"Play the alerts and the nodes on the graph as they occurred over time to understand the chronology of the attack."*
+
+Microsoft ships an animated demo of the feature in the docs (`play-alert-attack-story.gif`). The mechanics are essentially identical to V5: same incident graph, a Play control above the canvas, nodes/edges light up step-by-step in chronological order, and the analyst keeps full investigation context (entity sliders, go-hunt, isolate-device, etc.) on the side.
+
+- Source: <https://learn.microsoft.com/en-us/defender-xdr/investigate-incidents#attack-story>
+- Demo GIF: <https://learn.microsoft.com/en-us/defender-xdr/media/investigate-incidents/play-alert-attack-story.gif>
+- Status: GA today (Microsoft Defender XDR, formerly Microsoft 365 Defender)
+
+### Adjacent — graph + chronology, no explicit *Play* button
+
+| Vendor | Feature | Mental model |
+|---|---|---|
+| **Palo Alto Cortex XDR / XSIAM** | *Causality View* | Causality chain rendered as a tree; analyst scrubs through it chronologically. No explicit play, but same time-anchored graph idea. |
+| **CrowdStrike Falcon** | *Incident Workbench* + Process Tree replay | Time-scrub over the process tree with cross-host pivots. |
+| **SentinelOne Singularity** | *Storyline* (S1QL `storyline_id`) | Auto-correlated graph with timeline scrubber; events re-played by storyline ID. |
+| **Google SecOps (Chronicle / Mandiant)** | Case timeline + entity graph | Timeline scrubber tied to UDM events on the graph. |
+| **Splunk Enterprise Security / Mission Control** | Investigation timeline | Time-scrub over events, less graph-centric. |
+| **IBM QRadar Suite** | *Threat Investigator* timeline | Chronological replay of correlated observables. |
+
+### Where V5 differentiates
+
+V5's Play feature reaches Defender-XDR parity but **adds two tiers Defender doesn't surface on the graph today**:
+
+1. **AI-correlated tier** (✨ glyph) — events the AI agent enriched after Start Investigation, distinct from raw observed events.
+2. **Predicted tier** (⏱ amber) — projected next steps in the kill chain (e.g. LSASS dump, DC pivot) shown *on the same graph and the same timeline* as observed events. Defender's blast-radius graph shows *possible attack paths* but not *time-stamped predicted events on the replay timeline*.
+
+Combined with the **partial-mode → Start Investigation → full-graph reveal** flow (which no competitor ships today), this gives Log360 a defensible "Defender-Attack-Story-plus-AI-prediction" positioning for the alert-investigation workflow.
+
+### Implication for the Log360 product line
+
+ManageEngine Log360 / ADAudit Plus / EventLog Analyzer **do not currently ship a play-the-attack-on-the-graph experience**. Adopting it in V5 closes a clear capability gap against Microsoft Defender XDR (the most-cited XDR competitor in PM briefs) without entering uncharted UX territory — Defender has already validated the pattern in production with enterprise SOCs.
+
+---
+
 ## References
 
 ### BloodHound / SpecterOps
@@ -484,5 +527,13 @@ CrowdStrike Identity, SentinelOne Identity, and XM Cyber all switch to richer na
 ### SentinelOne
 - Singularity Identity: https://www.sentinelone.com/platform/singularity-identity/
 - Storyline technology: https://www.sentinelone.com/platform/singularity-platform/
+
+### Play-the-Attack Timeline (§14)
+- Microsoft Defender XDR — Investigate incidents (Attack story): https://learn.microsoft.com/en-us/defender-xdr/investigate-incidents#attack-story
+- Microsoft Defender XDR — Attack story Play demo (GIF): https://learn.microsoft.com/en-us/defender-xdr/media/investigate-incidents/play-alert-attack-story.gif
+- Palo Alto Cortex XDR — Causality View: https://docs-cortex.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/investigation-and-response/investigate-incidents/causality-view
+- SentinelOne Storyline: https://www.sentinelone.com/platform/singularity-platform/
+- CrowdStrike Incident Workbench: https://www.crowdstrike.com/platform/insight-xdr/
+- Google SecOps case timeline + entity graph: https://docs.cloud.google.com/chronicle/docs/reference/udm-field-list
 
 > ⚠️ **Source caveat:** Chronicle and BloodHound data are verified from official docs. Splunk, Palo Alto, CrowdStrike, SentinelOne sections are from public product knowledge as authoritative pages either redirect, 404, or sit behind login walls — anyone validating should pull the gated docs directly.
