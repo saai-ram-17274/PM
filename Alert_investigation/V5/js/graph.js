@@ -189,7 +189,7 @@ function attackVectorHTML(){
             <g class="edge-info-btn" data-label="CommunicatedWith" data-source="ip-tor" data-target="domain-c2" onclick="showEdgeRelation(event,this)"><circle cx="120" cy="540" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="120" y="544" text-anchor="middle" font-size="11" dominant-baseline="central">📡</text></g>
             <g class="edge-info-btn" data-label="CommunicatedWith" data-source="dev-ws045" data-target="domain-c2" onclick="showEdgeRelation(event,this)"><circle cx="230" cy="610" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="230" y="614" text-anchor="middle" font-size="11" dominant-baseline="central">📡</text></g>
             <!-- PREDICTED edge-info button: administrator -> DC-01 -->
-            <g class="edge-info-btn" data-predicted="1" data-label="LateralMovementTo" data-source="user-admin" data-target="dev-dc01-predicted" onclick="showPredictionDetails('dev-dc01-predicted')"><circle cx="660" cy="495" r="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/><text x="660" y="499" text-anchor="middle" font-size="11" dominant-baseline="central">⏱</text></g>
+            <g class="edge-info-btn" data-predicted="1" data-label="LateralMovementTo" data-source="user-admin" data-target="dev-dc01-predicted" onclick="showEdgePrediction(event,this)"><circle cx="660" cy="495" r="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/><text x="660" y="499" text-anchor="middle" font-size="11" dominant-baseline="central">⏱</text></g>
           </svg>
 
           <div class="graph-canvas-toolbar">

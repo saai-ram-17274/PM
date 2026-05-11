@@ -739,6 +739,35 @@ const PREDICTION_DETAILS = {
   }
 };
 
+/* Edge-level predictions: same shared slider, but the framing is the
+ * *relationship* (the projected action), not the target entity. */
+const PREDICTION_EDGE_DETAILS = {
+  'user-admin→dev-dc01-predicted': {
+    title: 'Administrator → DC-01',
+    relation: 'LateralMovementTo',
+    summary: 'The AI projects the compromised administrator account will be used to move laterally from CORP-WS-045 to the Domain Controller (DC-01). This connection has not been observed yet.',
+    confidence: 78,
+    eta: 'Within next ~30 min',
+    method: 'Remote Services (RDP / SMB) using stolen administrator credentials',
+    mitre: [
+      { id: 'T1021.001', name: 'Remote Services: Remote Desktop Protocol' },
+      { id: 'T1021.002', name: 'Remote Services: SMB / Windows Admin Shares' },
+      { id: 'T1078.003', name: 'Valid Accounts: Local Accounts' }
+    ],
+    basis: [
+      'Observed: EID 4648 — Explicit credential used (administrator) on CORP-WS-045 @ 15:36:22',
+      'Observed: PowerShell parent → child chain consistent with credential dumping',
+      'Pattern match: 87% of similar kill-chains pivoted to a DC within 30 min via RDP/SMB'
+    ],
+    recommendation: [
+      'Block 192.168.1.22 → DC-01 on TCP/445 (SMB) and TCP/3389 (RDP) at the network firewall',
+      'Force-disable the administrator account in AD',
+      'Enable Restricted Admin Mode for RDP on DC-01',
+      'Increase audit policy on DC-01 (4624, 4672, 4769) for next 24h'
+    ]
+  }
+};
+
 function showPredictionDetails(entityId) {
   const data = PREDICTION_DETAILS[entityId];
   if (!data) return;
@@ -785,6 +814,79 @@ function showPredictionDetails(entityId) {
           <div style="font-size:13px;font-weight:600;color:#1f2937;margin-top:6px;">${data.eta}</div>
         </div>
       </div>
+    </div>
+    <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+      <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">MITRE ATT&amp;CK Techniques</div>
+      <div>${mitreHtml}</div>
+    </div>
+    <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+      <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Evidence Basis <span style="font-weight:500;color:#94a3b8;text-transform:none;letter-spacing:0;">(why AI predicts this)</span></div>
+      <ul style="margin:0;padding-left:18px;font-size:12px;color:#334155;">${basisHtml}</ul>
+    </div>
+    <div class="eds-section" style="padding:12px 16px;">
+      <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Recommended Pre-emptive Actions</div>
+      <ul style="margin:0;padding-left:18px;font-size:12px;color:#334155;">${recHtml}</ul>
+    </div>`;
+
+  document.getElementById('graphContainer').classList.add('slider-open');
+  if (typeof closeActionPanel === 'function') closeActionPanel();
+}
+
+function showEdgePrediction(evt, el) {
+  if (evt && evt.stopPropagation) evt.stopPropagation();
+  const source = el.getAttribute('data-source');
+  const target = el.getAttribute('data-target');
+  const data = PREDICTION_EDGE_DETAILS[source + '\u2192' + target];
+  if (!data) return;
+
+  document.getElementById('edsTitle').textContent = data.title;
+  const badge = document.getElementById('edsTypeBadge');
+  badge.textContent = '⏱ Predicted Relationship';
+  badge.className = 'eds-type-badge';
+  badge.style.cssText = 'display:inline-flex;background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
+  const depthBadge = document.getElementById('edsDepthBadge');
+  if (depthBadge) depthBadge.style.display = 'none';
+  const tabsHost = document.getElementById('edsTabsHost');
+  if (tabsHost) tabsHost.innerHTML = '';
+
+  const confColor = data.confidence >= 75 ? '#dc2626' : data.confidence >= 50 ? '#d97706' : '#65a30d';
+  const mitreHtml = data.mitre.map(m => `<span style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;padding:2px 8px;border-radius:6px;font-size:11px;margin-right:6px;display:inline-block;margin-bottom:4px;">${m.id} · ${m.name}</span>`).join('');
+  const basisHtml = data.basis.map(b => `<li style="margin-bottom:6px;line-height:1.5;">${b}</li>`).join('');
+  const recHtml = data.recommendation.map(r => `<li style="margin-bottom:6px;line-height:1.5;">${r}</li>`).join('');
+
+  document.getElementById('edsBody').innerHTML = `
+    <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);background:#fffbeb;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:22px;">⏱</span>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:700;color:#92400e;letter-spacing:0.5px;">NOT YET OBSERVED · PREDICTED ATTACK STEP</div>
+          <div style="font-size:11px;color:#78350f;margin-top:2px;">The AI projects this relationship as the most likely next action in the kill-chain.</div>
+        </div>
+      </div>
+      <div style="font-size:12.5px;color:#1f2937;line-height:1.5;">${data.summary}</div>
+    </div>
+    <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:140px;background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#64748b;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Relation</div>
+          <div style="font-size:13px;font-weight:600;color:#1f2937;margin-top:4px;">${data.relation}</div>
+        </div>
+        <div style="flex:1;min-width:120px;background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#64748b;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Confidence</div>
+          <div style="font-size:18px;font-weight:700;color:${confColor};margin-top:2px;">${data.confidence}%</div>
+          <div style="height:4px;background:#e5e7eb;border-radius:2px;margin-top:4px;overflow:hidden;">
+            <div style="width:${data.confidence}%;background:${confColor};height:100%;"></div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:140px;background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#64748b;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Expected Within</div>
+          <div style="font-size:13px;font-weight:600;color:#1f2937;margin-top:6px;">${data.eta}</div>
+        </div>
+      </div>
+    </div>
+    <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+      <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;">Predicted Method</div>
+      <div style="font-size:12.5px;color:#334155;line-height:1.5;">${data.method}</div>
     </div>
     <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);">
       <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">MITRE ATT&amp;CK Techniques</div>

@@ -258,7 +258,6 @@ body:has(#panel-attack-vector.active) .dv-tabs-row { margin-bottom: 0; }
    glyph, and a "PREDICTED" sub-label. Edges use dashed amber. */
 .graph-node[data-predicted="1"] circle {
   stroke: #d97706 !important;
-  stroke-dasharray: 5 3;
   fill: #fffbeb !important;
   opacity: 0.92;
 }
@@ -285,7 +284,6 @@ line[data-predicted="1"] {
 }
 g.edge-info-btn[data-predicted="1"] circle {
   stroke: #d97706 !important;
-  stroke-dasharray: 3 2;
   fill: #fffbeb !important;
 }
 
