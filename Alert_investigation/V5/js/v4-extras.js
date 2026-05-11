@@ -745,7 +745,7 @@ const PREDICTION_EDGE_DETAILS = {
   'user-admin→dev-dc01-predicted': {
     title: 'Administrator → DC-01',
     relation: 'LoginTo',
-    summary: 'The AI projects the compromised administrator account will be used to move laterally from CORP-WS-045 to the Domain Controller (DC-01). This connection has not been observed yet.',
+    summary: 'The AI projects the compromised administrator account will be used to log in to the Domain Controller (DC-01) from CORP-WS-045 \u2014 a lateral-movement pivot. This authentication has not been observed yet.',
     confidence: 78,
     eta: 'Within next ~30 min',
     method: 'Remote Services (RDP / SMB) using stolen administrator credentials',
@@ -867,7 +867,13 @@ function showEdgePrediction(evt, el) {
 
   document.getElementById('edsTitle').textContent = data.title;
   const badge = document.getElementById('edsTypeBadge');
-  badge.textContent = '⏱ Predicted Relationship';
+  // Resolve the canonical relation from REL_GUIDE so icon/color match
+  // the rest of the graph (predicted edge uses LoginTo → 🔐 blue).
+  const relGuide = (typeof REL_GUIDE !== 'undefined')
+    ? REL_GUIDE.find(r => r.key === data.relation) : null;
+  const relIcon = relGuide ? relGuide.icon : '🔗';
+  const relName = relGuide ? relGuide.name : data.relation;
+  badge.textContent = '⏱ ' + relIcon + ' ' + relName + ' · Predicted';
   badge.className = 'eds-type-badge';
   badge.style.cssText = 'display:inline-flex;background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
   const depthBadge = document.getElementById('edsDepthBadge');
@@ -895,7 +901,8 @@ function showEdgePrediction(evt, el) {
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
         <div style="flex:1;min-width:140px;background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:8px 10px;">
           <div style="font-size:10px;color:#64748b;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Relation</div>
-          <div style="font-size:13px;font-weight:600;color:#1f2937;margin-top:4px;">${data.relation}</div>
+          <div style="font-size:13px;font-weight:600;color:#1f2937;margin-top:4px;">${relIcon} ${relName}</div>
+          <div style="font-size:10.5px;color:#94a3b8;margin-top:2px;">${relGuide ? relGuide.category : ''}</div>
         </div>
         <div style="flex:1;min-width:120px;background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:8px 10px;">
           <div style="font-size:10px;color:#64748b;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Confidence</div>
