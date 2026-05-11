@@ -710,6 +710,99 @@ document.addEventListener('click', () => {
   if (popup) popup.classList.remove('show');
 });
 
+/* ── AI Prediction details ─────────────────────────────────────────────
+ * Opens the shared slider with a "predicted next step" card. This is
+ * deliberately styled differently from observed entities/edges so the
+ * analyst never confuses a projection with a fact. Reasoning is grounded
+ * in real observed events (Evidence Basis section). */
+const PREDICTION_DETAILS = {
+  'dev-dc01-predicted': {
+    title: 'DC-01 · AI-projected target',
+    summary: 'Domain Controller (DC-01) is the most likely next target for lateral movement using the compromised administrator credentials observed on CORP-WS-045.',
+    confidence: 78,
+    eta: 'Within next ~30 min',
+    mitre: [
+      { id: 'T1078.003', name: 'Valid Accounts: Local Accounts' },
+      { id: 'T1021.001', name: 'Remote Services: RDP' },
+      { id: 'T1003.001', name: 'OS Credential Dumping: LSASS Memory' }
+    ],
+    basis: [
+      'Observed: EID 4648 — Explicit credential used (administrator) on CORP-WS-045 @ 15:36:22',
+      'Observed: EID 4624 — Logon type 9 (NewCredentials) chained with token impersonation',
+      'Pattern match: 87% similarity to prior incidents that pivoted to DC within 30 min'
+    ],
+    recommendation: [
+      'Force-revoke administrator session and disable account (auto-suggested in Recommendation tab)',
+      'Block SMB/RDP from CORP-WS-045 → DC-01 at firewall',
+      'Trigger LSASS protection / Credential Guard policy on DC-01'
+    ]
+  }
+};
+
+function showPredictionDetails(entityId) {
+  const data = PREDICTION_DETAILS[entityId];
+  if (!data) return;
+  if (typeof event !== 'undefined' && event && event.stopPropagation) event.stopPropagation();
+
+  // Reuse shared slider DOM
+  document.getElementById('edsTitle').textContent = data.title;
+  const badge = document.getElementById('edsTypeBadge');
+  badge.textContent = '⏱ AI Prediction';
+  badge.className = 'eds-type-badge';
+  badge.style.cssText = 'display:inline-flex;background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
+  const depthBadge = document.getElementById('edsDepthBadge');
+  if (depthBadge) depthBadge.style.display = 'none';
+  const tabsHost = document.getElementById('edsTabsHost');
+  if (tabsHost) tabsHost.innerHTML = '';
+
+  const confColor = data.confidence >= 75 ? '#dc2626' : data.confidence >= 50 ? '#d97706' : '#65a30d';
+  const mitreHtml = data.mitre.map(m => `<span class="ers-mitre-chip" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;padding:2px 8px;border-radius:6px;font-size:11px;margin-right:6px;display:inline-block;margin-bottom:4px;">${m.id} · ${m.name}</span>`).join('');
+  const basisHtml = data.basis.map(b => `<li style="margin-bottom:6px;line-height:1.5;">${b}</li>`).join('');
+  const recHtml = data.recommendation.map(r => `<li style="margin-bottom:6px;line-height:1.5;">${r}</li>`).join('');
+
+  document.getElementById('edsBody').innerHTML = `
+    <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);background:#fffbeb;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:22px;">⏱</span>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:700;color:#92400e;letter-spacing:0.5px;">NOT YET OBSERVED · AI PROJECTION</div>
+          <div style="font-size:11px;color:#78350f;margin-top:2px;">This is the AI's most likely next step based on observed kill-chain patterns. It has not happened yet.</div>
+        </div>
+      </div>
+      <div style="font-size:12.5px;color:#1f2937;line-height:1.5;">${data.summary}</div>
+    </div>
+    <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;gap:12px;">
+        <div style="flex:1;background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#64748b;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Confidence</div>
+          <div style="font-size:18px;font-weight:700;color:${confColor};margin-top:2px;">${data.confidence}%</div>
+          <div style="height:4px;background:#e5e7eb;border-radius:2px;margin-top:4px;overflow:hidden;">
+            <div style="width:${data.confidence}%;background:${confColor};height:100%;"></div>
+          </div>
+        </div>
+        <div style="flex:1;background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#64748b;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Expected Within</div>
+          <div style="font-size:13px;font-weight:600;color:#1f2937;margin-top:6px;">${data.eta}</div>
+        </div>
+      </div>
+    </div>
+    <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+      <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">MITRE ATT&amp;CK Techniques</div>
+      <div>${mitreHtml}</div>
+    </div>
+    <div class="eds-section" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+      <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Evidence Basis <span style="font-weight:500;color:#94a3b8;text-transform:none;letter-spacing:0;">(why AI predicts this)</span></div>
+      <ul style="margin:0;padding-left:18px;font-size:12px;color:#334155;">${basisHtml}</ul>
+    </div>
+    <div class="eds-section" style="padding:12px 16px;">
+      <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Recommended Pre-emptive Actions</div>
+      <ul style="margin:0;padding-left:18px;font-size:12px;color:#334155;">${recHtml}</ul>
+    </div>`;
+
+  document.getElementById('graphContainer').classList.add('slider-open');
+  if (typeof closeActionPanel === 'function') closeActionPanel();
+}
+
 
 /* ── REL_GUIDE + toggleRelGuide ──
  * Canonical relation catalog — 24 edges across 7 categories.

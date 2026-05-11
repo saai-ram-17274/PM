@@ -108,6 +108,8 @@ function attackVectorHTML(){
             <line x1="940" y1="570" x2="880" y2="420" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="svc-oauth" data-target="svc-sharepoint" data-label="AccessedFile"/>
             <line x1="120" y1="460" x2="120" y2="620" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="ip-tor" data-target="domain-c2" data-label="CommunicatedWith"/>
             <line x1="320" y1="580" x2="140" y2="640" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="dev-ws045" data-target="domain-c2" data-label="CommunicatedWith"/>
+            <!-- PREDICTED edge: administrator -> DC-01 (lateral movement, T1078.003) -->
+            <line x1="635" y1="370" x2="685" y2="620" data-predicted="1" data-source="user-admin" data-target="dev-dc01-predicted" data-label="LateralMovementTo"/>
 
             <g class="graph-node" data-entity="alert-impossible-travel" onclick="openEntitySlider('alert-impossible-travel')" oncontextmenu="showGraphCtx(event,'alert-impossible-travel')">
               <circle cx="580" cy="65" r="24" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
@@ -161,6 +163,14 @@ function attackVectorHTML(){
               <text x="120" y="680" text-anchor="middle" font-size="8.5" fill="#DD1616" font-family="Inter,sans-serif" font-weight="600">c2-update.darkoperator.net</text>
               <text x="120" y="692" text-anchor="middle" font-size="7.5" fill="#8a94a6" font-family="Inter,sans-serif">(185.220.101.99 · C2 Server)</text>
             </g>
+            <!-- PREDICTED node: Domain Controller (AI-projected next step) -->
+            <g class="graph-node" data-entity="dev-dc01-predicted" data-predicted="1" onclick="showPredictionDetails('dev-dc01-predicted')" oncontextmenu="event.preventDefault();showPredictionDetails('dev-dc01-predicted')">
+              <circle cx="700" cy="640" r="20" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+              <text x="700" y="645" text-anchor="middle" font-size="14" dominant-baseline="central">🖥</text>
+              <text class="predicted-glyph" x="717" y="630" text-anchor="middle">⏱</text>
+              <text x="700" y="670" text-anchor="middle" font-size="10" fill="#d97706" font-family="Inter,sans-serif" font-weight="600">DC-01</text>
+              <text class="predicted-sublabel" x="700" y="683" text-anchor="middle">PREDICTED · LATERAL MOVEMENT</text>
+            </g>
 
             <g class="edge-info-btn" data-label="TriggeredBy" data-source="alert-impossible-travel" data-target="user-m-henderson" onclick="showEdgeRelation(event,this)"><circle cx="430" cy="155" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="430" y="159" text-anchor="middle" font-size="11" dominant-baseline="central">⚡</text></g>
             <g class="edge-info-btn" data-label="DetectedOn" data-source="alert-impossible-travel" data-target="svc-azure-ad" onclick="showEdgeRelation(event,this)"><circle cx="740" cy="125" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="740" y="129" text-anchor="middle" font-size="11" dominant-baseline="central">🔍</text></g>
@@ -178,13 +188,16 @@ function attackVectorHTML(){
             <g class="edge-info-btn" data-label="AccessedFile" data-source="svc-oauth" data-target="svc-sharepoint" onclick="showEdgeRelation(event,this)"><circle cx="915" cy="490" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="915" y="494" text-anchor="middle" font-size="11" dominant-baseline="central">🎟</text></g>
             <g class="edge-info-btn" data-label="CommunicatedWith" data-source="ip-tor" data-target="domain-c2" onclick="showEdgeRelation(event,this)"><circle cx="120" cy="540" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="120" y="544" text-anchor="middle" font-size="11" dominant-baseline="central">📡</text></g>
             <g class="edge-info-btn" data-label="CommunicatedWith" data-source="dev-ws045" data-target="domain-c2" onclick="showEdgeRelation(event,this)"><circle cx="230" cy="610" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="230" y="614" text-anchor="middle" font-size="11" dominant-baseline="central">📡</text></g>
+            <!-- PREDICTED edge-info button: administrator -> DC-01 -->
+            <g class="edge-info-btn" data-predicted="1" data-label="LateralMovementTo" data-source="user-admin" data-target="dev-dc01-predicted" onclick="showPredictionDetails('dev-dc01-predicted')"><circle cx="660" cy="495" r="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/><text x="660" y="499" text-anchor="middle" font-size="11" dominant-baseline="central">⏱</text></g>
           </svg>
 
           <div class="graph-canvas-toolbar">
             <span class="canvas-edge-tag"><span class="legend-line-red"></span> Malicious</span>
             <span class="canvas-edge-tag"><span class="legend-line-blue"></span> Normal</span>
             <span style="margin:0 4px;border-left:1px solid #e2e8f0;height:14px;align-self:center;"></span>
-            <span class="canvas-edge-tag" id="legendAiCorrelated" title="Entities and relationships surfaced by AI from existing log evidence (not predictions)"><span class="legend-ai-spark">\u2728</span> AI-correlated</span>
+            <span class="canvas-edge-tag" id="legendAiCorrelated" title="Entities and relationships surfaced by AI from existing log evidence (observed, not predicted)"><span class="legend-ai-spark">\u2728</span> AI-correlated</span>
+            <span class="canvas-edge-tag" id="legendPredicted" title="AI-projected next attack step based on TTP patterns (not yet observed)"><span class="legend-predicted-glyph">⏱</span> Predicted</span>
             <span style="margin:0 4px;border-left:1px solid #e2e8f0;height:14px;align-self:center;"></span>
             <span class="canvas-edge-tag" style="cursor:pointer;" onclick="toggleRelGuide(event)" title="Relationship Guide">⟷ Relations</span>
           </div>
@@ -404,7 +417,13 @@ document.addEventListener('keydown', e => {
    (before the user clicks "Start Investigation" in the Investigation tab)
    these nodes and any edges touching them are hidden, leaving only the
    entities present in the alert summary / sidebar. */
-const PARTIAL_HIDDEN_ENTITIES = ['svc-azure-ad','svc-sharepoint','svc-oauth','user-admin','domain-c2'];
+const PARTIAL_HIDDEN_ENTITIES = ['svc-azure-ad','svc-sharepoint','svc-oauth','user-admin','domain-c2','dev-dc01-predicted'];
+
+/* Entities flagged as AI-PREDICTED (not yet observed). Rendered with
+   amber dashed outline + ⏱ glyph + PREDICTED sub-label. Predictions
+   are TTP-based projections of the most likely next attack step;
+   they should never be confused with observed events. */
+const PREDICTED_ENTITIES = new Set(['dev-dc01-predicted']);
 
 function isAiInvestigated(){
   const d = (typeof currentAlertId !== 'undefined' && typeof ALERT_DETAIL !== 'undefined')
@@ -451,7 +470,8 @@ function applyAttackGraphPartialMode(){
   const tagAi = !partial;
   svg.querySelectorAll('g.graph-node').forEach(n => {
     const eid = n.getAttribute('data-entity');
-    if (tagAi && hidden.has(eid)) {
+    const isPredicted = PREDICTED_ENTITIES.has(eid);
+    if (tagAi && hidden.has(eid) && !isPredicted) {
       n.setAttribute('data-ai', '1');
       /* Inject the ✨ corner glyph exactly once per AI node */
       if (!n.querySelector('.ai-spark-glyph')) {
@@ -463,25 +483,32 @@ function applyAttackGraphPartialMode(){
           const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
           t.setAttribute('class', 'ai-spark-glyph');
           t.setAttribute('x', cx + r * 0.85);
-          t.setAttribute('y', cy - r * 0.75);
+          t.setAttribute('y', cy - r * 0.55);
           t.setAttribute('text-anchor', 'middle');
-          t.setAttribute('font-size', '12');
           t.setAttribute('pointer-events', 'none');
           t.textContent = '\u2728';
           n.appendChild(t);
         }
       }
-    } else {
+    } else if (!isPredicted) {
       n.removeAttribute('data-ai');
     }
   });
   svg.querySelectorAll('line[data-source]').forEach(l => {
     if (tagAi && edgeTouchesHidden(l)) l.setAttribute('data-ai', '1');
     else l.removeAttribute('data-ai');
+    /* Predicted edges already carry data-predicted="1" in markup;
+       toggle visibility based on partial mode */
+    if (l.getAttribute('data-predicted') === '1') {
+      l.style.display = partial ? 'none' : '';
+    }
   });
   svg.querySelectorAll('g.edge-info-btn').forEach(b => {
     if (tagAi && edgeTouchesHidden(b)) b.setAttribute('data-ai', '1');
     else b.removeAttribute('data-ai');
+    if (b.getAttribute('data-predicted') === '1') {
+      b.style.display = partial ? 'none' : '';
+    }
   });
 
   /* Toggle a container-level class so the legend chip can show/hide */

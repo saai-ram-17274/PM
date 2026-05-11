@@ -236,31 +236,66 @@ body:has(#panel-attack-vector.active) .dv-tabs-row { margin-bottom: 0; }
 .graph-edge-mal { stroke:#ef4444; stroke-width:1.5; stroke-dasharray:6 3; opacity:.7; }
 .graph-edge-norm { stroke:#3b82f6; stroke-width:1.2; opacity:.5; }
 
-/* ── AI-correlated provenance ──────────────────────────────────────────
+/* ── AI-correlated provenance (OBSERVED) ───────────────────────────────
    Entities and edges surfaced after "Start Investigation" are real
-   observations (joined from existing logs by the AI). To distinguish
-   them from alert-native primitives, they get a dashed purple halo
-   and a ✨ glyph. This is provenance, NOT prediction. */
-.graph-node[data-ai="1"] circle {
-  stroke-dasharray: 4 2;
-  filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.45));
-}
+   observations the AI joined from logs. We mark them with a small ✨
+   glyph only — keeping the node outline clean so the graph stays
+   readable. The legend chip explains what the sparkle means. */
 .graph-node[data-ai="1"] .ai-spark-glyph {
   fill: #7c3aed;
   font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;
   paint-order: stroke;
   stroke: #ffffff;
-  stroke-width: 2px;
+  stroke-width: 2.5px;
+  font-size: 13px;
+  font-weight: 700;
 }
-line[data-ai="1"] { stroke-dasharray: 4 3 !important; }
-g.edge-info-btn[data-ai="1"] circle {
-  stroke: #7c3aed !important;
+
+/* ── AI-predicted (NOT YET OBSERVED) ───────────────────────────────────
+   Nodes and edges the AI projects as the likely next attack step,
+   based on TTP patterns. Visually distinct so users never confuse
+   them with observed events: dashed amber outline, ghost fill, ⏱
+   glyph, and a "PREDICTED" sub-label. Edges use dashed amber. */
+.graph-node[data-predicted="1"] circle {
+  stroke: #d97706 !important;
+  stroke-dasharray: 5 3;
+  fill: #fffbeb !important;
+  opacity: 0.92;
+}
+.graph-node[data-predicted="1"] .predicted-glyph {
+  fill: #d97706;
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 2.5px;
+  font-weight: 700;
+}
+.graph-node[data-predicted="1"] .predicted-sublabel {
+  fill: #d97706;
+  font-family: Inter, sans-serif;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+line[data-predicted="1"] {
+  stroke: #d97706 !important;
+  stroke-width: 1.6 !important;
+  stroke-dasharray: 7 4 !important;
+  opacity: 0.85 !important;
+}
+g.edge-info-btn[data-predicted="1"] circle {
+  stroke: #d97706 !important;
   stroke-dasharray: 3 2;
+  fill: #fffbeb !important;
 }
-/* Legend chip only shows once the AI has run */
-#legendAiCorrelated { display: none; align-items: center; gap: 6px; }
-.inv-graph-container.av-ai-investigated #legendAiCorrelated { display: inline-flex; }
+
+/* Legend chips only show once the AI has run */
+#legendAiCorrelated,
+#legendPredicted { display: none; align-items: center; gap: 6px; }
+.inv-graph-container.av-ai-investigated #legendAiCorrelated,
+.inv-graph-container.av-ai-investigated #legendPredicted { display: inline-flex; }
 .legend-ai-spark { color: #7c3aed; font-size: 12px; line-height: 1; }
+.legend-predicted-glyph { color: #d97706; font-size: 12px; line-height: 1; }
 
 .graph-ctx {
   position:fixed; z-index:300;
