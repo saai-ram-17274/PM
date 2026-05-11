@@ -197,6 +197,8 @@
 .em-rg-pb-info { flex: 1; min-width: 0; }
 .em-rg-pb-name { font-size: 12px; font-weight: 700; color: var(--text-primary); }
 .em-rg-pb-id   { font-size: 10px; color: var(--text-dim, #94a3b8); font-family: var(--mono, monospace); }
+.em-rg-pb-default { font-size: 9px; padding: 1px 5px; border-radius: 3px; background:#e0e7ff; color:#3730a3; font-weight: 700; letter-spacing: 0.4px; margin-left: 4px; }
+.em-rg-pb-count   { font-size: 11px; color: var(--text-dim, #94a3b8); font-weight: 500; margin-left: 2px; }
 .em-rg-pb-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.4; margin-top: 2px; }
 .em-rg-pb-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
 .em-rg-pb-badge {

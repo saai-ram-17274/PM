@@ -736,6 +736,29 @@ const PREDICTION_DETAILS = {
       'Block SMB/RDP from CORP-WS-045 → DC-01 at firewall',
       'Trigger LSASS protection / Credential Guard policy on DC-01'
     ]
+  },
+  'proc-credump-predicted': {
+    title: 'LSASS Credential Dump · AI-projected step',
+    summary: 'The AI projects credential dumping from LSASS memory on CORP-WS-045 as the next step — needed to harvest DC service tickets/NTLM hashes before pivoting to DC-01. Not yet observed.',
+    confidence: 72,
+    eta: 'Within next ~15 min',
+    mitre: [
+      { id: 'T1003.001', name: 'OS Credential Dumping: LSASS Memory' },
+      { id: 'T1059.001', name: 'PowerShell' },
+      { id: 'T1078.003', name: 'Valid Accounts: Local Accounts' }
+    ],
+    basis: [
+      'Observed: Encoded PowerShell execution by m.henderson on CORP-WS-045 (T1059.001)',
+      'Observed: Suspicious service WinUpdateSvc installed — typical staging for credential dumpers',
+      'Observed: Administrator credentials already abused (EID 4648) but no DC ticket yet — dump is the missing pre-req',
+      'Pattern match: 81% of similar kill-chains executed LSASS dump within 15 min of admin-cred abuse'
+    ],
+    recommendation: [
+      'Enable Credential Guard / LSA Protection (RunAsPPL=1) on CORP-WS-045 immediately',
+      'EDR isolate CORP-WS-045 before dump tooling executes',
+      'Trigger memory acquisition for forensic capture of LSASS state',
+      'Force-rotate all cached domain admin credentials'
+    ]
   }
 };
 
@@ -764,6 +787,30 @@ const PREDICTION_EDGE_DETAILS = {
       'Force-disable the administrator account in AD',
       'Enable Restricted Admin Mode for RDP on DC-01',
       'Increase audit policy on DC-01 (4624, 4672, 4769) for next 24h'
+    ]
+  },
+  'dev-ws045→proc-credump-predicted': {
+    title: 'CORP-WS-045 → LSASS Dump',
+    relation: 'ExecutedOn',
+    summary: 'The AI projects credential-dumping tooling will execute on CORP-WS-045 to harvest cached domain-admin material from LSASS memory. This execution has not been observed yet.',
+    confidence: 72,
+    eta: 'Within next ~15 min',
+    method: 'Encoded PowerShell (already observed) loading a reflective in-memory dumper against lsass.exe',
+    mitre: [
+      { id: 'T1003.001', name: 'OS Credential Dumping: LSASS Memory' },
+      { id: 'T1059.001', name: 'Command and Scripting Interpreter: PowerShell' }
+    ],
+    basis: [
+      'Observed: Encoded PowerShell execution by m.henderson on CORP-WS-045',
+      'Observed: Suspicious service WinUpdateSvc installed (typical loader staging)',
+      'Observed: Administrator credentials already used — attacker has local elevation but no DC ticket yet',
+      'Pattern match: 81% of similar chains performed LSASS dump within 15 min of admin-cred abuse'
+    ],
+    recommendation: [
+      'Enable LSA Protection (RunAsPPL=1) and Credential Guard on CORP-WS-045 right now',
+      'EDR isolate CORP-WS-045 before any dumper binary loads',
+      'Trigger Sysmon EID 10 alerts for any handle to lsass.exe with GrantedAccess 0x1010/0x1410',
+      'Force-rotate domain admin credentials before the dump completes'
     ]
   }
 };

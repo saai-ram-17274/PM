@@ -108,8 +108,10 @@ function attackVectorHTML(){
             <line x1="940" y1="570" x2="880" y2="420" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="svc-oauth" data-target="svc-sharepoint" data-label="AccessedFile"/>
             <line x1="120" y1="460" x2="120" y2="620" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="ip-tor" data-target="domain-c2" data-label="CommunicatedWith"/>
             <line x1="320" y1="580" x2="140" y2="640" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="dev-ws045" data-target="domain-c2" data-label="CommunicatedWith"/>
-            <!-- PREDICTED edge: administrator -> DC-01 (lateral movement, T1078.003) -->
+            <!-- PREDICTED edge: administrator -> DC-01 (LoginTo via RDP/SMB) -->
             <line x1="635" y1="370" x2="685" y2="620" data-predicted="1" data-source="user-admin" data-target="dev-dc01-predicted" data-label="LoginTo"/>
+            <!-- PREDICTED edge: dev-ws045 -> Credential Dump (ExecutedOn) — bridges admin abuse to DC pivot -->
+            <line x1="340" y1="590" x2="475" y2="645" data-predicted="1" data-source="dev-ws045" data-target="proc-credump-predicted" data-label="ExecutedOn"/>
 
             <g class="graph-node" data-entity="alert-impossible-travel" onclick="openEntitySlider('alert-impossible-travel')" oncontextmenu="showGraphCtx(event,'alert-impossible-travel')">
               <circle cx="580" cy="65" r="24" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
@@ -171,6 +173,14 @@ function attackVectorHTML(){
               <text x="700" y="670" text-anchor="middle" font-size="10" fill="#d97706" font-family="Inter,sans-serif" font-weight="600">DC-01</text>
               <text class="predicted-sublabel" x="700" y="683" text-anchor="middle">PREDICTED · LATERAL MOVEMENT</text>
             </g>
+            <!-- PREDICTED node: LSASS Credential Dump (bridges admin-creds-on-WS045 to DC-01 LoginTo) -->
+            <g class="graph-node" data-entity="proc-credump-predicted" data-predicted="1" onclick="showPredictionDetails('proc-credump-predicted')" oncontextmenu="event.preventDefault();showPredictionDetails('proc-credump-predicted')">
+              <circle cx="490" cy="660" r="18" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+              <text x="490" y="664" text-anchor="middle" font-size="13" dominant-baseline="central">🔧</text>
+              <text class="predicted-glyph" x="506" y="650" text-anchor="middle">⏱</text>
+              <text x="490" y="686" text-anchor="middle" font-size="9.5" fill="#d97706" font-family="Inter,sans-serif" font-weight="600">LSASS Dump</text>
+              <text class="predicted-sublabel" x="490" y="698" text-anchor="middle">PREDICTED · CREDENTIAL ACCESS</text>
+            </g>
 
             <g class="edge-info-btn" data-label="TriggeredBy" data-source="alert-impossible-travel" data-target="user-m-henderson" onclick="showEdgeRelation(event,this)"><circle cx="430" cy="155" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="430" y="159" text-anchor="middle" font-size="11" dominant-baseline="central">⚡</text></g>
             <g class="edge-info-btn" data-label="DetectedOn" data-source="alert-impossible-travel" data-target="svc-azure-ad" onclick="showEdgeRelation(event,this)"><circle cx="740" cy="125" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="740" y="129" text-anchor="middle" font-size="11" dominant-baseline="central">🔍</text></g>
@@ -190,6 +200,8 @@ function attackVectorHTML(){
             <g class="edge-info-btn" data-label="CommunicatedWith" data-source="dev-ws045" data-target="domain-c2" onclick="showEdgeRelation(event,this)"><circle cx="230" cy="610" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="230" y="614" text-anchor="middle" font-size="11" dominant-baseline="central">📡</text></g>
             <!-- PREDICTED edge-info button: administrator -> DC-01 -->
             <g class="edge-info-btn" data-predicted="1" data-label="LoginTo" data-source="user-admin" data-target="dev-dc01-predicted" onclick="showEdgePrediction(event,this)"><circle cx="660" cy="495" r="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/><text x="660" y="499" text-anchor="middle" font-size="11" dominant-baseline="central">🔐</text></g>
+            <!-- PREDICTED edge-info button: dev-ws045 -> Credential Dump -->
+            <g class="edge-info-btn" data-predicted="1" data-label="ExecutedOn" data-source="dev-ws045" data-target="proc-credump-predicted" onclick="showEdgePrediction(event,this)"><circle cx="407" cy="615" r="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/><text x="407" y="619" text-anchor="middle" font-size="11" dominant-baseline="central">▶</text></g>
           </svg>
 
           <div class="graph-canvas-toolbar">
@@ -417,13 +429,13 @@ document.addEventListener('keydown', e => {
    (before the user clicks "Start Investigation" in the Investigation tab)
    these nodes and any edges touching them are hidden, leaving only the
    entities present in the alert summary / sidebar. */
-const PARTIAL_HIDDEN_ENTITIES = ['svc-azure-ad','svc-sharepoint','svc-oauth','user-admin','domain-c2','dev-dc01-predicted'];
+const PARTIAL_HIDDEN_ENTITIES = ['svc-azure-ad','svc-sharepoint','svc-oauth','user-admin','domain-c2','dev-dc01-predicted','proc-credump-predicted'];
 
 /* Entities flagged as AI-PREDICTED (not yet observed). Rendered with
    amber dashed outline + ⏱ glyph + PREDICTED sub-label. Predictions
    are TTP-based projections of the most likely next attack step;
    they should never be confused with observed events. */
-const PREDICTED_ENTITIES = new Set(['dev-dc01-predicted']);
+const PREDICTED_ENTITIES = new Set(['dev-dc01-predicted','proc-credump-predicted']);
 
 function isAiInvestigated(){
   const d = (typeof currentAlertId !== 'undefined' && typeof ALERT_DETAIL !== 'undefined')

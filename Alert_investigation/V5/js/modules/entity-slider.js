@@ -401,7 +401,7 @@ function renderEntitySection(entityId, secKey, sec) {
 
   // Remediation guide (verdict + recommendations + playbooks)
   if (sec.remediationData) {
-    html += renderRemediationGuide(sec.remediationData);
+    html += renderRemediationGuide(sec.remediationData, entityId);
   }
 
   html += `</div>`; // section-body
@@ -676,7 +676,68 @@ function renderPeerComparison(pd) {
 }
 
 /* ─── Remediation Guide (Verdict + Recommendations + Playbooks) ─── */
-function renderRemediationGuide(rd) {
+
+/* Type-level default playbooks. Merged in below the entity-specific ones
+   so every node — even ones without a curated remediation list — still
+   surfaces sensible standard runbooks for the analyst. */
+const TYPE_DEFAULT_PLAYBOOKS = {
+  user: [
+    { id:'PB-USR-01', name:'Force-revoke all sessions',    desc:'Sign user out of every active session and require re-authentication.',          urgency:'High Priority',  status:'Ready', estimatedTime:'~30s' },
+    { id:'PB-USR-02', name:'Disable AD / cloud account',   desc:'Disable the account in AD and the cloud directory; preserve for forensics.',     urgency:'Run Immediate',  status:'Ready', estimatedTime:'~1m'  },
+    { id:'PB-USR-03', name:'Step-up MFA / reset password', desc:'Force password reset and enforce MFA on next login.',                            urgency:'Standard',       status:'Ready', estimatedTime:'~2m'  },
+    { id:'PB-USR-04', name:'Audit trail (last 24h)',       desc:'Generate full logon, file-access and email audit for the user.',                 urgency:'Standard',       status:'Ready', estimatedTime:'~3m'  }
+  ],
+  device: [
+    { id:'PB-DEV-01', name:'EDR isolate endpoint',         desc:'Network-isolate the device via EDR while preserving response channel.',          urgency:'Run Immediate',  status:'Ready', estimatedTime:'~30s' },
+    { id:'PB-DEV-02', name:'Collect triage package',       desc:'Pull volatile memory, MFT, EDR telemetry and prefetch.',                         urgency:'High Priority',  status:'Ready', estimatedTime:'~10m' },
+    { id:'PB-DEV-03', name:'Block C2 egress at firewall',  desc:'Add deny rules for any C2/Tor destinations seen on this host.',                  urgency:'High Priority',  status:'Ready', estimatedTime:'~1m'  },
+    { id:'PB-DEV-04', name:'Schedule reimage',             desc:'Queue device for golden-image rebuild after triage data is captured.',           urgency:'Standard',       status:'Ready', estimatedTime:'~1h'  }
+  ],
+  ip: [
+    { id:'PB-IP-01',  name:'Firewall block IP',            desc:'Add the IP to the perimeter / cloud-firewall deny list.',                        urgency:'Run Immediate',  status:'Ready', estimatedTime:'~30s' },
+    { id:'PB-IP-02',  name:'Push to TI feed',              desc:'Submit indicator to local TI platform and update SIEM watchlists.',              urgency:'High Priority',  status:'Ready', estimatedTime:'~1m'  },
+    { id:'PB-IP-03',  name:'Notify upstream / abuse',      desc:'Send abuse report to upstream ISP, hosting provider or anonymizer operator.',    urgency:'Standard',       status:'Ready', estimatedTime:'~5m'  }
+  ],
+  domain: [
+    { id:'PB-DOM-01', name:'DNS sinkhole',                 desc:'Redirect resolution of this domain to an internal sinkhole IP.',                 urgency:'Run Immediate',  status:'Ready', estimatedTime:'~30s' },
+    { id:'PB-DOM-02', name:'Add to deny-list',             desc:'Block the domain at the secure web gateway / DNS firewall.',                     urgency:'High Priority',  status:'Ready', estimatedTime:'~1m'  },
+    { id:'PB-DOM-03', name:'Notify CERT / TI partners',    desc:'Share the IoC with sector CERT and TI sharing groups.',                          urgency:'Standard',       status:'Ready', estimatedTime:'~5m'  }
+  ],
+  service: [
+    { id:'PB-SVC-01', name:'Revoke OAuth grants',          desc:'Revoke all OAuth/refresh tokens issued for this service or user.',               urgency:'Run Immediate',  status:'Ready', estimatedTime:'~1m'  },
+    { id:'PB-SVC-02', name:'Rotate service secrets',       desc:'Rotate API keys, client secrets and certificates associated with this service.', urgency:'High Priority',  status:'Ready', estimatedTime:'~5m'  },
+    { id:'PB-SVC-03', name:'Review consent grants',        desc:'Audit application consent grants and high-privilege role assignments.',          urgency:'Standard',       status:'Ready', estimatedTime:'~10m' }
+  ],
+  process: [
+    { id:'PB-PRC-01', name:'Terminate process',            desc:'Kill the PID across all hosts where it is running.',                             urgency:'Run Immediate',  status:'Ready', estimatedTime:'~30s' },
+    { id:'PB-PRC-02', name:'Hash to AV / EDR deny',        desc:'Add the executable hash to AV/EDR block-list.',                                  urgency:'High Priority',  status:'Ready', estimatedTime:'~1m'  },
+    { id:'PB-PRC-03', name:'Block parent path',            desc:'Add an EDR rule to block this binary path from launching.',                      urgency:'Standard',       status:'Ready', estimatedTime:'~2m'  }
+  ],
+  alert: [
+    { id:'PB-ALR-01', name:'Open IR ticket',               desc:'Create an incident in the IR platform with this alert as the seed event.',       urgency:'High Priority',  status:'Ready', estimatedTime:'~1m'  },
+    { id:'PB-ALR-02', name:'Suppress similar (24h)',       desc:'Auto-suppress identical alerts for the next 24 hours to reduce noise.',          urgency:'Standard',       status:'Ready', estimatedTime:'~30s' },
+    { id:'PB-ALR-03', name:'Mark as TP / FP',              desc:'Tag the alert verdict so the detection model can learn.',                        urgency:'Standard',       status:'Ready', estimatedTime:'~30s' }
+  ]
+};
+
+function mergePlaybooksWithDefaults(playbooks, entityId) {
+  const e = (typeof ENTITIES !== 'undefined') ? ENTITIES[entityId] : null;
+  const defaults = (e && TYPE_DEFAULT_PLAYBOOKS[e.type]) || [];
+  if (!defaults.length) return playbooks || [];
+  const seen = new Set();
+  const merged = [];
+  (playbooks || []).forEach(p => {
+    const k = (p.id || p.name || '').toLowerCase();
+    if (k && !seen.has(k)) { seen.add(k); merged.push(p); }
+  });
+  defaults.forEach(p => {
+    const k = (p.id || p.name || '').toLowerCase();
+    if (!seen.has(k)) { seen.add(k); merged.push({ ...p, _default: true }); }
+  });
+  return merged;
+}
+
+function renderRemediationGuide(rd, entityId) {
   let html = '<div class="em-remediation-guide">';
   // Verdict banner
   html += `<div class="em-rg-verdict ${rd.severity}">`;
@@ -697,14 +758,16 @@ function renderRemediationGuide(rd) {
     });
     html += '</div>';
   }
-  // Playbooks
-  if (rd.playbooks && rd.playbooks.length > 0) {
-    html += `<div class="em-rg-sub-title"><span class="rg-icon">▶</span> Available Playbooks</div>`;
+  // Playbooks (merge entity-specific with type-defaults so every node
+  // surfaces at least the standard runbooks for its type)
+  const mergedPbs = mergePlaybooksWithDefaults(rd.playbooks, entityId);
+  if (mergedPbs.length > 0) {
+    html += `<div class="em-rg-sub-title"><span class="rg-icon">▶</span> Available Playbooks <span class="em-rg-pb-count">(${mergedPbs.length})</span></div>`;
     html += '<div class="em-rg-playbooks">';
-    rd.playbooks.forEach(pb => {
+    mergedPbs.forEach(pb => {
       html += '<div class="em-rg-pb">';
       html += '<div class="em-rg-pb-info">';
-      html += `<div class="em-rg-pb-name">${pb.name} <span class="em-rg-pb-id">${pb.id}</span></div>`;
+      html += `<div class="em-rg-pb-name">${pb.name} <span class="em-rg-pb-id">${pb.id}</span>${pb._default ? ' <span class="em-rg-pb-default">DEFAULT</span>' : ''}</div>`;
       html += `<div class="em-rg-pb-desc">${pb.desc}</div>`;
       html += '<div class="em-rg-pb-meta">';
       if (pb.urgency) {
@@ -718,9 +781,6 @@ function renderRemediationGuide(rd) {
       html += '</div>';
     });
     html += '</div>';
-  } else if (rd.playbooks !== undefined && rd.playbooks.length === 0) {
-    html += `<div class="em-rg-sub-title"><span class="rg-icon">▶</span> Available Playbooks</div>`;
-    html += '<div class="em-rg-no-playbooks">No automated playbooks required for this entity.</div>';
   }
   html += '</div>';
   return html;
