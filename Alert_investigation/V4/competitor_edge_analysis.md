@@ -10,6 +10,7 @@
 1. [Executive Summary](#executive-summary)
 2. [BloodHound / SpecterOps — Entity & Edge Deep Dive](#1-bloodhound--specterops--entity--edge-deep-dive)
 3. [Microsoft Security Exposure Management](#2-microsoft-security-exposure-management)
+   - [Defender XDR portal graph — visual node & edge taxonomy](#25-defender-xdr-portal-graph--visual-node--edge-taxonomy--confirmed-from-microsoft-learn)
 4. [XM Cyber](#3-xm-cyber)
 5. [Google SecOps (Chronicle) — UDM Entity Graph](#4-google-secops-chronicle--udm-entity-graph)
 6. [Splunk Enterprise Security](#5-splunk-enterprise-security)
@@ -188,6 +189,76 @@ That's all the docs show by name. Other edges *exist* (the schema would be usele
 **Sources:**
 - https://learn.microsoft.com/en-us/security-exposure-management/microsoft-security-exposure-management
 - https://learn.microsoft.com/en-us/security-exposure-management/query-enterprise-exposure-graph (KQL examples — source of confirmed edge labels)
+
+### 2.5 Defender XDR portal graph — visual node & edge taxonomy ✅ confirmed from Microsoft Learn
+
+While the Exposure Management *data layer* (§2.1–2.4) is open-ended, the **visual layer** in the Defender portal (incident graph, blast-radius graph, hunting graph) ships a **closed, iconified node + edge vocabulary**. This is the rendering taxonomy every Defender XDR analyst sees — and the most concrete competitor reference for V5's own node/edge icon set.
+
+Source: <https://learn.microsoft.com/en-us/defender-xdr/understand-graph-icons> (last updated 2025-09-30)
+
+#### 2.5.1 Node categories (15 — fixed icon set)
+
+| # | Category | Example entities |
+|---|---|---|
+| 1 | **General** | App service plan |
+| 2 | **Compute** | Device, virtual machine, Azure Logic App |
+| 3 | **Networking** | Interface, public IP address, network security group |
+| 4 | **Data** | SQL data store, Log Analytics workspace, storage account, Event Hubs |
+| 5 | **Containers** | Kubernetes cluster |
+| 6 | **Keys & secrets** | Key vault |
+| 7 | **DevOps** | Azure DevOps repositories |
+| 8 | **APIs** | Cloud applications |
+| 9 | **Identity & access** | User account, Microsoft Entra ID service principal |
+| 10 | **IoT** | (IoT devices) |
+| 11 | **Certificate** | (Cert objects) |
+| 12 | **IP address** | (Discrete IP nodes) |
+| 13 | **Subscriptions** | (Azure subscriptions) |
+| 14 | (Group node — numeric badge for collapsed sets) | e.g. “12 user accounts” |
+| 15 | (Critical-asset halo + golden crown overlay) | Tier-0-equivalent marker |
+
+**Per-node indicators (overlay glyphs, not separate categories):**
+
+| Indicator | Glyph | Meaning |
+|---|---|---|
+| **Critical asset** | 👑 golden crown + halo | Business-critical per *Critical Asset Management* in Exposure Mgmt |
+| **Vulnerability** | 🐛 red bug | At least one CVE detected on the entity |
+| **Explore connected assets** | ➕ blue plus | Hunting graph can be expanded from this node |
+| **Discovery source** | Defender product icon (blue) | Which Defender workload contributed the entity (MDE, MDC, MDI, MDO, MDA…) |
+
+#### 2.5.2 Edge taxonomy (16 named relations — closed icon set)
+
+| # | Edge label | Direction / use |
+|---|---|---|
+| 1 | **Contains** | Containment (resource group → VM, etc.) |
+| 2 | **Routes traffic to** | Networking |
+| 3 | **Has permission to** / **Has role on** | RBAC / authz |
+| 4 | **Can authenticate as** / **Can authenticate to** | Identity authn |
+| 5 | **Pushes** | Code/artifact push (DevOps) |
+| 6 | **Maintains** | Operational ownership |
+| 7 | **Application** | App-to-resource binding |
+| 8 | **Moves data to** | Data-movement edge |
+| 9 | **Exposed to internet** | Internet-exposure marker (also a node property) |
+| 10 | **Can interactive logon to** / **Can logon over the network to** / **Can remote interactive logon to** | Lateral-movement primitives |
+| 11 | **Runs on** | Workload-to-host |
+| 12 | **Provisions** | Resource provisioning |
+| 13 | **Identified as owner of** | Ownership |
+| 14 | **Member of** | Group membership |
+| 15 | **Is running** | Live-process/state edge |
+| 16 | **Generic** / **Affects** | Catch-all when no specific icon applies |
+| 17 | **Created from** / **Used to create** | Provenance / template-instance |
+
+*(Per Microsoft’s own table; the three logon variants share one icon, and the two authenticate variants share one icon, so the rendered icon-set is ~16 even though the named-relation count is ~21.)*
+
+**Multi-edge handling:** when two nodes share more than one relation, Defender collapses the icons into a **numeric badge** on the edge — hover or click opens the side panel listing each relation. (Same UX pattern V5 already uses for grouped edges.)
+
+#### 2.5.3 Implications for V5
+
+1. **Node-icon parity check** — V5’s 8 entity types (alert, user, ip, device, domain, service, process, file) map cleanly into Defender’s 13. The gaps in V5 are **Containers**, **Keys & secrets**, **DevOps**, **APIs**, **IoT**, **Certificate**, **Subscriptions** — all cloud-/SaaS-native categories. Worth a roadmap entry; not blocking for an on-prem-first AD/Azure-AD hybrid alert flow.
+2. **Edge-vocabulary parity** — Defender’s 16-icon edge set is the closest peer to V5’s 24-canonical-relation catalog. The **lateral-movement triplet** (`CanInteractiveLogonTo`, `CanLogonOverTheNetworkTo`, `CanRemoteInteractiveLogonTo`) and the **authentication pair** (`CanAuthenticateAs`, `CanAuthenticateTo`) directly inform the granularity V5 should preserve in its `LoginTo` / `AuthenticatedAs` family.
+3. **Critical-asset halo** — Defender’s golden-crown overlay validates V5’s use of a halo/badge to mark high-value targets on the graph (`alert-impossible-travel` already uses a similar visual treatment).
+4. **Vulnerability bug overlay** — a discrete per-node indicator, not a separate node type. V5 currently does not render CVE state on graph nodes; this is a low-cost addition that aligns with Defender, BloodHound, and XM Cyber.
+5. **Discovery-source badge (toggleable)** — Defender lets analysts toggle a badge showing *which Defender workload contributed each node*. V5’s equivalent is the data-source-mapping work in `entity_data_mapping.md`; the UX of “toggle a layer to see provenance” is worth borrowing.
+6. **Closed visual taxonomy + open data taxonomy** — Defender’s pattern is **open-ended in the data layer (Exposure Graph) but closed in the rendering layer (16 icons)**. V5’s relation_catalog.md (24 canonical + 7 aliases) follows the same philosophy. This is now externally validated.
 
 ---
 
@@ -502,6 +573,7 @@ ManageEngine Log360 / ADAudit Plus / EventLog Analyzer **do not currently ship a
 ### Microsoft
 - Security Exposure Management overview: https://learn.microsoft.com/en-us/security-exposure-management/
 - Critical asset management: https://learn.microsoft.com/en-us/security-exposure-management/critical-asset-management
+- Defender XDR portal graph icons (nodes + edges): https://learn.microsoft.com/en-us/defender-xdr/understand-graph-icons
 
 ### XM Cyber
 - Platform overview: https://www.xmcyber.com/platform/
