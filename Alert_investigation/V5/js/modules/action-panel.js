@@ -39,7 +39,7 @@ function closeActionPanel() {
 }
 
 function buildActionContent(action, eid, name, type, entity) {
-  const ts = '03 Apr 2026';
+  const ts = '11 May 2026';
   switch (action) {
 
   // ═══════════════ SEARCH IN LOGS ═══════════════
@@ -361,8 +361,8 @@ function buildActionContent(action, eid, name, type, entity) {
   case 'revokeTokens': {
     const tokens = [
       { app:'FileSync Pro', scope:'Files.ReadWrite.All, Mail.ReadWrite', issued:'14:33', src:'Bucharest (Tor)', risk:'crit' },
-      { app:'Outlook Web', scope:'Mail.Read', issued:'09:15', src:'New York', risk:'low' },
-      { app:'Teams Desktop', scope:'Chat.Read', issued:'09:15', src:'New York', risk:'low' },
+      { app:'Outlook Web', scope:'Mail.Read', issued:'09:15', src:"Austin, TX", risk:'low' },
+      { app:'Teams Desktop', scope:'Chat.Read', issued:'09:15', src:"Austin, TX", risk:'low' },
     ];
     let rows = tokens.map(t => `<tr${t.risk==='crit'?' style="background:#fef2f2;"':''}>
       <td>${t.app} ${t.risk==='crit'?'<span class="ap-tag ap-tag-crit">SUSPICIOUS</span>':''}</td>
@@ -434,19 +434,19 @@ function buildActionContent(action, eid, name, type, entity) {
       html: `<div class="ap-section">
         <div class="ap-section-title">📌 Select Incident</div>
         <div style="cursor:pointer;border:2px solid var(--blue);background:#eff6ff;border-radius:8px;padding:10px 12px;margin-bottom:8px;">
-          <div style="font-size:11.5px;font-weight:700;color:var(--blue);">INC-2026-04-03-001 — Impossible Travel + Data Exfiltration</div>
-          <div style="font-size:10px;color:#555e6e;margin-top:2px;">Created 03 Apr 2026 · 7 entities · Assigned: Johnson Williams</div>
+          <div style="font-size:11.5px;font-weight:700;color:var(--blue);">INC-2026-05-11-001 — Impossible Travel + Data Exfiltration</div>
+          <div style="font-size:10px;color:#555e6e;margin-top:2px;">Created 11 May 2026 · 7 entities · Assigned: Johnson Williams</div>
         </div>
         <div style="cursor:pointer;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;">
-          <div style="font-size:11.5px;font-weight:600;">INC-2026-04-02-014 — Suspicious Azure AD Activity</div>
-          <div style="font-size:10px;color:#555e6e;margin-top:2px;">Created 02 Apr 2026 · 3 entities · Assigned: Sarah Chen</div>
+          <div style="font-size:11.5px;font-weight:600;">INC-2026-05-10-014 — Suspicious Azure AD Activity</div>
+          <div style="font-size:10px;color:#555e6e;margin-top:2px;">Created 10 May 2026 · 3 entities · Assigned: Sarah Chen</div>
         </div>
         <div style="cursor:pointer;border:1px dashed var(--border);border-radius:8px;padding:10px 12px;text-align:center;">
           <div style="font-size:11px;color:var(--blue);font-weight:600;">+ Create New Incident</div>
         </div>
       </div>`,
       actions: `<button class="ap-btn ap-btn-outline" onclick="closeActionPanel()">Cancel</button>
-        <button class="ap-btn ap-btn-primary" onclick="showToast('📌','${name} added to INC-2026-04-03-001');closeActionPanel();">Add to Selected</button>`
+        <button class="ap-btn ap-btn-primary" onclick="showToast('📌','${name} added to INC-2026-05-11-001');closeActionPanel();">Add to Selected</button>`
     };
   }
 
@@ -498,7 +498,7 @@ function buildActionContent(action, eid, name, type, entity) {
         <div contenteditable="true" style="border:1px solid var(--border);border-radius:6px;padding:8px 10px;min-height:50px;font-size:11px;font-family:var(--font);color:var(--text-primary);outline:none;" placeholder="Add investigation notes…"></div>
       </div>`,
       actions: `<button class="ap-btn ap-btn-outline" onclick="closeActionPanel()">Cancel</button>
-        <button class="ap-btn ap-btn-primary" onclick="showToast('✓','Alert closed as True Positive. Incident INC-2026-04-03-001 updated.');closeActionPanel();">Close Alert</button>`
+        <button class="ap-btn ap-btn-primary" onclick="showToast('✓','Alert closed as True Positive. Incident INC-2026-05-11-001 updated.');closeActionPanel();">Close Alert</button>`
     };
   }
 

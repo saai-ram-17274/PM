@@ -426,11 +426,11 @@ function renderTimelinePanel() {
   const panel = document.getElementById('panel-timeline');
   if (!panel) return;
   const events = [
-    { time:'07 Jun 2017  05:02:40', sev:'high',   score:91, dot:'red',   icon:'✕', desc:'Impossible Travel login detected — login from Tor exit node (Romania) followed by internal CORP-NET access within 28 minutes.', who:'m.henderson', where:'CORP-NET',     app:'Azure AD Portal', expanded:true },
-    { time:'07 Jun 2017  05:01:55', sev:'crit',   score:97, dot:'red',   icon:'⚠', desc:'OAuth token issued with Files.ReadWrite.All scope to unverified third-party application "FileSync Pro".', who:'m.henderson', where:'Azure AD',     app:'OAuth Service' },
-    { time:'07 Jun 2017  05:00:10', sev:'high',   score:82, dot:'amber', icon:'⚠', desc:'Encoded PowerShell execution (hidden window) on CORP-WS-045 — process tree includes svchost_update.dll write to C:\\Temp.', who:'SYSTEM',      where:'CORP-WS-045',  app:'powershell.exe' },
-    { time:'07 Jun 2017  04:58:22', sev:'medium', score:55, dot:'amber', icon:'⚠', desc:'24 files bulk-downloaded from /Finance/Sensitive directory in 3 minutes — well above user baseline (3 files/day).', who:'m.henderson', where:'SharePoint',    app:'OneDrive Sync' },
-    { time:'07 Jun 2017  04:55:40', sev:'low',    score:22, dot:'green', icon:'⚠', desc:'Successful interactive logon from internal IP 10.18.1.81 (CORP-WS-045). Normal weekday office hours.', who:'m.henderson', where:'CORP-WS-045', app:'Windows Logon' },
+    { time:'11 May 2026  10:04:00', sev:'high',   score:91, dot:'red',   icon:'✕', desc:'Impossible Travel detected — Azure AD sign-ins from Austin (10.18.1.81, baseline 06:42) and Bucharest (185.220.101.42, Tor exit, 09:56) — 9,400 km in 3 h 14 min, physically impossible.', who:'m.henderson', where:'CORP-NET',     app:'Azure AD Portal', expanded:true },
+    { time:'11 May 2026  11:18:00', sev:'crit',   score:97, dot:'red',   icon:'⚠', desc:'OAuth token issued with Files.ReadWrite.All scope to unverified third-party application "FileSync Pro".', who:'m.henderson', where:'Azure AD',     app:'OAuth Service' },
+    { time:'11 May 2026  11:16:00', sev:'high',   score:82, dot:'amber', icon:'⚠', desc:'Encoded PowerShell execution (hidden window) on CORP-WS-045 — process tree includes svchost_update.dll write to C:\\Temp.', who:'SYSTEM',      where:'CORP-WS-045',  app:'powershell.exe' },
+    { time:'11 May 2026  11:08:00', sev:'medium', score:55, dot:'amber', icon:'⚠', desc:'24 files bulk-downloaded from /Finance/Sensitive directory in 3 minutes — well above user baseline (3 files/day).', who:'m.henderson', where:'SharePoint',    app:'OneDrive Sync' },
+    { time:'11 May 2026  10:28:00', sev:'low',    score:22, dot:'green', icon:'⚠', desc:'Successful interactive logon from internal IP 10.18.1.81 (CORP-WS-045). Normal weekday office hours.', who:'m.henderson', where:'CORP-WS-045', app:'Windows Logon' },
   ];
   panel.innerHTML = `
     <div class="tl-header">

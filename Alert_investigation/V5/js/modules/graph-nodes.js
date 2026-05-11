@@ -4,7 +4,7 @@ function generateCascadingData(category, label, parentEid, isMalicious, selfNode
   const parentEntity = ENTITIES[parentEid];
   const parentName = parentEntity ? parentEntity.modalTitle : parentEid;
   const self = selfNodeId || parentEid;
-  const ts = '03 Apr 2026';
+  const ts = '11 May 2026';
 
   const sections = {};
 
@@ -278,7 +278,7 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
     const isMal = !!entry.malicious;
     const parentEntity = ENTITIES[parentEid];
     const parentLabel = parentEntity ? parentEntity.modalTitle : parentEid;
-    const ts = '03 Apr 2026';
+    const ts = '11 May 2026';
 
     // Build rich sections based on category (matching static entity structure)
     const builtSections = {};

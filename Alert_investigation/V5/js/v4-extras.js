@@ -82,12 +82,12 @@ const SEV_SHAPE = {
 var EDGE_ATTRIBUTES = {
   'alert-impossible-travel→user-m-henderson': {
     relation:'TriggeredBy', count:1, risk:95,
-    firstSeen:'03 Apr 2026 14:22:45', lastSeen:'03 Apr 2026 14:22:45',
+    firstSeen:'11 May 2026 09:22:45', lastSeen:'11 May 2026 09:22:45',
     evidence:{
-      summary:'Impossible travel detected: Romania → New York in 28 min',
-      findings:['Geo distance: 8,847 km','Travel time: 28 min (impossible)','Source IP: Tor exit node'],
+      summary:'Impossible travel detected: Austin (10.18.1.81, MFA OK) → Bucharest (185.220.101.42, Tor exit) — 9,400 km in 3 h 14 min',
+      findings:['Geo distance: 9,400 km (Austin → Bucharest)','Travel time: 3 h 14 min (impossible — no commercial flight covers this distance in that window)','Source IP: Tor exit node'],
       confidence:96,
-      rawLog:'EventID=4624 | User=m.henderson | SrcIP=185.220.101.42 | Auth=NTLM | Status=Success | Geo=RO→US'
+      rawLog:'EventID=4624 | User=m.henderson | SrcIP=185.220.101.42 | Auth=NTLM | Status=Success | Geo=US→RO (Austin baseline → Bucharest Tor exit)'
     },
     detectionRule:{ name:'Impossible Travel Detection', type:'Correlation', id:'CR-0042' },
     mitre:{ tactic:'Initial Access', tacticId:'TA0001', technique:'Valid Accounts', techId:'T1078' },
@@ -96,7 +96,7 @@ var EDGE_ATTRIBUTES = {
   },
   'alert-impossible-travel→svc-azure-ad': {
     relation:'DetectedOn', count:1, risk:95,
-    firstSeen:'03 Apr 2026 14:22:45', lastSeen:'03 Apr 2026 14:22:45',
+    firstSeen:'11 May 2026 09:22:45', lastSeen:'11 May 2026 09:22:45',
     evidence:{
       summary:'Azure AD sign-in logs flagged anomalous authentication',
       findings:['Sign-in risk: High','Location anomaly flagged','Conditional access policy bypassed'],
@@ -109,7 +109,7 @@ var EDGE_ATTRIBUTES = {
   },
   'user-m-henderson→ip-tor': {
     relation:'AccessedFrom', count:3, risk:92,
-    firstSeen:'03 Apr 2026 14:18:02', lastSeen:'03 Apr 2026 14:22:45',
+    firstSeen:'11 May 2026 09:18:02', lastSeen:'11 May 2026 09:22:45',
     evidence:{
       summary:'Tor exit node (Romania), 3 successful logons in 24h',
       findings:['Tor exit node confirmed','3 logons from same IP','All logons successful (no failures)'],
@@ -126,21 +126,21 @@ var EDGE_ATTRIBUTES = {
   },
   'user-m-henderson→ip-internal': {
     relation:'AccessedFrom', count:12, risk:15,
-    firstSeen:'03 Apr 2026 08:02:10', lastSeen:'03 Apr 2026 14:50:30',
+    firstSeen:'11 May 2026 06:02:10', lastSeen:'11 May 2026 09:50:30',
     evidence:{
       summary:'Internal VPN IP, routine access from corp network',
       findings:['VPN IP in corp range','Access during business hours','Standard auth pattern'],
       confidence:35,
       rawLog:'VPNLog | User=m.henderson | SrcIP=10.18.1.81 | Tunnel=IPSec | Duration=8h12m'
     },
-    geo:{ flag:'🇺🇸', country:'United States', city:'New York (Corp)', ip:'10.18.1.81' },
+    geo:{ flag:'🇺🇸', country:'United States', city:'Austin (Corp HQ)', ip:'10.18.1.81' },
     sparkline:[1,2,1,1,1,2,1,0,1,1,0,1],
     baseline:{ expected:10, actual:12, deviation:1.2 },
     source:'VPN Gateway Logs'
   },
   'user-m-henderson→svc-azure-ad': {
     relation:'LoginTo', count:5, risk:78,
-    firstSeen:'03 Apr 2026 14:18:02', lastSeen:'03 Apr 2026 15:02:18',
+    firstSeen:'11 May 2026 09:18:02', lastSeen:'11 May 2026 10:02:18',
     evidence:{
       summary:'MFA bypassed via legacy auth protocol',
       findings:['IMAP legacy auth used','MFA not enforced on protocol','5 sessions in 47 min'],
@@ -155,19 +155,19 @@ var EDGE_ATTRIBUTES = {
   },
   'ip-internal→dev-ws045': {
     relation:'ResolvedTo', count:1, risk:10,
-    firstSeen:'03 Apr 2026 14:41:10', lastSeen:'03 Apr 2026 14:41:10',
+    firstSeen:'11 May 2026 09:41:10', lastSeen:'11 May 2026 09:41:10',
     evidence:{
       summary:'DHCP lease mapping, IP assigned to CORP-WS-045',
-      findings:['DHCP lease confirmed','MAC: 00:1A:2B:3C:4D:5E','Lease active since 08:00'],
+      findings:['DHCP lease confirmed','MAC: 00:1A:2B:3C:4D:5E','Lease active since 06:00'],
       confidence:100,
       rawLog:'DHCPLog | IP=10.18.1.81 | MAC=00:1A:2B:3C:4D:5E | Hostname=CORP-WS-045 | LeaseStart=08:00'
     },
-    geo:{ flag:'🇺🇸', country:'United States', city:'New York (Corp)', ip:'10.18.1.81' },
+    geo:{ flag:'🇺🇸', country:'United States', city:'Austin (Corp HQ)', ip:'10.18.1.81' },
     source:'DHCP Server Logs'
   },
   'user-m-henderson→svc-sharepoint': {
     relation:'AccessedFile', count:24, risk:88,
-    firstSeen:'03 Apr 2026 15:28:00', lastSeen:'03 Apr 2026 15:36:22',
+    firstSeen:'11 May 2026 10:28:00', lastSeen:'11 May 2026 10:36:22',
     evidence:{
       summary:'24 sensitive files downloaded from /finance/ and /hr/',
       findings:['24 files in 8 min','Sensitive folders targeted','Download rate 14× above baseline'],
@@ -182,7 +182,7 @@ var EDGE_ATTRIBUTES = {
   },
   'svc-azure-ad→svc-oauth': {
     relation:'IssuedTo', count:3, risk:85,
-    firstSeen:'03 Apr 2026 15:08:12', lastSeen:'03 Apr 2026 15:10:00',
+    firstSeen:'11 May 2026 10:08:12', lastSeen:'11 May 2026 10:10:00',
     evidence:{
       summary:'3 OAuth refresh tokens issued, unusual scope elevation',
       findings:['Scope: Files.ReadWrite.All added','3 tokens in 2 min','Consent granted without admin review'],
@@ -197,7 +197,7 @@ var EDGE_ATTRIBUTES = {
   },
   'user-admin→svc-azure-ad': {
     relation:'LoginTo', count:4, risk:86,
-    firstSeen:'03 Apr 2026 15:24:42', lastSeen:'03 Apr 2026 15:33:18',
+    firstSeen:'11 May 2026 10:24:42', lastSeen:'11 May 2026 10:33:18',
     evidence:{
       summary:'Administrator session originated from compromised CORP-WS-045 immediately after privilege escalation — 4 sign-ins in 9 min',
       findings:['Source host = CORP-WS-045 (compromised)','Sign-ins began <2 min after EscalatedTo event','MFA satisfied via stale session token (no fresh prompt)','4 sign-ins in 9 min vs baseline 0–1/day','Conditional access risk: High'],
@@ -212,7 +212,7 @@ var EDGE_ATTRIBUTES = {
   },
   'ip-tor→dev-ws045': {
     relation:'CommunicatedWith', count:47, risk:96,
-    firstSeen:'03 Apr 2026 15:20:05', lastSeen:'03 Apr 2026 15:25:10',
+    firstSeen:'11 May 2026 10:20:05', lastSeen:'11 May 2026 10:25:10',
     evidence:{
       summary:'Reverse shell traffic, 47 C2 beacon attempts detected',
       findings:['47 beacons in 5 min','Fixed interval: 6.3s ±0.2s','Payload: encrypted binary'],
@@ -229,7 +229,7 @@ var EDGE_ATTRIBUTES = {
   },
   'dev-ws045→svc-sharepoint': {
     relation:'AccessedFile', count:24, risk:90,
-    firstSeen:'03 Apr 2026 15:30:00', lastSeen:'03 Apr 2026 15:36:22',
+    firstSeen:'11 May 2026 10:30:00', lastSeen:'11 May 2026 10:36:22',
     evidence:{
       summary:'Bulk file exfiltration via WebDAV, 4.2 MB transferred',
       findings:['WebDAV protocol used','4.2 MB outbound','24 files in single session'],
@@ -245,7 +245,7 @@ var EDGE_ATTRIBUTES = {
   },
   'user-m-henderson→dev-ws045': {
     relation:'LoginTo', count:8, risk:45,
-    firstSeen:'03 Apr 2026 08:15:00', lastSeen:'03 Apr 2026 14:41:10',
+    firstSeen:'11 May 2026 06:15:00', lastSeen:'11 May 2026 09:41:10',
     evidence:{
       summary:'Primary workstation, 8 interactive logon sessions',
       findings:['Interactive logon type (2)','Consistent 8h usage','No remote sessions'],
@@ -258,7 +258,7 @@ var EDGE_ATTRIBUTES = {
   },
   'dev-ws045→user-admin': {
     relation:'EscalatedTo', count:2, risk:88,
-    firstSeen:'03 Apr 2026 15:24:18', lastSeen:'03 Apr 2026 15:31:02',
+    firstSeen:'11 May 2026 10:24:18', lastSeen:'11 May 2026 10:31:02',
     evidence:{
       summary:'PowerShell on CORP-WS-045 elevated to local Administrator via runas / token impersonation',
       findings:['UAC elevation prompt bypassed (auto-approve)','New process spawned with SYSTEM/Administrator token','2 elevation events within 7 minutes','User m.henderson is not a member of local Administrators'],
@@ -273,7 +273,7 @@ var EDGE_ATTRIBUTES = {
   },
   'svc-oauth→svc-sharepoint': {
     relation:'AccessedFile', count:24, risk:88,
-    firstSeen:'03 Apr 2026 15:25:00', lastSeen:'03 Apr 2026 15:28:33',
+    firstSeen:'11 May 2026 10:25:00', lastSeen:'11 May 2026 10:28:33',
     evidence:{
       summary:'OAuth token used to access SharePoint API, 24 file downloads',
       findings:['Graph API calls detected','Token scope: Files.ReadWrite.All','24 sequential downloads'],
@@ -288,7 +288,7 @@ var EDGE_ATTRIBUTES = {
   },
   'ip-tor→domain-c2': {
     relation:'CommunicatedWith', count:142, risk:98,
-    firstSeen:'03 Apr 2026 14:45:00', lastSeen:'03 Apr 2026 15:35:44',
+    firstSeen:'11 May 2026 09:45:00', lastSeen:'11 May 2026 10:35:44',
     evidence:{
       summary:'142 DNS queries + TLS sessions to c2-update.darkoperator.net',
       findings:['Known C2 domain','142 DNS queries','TLS cert: self-signed, CN=randomstring'],
@@ -306,7 +306,7 @@ var EDGE_ATTRIBUTES = {
   },
   'dev-ws045→domain-c2': {
     relation:'CommunicatedWith', count:23, risk:97,
-    firstSeen:'03 Apr 2026 15:22:00', lastSeen:'03 Apr 2026 15:30:22',
+    firstSeen:'11 May 2026 10:22:00', lastSeen:'11 May 2026 10:30:22',
     evidence:{
       summary:'PowerShell.exe initiated 23 TLS connections, 4.2 MB outbound',
       findings:['PowerShell.exe (PID 4812)','23 TLS conns to C2 domain','4.2 MB exfiltrated outbound'],
@@ -728,7 +728,7 @@ const PREDICTION_DETAILS = {
       { id: 'T1003.001', name: 'OS Credential Dumping: LSASS Memory' }
     ],
     basis: [
-      'Observed: EID 4648 — Explicit credential used (administrator) on CORP-WS-045 @ 15:36:22',
+      'Observed: EID 4648 — Explicit credential used (administrator) on CORP-WS-045 @ 10:36:22',
       'Observed: EID 4624 — Logon type 9 (NewCredentials) chained with token impersonation',
       'Pattern match: 87% similarity to prior incidents that pivoted to DC within 30 min'
     ],
@@ -780,7 +780,7 @@ const PREDICTION_EDGE_DETAILS = {
       { id: 'T1078.003', name: 'Valid Accounts: Local Accounts' }
     ],
     basis: [
-      'Observed: EID 4648 — Explicit credential used (administrator) on CORP-WS-045 @ 15:36:22',
+      'Observed: EID 4648 — Explicit credential used (administrator) on CORP-WS-045 @ 10:36:22',
       'Observed: PowerShell parent → child chain consistent with credential dumping',
       'Pattern match: 87% of similar kill-chains pivoted to a DC within 30 min via RDP/SMB'
     ],
