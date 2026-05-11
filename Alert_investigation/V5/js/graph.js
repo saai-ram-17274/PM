@@ -109,7 +109,7 @@ function attackVectorHTML(){
             <line x1="120" y1="460" x2="120" y2="620" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="ip-tor" data-target="domain-c2" data-label="CommunicatedWith"/>
             <line x1="320" y1="580" x2="140" y2="640" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="dev-ws045" data-target="domain-c2" data-label="CommunicatedWith"/>
             <!-- PREDICTED edge: administrator -> DC-01 (lateral movement, T1078.003) -->
-            <line x1="635" y1="370" x2="685" y2="620" data-predicted="1" data-source="user-admin" data-target="dev-dc01-predicted" data-label="LateralMovementTo"/>
+            <line x1="635" y1="370" x2="685" y2="620" data-predicted="1" data-source="user-admin" data-target="dev-dc01-predicted" data-label="LoginTo"/>
 
             <g class="graph-node" data-entity="alert-impossible-travel" onclick="openEntitySlider('alert-impossible-travel')" oncontextmenu="showGraphCtx(event,'alert-impossible-travel')">
               <circle cx="580" cy="65" r="24" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
@@ -189,7 +189,7 @@ function attackVectorHTML(){
             <g class="edge-info-btn" data-label="CommunicatedWith" data-source="ip-tor" data-target="domain-c2" onclick="showEdgeRelation(event,this)"><circle cx="120" cy="540" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="120" y="544" text-anchor="middle" font-size="11" dominant-baseline="central">📡</text></g>
             <g class="edge-info-btn" data-label="CommunicatedWith" data-source="dev-ws045" data-target="domain-c2" onclick="showEdgeRelation(event,this)"><circle cx="230" cy="610" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="230" y="614" text-anchor="middle" font-size="11" dominant-baseline="central">📡</text></g>
             <!-- PREDICTED edge-info button: administrator -> DC-01 -->
-            <g class="edge-info-btn" data-predicted="1" data-label="LateralMovementTo" data-source="user-admin" data-target="dev-dc01-predicted" onclick="showEdgePrediction(event,this)"><circle cx="660" cy="495" r="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/><text x="660" y="499" text-anchor="middle" font-size="11" dominant-baseline="central">⏱</text></g>
+            <g class="edge-info-btn" data-predicted="1" data-label="LoginTo" data-source="user-admin" data-target="dev-dc01-predicted" onclick="showEdgePrediction(event,this)"><circle cx="660" cy="495" r="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/><text x="660" y="499" text-anchor="middle" font-size="11" dominant-baseline="central">🔐</text></g>
           </svg>
 
           <div class="graph-canvas-toolbar">

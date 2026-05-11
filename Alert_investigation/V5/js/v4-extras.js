@@ -744,7 +744,7 @@ const PREDICTION_DETAILS = {
 const PREDICTION_EDGE_DETAILS = {
   'user-admin→dev-dc01-predicted': {
     title: 'Administrator → DC-01',
-    relation: 'LateralMovementTo',
+    relation: 'LoginTo',
     summary: 'The AI projects the compromised administrator account will be used to move laterally from CORP-WS-045 to the Domain Controller (DC-01). This connection has not been observed yet.',
     confidence: 78,
     eta: 'Within next ~30 min',
