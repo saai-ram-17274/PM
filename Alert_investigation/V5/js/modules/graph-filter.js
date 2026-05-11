@@ -208,7 +208,8 @@ function getEntityChip(entityId) {
 }
 
 function buildMaliciousPopup() {
-  const edges = document.querySelectorAll('#graphSvg line.graph-edge-mal');
+  const edges = Array.from(document.querySelectorAll('#graphSvg line.graph-edge-mal'))
+    .filter(e => e.style.display !== 'none');
   let items = '';
   edges.forEach(e => {
     const src = e.getAttribute('data-source');
@@ -229,7 +230,8 @@ function buildMaliciousPopup() {
 }
 
 function buildCriticalPopup() {
-  const nodes = document.querySelectorAll('#graphSvg g.graph-node');
+  const nodes = Array.from(document.querySelectorAll('#graphSvg g.graph-node'))
+    .filter(n => n.style.display !== 'none');
   let items = '';
   nodes.forEach(n => {
     const circle = n.querySelector('circle:not(.expand-indicator)');

@@ -348,6 +348,10 @@ function mountAttackGraph(){
        is clicked in the Investigation tab. The visible set is derived from
        the alert summary (alert + main user + IPs + workstation). */
     applyAttackGraphPartialMode();
+    /* Re-count chips AFTER partial-mode hides the AI-only nodes so the
+       entity-type dropdown and malicious / critical pills reflect only
+       what is actually on the canvas. */
+    initGraphChips();
   } catch(err){
     console.error('[mountAttackGraph]', err);
   }

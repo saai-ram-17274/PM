@@ -289,8 +289,6 @@ function _tlRenderSlider() {
   const total = steps.length;
   if (_tlIndex >= total) _tlIndex = Math.max(0, total - 1);
   const current = steps[_tlIndex];
-  const investigated = (typeof isAiInvestigated === 'function') ? isAiInvestigated() : true;
-  const hiddenCount = TIMELINE_STEPS.length - total;
 
   // Sticky controls header (Prev / counter / Play / Next)
   const controls = `
@@ -306,15 +304,7 @@ function _tlRenderSlider() {
       <button class="tl-btn tl-btn-primary" id="tlNextBtn" onclick="timelineNext()" ${_tlIndex >= total - 1 ? 'disabled' : ''}>Next ▶</button>
     </div>`;
 
-  // Optional partial-mode banner inviting the user to unlock the full chain
-  const partialBanner = (!investigated && hiddenCount > 0) ? `
-    <div class="tl-partial-banner">
-      <div class="tl-partial-banner-text">
-        <strong>${hiddenCount} more event${hiddenCount === 1 ? '' : 's'}</strong>
-        in this attack chain are not yet visible. Run AI investigation to expand the kill-chain and surface predicted next steps.
-      </div>
-      <button class="tl-btn tl-btn-primary" onclick="if (typeof startInvestigation === 'function') startInvestigation()">✨ Start Investigation</button>
-    </div>` : '';
+
 
   // Highlight banner for the active step
   const tierBadge = current.tier === 'predicted'
@@ -358,7 +348,6 @@ function _tlRenderSlider() {
     ${activeCard}
     <div class="tl-section-label">Timeline · ${total} event${total === 1 ? '' : 's'}</div>
     <div class="tl-rows">${rows}</div>
-    ${partialBanner}
   `;
 
   // scroll the active row into view inside the slider body

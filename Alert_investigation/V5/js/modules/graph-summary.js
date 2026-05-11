@@ -1,8 +1,14 @@
 /* graph-summary.js — Dynamic graph summary / command bar stats
  * Depends on: entities.js, display-config.js, entity-slider.js */
 function updateGraphSummary() {
-  const allNodes = document.querySelectorAll('#graphSvg g.graph-node');
-  const allEdges = document.querySelectorAll('#graphSvg > line');
+  // Skip nodes/edges that are hidden in partial mode (display:none). The
+  // entity chip menu and the malicious / critical pills should reflect
+  // only what's actually visible on the canvas.
+  const isVisible = el => el.style.display !== 'none'
+    && !(el.getAttribute('style') || '').includes('display:none')
+    && !(el.getAttribute('style') || '').includes('display: none');
+  const allNodes = Array.from(document.querySelectorAll('#graphSvg g.graph-node')).filter(isVisible);
+  const allEdges = Array.from(document.querySelectorAll('#graphSvg > line')).filter(isVisible);
   const totalEntities = allNodes.length;
   const totalConnections = allEdges.length;
 
