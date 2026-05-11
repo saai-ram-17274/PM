@@ -718,6 +718,7 @@ document.addEventListener('click', () => {
 const PREDICTION_DETAILS = {
   'dev-dc01-predicted': {
     title: 'DC-01 · AI-projected target',
+    type: 'device',
     summary: 'Domain Controller (DC-01) is the most likely next target for lateral movement using the compromised administrator credentials observed on CORP-WS-045.',
     confidence: 78,
     eta: 'Within next ~30 min',
@@ -739,6 +740,7 @@ const PREDICTION_DETAILS = {
   },
   'proc-credump-predicted': {
     title: 'LSASS Credential Dump · AI-projected step',
+    type: 'process',
     summary: 'The AI projects credential dumping from LSASS memory on CORP-WS-045 as the next step — needed to harvest DC service tickets/NTLM hashes before pivoting to DC-01. Not yet observed.',
     confidence: 72,
     eta: 'Within next ~15 min',
@@ -815,6 +817,34 @@ const PREDICTION_EDGE_DETAILS = {
   }
 };
 
+/* Build a 'Pre-emptive Playbooks' HTML block from TYPE_DEFAULT_PLAYBOOKS
+ * for the given entity type. Used by both prediction sliders. */
+function _buildPredictionPlaybooksHtml(type) {
+  const list = (typeof TYPE_DEFAULT_PLAYBOOKS !== 'undefined' && type)
+    ? (TYPE_DEFAULT_PLAYBOOKS[type] || []) : [];
+  if (!list.length) return '';
+  const items = list.map(pb => {
+    const urgCls = pb.urgency === 'Run Immediate' ? 'urg-immediate' : pb.urgency === 'High Priority' ? 'urg-high' : 'urg-standard';
+    return `<div class="em-rg-pb">
+      <div class="em-rg-pb-info">
+        <div class="em-rg-pb-name">${pb.name} <span class="em-rg-pb-id">${pb.id}</span></div>
+        <div class="em-rg-pb-desc">${pb.desc}</div>
+        <div class="em-rg-pb-meta">
+          <span class="em-rg-pb-badge ${urgCls}">${pb.urgency}</span>
+          <span class="em-rg-pb-badge ready">● ${pb.status}</span>
+          <span class="em-rg-pb-badge time">⏱ ${pb.estimatedTime}</span>
+        </div>
+      </div>
+      <button class="em-rg-pb-run" onclick="if(typeof showToast==='function')showToast('▶','Running ${pb.name}…')">▶ Run</button>
+    </div>`;
+  }).join('');
+  return `
+    <div class="eds-section" style="padding:12px 16px;border-top:1px solid var(--border);">
+      <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Pre-emptive Playbooks <span class="em-rg-pb-count">(${list.length})</span></div>
+      <div class="em-rg-playbooks">${items}</div>
+    </div>`;
+}
+
 function showPredictionDetails(entityId) {
   const data = PREDICTION_DETAILS[entityId];
   if (!data) return;
@@ -876,7 +906,7 @@ function showPredictionDetails(entityId) {
     <div class="eds-section" style="padding:12px 16px;">
       <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Recommended Pre-emptive Actions</div>
       <ul style="margin:0;padding-left:18px;font-size:12px;color:#334155;">${recHtml}</ul>
-    </div>`;
+    </div>${_buildPredictionPlaybooksHtml(data.type)}`;
 
   document.getElementById('graphContainer').classList.add('slider-open');
   if (typeof closeActionPanel === 'function') closeActionPanel();
@@ -979,7 +1009,7 @@ function showEdgePrediction(evt, el) {
     <div class="eds-section" style="padding:12px 16px;">
       <div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Recommended Pre-emptive Actions</div>
       <ul style="margin:0;padding-left:18px;font-size:12px;color:#334155;">${recHtml}</ul>
-    </div>`;
+    </div>${_buildPredictionPlaybooksHtml((PREDICTION_DETAILS[target] || {}).type)}`;
 
   document.getElementById('graphContainer').classList.add('slider-open');
   if (typeof closeActionPanel === 'function') closeActionPanel();

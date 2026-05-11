@@ -78,6 +78,9 @@ function attackVectorHTML(){
               <marker id="arrow-norm" viewBox="0 0 10 10" refX="35" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="#2C66DD"/>
               </marker>
+              <marker id="arrow-predicted" viewBox="0 0 10 10" refX="32" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#d97706"/>
+              </marker>
               <filter id="glow-r" x="-50%" y="-50%" width="200%" height="200%">
                 <feGaussianBlur stdDeviation="4" result="b"/>
                 <feFlood flood-color="#DD1616" flood-opacity=".15" result="c"/>
@@ -109,9 +112,9 @@ function attackVectorHTML(){
             <line x1="120" y1="460" x2="120" y2="620" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="ip-tor" data-target="domain-c2" data-label="CommunicatedWith"/>
             <line x1="320" y1="580" x2="140" y2="640" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="dev-ws045" data-target="domain-c2" data-label="CommunicatedWith"/>
             <!-- PREDICTED edge: administrator -> DC-01 (LoginTo via RDP/SMB) -->
-            <line x1="635" y1="370" x2="685" y2="620" data-predicted="1" data-source="user-admin" data-target="dev-dc01-predicted" data-label="LoginTo"/>
+            <line x1="635" y1="370" x2="685" y2="620" marker-end="url(#arrow-predicted)" data-predicted="1" data-source="user-admin" data-target="dev-dc01-predicted" data-label="LoginTo"/>
             <!-- PREDICTED edge: dev-ws045 -> Credential Dump (ExecutedOn) — bridges admin abuse to DC pivot -->
-            <line x1="340" y1="590" x2="475" y2="645" data-predicted="1" data-source="dev-ws045" data-target="proc-credump-predicted" data-label="ExecutedOn"/>
+            <line x1="340" y1="590" x2="475" y2="645" marker-end="url(#arrow-predicted)" data-predicted="1" data-source="dev-ws045" data-target="proc-credump-predicted" data-label="ExecutedOn"/>
 
             <g class="graph-node" data-entity="alert-impossible-travel" onclick="openEntitySlider('alert-impossible-travel')" oncontextmenu="showGraphCtx(event,'alert-impossible-travel')">
               <circle cx="580" cy="65" r="24" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>

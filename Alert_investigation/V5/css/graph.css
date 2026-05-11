@@ -277,10 +277,10 @@ body:has(#panel-attack-vector.active) .dv-tabs-row { margin-bottom: 0; }
   letter-spacing: 0.6px;
 }
 line[data-predicted="1"] {
-  stroke: #d97706 !important;
-  stroke-width: 1.6 !important;
-  stroke-dasharray: 7 4 !important;
-  opacity: 0.85 !important;
+  stroke: #d97706;
+  stroke-width: 1.6;
+  stroke-dasharray: 7 4;
+  opacity: 0.85;
 }
 g.edge-info-btn[data-predicted="1"] circle {
   stroke: #d97706 !important;

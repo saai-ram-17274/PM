@@ -758,16 +758,16 @@ function renderRemediationGuide(rd, entityId) {
     });
     html += '</div>';
   }
-  // Playbooks (merge entity-specific with type-defaults so every node
-  // surfaces at least the standard runbooks for its type)
-  const mergedPbs = mergePlaybooksWithDefaults(rd.playbooks, entityId);
-  if (mergedPbs.length > 0) {
-    html += `<div class="em-rg-sub-title"><span class="rg-icon">▶</span> Available Playbooks <span class="em-rg-pb-count">(${mergedPbs.length})</span></div>`;
+  // Playbooks (only the curated, entity-specific ones for normal entities;
+  // type-defaults are reserved for PREDICTED entities in the prediction
+  // slider where pre-emptive runbooks are most actionable)
+  if (rd.playbooks && rd.playbooks.length > 0) {
+    html += `<div class="em-rg-sub-title"><span class="rg-icon">▶</span> Available Playbooks <span class="em-rg-pb-count">(${rd.playbooks.length})</span></div>`;
     html += '<div class="em-rg-playbooks">';
-    mergedPbs.forEach(pb => {
+    rd.playbooks.forEach(pb => {
       html += '<div class="em-rg-pb">';
       html += '<div class="em-rg-pb-info">';
-      html += `<div class="em-rg-pb-name">${pb.name} <span class="em-rg-pb-id">${pb.id}</span>${pb._default ? ' <span class="em-rg-pb-default">DEFAULT</span>' : ''}</div>`;
+      html += `<div class="em-rg-pb-name">${pb.name} <span class="em-rg-pb-id">${pb.id}</span></div>`;
       html += `<div class="em-rg-pb-desc">${pb.desc}</div>`;
       html += '<div class="em-rg-pb-meta">';
       if (pb.urgency) {
@@ -781,6 +781,9 @@ function renderRemediationGuide(rd, entityId) {
       html += '</div>';
     });
     html += '</div>';
+  } else if (rd.playbooks !== undefined && rd.playbooks.length === 0) {
+    html += `<div class="em-rg-sub-title"><span class="rg-icon">▶</span> Available Playbooks</div>`;
+    html += '<div class="em-rg-no-playbooks">No automated playbooks required for this entity.</div>';
   }
   html += '</div>';
   return html;
