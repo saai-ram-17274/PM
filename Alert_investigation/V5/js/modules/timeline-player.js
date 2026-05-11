@@ -36,10 +36,10 @@ const TIMELINE_STEPS = [
     edges: [['user-m-henderson', 'ip-tor']]
   },
   {
-    offsetMin: 1,
+    offsetMin: 7,
     tier: 'observed',
     title: 'Impossible Travel alert fires',
-    narrative: 'The correlation engine compares the new Bucharest sign-in against m.henderson\u2019s prior successful login from the corporate office in Austin only 14 minutes earlier. The geographic transition is physically impossible, so the Impossible Travel alert is raised against the user identity and the Azure AD source.',
+    narrative: 'After Azure AD logs are ingested and the correlation engine finishes its sliding-window evaluation (~7 minutes from event time), the new Bucharest sign-in is compared against m.henderson’s earlier successful login from the corporate office in Austin. The geographic transition is physically impossible, so the Impossible Travel alert is raised against the user identity and the Azure AD source.',
     mitre: 'TA0001 · Initial Access · Detection',
     entities: ['alert-impossible-travel', 'user-m-henderson', 'svc-azure-ad'],
     edges: [
@@ -48,7 +48,7 @@ const TIMELINE_STEPS = [
     ]
   },
   {
-    offsetMin: 5,
+    offsetMin: 12,
     tier: 'observed',
     title: 'Tor node beacons to C2 infrastructure',
     narrative: 'Firewall logs show 185.220.101.42 establishing outbound HTTPS to c2-update.darkoperator.net — a domain registered 3 days ago and previously linked to FIN-class actors.',
@@ -57,7 +57,7 @@ const TIMELINE_STEPS = [
     edges: [['ip-tor', 'domain-c2']]
   },
   {
-    offsetMin: 8,
+    offsetMin: 18,
     tier: 'observed',
     title: 'Inbound contact to internal workstation',
     narrative: 'CORP-WS-045 receives an inbound SMB session from the Tor exit — an unusual reverse-direction connection that suggests a tunneled remote shell.',
@@ -66,7 +66,7 @@ const TIMELINE_STEPS = [
     edges: [['ip-tor', 'dev-ws045']]
   },
   {
-    offsetMin: 12,
+    offsetMin: 24,
     tier: 'observed',
     title: 'Interactive logon to CORP-WS-045',
     narrative: 'm.henderson signs into CORP-WS-045 from internal IP 10.18.1.81. The session is interactive (Type 2) \u2014 consistent with the attacker pivoting onto an endpoint after credential reuse.',
@@ -79,7 +79,7 @@ const TIMELINE_STEPS = [
     ]
   },
   {
-    offsetMin: 18,
+    offsetMin: 33,
     tier: 'observed',
     title: 'Workstation beacons to C2',
     narrative: 'CORP-WS-045 establishes its own outbound channel to c2-update.darkoperator.net \u2014 confirming foothold and enabling subsequent hands-on-keyboard activity.',
@@ -88,7 +88,7 @@ const TIMELINE_STEPS = [
     edges: [['dev-ws045', 'domain-c2']]
   },
   {
-    offsetMin: 24,
+    offsetMin: 41,
     tier: 'observed',
     title: 'Privilege escalation to Administrator',
     narrative: 'A local privilege-escalation primitive on CORP-WS-045 results in the attacker obtaining a process token impersonating the built-in Administrator account.',
@@ -97,7 +97,7 @@ const TIMELINE_STEPS = [
     edges: [['dev-ws045', 'user-admin']]
   },
   {
-    offsetMin: 31,
+    offsetMin: 49,
     tier: 'observed',
     title: 'Administrator authenticates to Azure AD',
     narrative: 'The newly-obtained Administrator credentials are exercised against Azure AD \u2014 likely to enumerate available cloud apps and OAuth scopes before exfiltration.',
@@ -106,7 +106,7 @@ const TIMELINE_STEPS = [
     edges: [['user-admin', 'svc-azure-ad']]
   },
   {
-    offsetMin: 36,
+    offsetMin: 56,
     tier: 'observed',
     title: 'OAuth tokens issued',
     narrative: 'Azure AD issues 3 refresh tokens covering Files.ReadWrite.All and Sites.Read.All \u2014 providing durable, MFA-bypassing access to SharePoint Online.',
@@ -115,7 +115,7 @@ const TIMELINE_STEPS = [
     edges: [['svc-azure-ad', 'svc-oauth']]
   },
   {
-    offsetMin: 42,
+    offsetMin: 64,
     tier: 'observed',
     title: 'SharePoint file access via stolen tokens',
     narrative: 'The OAuth tokens are used to enumerate and download files from the Finance and HR document libraries on SharePoint Online. Both m.henderson and CORP-WS-045 also touch SharePoint directly.',
@@ -128,7 +128,7 @@ const TIMELINE_STEPS = [
     ]
   },
   {
-    offsetMin: 48,
+    offsetMin: 75,
     tier: 'predicted',
     title: '[Predicted] LSASS credential dump on CORP-WS-045',
     narrative: 'AI projects the attacker will run procdump / comsvcs to extract cleartext credentials and Kerberos tickets from LSASS \u2014 converting the workstation foothold into reusable domain creds.',
@@ -137,7 +137,7 @@ const TIMELINE_STEPS = [
     edges: [['dev-ws045', 'proc-credump-predicted']]
   },
   {
-    offsetMin: 55,
+    offsetMin: 86,
     tier: 'predicted',
     title: '[Predicted] Administrator pivots to DC-01',
     narrative: 'Using the freshly-dumped credentials, AI expects an RDP or SMB login from Administrator to the domain controller DC-01 within ~7 minutes \u2014 the canonical lateral-movement step before domain-wide impact.',
