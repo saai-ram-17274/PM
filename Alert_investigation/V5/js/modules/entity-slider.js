@@ -219,7 +219,7 @@ function renderEntitySliderBody(entityId) {
   const tabConfig = {
     user: [
       { id:'overview', label:'Overview', sections:['riskSummary','usersDetails'] },
-      { id:'risk', label:'Risk & Identity', sections:['uebaProfile','loginStatistics','cloudIdentities','identityRisk','privilegedRoleChanges','threatIntelContext','dlpIncidents'] },
+      { id:'risk', label:'Risk & Identity', sections:['uebaProfile','loginStatistics','cloudIdentities','identityRisk','threatIntelContext','dlpIncidents'] },
       { id:'activity', label:'Activity', sections:['logonActivity','networkActivity','processes','serviceTriggered','resourceFileAccess','recentAppAccess'] },
       { id:'changes', label:'Account Changes', sections:['accountLockouts','passwordHistory','groupMembershipChanges','mailboxForwarding'] },
       { id:'recentAlerts', label:'Recent Alerts', sections:['recentAlerts'] }

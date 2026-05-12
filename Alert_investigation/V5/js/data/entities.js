@@ -732,11 +732,6 @@ const ENTITIES = {
             details: { 'Application':'SharePoint Online', 'Source IP':'10.18.1.81 (NYC Office)', 'Risk Level':'None', 'Result':'Success' } }
         ]
       },
-      privilegedRoleChanges: {
-        label: 'Privileged Role Assignment Changes', expanded: false,
-        timeline: [],
-        emptyText: 'No privileged role changes found — m.henderson has no Azure AD admin role assignments.'
-      },
       networkActivity: {
         label: 'Network Activity (24h)', expanded: false, viewAll: true,
         timeline: [
