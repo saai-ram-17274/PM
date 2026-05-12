@@ -1,5 +1,34 @@
 /* entity-slider.js — Entity detail slider panel (right panel in graph view)
  * Depends on: entities.js, display-config.js, utils.js, action-panel.js, app.js */
+
+/* ─── Dynamic metric helpers ───
+ * `firstSeen` is rendered as e.g. "11 May 2026 09:22:45". Parse that into a
+ * Date so we can compute "time since first alert" relative to the incident
+ * wall-clock (the play-the-attack timeline ends at 11 May 2026 11:24).
+ * We anchor "now" to the latest event in the demo timeline so the metric
+ * stays stable across days and matches the rest of the narrative. */
+const _ENTITY_NOW = new Date('2026-05-11T11:24:00');
+const _ENTITY_MONTHS = { Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11 };
+function _parseEntityTs(s) {
+  // Accepts "11 May 2026 09:22:45" or "11 May 2026  09:22:45" (double space)
+  const m = String(s||'').trim().match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})$/);
+  if (!m) return null;
+  const mo = _ENTITY_MONTHS[m[2]];
+  if (mo === undefined) return null;
+  return new Date(+m[3], mo, +m[1], +m[4], +m[5], +m[6]);
+}
+function _humanizeDelta(then, now) {
+  if (!then) return null;
+  now = now || _ENTITY_NOW;
+  let s = Math.max(0, Math.floor((now - then) / 1000));
+  const d = Math.floor(s / 86400); s -= d*86400;
+  const h = Math.floor(s / 3600);  s -= h*3600;
+  const m = Math.floor(s / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
 function openEntitySlider(entityId) {
   // Dismiss quick card if open
   if (eqcVisible) hideEntityQuickCard();
@@ -538,10 +567,15 @@ function renderSummaryCard(card) {
   // Metric strip
   html += '<div class="em-sc-metrics">';
   card.metrics.forEach(m => {
+    let val = m.value;
+    // Resolve dynamic metric values at render time.
+    if (!val && m.dynamic === 'timeSinceFirst' && card.firstSeen) {
+      val = _humanizeDelta(_parseEntityTs(card.firstSeen));
+    }
     html += `<div class="em-sc-metric">`;
     html += `<span class="em-sc-metric-dot" style="background:${m.color};"></span>`;
     html += `<div class="em-sc-metric-body">`;
-    html += `<span class="em-sc-metric-val" style="color:${m.color};">${m.value}</span>`;
+    html += `<span class="em-sc-metric-val" style="color:${m.color};">${val || '—'}</span>`;
     html += `<span class="em-sc-metric-lbl">${m.label}</span>`;
     html += `</div></div>`;
   });
