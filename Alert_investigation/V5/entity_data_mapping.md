@@ -51,7 +51,7 @@ Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Ale
 | Active Anomalies (count) | ✅ | `ITSEntityRiskScoreDetails.DETECTION_COUNT` | Raw DB | — |
 | Failed Logins (24h) | ✅ | Elasticsearch `eventid=4625` | Aggregated ES query on Windows Security logs | 🤖✚ AI clusters failures by source IP and labels each cluster (brute-force vs misconfig vs typo) |
 | Time Since First Alert | ✅ | `ITSAlertProfileConfigurations` first timestamp | `now() - first_alert_ts` | — |
-| First Seen / Last Activity | ✅ | `ADSAnomalyDetectionUniqueEntities.FIRST_SEEN_TIME` + ES max `_zl_timestamp` | Raw DB + ES agg | — |
+| First Seen / Last Activity | ✅ | `GlobalSequenceDetails.CREATION_TIME` (per-entity, FK'd via `ENTITY_ID`) + ES `min/max(_zl_timestamp)` filtered by entity | Raw DB + ES agg | — |
 
 ### 1.2 User Details (`usersDetails`)
 
