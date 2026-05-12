@@ -539,7 +539,7 @@ const ENTITIES = {
           metrics: [
             { icon:'⚠', label:'Active Anomalies', value:'7', color:'#DD1616' },
             { icon:'🔐', label:'Failed Logins (24h)', value:'4', color:'#FF5900' },
-            { icon:'⏱', label:'Time Since First Alert', value:'', color:'#6366B3', dynamic:'timeSinceFirst' }
+            { icon:'⏱', label:'Dwell Time', value:'', color:'#6366B3', dynamic:'timeSinceFirst' }
           ],
           firstSeen: '11 May 2026 09:22:45',
           lastActivity: '11 May 2026 10:36:22'

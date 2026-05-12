@@ -50,7 +50,7 @@ Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Ale
 | Status Badge ("Compromised Account") | 🟡 | Computed from anomaly types | Aggregate `ITSAlertProfileConfigurations` rule categories | 🤖✚ AI generates a one-line **verdict** ("Compromised", "Insider", "Misconfigured") from log evidence |
 | Active Anomalies (count) | ✅ | `ITSEntityRiskScoreDetails.DETECTION_COUNT` | Raw DB | — |
 | Failed Logins (24h) | ✅ | Elasticsearch `eventid=4625` | Aggregated ES query on Windows Security logs | 🤖✚ AI clusters failures by source IP and labels each cluster (brute-force vs misconfig vs typo) |
-| Time Since First Alert | ✅ | Elasticsearch alert index (per-occurrence alert documents, tracked via `AlertPartition` / `AlertsCreatedFromProfilePerDay` in ELA DD) — `min(@timestamp)` filtered by user. `ITSAlertProfileConfigurations` only stores the rule definition (`LAST_NOTIFIED_TIME`, no first-trigger column), so it can't answer this on its own. | ES agg `min(@timestamp) WHERE user=…`, then `now() - first_alert_ts` | — |
+| Dwell Time (time since first alert) | ✅ | Elasticsearch alert index (per-occurrence alert documents, tracked via `AlertPartition` / `AlertsCreatedFromProfilePerDay` in ELA DD) — `min(@timestamp)` filtered by user. `ITSAlertProfileConfigurations` only stores the rule definition (`LAST_NOTIFIED_TIME`, no first-trigger column), so it can't answer this on its own. | ES agg `min(@timestamp) WHERE user=…`, then `now() - first_alert_ts` | — |
 | First Seen / Last Activity | ✅ | `GlobalSequenceDetails.CREATION_TIME` (per-entity, FK'd via `ENTITY_ID`) + ES `min/max(_zl_timestamp)` filtered by entity | Raw DB + ES agg | — |
 
 ### 1.2 User Details (`usersDetails`)
