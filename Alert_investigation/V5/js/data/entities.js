@@ -556,7 +556,7 @@ const ENTITIES = {
       },
       usersDetails: {
         label: 'User Details', expanded: true,
-        kv: { 'Display Name':'m.henderson', 'SAM Account Name':'m.henderson', 'UPN':'m.henderson@contoso.com', 'Email':'m.henderson@corp.local', 'Job Title':'IT Support Engineer', 'Department':'IT', 'Manager':'j.williams (IT Manager)', 'Last Logon Time':'09:41:10', 'OU Name':'OU 1', 'Account Created':'2024-03-15', 'Account Status':'Active ⚠ (Recommended: Disable)', 'Logon Workstation':'CORP-WS-045', 'Primary Group':'Domain Users' }
+        kv: { 'Display Name':'m.henderson', 'SAM Account Name':'m.henderson', 'UPN':'m.henderson@contoso.com', 'Email':'m.henderson@corp.local', 'Job Title':'IT Support Engineer', 'Department':'IT', 'Manager':'j.williams (IT Manager)', 'Last Logon Time':'09:41:10', 'OU Name':'OU 1', 'Account Created':'2024-03-15', 'Account Status':'Active ⚠ (Recommended: Disable)', 'Primary Group':'Domain Users' }
       },
       logonActivity: {
         label: 'Logon Activity', expanded: true, viewAll: true,

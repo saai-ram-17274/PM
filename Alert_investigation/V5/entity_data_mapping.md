@@ -82,41 +82,11 @@ Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Ale
 | OU Name | ✅ AD · ❌ Entra | `APFDiscADUserDetails.OU_NAME` directly (also `OU_DN_NAME`, `OU_UNIQUE_ID`). Entra has no OU concept (administrative units instead — `APFDiscAADUserDetails.GROUP_COUNT` is the closest signal). | Direct read |
 | Account Created | ✅ both | `APFDiscADUserDetails.WHEN_CREATED` (AD) · `APFDiscAADUserDetails.WHEN_CREATED` + `DAYS_SINCE_CREATED` (Entra) | Direct read |
 | Account Status (with recommendation) | ✅ both (status) · 🤖 (recommendation) | Stored as pre-decoded BOOLEAN: `APFDiscADUserDetails.ACCOUNT_STATUS` — schema description is explicit: `0 → Disabled, 1 → Enabled`. The discovery handler resolves the `userAccountControl` disabled-bit during ingest (LDAP attr `uacAccountStatus`, [`APFADUserAttributes.xml` priority 18](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/applications/attributes/ad/APFADUserAttributes.xml#L18)) and writes the resolved boolean. Raw `USER_ACCOUNT_CONTROL` (BIGINT) is also retained for bits without their own column. Entra: `APFDiscAADUserDetails.ACCOUNT_ENABLED` (already a BOOLEAN per Graph API). The "Recommended: Disable" suffix is product-side business logic, not a stored column. | Direct read (BOOLEAN, no decoding needed) + AI for recommendation text |
-| Logon Workstation | 🟡 both | **Two different concepts under one label** — see [§1.2.1](#121-logon-workstation--two-concepts-one-label) below. (a) **Allowlist (policy)** = `APFDiscADUserDetails.LOGON_TO` — direct read of LDAP `userWorkstations`, the workstations the AD admin permits this account to log on from. Usually empty (= all). (b) **Actual last logon from** (what the card shows as `CORP-WS-045`) = NOT on the user table at all — only in Windows Security event logs, requires ES query: `eventid=4624 \| stats latest(WorkstationName) by TargetUserName`. | (a) Direct read of `LOGON_TO` · (b) ES side-call (retention-bounded, typically 30/60/90 days) |
-| Primary Group | ✅ AD (with join) · ❌ Entra | **One column + one join** — see [§1.2.2](#122-primary-group--one-column-one-join) below. `APFDiscADUserDetails` stores `PRIMARY_GROUP_ID` (the RID, e.g. `513`) and `PRIMARY_GROUP_GUID` (the group's OBJECT_GUID, manifest priority 100). Neither is the display name `"Domain Users"`. To resolve, join against [`APFDiscADGroupDetails`](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/discovery/application/ad/data-dictionary.xml) (same APF discovery, already in cloud schema) on `OBJECT_GUID = u.PRIMARY_GROUP_GUID`, return `GROUP_NAME`. Entra has no primary-group concept — `GROUP_COUNT` only; full membership lives in a separate APF group-membership table. | Direct read + 1 join |
+| Primary Group | ✅ AD (with join) · ❌ Entra | **One column + one join** — see [§1.2.1](#121-primary-group--one-column-one-join) below. `APFDiscADUserDetails` stores `PRIMARY_GROUP_ID` (the RID, e.g. `513`) and `PRIMARY_GROUP_GUID` (the group's OBJECT_GUID, manifest priority 100). Neither is the display name `"Domain Users"`. To resolve, join against [`APFDiscADGroupDetails`](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/discovery/application/ad/data-dictionary.xml) (same APF discovery, already in cloud schema) on `OBJECT_GUID = u.PRIMARY_GROUP_GUID`, return `GROUP_NAME`. Entra has no primary-group concept — `GROUP_COUNT` only; full membership lives in a separate APF group-membership table. | Direct read + 1 join |
 
-> **Implication for the demo (corrected):** All 13 m.henderson User Details fields are now sourced from `APFDiscADUserDetails` directly with no two-table fallback needed for AD users. Only **two** caveats remain: (a) "Logon Workstation" on the card today shows `CORP-WS-045` which is "where m.henderson actually logged on from" — that's an ES side-call, **not** the `LOGON_TO` allowlist column. The doc should distinguish these. (b) For Entra-only tenants, **Last Logon Time** still requires an ES side-call into M365 SignInLogs (retention-bounded). For mixed tenants the slider should pick the path based on the discovered identity source.
+> **Implication for the demo (corrected):** All 12 m.henderson User Details fields are now sourced from `APFDiscADUserDetails` directly with no two-table fallback needed for AD users. Only one caveat remains: for Entra-only tenants, **Last Logon Time** requires an ES side-call into M365 SignInLogs (retention-bounded). For mixed tenants the slider should pick the path based on the discovered identity source.
 
-##### 1.2.1 Logon Workstation — two concepts, one label
-
-The single card label "Logon Workstation" conflates two unrelated things. They live in different stores and answer different questions:
-
-| Concept | Question it answers | Where it lives | Cost |
-|---|---|---|---|
-| **Allowlist (policy)** | "Where is this account *permitted* to log on from?" | `APFDiscADUserDetails.LOGON_TO` — schema: `<column name="LOGON_TO"><description>userWorkstations</description><data-type>CHAR</data-type></column>`. Populated from LDAP `userWorkstations` (manifest priority 37). Static AD attribute set by the admin on the user object. **Usually empty** — meaning "allowed everywhere". | 1 indexed row read |
-| **Actual last logon from** | "Where did this user *actually* log on from last?" | **Not** on any discovery table. Lives only in Windows Security event logs in Elasticsearch — `EventID 4624` (success) / `4625` (fail), fields `WorkstationName`, `IpAddress`, `IpPort`, `LogonType`. | 1 ES aggregation, **retention-bounded** (only as far back as ES retains 4624 events) |
-
-**Resolution paths**
-
-```sql
--- (a) Allowlist policy — direct read
-SELECT LOGON_TO FROM APFDiscADUserDetails WHERE OBJECT_GUID = :userGuid;
-```
-
-```
-# (b) Actual last logon from — ES query
-index=wineventlog eventid=4624 TargetUserName="m.henderson"
-| stats latest(WorkstationName) AS lastFromHost,
-        latest(IpAddress)       AS lastFromIp
-  by TargetUserName
-```
-
-**Why this matters for the card.** The demo today shows `CORP-WS-045` as "Logon Workstation". That value cannot come from `LOGON_TO` (that's the allowlist), it must come from ES `4624`. The two should be on separate rows on the card:
-
-- **Last logon from:** `CORP-WS-045` (from ES 4624, retention-bounded)
-- **Permitted from:** `LOGON_TO` value or `"All workstations"` (from discovery)
-
-##### 1.2.2 Primary Group — one column, one join
+##### 1.2.1 Primary Group — one column, one join
 
 `APFDiscADUserDetails` stores **two columns** related to the primary group, but neither is the display name a SOC analyst wants on the card:
 
