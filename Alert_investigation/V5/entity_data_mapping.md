@@ -156,12 +156,23 @@ WHERE  u.OBJECT_GUID = :userGuid;
 
 #### 1.9 Login Statistics (7 days) (`loginStatistics`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Total / Successful / Failed | ✅ | ES agg over 4624/4625 | Existing |
-| Unique Source IPs | ✅ | ES `terms` agg | Existing |
-| Off-Hours Logins | ✅ | ES filter on hour-of-day vs business window | Existing |
-| Unique Hosts | ✅ | ES `terms` agg on `Workstation` | Existing |
+**Source of truth.** Elasticsearch — Windows Security log index. Queried live via `ZLogsQueryExecutorImpl` + `ZLogsUtil.executeAndRetrieveData()` (the generic ES wrapper used across the product, also used by UEBA — see [`L3CUEBAUtil.getZLogsQueryExecutor()`](../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/ueba/dashboard/util/L3CUEBAUtil.java#L84)). **No DB read, no pre-aggregation, no schema additions.**
+
+| # | Field | Sample value | ES filter | ES aggregation |
+|---|-------|--------------|-----------|----------------|
+| 1 | Total Logins | `47` | `USERNAME=u AND EVENTID IN (4624,4625)` | `numFound` |
+| 2 | Successful | `43 (91.5%)` | same as #1 | `groupBy EVENTID` → bucket `4624` |
+| 3 | Failed | `4 (8.5%)` | same as #1 | `groupBy EVENTID` → bucket `4625` |
+| 4 | Unique Source IPs | `3 (192.168.1.22, 10.18.1.81, 10.112.11.1)` | `USERNAME=u AND EVENTID=4624` | `groupBy IPADDRESS` → bucket count + top |
+| 5 | Off-Hours Logins | `2` | `USERNAME=u AND EVENTID=4624` + `setDayHours(L3CWorkingHourHandler.getFromCache(DAY_HOURS, filterId))` | `numFound` |
+| 6 | Unique Hosts | `3 (CORP-WS-045, CORP-SRV-01, CORP-FS-02)` | `USERNAME=u AND EVENTID=4624` | `groupBy WORKSTATIONNAME` |
+
+**Calls per card refresh:** 4 ES queries (#1+#2+#3 share one call via `groupBy EVENTID`).
+
+**Caveats**
+- Window is **retention-bounded** — "7 days" only works if ES retains ≥7d Windows Security events for the tenant.
+- **Username normalization** — events store `DOMAIN\sam` / `sam@upn` / bare `sam` depending on feed. The existing ELA logon-report normalization helper must be reused so all variants count.
+- **Off-hours window is config-driven** — uses `L3CWorkingHourHandler` cache (admin-defined business hours), not hardcoded.
 
 #### 1.10 Cloud Identities & Assets (`cloudIdentities`)
 
