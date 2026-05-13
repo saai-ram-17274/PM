@@ -835,7 +835,7 @@ function viewAllSection(entityId, secKey) {
       { id:'overview', sections:['riskSummary','usersDetails','responseActions'] },
       { id:'risk', sections:['uebaProfile','loginStatistics','peerComparison','cloudIdentities','identityRisk'] },
       { id:'activity', sections:['logonActivity','geoTravelAnalysis','networkActivity','processes','serviceTriggered','resourceFileAccess'] },
-      { id:'threats', sections:['recentAlerts','threatIntelContext','dlpIncidents','endpointSecurity','complianceImpact','attackPathContext'] }
+      { id:'threats', sections:['recentAlerts','threatIntelContext','dlpIncidents','endpointSecurity','attackPathContext'] }
     ]
   };
   let returnTabId = null;

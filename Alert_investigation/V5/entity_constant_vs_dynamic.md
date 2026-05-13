@@ -17,7 +17,7 @@
 
 ---
 
-# 1. USER Entity — 8 constant / 12 dynamic
+# 1. USER Entity — 8 constant / 11 dynamic
 
 ## Constant (8)
 
@@ -47,27 +47,28 @@
 | 9 | Mailbox Forwarding Rules | Mailbox manipulation, email exfil, inbox-rule abuse | **Brute force**, malware, network, file-access |
 | 10 | DLP Incidents | Data-handling policy violation, regulated-data exposure | Auth/lockout-only |
 | 11 | Threat Intel Context | Alert chain contains external IOC | Pure insider/policy-violation alerts |
-| 12 | Compliance & Regulatory Impact | Regulated data (PII/PHI/PCI/EU) accessed or exposed | Any alert without regulated-data scope |
+
+> **Note:** *Compliance & Regulatory Impact* was previously listed here but its data block was orphaned in `entities.js` (defined but never wired into any tab). Removed in this revision — the regulated-data narrative is covered today by **DLP Incidents** + the **Recommendations & Remediation** card (which already calls out GDPR Art. 33 / PII exposure). A dedicated compliance section can be re-introduced later if PM commits to a real `ITSComplianceMapping` source rather than hard-coded cards.
 
 ## Alert-family decision matrix (USER)
 
-| Alert family | Proc | Svc | File | Net | App | Lock | Pwd | Group | Mbox | DLP | TI | Comp |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Impossible Travel / Geo-anomaly | | | ✓ | ✓ | ✓ | | | ✓ | ✓ | ✓ | ✓ | ✓ |
-| **Brute Force / Password Spray** | | | | | | ✓ | ✓ | | | | | |
-| Account Lockout Anomaly | | | | | | ✓ | ✓ | | | | | |
-| MFA Fatigue / Bypass | | | | | ✓ | ✓ | ✓ | | | | | |
-| OAuth Consent / App Governance | | | ✓ | | ✓ | | | ✓ | | | ✓ | |
-| Suspicious OAuth Token | | | ✓ | | ✓ | | | | | | ✓ | |
-| Encoded PowerShell / Execution | ✓ | ✓ | ✓ | ✓ | | | | | | | ✓ | |
-| Suspicious Service Install | ✓ | ✓ | | ✓ | | | | | | | ✓ | |
-| C2 / Tor Connection | ✓ | ✓ | | ✓ | | | | | | | ✓ | |
-| SAM / Credential Dump | ✓ | | ✓ | | | | ✓ | ✓ | | | | |
-| Bulk File Download / Sensitive Access | | | ✓ | ✓ | ✓ | | | | | ✓ | ✓ | ✓ |
-| Data Exfiltration | ✓ | | ✓ | ✓ | | | | | ✓ | ✓ | ✓ | ✓ |
-| ARP Spoofing / LAN MITM | ✓ | | | ✓ | | | | | | | ✓ | |
-| Admin Off-Hours Login | | | | | ✓ | | | ✓ | | | | |
-| Mailbox Forwarding to External | | | ✓ | | ✓ | | | | ✓ | ✓ | | ✓ |
+| Alert family | Proc | Svc | File | Net | App | Lock | Pwd | Group | Mbox | DLP | TI |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Impossible Travel / Geo-anomaly | | | ✓ | ✓ | ✓ | | | ✓ | ✓ | ✓ | ✓ |
+| **Brute Force / Password Spray** | | | | | | ✓ | ✓ | | | | |
+| Account Lockout Anomaly | | | | | | ✓ | ✓ | | | | |
+| MFA Fatigue / Bypass | | | | | ✓ | ✓ | ✓ | | | | |
+| OAuth Consent / App Governance | | | ✓ | | ✓ | | | ✓ | | | ✓ |
+| Suspicious OAuth Token | | | ✓ | | ✓ | | | | | | ✓ |
+| Encoded PowerShell / Execution | ✓ | ✓ | ✓ | ✓ | | | | | | | ✓ |
+| Suspicious Service Install | ✓ | ✓ | | ✓ | | | | | | | ✓ |
+| C2 / Tor Connection | ✓ | ✓ | | ✓ | | | | | | | ✓ |
+| SAM / Credential Dump | ✓ | | ✓ | | | | ✓ | ✓ | | | |
+| Bulk File Download / Sensitive Access | | | ✓ | ✓ | ✓ | | | | | ✓ | ✓ |
+| Data Exfiltration | ✓ | | ✓ | ✓ | | | | | ✓ | ✓ | ✓ |
+| ARP Spoofing / LAN MITM | ✓ | | | ✓ | | | | | | | ✓ |
+| Admin Off-Hours Login | | | | | ✓ | | | ✓ | | | |
+| Mailbox Forwarding to External | | | ✓ | | ✓ | | | | ✓ | ✓ | |
 
 ---
 

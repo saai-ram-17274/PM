@@ -195,11 +195,9 @@ Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Ale
 |-------|--------|----------------|------------|---------------|
 | Empty-state when none | ✅ | Entra audit log | Existing | 🤖✚ AI generates an **empty-state explanation** ("No privileged-role assignments — risk vector: lateral via group, not role") |
 
-### 1.21 Compliance & Regulatory Impact (`complianceImpact`)
+### 1.21 Compliance & Regulatory Impact (`complianceImpact`) — **REMOVED**
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Framework (PCI/HIPAA/SOX/GDPR/NIST) + Status + Controls + Impact | 🟡 | Log360 Compliance module | Compliance report mapping | 🤖✚ **High-value AI use case** — AI maps the **specific evidence chain** in this incident to control IDs and drafts the **breach-notification text** for GDPR Art.33, HIPAA §164, etc. |
+> Data block existed in `entities.js` but was never wired into any tab. Removed in the constant-vs-dynamic revision (see [entity_constant_vs_dynamic.md](entity_constant_vs_dynamic.md#1-user-entity--8-constant--11-dynamic)). Regulated-data narrative is now covered by **DLP Incidents** (§1.20) and the **Recommendations & Remediation** card (§1.22), which already calls out GDPR Art. 33 / PII exposure. Re-introduce only if PM commits a real `ITSComplianceMapping` source rather than hard-coded cards.
 
 ### 1.22 Recommendations & Remediation (`remediationGuide`)
 

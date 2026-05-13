@@ -759,16 +759,6 @@ const ENTITIES = {
             details: { 'Type':'VPN Connection', 'Source IP':'72.14.201.88 (NY Office ISP)', 'Assigned IP':'10.18.1.81', 'Protocol':'IPSec', 'Duration':'5h 22m' } }
         ]
       },
-      complianceImpact: {
-        label: 'Compliance & Regulatory Impact', expanded: false,
-        complianceCards: [
-          { framework:'PCI-DSS v4.0', status:'At Risk', controls:['10.2.1 — Audit log access', '8.3.1 — MFA for admin access'], impact:'File access anomaly detected during alert investigation' },
-          { framework:'HIPAA', status:'Violation', controls:['§164.312(a)(1) — Access Control', '§164.312(b) — Audit Controls'], impact:'Potential PHI data access during anomalous session' },
-          { framework:'SOX', status:'At Risk', controls:['Section 302 — Financial data integrity'], impact:'Financial data accessed during anomalous session' },
-          { framework:'GDPR Art. 33', status:'Notification Required', controls:['Art. 33 — Data breach notification (72h)'], impact:'EU employee PII potentially exposed' },
-          { framework:'NIST 800-53', status:'Non-Compliant', controls:['AC-2 — Account Management', 'IR-4 — Incident Handling'], impact:'Account risk score exceeds threshold' }
-        ]
-      },
       threatIntelContext: {
         label: 'Threat Intelligence Context', expanded: false,
         kv: {
