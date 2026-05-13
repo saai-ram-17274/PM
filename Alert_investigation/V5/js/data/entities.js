@@ -653,8 +653,11 @@ const ENTITIES = {
         label: 'UEBA Risk Profile', expanded: false,
         kv: {
           'Risk Score':'94 / 100 — Critical',
-          'Anomalies Detected':'7',
-          'Account Type':'Standard User (No admin privileges)'
+          'Last Anomaly Fired':'12 May 2026 09:14 (2h ago)',
+          'Last Score Update':'13 May 2026 03:00',
+          'Under Observation':'Yes',
+          'Source':'Windows Event Log Collector',
+          'Analyst Notes':'"Investigated 11 May — escalated to T2" — j.doe, 11 May'
         }
       },
       loginStatistics: {

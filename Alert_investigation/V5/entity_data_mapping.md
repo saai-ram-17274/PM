@@ -162,11 +162,27 @@ WHERE  u.OBJECT_GUID = :userGuid;
 
 #### 1.8 UEBA Risk Profile (`uebaProfile`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Risk Score / 100 + Severity | ✅ | UEBA scorer | Existing |
-| Anomalies Detected | ✅ | UEBA model output | Existing |
-| Account Type | ✅ | LDAP `adminCount` + group memberships | LDAP |
+**Source of truth.** All six fields are read by the existing query [`L3CUEBAUtil.formRiskScoreSelectQuery()`](../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/ueba/dashboard/util/L3CUEBAUtil.java#L143-L159) (single `INNER JOIN` between `ITSEntityRiskScoreDetails` ↔ `ADSAnomalyDetectionUniqueEntities` on `ENTITY_ID`) plus the notes CRUD already wired in the same class ([`addNote()`](../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/ueba/dashboard/util/L3CUEBAUtil.java#L606), [`editNote()`](../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/ueba/dashboard/util/L3CUEBAUtil.java#L619), [`deleteNote()`](../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/ueba/dashboard/util/L3CUEBAUtil.java#L654)). **Zero new tables, zero new joins.**
+
+| # | Field | Sample value | Source column | Verdict |
+|---|-------|--------------|---------------|---------|
+| 1 | Risk Score | `94 / 100 — Critical` | `ITSEntityRiskScoreDetails.RISK_SCORE × 100` (mirrors [`getEntityRiskScore()`](../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/ueba/dashboard/util/L3CUEBAUtil.java#L668-L672)) | ✅ already selected |
+| 2 | Last anomaly fired | `12 May 2026 09:14 (2h ago)` | `ITSEntityRiskScoreDetails.LAST_ANOMALY_UPDATE_TIME` (epoch ms) — used as sort key in [`recentlyDetectedEntities()`](../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/ueba/dashboard/util/L3CUEBAUtil.java#L208) | ✅ already selected |
+| 3 | Last score update | `13 May 2026 03:00` | `ITSEntityRiskScoreDetails.LAST_UPDATE_TIME` | ✅ already selected |
+| 4 | Under Observation | `Yes` / `No` | `ADSAnomalyDetectionUniqueEntities.IS_SURVEILLED` (BOOLEAN, default false) — see [anomalydetection/data-dictionary.xml#L154-L159](../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/anomalydetection/data-dictionary.xml#L154-L159) | ✅ already selected |
+| 5 | Source | `Windows Event Log Collector` (which feed first flagged this entity) | `ADSAnomalyDetectionUniqueEntities.SOURCE` | ✅ already selected |
+| 6 | Analyst notes | `"Investigated 11 May — escalated to T2" — j.doe, 11 May` `[+ Add note]` | `UEBAEntityNotes.NOTE` + `CREATION_TIME` + `CREATED_USER_ID → AaaUser` ([dashboard/ueba/data-dictionary.xml#L55-L115](../../REPOS/itsf/product_package/conf/itsf/common/dashboard/ueba/data-dictionary.xml#L55-L115)) | ✅ CRUD already exists; needs a read query on the card |
+
+**Renamed.** "Watchlist" → **"Under Observation"** — clearer analyst phrasing for the same `IS_SURVEILLED` boolean.
+
+**Removed from earlier mock.**
+- `Anomalies Detected: 7` — bare integer dropped; the count is conveyed by the score itself plus the alerts/anomaly tabs.
+- `Account Type: Standard User` — moved to §1.11 `identityRisk` (it's an AD-membership derivation, not a UEBA scorer output).
+
+**Gaps to flag (not claiming on this card).**
+- **Score breakdown** (`MODIFIED_SCORE × SEVERITY_SCORE × DECAY_FACTOR`) — columns exist on `ITSEntityRiskScoreDetails` but are not selected by `formRiskScoreSelectQuery()`. Adding them is a small `addSelectColumn` change, not a free read.
+- **Lifetime vs session score** (`OVERALL_RISK_SCORE`, `OVERALL_DETECTION_COUNT`) — same situation: real columns, not currently selected.
+- **"Watchlisted by `<user>` on `<date>`"** — schema gap. `ADSAnomalyDetectionUniqueEntities` has only the `IS_SURVEILLED` boolean; no `SURVEILLED_BY` / `SURVEILLED_TIME` columns.
 
 #### 1.9 Login Statistics (7 days) (`loginStatistics`)
 
