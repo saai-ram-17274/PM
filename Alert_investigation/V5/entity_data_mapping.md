@@ -57,16 +57,30 @@ Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Ale
 
 ### 1.2 User Details (`usersDetails`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Display Name, SAM, UPN, Email | ✅ | ADAudit Plus / ADManager Plus — `ADSUserDetails` | LDAP sync into RDBMS | — |
-| Job Title, Department, Manager | ✅ | AD attributes (`title`, `department`, `manager`) | LDAP attribute pull | 🤖 Cross-reference with HRIS (Workday, BambooHR) for verified org-chart |
-| Last Logon Time | ✅ | `ADSUserDetails.LAST_LOGON` (replicated from all DCs) | ADAP nightly aggregator | — |
-| OU Name | ✅ | AD `distinguishedName` parsed | ADAP | — |
-| Account Created | ✅ | AD `whenCreated` | LDAP | — |
-| Account Status (with recommendation) | 🟡 | `userAccountControl` flags | LDAP + business rule | 🤖✚ AI generates the **recommendation text** ("Disable" / "Force password change") from current risk + attack chain |
-| Logon Workstation | ✅ | `ADSUserLogonDetails.WORKSTATION` | EventID 4624 parser | — |
-| Primary Group | ✅ | AD `primaryGroupID` | LDAP | — |
+> **Cloud surface — verified.** Log360 Cloud uses two distinct user-identity tables, picked based on whether the entity is an AD-discovered user or an Entra/M365 user. Neither is the on-prem ADAP `ADSMUserGeneralDetails` table; both are cloud-side persistence (APF + ELA discovery). Resolution path verified in [`UserDetailsUtil.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/incident/workbench/tab/util/UserDetailsUtil.java).
+>
+> | Source | Table | Holds | Notes |
+> |---|---|---|---|
+> | AD-discovered users | [`ELADomainUserDetails`](../../../REPOS/itsf/product_package/conf/itsf/common/LogCollection/discovery/data-dictionary.xml#L299) | OBJECT_GUID, OBJECT_SID, NAME, SAMACCOUNTNAME, USERPRINCIPALNAME, DISTINGUISHEDNAME, OBJECTROOT_DN, USERACCOUNTCONTROL, EMAIL_ID, DOMAIN_ID | **10 columns only** — no title/dept/manager/lastLogon/whenCreated. Anything richer needs ES logs or APF table. |
+> | Entra / M365 users | [`APFDiscAADUserDetails`](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/discovery/application/azure/data-dictionary.xml#L177) | OBJECT_ID, IDENTITY, FIRST_NAME, LAST_NAME, USER_PRINCIPAL_NAME, DISPLAY_NAME, EMAIL_ADDRESS, PHONE_NUMBER, MOBILE_PHONE, TITLE, DEPARTMENT, COMPANY, OFFICE, EMPLOYEE_ID, MANAGER, COUNTRY/CITY/STATE/STREET, ACCOUNT_ENABLED, USER_ACCOUNT_CONTROL, WHEN_CREATED, WHEN_MODIFIED, LAST_PWD_CHANGE_TIME, PASSWORD_EXPIRY_DATE, LAST_DIR_SYNC_TIME, O365_USER_TYPE, IS_LICENSED, GROUP_COUNT, LITIGATION_HOLD_ENABLED, AUDIT_ENABLED, SOFT_DELETION_TIMESTAMP | Rich schema — APF discovery sync. |
+
+| Field | Status | Cloud Source | How to Get | AI Enrichment |
+|-------|--------|--------------|------------|---------------|
+| Display Name | ✅ Entra · 🟡 AD | Entra: `APFDiscAADUserDetails.DISPLAY_NAME` directly. AD: derive from `ELADomainUserDetails.NAME` (no DISPLAY_NAME column on the AD table). | Direct read | — |
+| SAM Account Name | ✅ AD · ❌ Entra | `ELADomainUserDetails.SAMACCOUNTNAME` (AD only — Entra has no SAM concept) | Direct read | — |
+| UPN | ✅ both | `APFDiscAADUserDetails.USER_PRINCIPAL_NAME` (Entra) · `ELADomainUserDetails.USERPRINCIPALNAME` (AD) | Direct read | — |
+| Email | ✅ both | `APFDiscAADUserDetails.EMAIL_ADDRESS` (Entra) · `ELADomainUserDetails.EMAIL_ID` (AD) | Direct read. Also `ALTERNATE_EMAIL_ADDRESS` available on Entra. | — |
+| Job Title | ✅ Entra · ❌ AD | `APFDiscAADUserDetails.TITLE` only — **not present** on `ELADomainUserDetails`. For AD-only tenants this field is unavailable from cloud DB; would require LDAP sync extension. | Direct read | 🤖 Cross-reference with HRIS for verified org-chart |
+| Department | ✅ Entra · ❌ AD | `APFDiscAADUserDetails.DEPARTMENT` only — **not present** on `ELADomainUserDetails`. Same caveat as Title for AD-only tenants. | Direct read | 🤖 HRIS cross-ref |
+| Manager | ✅ Entra · ❌ AD | `APFDiscAADUserDetails.MANAGER` (stores manager `OBJECT_ID`; `UserDetailsUtil.getUserUPN()` resolves it to UPN via APF entity lookup — see [`UserDetailsUtil.java#L107-L131`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/incident/workbench/tab/util/UserDetailsUtil.java#L107)). **Not present** on `ELADomainUserDetails`. | Two-step: read MANAGER, resolve to UPN via APF base table | 🤖 HRIS cross-ref |
+| Last Logon Time | ❌ both tables | **Neither user table stores last logon.** Must come from logs: AD via ES `eventid=4624 max(@timestamp) WHERE TargetUserName=:user` (retention-bounded). Entra via M365 SignInLogs `max(createdDateTime) WHERE userPrincipalName=:upn`. | ES agg — caveat: ES retention silently truncates if user inactive longer than retention. | — |
+| OU Name | ✅ AD · ❌ Entra | Parse `ELADomainUserDetails.DISTINGUISHEDNAME` (split on `OU=`). Entra has no OU concept (groups + administrative units instead — `APFDiscAADUserDetails.GROUP_COUNT` is the closest signal). | Client-side parse | — |
+| Account Created | ✅ Entra · ❌ AD | `APFDiscAADUserDetails.WHEN_CREATED` (BIGINT epoch) — also `DAYS_SINCE_CREATED` precomputed. **Not present** on `ELADomainUserDetails`. For AD-only, would need M365 audit "Add user" event from ES (retention-bounded). | Direct read | — |
+| Account Status (with recommendation) | 🟡 both | Stored: Entra `APFDiscAADUserDetails.ACCOUNT_ENABLED` (BOOLEAN) and `USER_ACCOUNT_CONTROL` (raw flags). AD `ELADomainUserDetails.USERACCOUNTCONTROL` (raw flag bits — must be decoded: `0x2`=disabled, `0x10`=lockout, etc.). The "Recommended: Disable" suffix is product-side business logic, not a stored column. | Direct read + flag decoder + business rule | 🤖✚ AI generates the **recommendation text** ("Disable" / "Force password change") from current risk + attack chain |
+| Logon Workstation | ❌ both tables | **Neither user table stores workstation.** Must come from ES: `eventid=4624` latest record for the user, read `WorkstationName` (or `IpAddress` lookup). Same retention caveat as Last Logon Time. | ES `latest(WorkstationName) WHERE TargetUserName=:user` | — |
+| Primary Group | ❌ both tables | **Neither user table stores primary group.** AD: separate table `ELADomainGroupDetails` + a user-group membership join (`primaryGroupID` lives in raw AD attrs but isn't projected into `ELADomainUserDetails`). Entra: `APFDiscAADUserDetails.GROUP_COUNT` only — actual group list lives in a separate APF group-membership table. | Lookup join against group/membership table | — |
+
+> **Implication for the demo:** Six of the 13 fields rendered today on m.henderson's User Details card (Job Title, Department, Manager, Last Logon Time, Account Created, Logon Workstation, Primary Group) are **not** directly readable from a single cloud user table. Three are Entra-only (`TITLE`/`DEPARTMENT`/`MANAGER`/`WHEN_CREATED` — APF only); two require ES log queries with retention caveats (Last Logon Time, Logon Workstation); one requires a separate join (Primary Group). For a hybrid AD+Entra tenant the slider needs a **two-table read pattern** (try `APFDiscAADUserDetails` first, fall back to `ELADomainUserDetails` for AD-only users) plus an ES side-call for Last Logon / Workstation.
 
 ### 1.3 Logon Activity (`logonActivity`) — Timeline
 
