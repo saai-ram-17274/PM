@@ -43,17 +43,17 @@ Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Ale
 
 ### 1.1 Risk Summary (`riskSummary`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Risk Score (0–100) | ✅ | `ITSEntityRiskScoreDetails.RISK_SCORE` (Log360) | `RiskScoreHandler` — computed `MODIFIED_SCORE × SEVERITY_SCORE`, cached in Redis | 🤖✚ AI can re-rank by considering the **full alert chain context** (e.g. boost score if entity also appears in a parallel attack-path graph) |
-| Severity | ✅ | Stored as `ITSEntityRiskScoreDetails.SESSION_SEVERITY` (INTEGER bucket id). Human label resolved via lookup join `ITSRiskSeverityDetails.SEVERITY_NAME WHERE SEVERITY_ID = SESSION_SEVERITY` → `CRITICAL` / `ATTENTION` / `TROUBLE`. The join is a convention — there is **no FK declared** in [`data-dictionary.xml`](../../../REPOS/itsf/product_package/conf/itsf/common/riskscore/data-dictionary.xml). The bucket itself is selected per-event via `LIKE_LI_HOOD_SEVERITY` mapping in [`RiskScoreHandler.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/riskscore/handler/RiskScoreHandler.java#L33-L34) (NOT mapped from score thresholds). | Lookup join | 🤖✚ AI suggests severity-vs-blast-radius adjustment |
-| Status Badge ("Compromised Account") | 🟡 | Computed from anomaly types | Aggregate `ITSAlertProfileConfigurations` rule categories | 🤖✚ AI generates a one-line **verdict** ("Compromised", "Insider", "Misconfigured") from log evidence |
-| Active Anomalies — session / lifetime | ✅ | `ITSEntityRiskScoreDetails.DETECTION_COUNT` (session, decays via `DecayHandler`) + `OVERALL_DETECTION_COUNT` (true lifetime tally — incremented `+1` per anomaly in [`RiskScoreHandler.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/riskscore/handler/RiskScoreHandler.java#L42), never decays, never resets) | Raw DB | 🤖✚ AI compares lifetime count vs peer baseline → "top 5% of users" repeat-offender label |
-| Failed Logins (24h) | ✅ | Elasticsearch `eventid=4625` | Aggregated ES query on Windows Security logs | 🤖✚ AI clusters failures by source IP and labels each cluster (brute-force vs misconfig vs typo) |
-| Last Anomaly | ✅ | `ITSEntityRiskScoreDetails.LAST_ANOMALY_UPDATE_TIME` — running `Math.max()` on every event in [`RiskScoreHandler.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/riskscore/handler/RiskScoreHandler.java#L47). Long-term storage, not bounded by ES retention. | `now() - LAST_ANOMALY_UPDATE_TIME`, humanized | — |
-| ~~Dwell Time~~ — **REMOVED** | ❌ | No `FIRST_ANOMALY_TIME` column in `ITSEntityRiskScoreDetails`; the handler captures only the running max, not the min. ES `min(@timestamp)` is bounded by retention so silently truncates. Removed from the user summary card to avoid misleading numbers. To bring back: add `FIRST_ANOMALY_TIME BIGINT` to [`data-dictionary.xml`](../../../REPOS/itsf/product_package/conf/itsf/common/riskscore/data-dictionary.xml) and set it once on row insert in [`RiskScoreUtil.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/riskscore/util/RiskScoreUtil.java#L70). | — | — |
-| Hero chip — **Last Logon** | ✅ | `ADSUserDetails.lastLogonTime` (ADAP — real DB column, never retention-bounded for users). Renders as a single chip via `summaryCard.heroChips[]` in [entity-slider.js](js/modules/entity-slider.js) (generic hook — other entity types can fill `heroChips` with their own schema-honest fields). | LDAP-synced into RDBMS | — |
-| ~~First Seen / Last Activity~~ — **REMOVED from user hero** | ❌ | Was sourced from ES `min/max(_zl_timestamp)` filtered by entity. `MIN()` is silently truncated by log retention so it can't honestly answer *"when did the platform first observe this user"*. Replaced by the single **Last Logon** chip above. The renderer keeps the legacy `firstSeen` / `lastActivity` fields as a fallback so non-user entities (which haven't been re-reviewed yet) continue to render. | — | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Risk Score (0–100) | ✅ | `ITSEntityRiskScoreDetails.RISK_SCORE` (Log360) | `RiskScoreHandler` — computed `MODIFIED_SCORE × SEVERITY_SCORE`, cached in Redis |
+| Severity | ✅ | Stored as `ITSEntityRiskScoreDetails.SESSION_SEVERITY` (INTEGER bucket id). Human label resolved via lookup join `ITSRiskSeverityDetails.SEVERITY_NAME WHERE SEVERITY_ID = SESSION_SEVERITY` → `CRITICAL` / `ATTENTION` / `TROUBLE`. The join is a convention — there is **no FK declared** in [`data-dictionary.xml`](../../../REPOS/itsf/product_package/conf/itsf/common/riskscore/data-dictionary.xml). The bucket itself is selected per-event via `LIKE_LI_HOOD_SEVERITY` mapping in [`RiskScoreHandler.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/riskscore/handler/RiskScoreHandler.java#L33-L34) (NOT mapped from score thresholds). | Lookup join |
+| Status Badge ("Compromised Account") | 🟡 | Computed from anomaly types | Aggregate `ITSAlertProfileConfigurations` rule categories |
+| Active Anomalies — session / lifetime | ✅ | `ITSEntityRiskScoreDetails.DETECTION_COUNT` (session, decays via `DecayHandler`) + `OVERALL_DETECTION_COUNT` (true lifetime tally — incremented `+1` per anomaly in [`RiskScoreHandler.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/riskscore/handler/RiskScoreHandler.java#L42), never decays, never resets) | Raw DB |
+| Failed Logins (24h) | ✅ | Elasticsearch `eventid=4625` | Aggregated ES query on Windows Security logs |
+| Last Anomaly | ✅ | `ITSEntityRiskScoreDetails.LAST_ANOMALY_UPDATE_TIME` — running `Math.max()` on every event in [`RiskScoreHandler.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/riskscore/handler/RiskScoreHandler.java#L47). Long-term storage, not bounded by ES retention. | `now() - LAST_ANOMALY_UPDATE_TIME`, humanized |
+| ~~Dwell Time~~ — **REMOVED** | ❌ | No `FIRST_ANOMALY_TIME` column in `ITSEntityRiskScoreDetails`; the handler captures only the running max, not the min. ES `min(@timestamp)` is bounded by retention so silently truncates. Removed from the user summary card to avoid misleading numbers. To bring back: add `FIRST_ANOMALY_TIME BIGINT` to [`data-dictionary.xml`](../../../REPOS/itsf/product_package/conf/itsf/common/riskscore/data-dictionary.xml) and set it once on row insert in [`RiskScoreUtil.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/riskscore/util/RiskScoreUtil.java#L70). | — |
+| Hero chip — **Last Logon** | ✅ | `ADSUserDetails.lastLogonTime` (ADAP — real DB column, never retention-bounded for users). Renders as a single chip via `summaryCard.heroChips[]` in [entity-slider.js](js/modules/entity-slider.js) (generic hook — other entity types can fill `heroChips` with their own schema-honest fields). | LDAP-synced into RDBMS |
+| ~~First Seen / Last Activity~~ — **REMOVED from user hero** | ❌ | Was sourced from ES `min/max(_zl_timestamp)` filtered by entity. `MIN()` is silently truncated by log retention so it can't honestly answer *"when did the platform first observe this user"*. Replaced by the single **Last Logon** chip above. The renderer keeps the legacy `firstSeen` / `lastActivity` fields as a fallback so non-user entities (which haven't been re-reviewed yet) continue to render. | — |
 
 ### 1.2 User Details (`usersDetails`)
 
@@ -65,21 +65,21 @@ Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Ale
 > | AD discovery index (thin) | [`ELADomainUserDetails`](../../../REPOS/itsf/product_package/conf/itsf/common/LogCollection/discovery/data-dictionary.xml#L299) | OBJECT_GUID, OBJECT_SID, NAME, SAMACCOUNTNAME, USERPRINCIPALNAME, DISTINGUISHEDNAME, OBJECTROOT_DN, USERACCOUNTCONTROL, EMAIL_ID, DOMAIN_ID | Used by [`UserDetailsUtil.getUserObjectGUID()`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/incident/workbench/tab/util/UserDetailsUtil.java#L56) only to resolve `(domain, username) → OBJECT_GUID`. Not a full identity table — full attributes live in `APFDiscADUserDetails`. |
 > | Entra / M365 users | [`APFDiscAADUserDetails`](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/discovery/application/azure/data-dictionary.xml#L177) | OBJECT_ID, IDENTITY, FIRST_NAME, LAST_NAME, USER_PRINCIPAL_NAME, DISPLAY_NAME, EMAIL_ADDRESS, PHONE_NUMBER, MOBILE_PHONE, TITLE, DEPARTMENT, COMPANY, OFFICE, EMPLOYEE_ID, MANAGER, COUNTRY/CITY/STATE/STREET, ACCOUNT_ENABLED, USER_ACCOUNT_CONTROL, WHEN_CREATED, WHEN_MODIFIED, LAST_PWD_CHANGE_TIME, PASSWORD_EXPIRY_DATE, LAST_DIR_SYNC_TIME, O365_USER_TYPE, IS_LICENSED, GROUP_COUNT, LITIGATION_HOLD_ENABLED, AUDIT_ENABLED, SOFT_DELETION_TIMESTAMP | Cloud-side APF discovery for Entra. Used by [`UserDetailsUtil.getAADUserDetails()`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/incident/workbench/tab/util/UserDetailsUtil.java#L72). |
 
-| Field | Status | Cloud Source | How to Get | AI Enrichment |
-|-------|--------|--------------|------------|---------------|
-| Display Name | ✅ both | `APFDiscADUserDetails.DISPLAY_NAME` (AD) · `APFDiscAADUserDetails.DISPLAY_NAME` (Entra) | Direct read | — |
-| SAM Account Name | ✅ AD · ❌ Entra | `APFDiscADUserDetails.SAM_ACCOUNT_NAME` (AD only — Entra has no SAM concept) | Direct read | — |
-| UPN | ✅ both | `APFDiscADUserDetails.LOGON_NAME` (the AD `userPrincipalName` LDAP attr maps to LOGON_NAME column — see `APFADUserAttributes.xml` priority 6) · `APFDiscAADUserDetails.USER_PRINCIPAL_NAME` (Entra) | Direct read | — |
-| Email | ✅ both | `APFDiscADUserDetails.EMAIL_ADDRESS` (AD) · `APFDiscAADUserDetails.EMAIL_ADDRESS` (Entra) | Direct read. Entra also has `ALTERNATE_EMAIL_ADDRESS`. | — |
-| Job Title | ✅ both | `APFDiscADUserDetails.TITLE` (AD) · `APFDiscAADUserDetails.TITLE` (Entra) | Direct read | 🤖 Cross-reference with HRIS for verified org-chart |
-| Department | ✅ both | `APFDiscADUserDetails.DEPARTMENT` (AD) · `APFDiscAADUserDetails.DEPARTMENT` (Entra) | Direct read | 🤖 HRIS cross-ref |
-| Manager | ✅ both | `APFDiscADUserDetails.MANAGER` (display) + `MANAGER_DN` (full DN) for AD · `APFDiscAADUserDetails.MANAGER` (stores OBJECT_ID; resolved to UPN via [`getUserUPN()`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/incident/workbench/tab/util/UserDetailsUtil.java#L107)) for Entra | Direct read (AD) · two-step lookup (Entra) | 🤖 HRIS cross-ref |
-| Last Logon Time | ✅ both | `APFDiscADUserDetails.LAST_LOGON_TIME` + `LAST_LOGON_TIMESTAMP` + precomputed `DAYS_SINCE_LAST_LOGON` (AD) · for Entra: not on `APFDiscAADUserDetails` directly — must come from M365 SignInLogs `max(createdDateTime) WHERE userPrincipalName=:upn` | Direct read (AD) · ES side-call (Entra, retention-bounded) | — |
-| OU Name | ✅ AD · ❌ Entra | `APFDiscADUserDetails.OU_NAME` directly (also `OU_DN_NAME`, `OU_UNIQUE_ID`). Entra has no OU concept (administrative units instead — `APFDiscAADUserDetails.GROUP_COUNT` is the closest signal). | Direct read | — |
-| Account Created | ✅ both | `APFDiscADUserDetails.WHEN_CREATED` (AD) · `APFDiscAADUserDetails.WHEN_CREATED` + `DAYS_SINCE_CREATED` (Entra) | Direct read | — |
-| Account Status (with recommendation) | ✅ both (status) · 🤖 (recommendation) | Stored as pre-decoded BOOLEAN: `APFDiscADUserDetails.ACCOUNT_STATUS` — schema description is explicit: `0 → Disabled, 1 → Enabled`. The discovery handler resolves the `userAccountControl` disabled-bit during ingest (LDAP attr `uacAccountStatus`, [`APFADUserAttributes.xml` priority 18](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/applications/attributes/ad/APFADUserAttributes.xml#L18)) and writes the resolved boolean. Raw `USER_ACCOUNT_CONTROL` (BIGINT) is also retained for bits without their own column. Entra: `APFDiscAADUserDetails.ACCOUNT_ENABLED` (already a BOOLEAN per Graph API). The "Recommended: Disable" suffix is product-side business logic, not a stored column. | Direct read (BOOLEAN, no decoding needed) + AI for recommendation text | 🤖✚ AI generates the **recommendation text** ("Disable" / "Force password change") from current risk + attack chain |
-| Logon Workstation | 🟡 both | **Two different concepts under one label** — see [§1.2.1](#121-logon-workstation--two-concepts-one-label) below. (a) **Allowlist (policy)** = `APFDiscADUserDetails.LOGON_TO` — direct read of LDAP `userWorkstations`, the workstations the AD admin permits this account to log on from. Usually empty (= all). (b) **Actual last logon from** (what the card shows as `CORP-WS-045`) = NOT on the user table at all — only in Windows Security event logs, requires ES query: `eventid=4624 \| stats latest(WorkstationName) by TargetUserName`. | (a) Direct read of `LOGON_TO` · (b) ES side-call (retention-bounded, typically 30/60/90 days) | — |
-| Primary Group | ✅ AD (with join) · ❌ Entra | **One column + one join** — see [§1.2.2](#122-primary-group--one-column-one-join) below. `APFDiscADUserDetails` stores `PRIMARY_GROUP_ID` (the RID, e.g. `513`) and `PRIMARY_GROUP_GUID` (the group's OBJECT_GUID, manifest priority 100). Neither is the display name `"Domain Users"`. To resolve, join against [`APFDiscADGroupDetails`](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/discovery/application/ad/data-dictionary.xml) (same APF discovery, already in cloud schema) on `OBJECT_GUID = u.PRIMARY_GROUP_GUID`, return `GROUP_NAME`. Entra has no primary-group concept — `GROUP_COUNT` only; full membership lives in a separate APF group-membership table. | Direct read + 1 join | — |
+| Field | Status | Cloud Source | How to Get |
+|-------|--------|--------------|------------|
+| Display Name | ✅ both | `APFDiscADUserDetails.DISPLAY_NAME` (AD) · `APFDiscAADUserDetails.DISPLAY_NAME` (Entra) | Direct read |
+| SAM Account Name | ✅ AD · ❌ Entra | `APFDiscADUserDetails.SAM_ACCOUNT_NAME` (AD only — Entra has no SAM concept) | Direct read |
+| UPN | ✅ both | `APFDiscADUserDetails.LOGON_NAME` (the AD `userPrincipalName` LDAP attr maps to LOGON_NAME column — see `APFADUserAttributes.xml` priority 6) · `APFDiscAADUserDetails.USER_PRINCIPAL_NAME` (Entra) | Direct read |
+| Email | ✅ both | `APFDiscADUserDetails.EMAIL_ADDRESS` (AD) · `APFDiscAADUserDetails.EMAIL_ADDRESS` (Entra) | Direct read. Entra also has `ALTERNATE_EMAIL_ADDRESS`. |
+| Job Title | ✅ both | `APFDiscADUserDetails.TITLE` (AD) · `APFDiscAADUserDetails.TITLE` (Entra) | Direct read |
+| Department | ✅ both | `APFDiscADUserDetails.DEPARTMENT` (AD) · `APFDiscAADUserDetails.DEPARTMENT` (Entra) | Direct read |
+| Manager | ✅ both | `APFDiscADUserDetails.MANAGER` (display) + `MANAGER_DN` (full DN) for AD · `APFDiscAADUserDetails.MANAGER` (stores OBJECT_ID; resolved to UPN via [`getUserUPN()`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/incident/workbench/tab/util/UserDetailsUtil.java#L107)) for Entra | Direct read (AD) · two-step lookup (Entra) |
+| Last Logon Time | ✅ both | `APFDiscADUserDetails.LAST_LOGON_TIME` + `LAST_LOGON_TIMESTAMP` + precomputed `DAYS_SINCE_LAST_LOGON` (AD) · for Entra: not on `APFDiscAADUserDetails` directly — must come from M365 SignInLogs `max(createdDateTime) WHERE userPrincipalName=:upn` | Direct read (AD) · ES side-call (Entra, retention-bounded) |
+| OU Name | ✅ AD · ❌ Entra | `APFDiscADUserDetails.OU_NAME` directly (also `OU_DN_NAME`, `OU_UNIQUE_ID`). Entra has no OU concept (administrative units instead — `APFDiscAADUserDetails.GROUP_COUNT` is the closest signal). | Direct read |
+| Account Created | ✅ both | `APFDiscADUserDetails.WHEN_CREATED` (AD) · `APFDiscAADUserDetails.WHEN_CREATED` + `DAYS_SINCE_CREATED` (Entra) | Direct read |
+| Account Status (with recommendation) | ✅ both (status) · 🤖 (recommendation) | Stored as pre-decoded BOOLEAN: `APFDiscADUserDetails.ACCOUNT_STATUS` — schema description is explicit: `0 → Disabled, 1 → Enabled`. The discovery handler resolves the `userAccountControl` disabled-bit during ingest (LDAP attr `uacAccountStatus`, [`APFADUserAttributes.xml` priority 18](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/applications/attributes/ad/APFADUserAttributes.xml#L18)) and writes the resolved boolean. Raw `USER_ACCOUNT_CONTROL` (BIGINT) is also retained for bits without their own column. Entra: `APFDiscAADUserDetails.ACCOUNT_ENABLED` (already a BOOLEAN per Graph API). The "Recommended: Disable" suffix is product-side business logic, not a stored column. | Direct read (BOOLEAN, no decoding needed) + AI for recommendation text |
+| Logon Workstation | 🟡 both | **Two different concepts under one label** — see [§1.2.1](#121-logon-workstation--two-concepts-one-label) below. (a) **Allowlist (policy)** = `APFDiscADUserDetails.LOGON_TO` — direct read of LDAP `userWorkstations`, the workstations the AD admin permits this account to log on from. Usually empty (= all). (b) **Actual last logon from** (what the card shows as `CORP-WS-045`) = NOT on the user table at all — only in Windows Security event logs, requires ES query: `eventid=4624 \| stats latest(WorkstationName) by TargetUserName`. | (a) Direct read of `LOGON_TO` · (b) ES side-call (retention-bounded, typically 30/60/90 days) |
+| Primary Group | ✅ AD (with join) · ❌ Entra | **One column + one join** — see [§1.2.2](#122-primary-group--one-column-one-join) below. `APFDiscADUserDetails` stores `PRIMARY_GROUP_ID` (the RID, e.g. `513`) and `PRIMARY_GROUP_GUID` (the group's OBJECT_GUID, manifest priority 100). Neither is the display name `"Domain Users"`. To resolve, join against [`APFDiscADGroupDetails`](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/discovery/application/ad/data-dictionary.xml) (same APF discovery, already in cloud schema) on `OBJECT_GUID = u.PRIMARY_GROUP_GUID`, return `GROUP_NAME`. Entra has no primary-group concept — `GROUP_COUNT` only; full membership lives in a separate APF group-membership table. | Direct read + 1 join |
 
 > **Implication for the demo (corrected):** All 13 m.henderson User Details fields are now sourced from `APFDiscADUserDetails` directly with no two-table fallback needed for AD users. Only **two** caveats remain: (a) "Logon Workstation" on the card today shows `CORP-WS-045` which is "where m.henderson actually logged on from" — that's an ES side-call, **not** the `LOGON_TO` allowlist column. The doc should distinguish these. (b) For Entra-only tenants, **Last Logon Time** still requires an ES side-call into M365 SignInLogs (retention-bounded). For mixed tenants the slider should pick the path based on the discovered identity source.
 
@@ -154,132 +154,132 @@ WHERE  u.OBJECT_GUID = :userGuid;
 
 ### 1.3 Logon Activity (`logonActivity`) — Timeline
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Timestamp, Logon Type (2/3/10), Target Host, Source IP, Status | ✅ | EventID 4624 / 4625 in Elasticsearch | Standard auth-log parser | 🤖✚ AI labels each entry as "normal", "anomalous (geo)", "anomalous (time)", "credential-stuffing pattern" with rationale |
-| `dot` color (red/orange/green) | ✅ | Computed from UEBA peer-group baseline | UEBA scorer | 🤖✚ AI provides a **natural-language reason** for the color ("Red because Tor exit + off-hours + new device") |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Timestamp, Logon Type (2/3/10), Target Host, Source IP, Status | ✅ | EventID 4624 / 4625 in Elasticsearch | Standard auth-log parser |
+| `dot` color (red/orange/green) | ✅ | Computed from UEBA peer-group baseline | UEBA scorer |
 
 ### 1.4 Processes (`processes`) — Timeline (per user-launched processes)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Process Name, Parent Process | ✅ | Sysmon EventID 1 + EID 8 (CreateRemoteThread) | Sysmon collector → ES | 🤖 AI looks up binary hash on **VirusTotal**, classifies parent-child anomaly via MITRE T1059 catalog |
-| Action: Kill Process | ✅ | EDR API call (Defender/CrowdStrike/SentinelOne) | Existing remediation orchestrator | 🤖✚ AI pre-validates kill safety (e.g. avoid killing system-critical PIDs) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Process Name, Parent Process | ✅ | Sysmon EventID 1 + EID 8 (CreateRemoteThread) | Sysmon collector → ES |
+| Action: Kill Process | ✅ | EDR API call (Defender/CrowdStrike/SentinelOne) | Existing remediation orchestrator |
 
 ### 1.5 Service Triggered (`serviceTriggered`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Service Name, Display Name, Startup type, Host, Status, Severity | ✅ | EventID 7045 (service installed) + 4697 + EID 12/13 | Windows Service log parser | 🤖 AI matches service name against **LOLBAS** + known-malware catalogs (e.g. `WinUpdateSvc` masquerade) |
-| Action: Stop Service | ✅ | WMI/PowerShell remoting via existing AAP runner | — | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Service Name, Display Name, Startup type, Host, Status, Severity | ✅ | EventID 7045 (service installed) + 4697 + EID 12/13 | Windows Service log parser |
+| Action: Stop Service | ✅ | WMI/PowerShell remoting via existing AAP runner | — |
 
 ### 1.6 Recent Alerts (`recentAlerts`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Time, Alert label, Type tag, MITRE technique, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` + correlation engine output | Existing alert-profile API | 🤖✚ AI generates **alert-cluster summary** ("These 4 alerts form a kill-chain: Initial Access → Execution → Exfiltration") |
-| Linked graph node (`viewOnGraph`) | ✅ | Internal entity-id mapping | — | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Time, Alert label, Type tag, MITRE technique, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` + correlation engine output | Existing alert-profile API |
+| Linked graph node (`viewOnGraph`) | ✅ | Internal entity-id mapping | — |
 
 ### 1.7 Resource / File Access (`resourceFileAccess`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Host, File Name, Location, Change Type | ✅ | File-server auditing (ADAudit Plus File Server module) + SharePoint audit | Existing FS collector + Graph API | 🤖✚ AI classifies file sensitivity (PII/PCI/PHI) by filename + path heuristics; flags **uncommon access patterns** for the user's role |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Host, File Name, Location, Change Type | ✅ | File-server auditing (ADAudit Plus File Server module) + SharePoint audit | Existing FS collector + Graph API |
 
 ### 1.8 UEBA Risk Profile (`uebaProfile`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Risk Score / 100 + Severity | ✅ | UEBA scorer | Existing | — |
-| Anomalies Detected | ✅ | UEBA model output | Existing | 🤖✚ AI clusters anomalies into **TTP buckets** (Lateral, Persistence, Exfil) |
-| Account Type | ✅ | LDAP `adminCount` + group memberships | LDAP | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Risk Score / 100 + Severity | ✅ | UEBA scorer | Existing |
+| Anomalies Detected | ✅ | UEBA model output | Existing |
+| Account Type | ✅ | LDAP `adminCount` + group memberships | LDAP |
 
 ### 1.9 Login Statistics (7 days) (`loginStatistics`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Total / Successful / Failed | ✅ | ES agg over 4624/4625 | Existing | — |
-| Unique Source IPs | ✅ | ES `terms` agg | Existing | 🤖 AI enriches each IP with **geo + ASN + threat-feed reputation** in one call |
-| Off-Hours Logins | ✅ | ES filter on hour-of-day vs business window | Existing | 🤖✚ AI infers "business hours" from the **user's own historical baseline** instead of a global rule |
-| Unique Hosts | ✅ | ES `terms` agg on `Workstation` | Existing | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Total / Successful / Failed | ✅ | ES agg over 4624/4625 | Existing |
+| Unique Source IPs | ✅ | ES `terms` agg | Existing |
+| Off-Hours Logins | ✅ | ES filter on hour-of-day vs business window | Existing |
+| Unique Hosts | ✅ | ES `terms` agg on `Workstation` | Existing |
 
 ### 1.10 Cloud Identities & Assets (`cloudIdentities`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Azure AD UPN + Tenant + License (P1/P2/E5) | ✅ | M365 Manager Plus / Cloud Security Plus | Graph API `users/{id}` + `subscribedSkus` | — |
-| Azure Roles | ✅ | Graph API `directoryRoles` | Existing | 🤖✚ AI flags **dormant role assignments** (assigned but unused for N days) |
-| Conditional Access (count) | ✅ | Graph API `conditionalAccessPolicies` | Existing | 🤖✚ AI evaluates **policy-coverage gaps** for this user |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Azure AD UPN + Tenant + License (P1/P2/E5) | ✅ | M365 Manager Plus / Cloud Security Plus | Graph API `users/{id}` + `subscribedSkus` |
+| Azure Roles | ✅ | Graph API `directoryRoles` | Existing |
+| Conditional Access (count) | ✅ | Graph API `conditionalAccessPolicies` | Existing |
 
 ### 1.11 Identity Risk Assessment (`identityRisk`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Password Age (vs policy) | ✅ | LDAP `pwdLastSet` + domain pwd policy | ADAP | — |
-| Group Memberships | ✅ | LDAP `memberOf` | ADAP | 🤖✚ AI tags **toxic combinations** ("VPN-Users + SharePoint-Editors + WriteDACL on SVC_Backup = privilege chain") |
-| Privileged Groups + WriteDACL findings | 🟡 | ADAP risk-report module + ADMP Governance attack-path | Existing (Governance module) | 🤖✚ AI cross-walks with BloodHound-style attack paths |
-| Stale Account / Service Account flags | ✅ | LDAP attributes + heuristic | ADAP | — |
-| Last Password Change | ✅ | LDAP `pwdLastSet` | ADAP | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Password Age (vs policy) | ✅ | LDAP `pwdLastSet` + domain pwd policy | ADAP |
+| Group Memberships | ✅ | LDAP `memberOf` | ADAP |
+| Privileged Groups + WriteDACL findings | 🟡 | ADAP risk-report module + ADMP Governance attack-path | Existing (Governance module) |
+| Stale Account / Service Account flags | ✅ | LDAP attributes + heuristic | ADAP |
+| Last Password Change | ✅ | LDAP `pwdLastSet` | ADAP |
 
 ### 1.12 Network Activity (24h) (`networkActivity`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| DNS Query (Domain, Resolution, Source Host) | ✅ | Sysmon EventID 22 + DNS-server logs | Existing collector | 🤖 AI checks domain on **VirusTotal, urlscan.io, ThreatFox**; computes domain age via WHOIS |
-| Firewall Allow / Deny (Dst, Proto, Bytes, Duration) | ✅ | Firewall syslog (Fortinet/PA/Checkpoint) | Existing parsers | 🤖 AI maps Dst IP to ASN + hosting reputation |
-| Proxy log (URL, Method, UA) | ✅ | Proxy syslog | Existing | 🤖 AI flags suspicious **paste-site** / **anonymous-share** destinations |
-| VPN Connection (Src, Assigned, Proto, Duration) | ✅ | VPN gateway logs | Existing | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| DNS Query (Domain, Resolution, Source Host) | ✅ | Sysmon EventID 22 + DNS-server logs | Existing collector |
+| Firewall Allow / Deny (Dst, Proto, Bytes, Duration) | ✅ | Firewall syslog (Fortinet/PA/Checkpoint) | Existing parsers |
+| Proxy log (URL, Method, UA) | ✅ | Proxy syslog | Existing |
+| VPN Connection (Src, Assigned, Proto, Duration) | ✅ | VPN gateway logs | Existing |
 
 ### 1.13 Threat Intelligence Context (`threatIntelContext`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Primary IOC | 🟡 | Log360 Threat Analytics module | Internal IP/domain enrichment cache | 🤖 AI fetches **fresh** IOC reputation (VirusTotal, Webroot, AlienVault OTX) on-demand |
-| VirusTotal verdict | ❌ | Not in product | — | 🤖 **AI-only** — direct VT API call |
-| First Seen (Global) | ❌ | Not in product | — | 🤖 **AI-only** — VT/passive-DNS lookup |
-| MITRE Techniques | 🟡 | Per-alert-profile mapping | `ITSAlertProfileConfigurations.MITRE_TECHNIQUE_ID` | 🤖✚ AI walks the **alert chain** to predict next-likely-technique |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Primary IOC | 🟡 | Log360 Threat Analytics module | Internal IP/domain enrichment cache |
+| VirusTotal verdict | ❌ | Not in product | — |
+| First Seen (Global) | ❌ | Not in product | — |
+| MITRE Techniques | 🟡 | Per-alert-profile mapping | `ITSAlertProfileConfigurations.MITRE_TECHNIQUE_ID` |
 
 ### 1.14 DLP Incidents (`dlpIncidents`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Policy, Action, File, Destination | ✅ | DataSecurity Plus / Defender for Cloud Apps DLP | Existing connector | 🤖✚ AI **classifies file content sensitivity** (PII/PCI/PHI) when filename is ambiguous |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Policy, Action, File, Destination | ✅ | DataSecurity Plus / Defender for Cloud Apps DLP | Existing connector |
 
 ### 1.15 Account Lockouts (`accountLockouts`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| User, Locking DC, Source Computer, EventID | ✅ | EventID 4740 (account locked) | ADAP account-lockout analyzer | 🤖✚ AI suggests **likely root cause** (cached creds on phone, mapped drive, scheduled task) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| User, Locking DC, Source Computer, EventID | ✅ | EventID 4740 (account locked) | ADAP account-lockout analyzer |
 
 ### 1.16 Password Change / Reset History (`passwordHistory`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Operation, Caller, Target, Source, Result | ✅ | EventID 4723 (self) / 4724 (admin) — on-prem; Entra audit log — cloud | ADAP + M365MP | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation, Caller, Target, Source, Result | ✅ | EventID 4723 (self) / 4724 (admin) — on-prem; Entra audit log — cloud | ADAP + M365MP |
 
 ### 1.17 Group Membership Changes (`groupMembershipChanges`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Operation, Group, Caller, Source | ✅ | EventID 4732/4756 — on-prem; Entra audit — cloud | ADAP + M365MP | 🤖✚ AI flags **abnormal group additions** for this user's role band |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation, Group, Caller, Source | ✅ | EventID 4732/4756 — on-prem; Entra audit — cloud | ADAP + M365MP |
 
 ### 1.18 Mailbox Forwarding Rules (`mailboxForwarding`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Operation (New-InboxRule), Mailbox, Rule Name, ForwardTo, Creator IP | ✅ | Exchange Online audit log | M365 Manager Plus | 🤖✚ AI detects **classic exfil rule patterns** (forward-to-external + `_sync_` / `.` rule names) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation (New-InboxRule), Mailbox, Rule Name, ForwardTo, Creator IP | ✅ | Exchange Online audit log | M365 Manager Plus |
 
 ### 1.19 Recent Application Access (`recentAppAccess`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Application, Source IP, Risk Level, Result | ✅ | Entra ID Sign-in logs | M365MP | 🤖 AI looks up **app publisher reputation** + Microsoft App Governance score |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Application, Source IP, Risk Level, Result | ✅ | Entra ID Sign-in logs | M365MP |
 
 ### 1.20 Privileged Role Assignment Changes (`privilegedRoleChanges`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Empty-state when none | ✅ | Entra audit log | Existing | 🤖✚ AI generates an **empty-state explanation** ("No privileged-role assignments — risk vector: lateral via group, not role") |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Empty-state when none | ✅ | Entra audit log | Existing |
 
 ### 1.21 Compliance & Regulatory Impact (`complianceImpact`) — **REMOVED**
 
@@ -287,11 +287,11 @@ WHERE  u.OBJECT_GUID = :userGuid;
 
 ### 1.22 Recommendations & Remediation (`remediationGuide`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Verdict, Severity | 🟡 | Aggregated from rule output | — | 🤖✚ **AI-generated** — synthesized from all evidence |
-| Recommendations (icon, title, desc, priority) | ❌ | Not in product | — | 🤖✚ **AI-generated** — context-specific next steps with playbook links |
-| Playbooks (name, ID, desc, ETA, urgency) | 🟡 | SOAR connector / runbook catalog | Log360 Cloud Workflows | 🤖✚ AI **selects + ranks** playbooks based on alert composition; pre-fills variables |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Verdict, Severity | 🟡 | Aggregated from rule output | — |
+| Recommendations (icon, title, desc, priority) | ❌ | Not in product | — |
+| Playbooks (name, ID, desc, ETA, urgency) | 🟡 | SOAR connector / runbook catalog | Log360 Cloud Workflows |
 
 ---
 
@@ -304,70 +304,70 @@ Same field structure as User §1.1; `metrics` are device-specific ("Suspicious P
 
 ### 2.2 Device Details (`deviceDetails`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Hostname, FQDN, OS, OS Build | ✅ | AD computer object + Sysmon system info | ADAP + Sysmon EID 1 | — |
-| Domain, OU | ✅ | AD `distinguishedName` | ADAP | — |
-| Last Logon, Last Boot | ✅ | AD `lastLogonTimestamp` + Sysmon EID 6005 | Existing | — |
-| Owner / Primary User | ✅ | AD `managedBy` + heuristic on logon counts | ADAP | 🤖✚ AI infers primary user from logon-pattern when `managedBy` is empty |
-| Hardware (CPU, RAM, Disk) | 🟡 | Asset-management integration (SCCM/Intune) | Optional connector | 🤖 AI can correlate with **CMDB** if available |
-| BitLocker / Disk encryption | 🟡 | Intune compliance | Existing | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Hostname, FQDN, OS, OS Build | ✅ | AD computer object + Sysmon system info | ADAP + Sysmon EID 1 |
+| Domain, OU | ✅ | AD `distinguishedName` | ADAP |
+| Last Logon, Last Boot | ✅ | AD `lastLogonTimestamp` + Sysmon EID 6005 | Existing |
+| Owner / Primary User | ✅ | AD `managedBy` + heuristic on logon counts | ADAP |
+| Hardware (CPU, RAM, Disk) | 🟡 | Asset-management integration (SCCM/Intune) | Optional connector |
+| BitLocker / Disk encryption | 🟡 | Intune compliance | Existing |
 
 ### 2.3 Login Activity on Device (`loginActivity`)
 Same shape as User §1.3 but reverse-pivoted (who logged into this host). ✅ from EventID 4624 on the host.
 
 ### 2.4 Processes on Host (`processesOnHost`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Process name, PID, Start time, Cmdline | ✅ | Sysmon EID 1 | Existing | 🤖 AI hashes binary → VT lookup; flags LOLBin abuse |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Process name, PID, Start time, Cmdline | ✅ | Sysmon EID 1 | Existing |
 
 ### 2.5 Services on Host (`servicesOnHost`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Service Name, Display Name, Startup, User, Status | ✅ | EID 7045 + WMI snapshot | Existing | 🤖 AI matches against **service-masquerading** catalog |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Service Name, Display Name, Startup, User, Status | ✅ | EID 7045 + WMI snapshot | Existing |
 
 ### 2.6 Users Logged On (`usersLoggedOn`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Active sessions (user, type, since) | ✅ | `quser` / `LogonSessions.exe` collector + 4624/4634 pairing | Existing | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Active sessions (user, type, since) | ✅ | `quser` / `LogonSessions.exe` collector + 4624/4634 pairing | Existing |
 
 ### 2.7 Recent Alerts on Device (`recentAlerts`)
 Same shape as User §1.6.
 
 ### 2.8 Agent Status & Health (`agentStatus`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| EDR (Defender / CrowdStrike / SentinelOne) status, version, last check-in | ✅ | EDR API | Existing connectors | 🤖✚ AI flags **agent-tampering** (sudden uninstall, definition-update lag) |
-| Sysmon version, config hash | 🟡 | Sysmon registry key | Custom collector | — |
-| AV definitions date | ✅ | EDR API | Existing | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| EDR (Defender / CrowdStrike / SentinelOne) status, version, last check-in | ✅ | EDR API | Existing connectors |
+| Sysmon version, config hash | 🟡 | Sysmon registry key | Custom collector |
+| AV definitions date | ✅ | EDR API | Existing |
 
 ### 2.9 GPO Applied to Device (`gpoApplied`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| GPO name, link OU, version, applied at | ✅ | ADManager Plus GPO module | Existing | 🤖✚ AI flags **conflicting** policies (e.g. one enables RDP, another blocks NLA) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| GPO name, link OU, version, applied at | ✅ | ADManager Plus GPO module | Existing |
 
 ### 2.10 Security Event Summary (24h Counters) (`securityEventSummary`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Per-EventID counts (4624, 4625, 4672, 4688, 7045, …) | ✅ | ES `date_histogram` + `terms` agg | Existing | 🤖✚ AI surfaces **anomalous deltas** vs the host's own baseline |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Per-EventID counts (4624, 4625, 4672, 4688, 7045, …) | ✅ | ES `date_histogram` + `terms` agg | Existing |
 
 ### 2.11 USB Device Events (`usbDeviceEvents`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Time, Vendor/Product, Serial, Action (insert/remove), Bytes copied | ✅ | EventID 6416/4663 + DataSecurity Plus | Existing | 🤖 AI classifies device type (mass-storage vs HID-injector / Rubber Ducky) by VID/PID |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Time, Vendor/Product, Serial, Action (insert/remove), Bytes copied | ✅ | EventID 6416/4663 + DataSecurity Plus | Existing |
 
 ### 2.12 Scheduled Task Events (`scheduledTasks`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Task Name, Action, Trigger, Author, Result | ✅ | EventID 4698/4699/4700/4701/4702 | Existing | 🤖✚ AI matches against **persistence-via-scheduled-task** patterns (T1053.005) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Task Name, Action, Trigger, Author, Result | ✅ | EventID 4698/4699/4700/4701/4702 | Existing |
 
 ---
 
@@ -377,72 +377,72 @@ Tabs: **Overview · Threat Intel · Connections · Logon Activity**
 
 ### 3.1 Risk Summary (`riskSummary`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| "Tor Exit Node: Confirmed" | 🟡 | Log360 Threat Analytics + Tor consensus list | Internal TI cache | 🤖 AI re-checks against **live** Tor consensus; identifies **bridge** vs **exit** vs **guard** |
-| Threat Feeds Flagged (5) | ✅ | Threat Analytics aggregator | Existing | 🤖 AI lists **which** feeds and the verdict from each |
-| Active Connections | ✅ | ES agg over firewall/IDS | Existing | — |
-| VirusTotal Detections (12/89) | ❌ | Not in product | — | 🤖 **AI-only** — VT API |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| "Tor Exit Node: Confirmed" | 🟡 | Log360 Threat Analytics + Tor consensus list | Internal TI cache |
+| Threat Feeds Flagged (5) | ✅ | Threat Analytics aggregator | Existing |
+| Active Connections | ✅ | ES agg over firewall/IDS | Existing |
+| VirusTotal Detections (12/89) | ❌ | Not in product | — |
 
 ### 3.2 IP Details (`ipDetails`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| IP, Version, Type (Tor/Public/Private/VPN) | 🟡 | Threat Analytics + RFC1918 check | Existing + heuristic | 🤖 AI enriches with **ASN, hosting provider, ISP** (MaxMind / IPinfo) |
-| Reverse DNS (PTR) | 🟡 | DNS server logs / live `dig` | Existing or live | 🤖 Live DNS query if not cached |
-| Country, City | ✅ | MaxMind GeoIP (bundled) | Existing | 🤖 AI cross-checks against **historical user geo** |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| IP, Version, Type (Tor/Public/Private/VPN) | 🟡 | Threat Analytics + RFC1918 check | Existing + heuristic |
+| Reverse DNS (PTR) | 🟡 | DNS server logs / live `dig` | Existing or live |
+| Country, City | ✅ | MaxMind GeoIP (bundled) | Existing |
 
 ### 3.3 Geo Context (`geoContext`)
 Same fields as §3.2 country/city + ASN. Map widget feeds from MaxMind. ✅.
 
 ### 3.4 Threat Intelligence (`threatIntelligence`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Detection counts per vendor | 🟡 | Internal TI aggregator (Webroot, Anomali, OTX) | Existing | 🤖 **VirusTotal, GreyNoise, Censys, Shodan** for additional verdicts |
-| Feed name, Category, Confidence, Last Updated | ✅ | Threat Analytics module | Existing | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Detection counts per vendor | 🟡 | Internal TI aggregator (Webroot, Anomali, OTX) | Existing |
+| Feed name, Category, Confidence, Last Updated | ✅ | Threat Analytics module | Existing |
 
 ### 3.5 Connection History (`connectionHistory`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Direction, Source/Dest IP, Port, Bytes, Duration, Action, Device | ✅ | Firewall syslog (PA, Fortinet, Checkpoint, Cisco ASA) | Existing parsers | 🤖✚ AI clusters connections into **sessions/flows** and labels each flow ("C2 beacon", "data exfil chunk") |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Direction, Source/Dest IP, Port, Bytes, Duration, Action, Device | ✅ | Firewall syslog (PA, Fortinet, Checkpoint, Cisco ASA) | Existing parsers |
 
 ### 3.6 Firewall Action Summary (`firewallSummary`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Allow / Deny / Drop counts (24h) | ✅ | ES agg on firewall logs | Existing | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Allow / Deny / Drop counts (24h) | ✅ | ES agg on firewall logs | Existing |
 
 ### 3.7 DNS Query History (`dnsHistory`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Domain, Record Type, Resolution, Querying Process, Source (Sysmon EID 22) | ✅ | Sysmon EID 22 + DNS server logs | Existing | 🤖 AI computes **DGA score** for each domain (`c2-update.darkoperator.net` → low DGA score; `xkj92qnda.com` → high) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Domain, Record Type, Resolution, Querying Process, Source (Sysmon EID 22) | ✅ | Sysmon EID 22 + DNS server logs | Existing |
 
 ### 3.8 IDS/IPS Alerts (`idsAlerts`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Signature, Threat ID, Severity, Action, Source device | ✅ | Snort/Suricata/PaloAlto Threat Prevention syslog | Existing | 🤖 AI maps signature ID → **MITRE technique + ATT&CK procedure example** |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Signature, Threat ID, Severity, Action, Source device | ✅ | Snort/Suricata/PaloAlto Threat Prevention syslog | Existing |
 
 ### 3.9 Associated Users / Devices (`associatedUsers`, `associatedDevices`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Pivot from IP → all users/devices that authenticated from / connected to this IP | ✅ | ES `terms` agg on auth logs filtered by IP | Existing | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Pivot from IP → all users/devices that authenticated from / connected to this IP | ✅ | ES `terms` agg on auth logs filtered by IP | Existing |
 
 ### 3.10 VPN Sessions (`vpnSessions`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| User, Assigned IP, Tunnel type, Duration | ✅ | VPN gateway syslog | Existing | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| User, Assigned IP, Tunnel type, Duration | ✅ | VPN gateway syslog | Existing |
 
 ### 3.11 Traffic Summary (`trafficSummary`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Total bytes in/out, Top protocols, Top destinations | ✅ | ES agg | Existing | 🤖✚ AI compares to **expected baseline** for this IP-class |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Total bytes in/out, Top protocols, Top destinations | ✅ | ES agg | Existing |
 
 ---
 
@@ -450,14 +450,14 @@ Same fields as §3.2 country/city + ASN. Map widget feeds from MaxMind. ✅.
 
 Tabs: same as IP (Overview · Threat Intel · Connections · Logon Activity).
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Domain, Record Type, Resolved IPs | ✅ | DNS logs + Sysmon EID 22 | Existing | 🤖 **WHOIS** (registrar, registered date, expiry, registrant); **passive DNS** (other historical resolutions) |
-| Threat Intel verdict | 🟡 | Internal TI aggregator | Existing | 🤖 **VirusTotal, urlscan.io, ThreatFox, AlienVault OTX** |
-| Domain age | ❌ | Not in product | — | 🤖 **AI-only** — WHOIS computation |
-| Hosting / certificate (TLS issuer, validity) | 🟡 | Network sensor TLS metadata if Zeek/NDR present | Optional | 🤖 Live `openssl s_client` style fetch |
-| Associated processes (which exe queried this domain) | ✅ | Sysmon EID 22 | Existing | — |
-| Connection history (same as §3.5) | ✅ | Firewall + Zeek | Existing | 🤖✚ AI labels **C2-beaconing pattern** (fixed interval + jitter detection) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Domain, Record Type, Resolved IPs | ✅ | DNS logs + Sysmon EID 22 | Existing |
+| Threat Intel verdict | 🟡 | Internal TI aggregator | Existing |
+| Domain age | ❌ | Not in product | — |
+| Hosting / certificate (TLS issuer, validity) | 🟡 | Network sensor TLS metadata if Zeek/NDR present | Optional |
+| Associated processes (which exe queried this domain) | ✅ | Sysmon EID 22 | Existing |
+| Connection history (same as §3.5) | ✅ | Firewall + Zeek | Existing |
 
 ---
 
@@ -467,46 +467,46 @@ Tabs: **Overview · Config & Policy · Activity · Alerts & Response**
 
 ### 5.1 Service Details (`serviceDetails` / `serviceInfo`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Service / Tenant / Workload name | ✅ | M365 Manager Plus tenant config | Existing | — |
-| Service Type (IDP, SaaS, Storage, OS-service) | ✅ | Internal classification | Existing | 🤖✚ AI auto-classifies new/unknown services from telemetry |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Service / Tenant / Workload name | ✅ | M365 Manager Plus tenant config | Existing |
+| Service Type (IDP, SaaS, Storage, OS-service) | ✅ | Internal classification | Existing |
 
 ### 5.2 OAuth App Consent Grants (`oauthConsentGrants`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Operation, App, Consenting User, Permissions, Source IP, Admin Consent | ✅ | Entra ID audit log (`Consent to application`) | M365MP | 🤖 AI looks up app's **Microsoft App Governance score**, publisher verification, install-base, and known-bad app catalog |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation, App, Consenting User, Permissions, Source IP, Admin Consent | ✅ | Entra ID audit log (`Consent to application`) | M365MP |
 
 ### 5.3 Admin Activity on Service (`adminActivity`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Operation, Target, Caller, Workload, Source IP | ✅ | Unified Audit Log (Entra/Exchange/SharePoint) | M365MP | 🤖✚ AI flags **admin actions taken from a compromised session** by joining to active alerts |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation, Target, Caller, Workload, Source IP | ✅ | Unified Audit Log (Entra/Exchange/SharePoint) | M365MP |
 
 ### 5.4 Conditional Access Policies (`conditionalAccess`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| State (Enabled/Report-Only/Disabled), Scope, Conditions, Grant, Exclusions, Last Modified | ✅ | Graph API `conditionalAccessPolicies` | M365MP | 🤖✚ AI runs **policy what-if** ("If this Report-Only policy were Enabled, would it have blocked this attack?") |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| State (Enabled/Report-Only/Disabled), Scope, Conditions, Grant, Exclusions, Last Modified | ✅ | Graph API `conditionalAccessPolicies` | M365MP |
 
 ### 5.5 Sign-In Audit (`signInAudit`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| User, IP, Location, App, MFA result, Risk, Result | ✅ | Entra ID Sign-in logs | M365MP | 🤖 AI explains MFA result ("Satisfied via stale token" → likely **token replay**) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| User, IP, Location, App, MFA result, Risk, Result | ✅ | Entra ID Sign-in logs | M365MP |
 
 ### 5.6 DLP Policies (`dlpPolicies`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Policy name, Scope, Action, Last triggered | ✅ | Defender for Cloud Apps DLP / Purview | Existing connector | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Policy name, Scope, Action, Last triggered | ✅ | Defender for Cloud Apps DLP / Purview | Existing connector |
 
 ### 5.7 File Access Anomaly / Sensitive Files (`fileAccessAnomaly`, `sensitiveFiles`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| File, User, Operation, Sensitivity tag | ✅ | SharePoint audit + Purview labels | M365MP | 🤖✚ AI **infers sensitivity** when no Purview label exists, using filename + path heuristics + content-classifier (if data-access permitted) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| File, User, Operation, Sensitivity tag | ✅ | SharePoint audit + Purview labels | M365MP |
 
 ### 5.8 Service Timeline / Network Connections / File Drops / WMI / Processes (when service is OS-resident)
 
@@ -524,63 +524,63 @@ Tabs: **Overview · Anomalies · Activity**
 
 ### 6.1 Risk Summary (`riskSummary`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| AMSI Detections (count), C2 Connection (Active), Payload (filename), Encoded Commands, Obfuscation type, Child processes | ✅ | Sysmon (EID 1, 3, 11), AMSI provider events (EID 4104) | Existing | 🤖✚ AI **deobfuscates** Base64/IEX content and produces a plain-English summary of what the script does |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| AMSI Detections (count), C2 Connection (Active), Payload (filename), Encoded Commands, Obfuscation type, Child processes | ✅ | Sysmon (EID 1, 3, 11), AMSI provider events (EID 4104) | Existing |
 
 ### 6.2 Process Details (`processDetails`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Process Name, PID, Parent, Cmdline, User, Integrity, Start, Status, Signature (publisher, validity), Session ID, Threads, Handles | ✅ | Sysmon EID 1 + EID 8 | Existing | 🤖 AI looks up file hash on VT; flags **signed-binary abuse** (e.g. signed `regsvr32.exe` running malicious script) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Process Name, PID, Parent, Cmdline, User, Integrity, Start, Status, Signature (publisher, validity), Session ID, Threads, Handles | ✅ | Sysmon EID 1 + EID 8 | Existing |
 
 ### 6.3 Process Tree (`processTree`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Level (Grandparent/Parent/Current/Child), User, Started, Cmdline, Status, Notes | ✅ | Sysmon EID 1 chain | Existing | 🤖✚ AI labels **suspicious chains** ("explorer → powershell → certutil → cmd /c whoami" matches **HAFNIUM-style hands-on-keyboard pattern**) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Level (Grandparent/Parent/Current/Child), User, Started, Cmdline, Status, Notes | ✅ | Sysmon EID 1 chain | Existing |
 
 ### 6.4 Child Processes (`childProcesses`)
 Same as §6.3 but filtered to direct children. ✅.
 
 ### 6.5 AMSI Events (`amsiEvents`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Detection (Suspicious/Malicious), Content Preview, Scan Result, Action, Script Block ID | ✅ | EventID 4104 (PowerShell ScriptBlock) + AMSI provider | Existing | 🤖✚ AI **explains the script block** in plain English; classifies into MITRE technique |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Detection (Suspicious/Malicious), Content Preview, Scan Result, Action, Script Block ID | ✅ | EventID 4104 (PowerShell ScriptBlock) + AMSI provider | Existing |
 
 ### 6.6 Token Anomaly / Token Usage (`tokenAnomaly`, `tokenUsage`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| SeDebugPrivilege, SeImpersonate, NewToken events | ✅ | EventID 4672 + Sysmon EID 8 (CreateRemoteThread) | Existing | 🤖✚ AI maps to **specific exploit primitive** (Token impersonation → T1134.001) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| SeDebugPrivilege, SeImpersonate, NewToken events | ✅ | EventID 4672 + Sysmon EID 8 (CreateRemoteThread) | Existing |
 
 ### 6.7 Registry Modifications (`registryModifications`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Key, Operation (Set/Delete), Old/New Value | ✅ | Sysmon EID 12/13/14 | Existing | 🤖 AI matches against **known persistence keys** (Run, RunOnce, Image File Execution Options, AppInit_DLLs) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Key, Operation (Set/Delete), Old/New Value | ✅ | Sysmon EID 12/13/14 | Existing |
 
 ### 6.8 Named Pipes (`namedPipes`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Pipe Name, Operation (Create/Connect), Process | ✅ | Sysmon EID 17/18 | Existing | 🤖 AI matches against **Cobalt Strike named-pipe patterns** (`\\.\pipe\msagent_*`, `\\.\pipe\status_*`) |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Pipe Name, Operation (Create/Connect), Process | ✅ | Sysmon EID 17/18 | Existing |
 
 ### 6.9 Network Activity (`networkActivity`)
 Same as §1.12, scoped to the process. ✅ from Sysmon EID 3.
 
 ### 6.10 File Operations (`fileOperations`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Operation (Create/Modify/Delete), Path, Hash | ✅ | Sysmon EID 11 + ADAP File Server | Existing | 🤖 AI hashes new files → VT |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation (Create/Modify/Delete), Path, Hash | ✅ | Sysmon EID 11 + ADAP File Server | Existing |
 
 ### 6.11 DLL Loads (`dllLoads`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| DLL Name, Path, Signed?, Loaded at | ✅ | Sysmon EID 7 | Existing (if EID 7 enabled — high-volume) | 🤖 AI flags **unsigned / unusual-path DLL injection** patterns |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| DLL Name, Path, Signed?, Loaded at | ✅ | Sysmon EID 7 | Existing (if EID 7 enabled — high-volume) |
 
 ### 6.12 Process DNS Queries (`processDnsQueries`)
 Same as §1.12 DNS row, scoped to the process. ✅ from Sysmon EID 22.
@@ -593,27 +593,27 @@ Tabs: **Overview · Scope · Response**
 
 ### 7.1 Alert Details (`alertDetails`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Alert ID, Name, Severity, MITRE Tactic+Technique, Detection Type, First Triggered, Last Updated, Source Service, Status | ✅ | `ITSAlertProfileConfigurations` + correlation engine result | Existing | 🤖✚ AI generates a **one-paragraph summary** of what triggered this alert and why |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Alert ID, Name, Severity, MITRE Tactic+Technique, Detection Type, First Triggered, Last Updated, Source Service, Status | ✅ | `ITSAlertProfileConfigurations` + correlation engine result | Existing |
 
 ### 7.2 Trigger Conditions (`triggerConditions`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Rule Name, Rule Type (Correlation/UEBA/Threat-Intel), Conditions, Threshold, Window | ✅ | Rule-engine config (`CorrelationRules` / UEBA model metadata) | Existing | 🤖✚ AI rewrites the rule in **natural language** for non-experts |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Rule Name, Rule Type (Correlation/UEBA/Threat-Intel), Conditions, Threshold, Window | ✅ | Rule-engine config (`CorrelationRules` / UEBA model metadata) | Existing |
 
 ### 7.3 Affected Entities (`affectedEntities`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| KV map of `{entity-id: role}` (Source, Target, Indicator, …) | ✅ | Alert-instance entity links | Existing | 🤖✚ AI infers **missing roles** when alert doesn't tag them explicitly |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| KV map of `{entity-id: role}` (Source, Target, Indicator, …) | ✅ | Alert-instance entity links | Existing |
 
 ### 7.4 Correlated Alerts (`correlatedAlerts`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Alert name, Source, Severity, MITRE | ✅ | Alert-correlation graph (existing) | Existing | 🤖✚ AI **clusters into a kill-chain narrative** ordered by MITRE tactic |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Alert name, Source, Severity, MITRE | ✅ | Alert-correlation graph (existing) | Existing |
 
 ### 7.5 Service Triggered / Recent Alerts
 Same as §1.5 / §1.6 but scoped to this alert's response actions.
@@ -637,104 +637,104 @@ Same as §1.22 — primarily 🤖✚ AI-generated.
 
 ### 8.1 Flow Diagram (Source → Relation → Target)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Source/Target Entity Icon | ✅ | `ENTITY_DISPLAY[id].icon` ([display-config.js](js/data/display-config.js)) | Lookup from graph node data | — |
-| Source/Target Entity Name | ✅ | Node ID → `fmtName()` | Strips `user-`/`ip-`/`dev-`/`svc-`/`alert-`/`proc-`/`domain-` prefix and hyphens | — |
-| Relation Label | ✅ | `EDGE_ATTRIBUTES[key].relation` (canonical via `canonicalRelation()`) | Stored per edge | 🤖✚ AI re-labels free-text legacy edges into canonical taxonomy |
-| Relation Color / Icon | ✅ | `REL_GUIDE[relation].color` / `.icon` | 24 canonical relations across 7 categories | — |
-| Source/Target clickable | ✅ | `openEntitySlider(id)` | Same handler as graph node click | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Source/Target Entity Icon | ✅ | `ENTITY_DISPLAY[id].icon` ([display-config.js](js/data/display-config.js)) | Lookup from graph node data |
+| Source/Target Entity Name | ✅ | Node ID → `fmtName()` | Strips `user-`/`ip-`/`dev-`/`svc-`/`alert-`/`proc-`/`domain-` prefix and hyphens |
+| Relation Label | ✅ | `EDGE_ATTRIBUTES[key].relation` (canonical via `canonicalRelation()`) | Stored per edge |
+| Relation Color / Icon | ✅ | `REL_GUIDE[relation].color` / `.icon` | 24 canonical relations across 7 categories |
+| Source/Target clickable | ✅ | `openEntitySlider(id)` | Same handler as graph node click |
 
 ### 8.2 Relation Description (`REL_GUIDE`)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Description text (1–2 sentences explaining the relation type) | ✅ | `REL_GUIDE[key].desc` | Static catalog (24 entries) | 🤖✚ AI rewrites the description to be **incident-specific** ("In this case, AccessedFile means 24 sensitive files were downloaded in 8 min…") |
-| Category badge (Detection / Identity / Privilege / Data Movement / Network / Process / Email / System Change) | ✅ | `REL_GUIDE[key].category` | Static catalog | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Description text (1–2 sentences explaining the relation type) | ✅ | `REL_GUIDE[key].desc` | Static catalog (24 entries) |
+| Category badge (Detection / Identity / Privilege / Data Movement / Network / Process / Email / System Change) | ✅ | `REL_GUIDE[key].category` | Static catalog |
 
 ### 8.3 MITRE ATT&CK Mapping
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Tactic Name + ID (e.g. `Initial Access` / `TA0001`) | ✅ | `ITSDetectionRuleVsMitre.TACTIC` / `.TACTIC_ID` | Mapped from triggering detection rule | 🤖✚ AI predicts **next-likely tactic** in the kill chain based on this edge + adjacent edges |
-| Technique Name + ID (e.g. `Valid Accounts` / `T1078`) | ✅ | `ITSDetectionRuleVsMitre.TECHNIQUE_NAME` / `.TECHNIQUE_ID` | Same as above | 🤖 AI fetches the **ATT&CK procedure examples** for this technique to show real-world attacker usage |
-| Sub-technique (e.g. `T1078.004`) | 🟡 | When mapped per-rule | Same source, sub-technique field | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Tactic Name + ID (e.g. `Initial Access` / `TA0001`) | ✅ | `ITSDetectionRuleVsMitre.TACTIC` / `.TACTIC_ID` | Mapped from triggering detection rule |
+| Technique Name + ID (e.g. `Valid Accounts` / `T1078`) | ✅ | `ITSDetectionRuleVsMitre.TECHNIQUE_NAME` / `.TECHNIQUE_ID` | Same as above |
+| Sub-technique (e.g. `T1078.004`) | 🟡 | When mapped per-rule | Same source, sub-technique field |
 
 > **Conditional**: Only RULE-type alert edges have native MITRE. Correlation/UEBA edges may not — AI can fill gaps by classifying the raw evidence against ATT&CK.
 
 ### 8.4 Detection Rule
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Rule Name (e.g. `Impossible Travel Detection`) | ✅ | `ITSAlertProfileConfigurations.DISPLAY_NAME` | DB lookup by alert ID | 🤖✚ AI explains the rule in **plain English** |
-| Rule Type (`Correlation` / `Anomaly (UEBA)` / `Threat Intel`) | ✅ | `ITSAlertProfileConfigurations.ALERT_TYPE` | Same | — |
-| Rule ID (e.g. `CR-0042`) | ✅ | `ITSAlertProfileConfigurations.ALERT_PROFILE_ID` | Internal ID | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Rule Name (e.g. `Impossible Travel Detection`) | ✅ | `ITSAlertProfileConfigurations.DISPLAY_NAME` | DB lookup by alert ID |
+| Rule Type (`Correlation` / `Anomaly (UEBA)` / `Threat Intel`) | ✅ | `ITSAlertProfileConfigurations.ALERT_TYPE` | Same |
+| Rule ID (e.g. `CR-0042`) | ✅ | `ITSAlertProfileConfigurations.ALERT_PROFILE_ID` | Internal ID |
 
 ### 8.5 Connection Properties
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Event Count (`count`) | ✅ | `ZLogs COUNT(*)` between source→target in time window | ES range query | 🤖✚ AI compares to **peer-pair baseline** and flags `47 events vs typical 0` |
-| Risk Score (0–100) | ✅ | `ITSEntityRiskScoreDetails.RISK_SCORE` (combined source+target) | Existing scorer | 🤖✚ AI re-ranks considering **path criticality** (edge sits on the kill-chain backbone vs noise) |
-| Risk Bar (color: green/yellow/orange/red) | ✅ | Computed client-side from risk | Threshold mapping | — |
-| Data Volume (e.g. `4.2 MB`) | 🟡 | `ZLogs SUM(BYTES_SENT + BYTES_RECEIVED)` | Available for FW/proxy/DLP logs only | 🤖✚ AI **estimates** when bytes aren't logged (e.g. infer from `24 files × avg size`) |
-| First Seen / Last Seen | ✅ | `ZLogs MIN/MAX(_zl_timestamp)` | ES min/max agg | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Event Count (`count`) | ✅ | `ZLogs COUNT(*)` between source→target in time window | ES range query |
+| Risk Score (0–100) | ✅ | `ITSEntityRiskScoreDetails.RISK_SCORE` (combined source+target) | Existing scorer |
+| Risk Bar (color: green/yellow/orange/red) | ✅ | Computed client-side from risk | Threshold mapping |
+| Data Volume (e.g. `4.2 MB`) | 🟡 | `ZLogs SUM(BYTES_SENT + BYTES_RECEIVED)` | Available for FW/proxy/DLP logs only |
+| First Seen / Last Seen | ✅ | `ZLogs MIN/MAX(_zl_timestamp)` | ES min/max agg |
 
 ### 8.6 Event Distribution (Sparkline, 12 buckets)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| 12-bucket sparkline (`sparkline:[…]`) | ✅ | `ZLogs COUNT(*) GROUP BY time_bucket` | 1-hour window / 12 × 5-min buckets | 🤖✚ AI labels the **shape** ("steady beacon", "burst-then-quiet", "ramp-up") |
-| Total Events | ✅ | `SUM(buckets)` | Client-side | — |
-| Time-axis labels | ✅ | Computed from `lastSeen − N×5min` | Client-side | — |
-| Average line | ✅ | `total / 12` | Client-side | — |
-| Peak marker | ✅ | `MAX(buckets)` | Client-side | 🤖✚ AI explains the peak in context ("15:30 spike correlates with the OAuth consent event") |
-| Hover tooltip (per-bucket count) | ✅ | Same data | Client-side | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| 12-bucket sparkline (`sparkline:[…]`) | ✅ | `ZLogs COUNT(*) GROUP BY time_bucket` | 1-hour window / 12 × 5-min buckets |
+| Total Events | ✅ | `SUM(buckets)` | Client-side |
+| Time-axis labels | ✅ | Computed from `lastSeen − N×5min` | Client-side |
+| Average line | ✅ | `total / 12` | Client-side |
+| Peak marker | ✅ | `MAX(buckets)` | Client-side |
+| Hover tooltip (per-bucket count) | ✅ | Same data | Client-side |
 
 > **Backend API needed**: One endpoint `(source, target, relation, time_range)` → `{count, buckets[]}`. No new infra — existing ZLogs aggregation.
 
 ### 8.7 Behavioral Baseline (UEBA)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Expected (learned baseline) | ✅ | `DashBoardAnomalyDataProvider` (UEBA) | 30/90-day rolling-window model | 🤖✚ AI provides **baseline rationale** ("Expected 0–1/day because user has no prior connections to Tor") |
-| Actual (observed in window) | ✅ | Same as event count | ES query | — |
-| Deviation (`actual / expected`) | ✅ | Computed | Client-side | — |
-| Severity classification (Normal ≤ 1.3×, Warning 1.3–2×, Danger > 2×, **First Occurrence**) | ✅ | `AnomalyDetectionDataImpl` thresholds | Existing | 🤖✚ AI rewrites the severity into a **risk-grade narrative** instead of just a multiplier |
-| Visual dual bars (Expected vs Actual) | ✅ | Client-side | Same data | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Expected (learned baseline) | ✅ | `DashBoardAnomalyDataProvider` (UEBA) | 30/90-day rolling-window model |
+| Actual (observed in window) | ✅ | Same as event count | ES query |
+| Deviation (`actual / expected`) | ✅ | Computed | Client-side |
+| Severity classification (Normal ≤ 1.3×, Warning 1.3–2×, Danger > 2×, **First Occurrence**) | ✅ | `AnomalyDetectionDataImpl` thresholds | Existing |
+| Visual dual bars (Expected vs Actual) | ✅ | Client-side | Same data |
 
 ### 8.8 Threat Intelligence (conditional, when edge involves an external IOC)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Vendor (`Webroot`, `Anomali`, `OTX`, etc.) | ✅ | `ThreatAnalyticsIntermediateProcessor` | Internal TI aggregator | 🤖 Live fan-out to **VirusTotal, GreyNoise, urlscan, ThreatFox, Censys, Shodan** for fresh reputation |
-| Reputation Score (1=Critical / 2=Malicious / 3=Suspicious) | ✅ | `ES THREAT_REPUTATION` | Existing | — |
-| Label (Critical / Malicious / Suspicious) | ✅ | Derived from score | Client-side | — |
-| VirusTotal Detection (`62/94`) | ❌ | Not in product | — | 🤖 **AI-only** — direct VT API call |
-| Domain Age (WHOIS) | ❌ | Not in product | — | 🤖 **AI-only** — WHOIS lookup |
-| Passive DNS (other historical resolutions) | 🟡 | Internal cache (limited) | Existing partial | 🤖 PassiveTotal / VT passive DNS for full history |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Vendor (`Webroot`, `Anomali`, `OTX`, etc.) | ✅ | `ThreatAnalyticsIntermediateProcessor` | Internal TI aggregator |
+| Reputation Score (1=Critical / 2=Malicious / 3=Suspicious) | ✅ | `ES THREAT_REPUTATION` | Existing |
+| Label (Critical / Malicious / Suspicious) | ✅ | Derived from score | Client-side |
+| VirusTotal Detection (`62/94`) | ❌ | Not in product | — |
+| Domain Age (WHOIS) | ❌ | Not in product | — |
+| Passive DNS (other historical resolutions) | 🟡 | Internal cache (limited) | Existing partial |
 
 ### 8.9 Geo Context (conditional, when edge involves an external IP)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Country flag + name | ✅ | MaxMind GeoIP → emoji map | Bundled DB | 🤖 AI cross-checks against **user's historical geo** for impossible-travel context |
-| City | 🟡 | MaxMind GeoLite2-City | City accuracy varies | — |
-| ASN / ISP / Hosting Provider | 🟡 | Optional MaxMind ASN DB | Existing if licensed | 🤖 AI fetches **IPinfo / ipdata.co** for ASN + hosting reputation when not licensed |
-| IP Address | ✅ | `ES REMOTEIP` / `SrcIP` | Raw log | — |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Country flag + name | ✅ | MaxMind GeoIP → emoji map | Bundled DB |
+| City | 🟡 | MaxMind GeoLite2-City | City accuracy varies |
+| ASN / ISP / Hosting Provider | 🟡 | Optional MaxMind ASN DB | Existing if licensed |
+| IP Address | ✅ | `ES REMOTEIP` / `SrcIP` | Raw log |
 
 ### 8.10 Evidence (the AI-most-valuable section)
 
-| Field | Status | Product Source | How to Get | AI Enrichment |
-|-------|--------|----------------|------------|---------------|
-| Summary (1-line) | ✅ | `EDGE_ATTRIBUTES.evidence.summary` (currently authored) | Composed from `ITSAlertProfileConfigurations.DESCRIPTION` + context | 🤖✚ **High-value AI use case** — AI synthesizes summary from raw logs |
-| Findings (chips: distance, count, protocol, anomaly) | ✅ | `EDGE_ATTRIBUTES.evidence.findings[]` | Authored / extracted | 🤖✚ AI **auto-extracts** the chips from the raw log + alert context |
-| Confidence Score (%) | 🟡 | Multi-signal aggregator (rule + UEBA + TI) | Logic to be built | 🤖✚ AI computes confidence from **agreement across signals** |
-| Confidence Bar (green/yellow/orange/gray) | ✅ | Visual from confidence | Client-side | — |
-| Severity Bar (Critical / High / Medium / Low) | ✅ | Derived from edge `risk` | Client-side | — |
-| Source Badge (`Azure AD Sign-in Logs`, `Firewall + IDS`, …) | ✅ | `EDGE_ATTRIBUTES.source` | Authored per edge | 🤖✚ AI auto-fills from log-source metadata |
-| Event Count Badge | ✅ | `EDGE_ATTRIBUTES.count` | Same as §8.5 | — |
-| Raw Log preview | ✅ (data) / 🟡 (UI) | `EDGE_ATTRIBUTES.evidence.rawLog` | Stored in catalog, currently **not rendered** | 🤖✚ AI **explains the log line** field-by-field on hover |
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Summary (1-line) | ✅ | `EDGE_ATTRIBUTES.evidence.summary` (currently authored) | Composed from `ITSAlertProfileConfigurations.DESCRIPTION` + context |
+| Findings (chips: distance, count, protocol, anomaly) | ✅ | `EDGE_ATTRIBUTES.evidence.findings[]` | Authored / extracted |
+| Confidence Score (%) | 🟡 | Multi-signal aggregator (rule + UEBA + TI) | Logic to be built |
+| Confidence Bar (green/yellow/orange/gray) | ✅ | Visual from confidence | Client-side |
+| Severity Bar (Critical / High / Medium / Low) | ✅ | Derived from edge `risk` | Client-side |
+| Source Badge (`Azure AD Sign-in Logs`, `Firewall + IDS`, …) | ✅ | `EDGE_ATTRIBUTES.source` | Authored per edge |
+| Event Count Badge | ✅ | `EDGE_ATTRIBUTES.count` | Same as §8.5 |
+| Raw Log preview | ✅ (data) / 🟡 (UI) | `EDGE_ATTRIBUTES.evidence.rawLog` | Stored in catalog, currently **not rendered** |
 
 ### 8.11 Per-Edge Authored Properties (for `EDGE_ATTRIBUTES` in V5)
 
@@ -749,7 +749,7 @@ These are the actual fields populated for each of the 16 demo edges in [v4-extra
 | `evidence.summary` | string | ✅ | `'Reverse shell traffic, 47 C2 beacon attempts detected'` |
 | `evidence.findings[]` | string[] | ✅ | `['47 beacons in 5 min', 'Fixed interval: 6.3s ±0.2s', …]` |
 | `evidence.confidence` | number 0–100 | ✅ | `99` |
-| `evidence.rawLog` | string | optional | `'IDS \| Alert=ReverseShell \| SrcIP=185.220.101.42 \| …'` |
+| `evidence.rawLog` | string | optional | `'IDS \| Alert=ReverseShell \| SrcIP=185.220.101.42 \|
 | `detectionRule.{name,type,id}` | object | optional | `{name:'C2 Beacon Pattern Detection', type:'Correlation', id:'CR-0101'}` |
 | `mitre.{tactic,tacticId,technique,techId}` | object | optional | `{tactic:'Command and Control', tacticId:'TA0011', …}` |
 | `threatIntel.{vendor,reputation,label,virusTotal}` | object | optional | `{vendor:'Webroot', reputation:2, label:'Malicious', virusTotal:'18/94'}` |
