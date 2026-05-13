@@ -541,6 +541,14 @@ const ENTITIES = {
             { icon:'🔐', label:'Failed Logins (24h)', value:'4', color:'#FF5900' },
             { icon:'⏱', label:'Last Anomaly', value:'', color:'#6366B3', dynamic:'lastAnomaly' }
           ],
+          // Hero chip: single honest field backed by ADSUserDetails.lastLogonTime (real DB column,
+          // not retention-bounded). Replaces the prior 'First Seen / Last Activity' pair which was
+          // sourced from ES min/max(@timestamp) and silently truncated by log retention.
+          // See entity_data_mapping.md §1.1.
+          heroChips: [
+            { label:'Last Logon', value:'11 May 2026 09:41:10' }
+          ],
+          // Kept for back-compat with any consumer that still reads these directly.
           firstSeen: '11 May 2026 09:22:45',
           lastActivity: '11 May 2026 10:36:22',
           lastAnomaly: '11 May 2026 10:36:22'

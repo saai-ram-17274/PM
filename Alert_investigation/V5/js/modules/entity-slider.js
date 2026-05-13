@@ -557,9 +557,19 @@ function renderSummaryCard(card) {
   if (card.statusBadge) html += `<span class="em-sc-status-badge">${card.statusBadge}</span>`;
   html += '</div>';
   if (card.investigationStatus) html += `<div class="em-sc-status-text"><strong>${card.investigationStatus}</strong></div>`;
+  // Hero chip row.
+  // New (preferred): card.heroChips = [{label, value}, ...] — honest, schema-backed labels per entity type.
+  // Legacy fallback: firstSeen / lastActivity (kept for non-user entities until each is reviewed).
+  // Rationale: 'First Seen' from ES min(@timestamp) is silently truncated by log retention,
+  // so it's misleading on its own — prefer a real DB-backed field per entity type.
+  // See entity_data_mapping.md §1.1.
   html += '<div class="em-sc-time-row">';
-  html += `<span>First Seen: ${card.firstSeen}</span>`;
-  html += `<span>Last Activity: ${card.lastActivity}</span>`;
+  if (Array.isArray(card.heroChips) && card.heroChips.length) {
+    card.heroChips.forEach(c => { html += `<span>${c.label}: ${c.value}</span>`; });
+  } else {
+    if (card.firstSeen)    html += `<span>First Seen: ${card.firstSeen}</span>`;
+    if (card.lastActivity) html += `<span>Last Activity: ${card.lastActivity}</span>`;
+  }
   html += '</div>';
   html += '</div>'; // sc-right
   html += '</div>'; // sc-hero
