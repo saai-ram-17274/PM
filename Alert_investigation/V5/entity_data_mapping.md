@@ -41,7 +41,11 @@ V5 ships **20 demo entities** across **8 entity types**. Each entity type has it
 
 Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Alerts**
 
-### 1.1 Risk Summary (`riskSummary`)
+### 🗂️ Tab — Overview
+
+> Sections in this tab: `riskSummary` · `usersDetails`
+
+#### 1.1 Risk Summary (`riskSummary`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -55,7 +59,7 @@ Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Ale
 | Hero chip — **Last Logon** | ✅ | `ADSUserDetails.lastLogonTime` (ADAP — real DB column, never retention-bounded for users). Renders as a single chip via `summaryCard.heroChips[]` in [entity-slider.js](js/modules/entity-slider.js) (generic hook — other entity types can fill `heroChips` with their own schema-honest fields). | LDAP-synced into RDBMS |
 | ~~First Seen / Last Activity~~ — **REMOVED from user hero** | ❌ | Was sourced from ES `min/max(_zl_timestamp)` filtered by entity. `MIN()` is silently truncated by log retention so it can't honestly answer *"when did the platform first observe this user"*. Replaced by the single **Last Logon** chip above. The renderer keeps the legacy `firstSeen` / `lastActivity` fields as a fallback so non-user entities (which haven't been re-reviewed yet) continue to render. | — |
 
-### 1.2 User Details (`usersDetails`)
+#### 1.2 User Details (`usersDetails`)
 
 > **Cloud surface — verified.** Log360 Cloud uses APF discovery tables for full identity attributes, with `ELADomainUserDetails` only as a thin discovery-time index. Picked based on whether the entity is an AD user or an Entra/M365 user. Resolution paths verified in [`UserDetailsUtil.java`](../../../REPOS/itsf/source/java_source/com/manageengine/itsf/common/incident/workbench/tab/util/UserDetailsUtil.java) and the attribute manifest at [`APFADUserAttributes.xml`](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/applications/attributes/ad/APFADUserAttributes.xml).
 >
@@ -83,7 +87,7 @@ Tabs: **Overview · Risk & Identity · Activity · Account Changes · Recent Ale
 
 > **Implication for the demo (corrected):** All 13 m.henderson User Details fields are now sourced from `APFDiscADUserDetails` directly with no two-table fallback needed for AD users. Only **two** caveats remain: (a) "Logon Workstation" on the card today shows `CORP-WS-045` which is "where m.henderson actually logged on from" — that's an ES side-call, **not** the `LOGON_TO` allowlist column. The doc should distinguish these. (b) For Entra-only tenants, **Last Logon Time** still requires an ES side-call into M365 SignInLogs (retention-bounded). For mixed tenants the slider should pick the path based on the discovered identity source.
 
-#### 1.2.1 Logon Workstation — two concepts, one label
+##### 1.2.1 Logon Workstation — two concepts, one label
 
 The single card label "Logon Workstation" conflates two unrelated things. They live in different stores and answer different questions:
 
@@ -112,7 +116,7 @@ index=wineventlog eventid=4624 TargetUserName="m.henderson"
 - **Last logon from:** `CORP-WS-045` (from ES 4624, retention-bounded)
 - **Permitted from:** `LOGON_TO` value or `"All workstations"` (from discovery)
 
-#### 1.2.2 Primary Group — one column, one join
+##### 1.2.2 Primary Group — one column, one join
 
 `APFDiscADUserDetails` stores **two columns** related to the primary group, but neither is the display name a SOC analyst wants on the card:
 
@@ -152,41 +156,11 @@ WHERE  u.OBJECT_GUID = :userGuid;
 
 **Net.** Primary Group is **feasible with one join**, not impossible. The card just needs to show that the value `"Domain Users"` requires the user-row + groups-row join, not a single-column read.
 
-### 1.3 Logon Activity (`logonActivity`) — Timeline
+### 🗂️ Tab — Risk & Identity
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Timestamp, Logon Type (2/3/10), Target Host, Source IP, Status | ✅ | EventID 4624 / 4625 in Elasticsearch | Standard auth-log parser |
-| `dot` color (red/orange/green) | ✅ | Computed from UEBA peer-group baseline | UEBA scorer |
+> Sections in this tab: `uebaProfile` · `loginStatistics` · `cloudIdentities` · `identityRisk` · `threatIntelContext` · `dlpIncidents`
 
-### 1.4 Processes (`processes`) — Timeline (per user-launched processes)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Process Name, Parent Process | ✅ | Sysmon EventID 1 + EID 8 (CreateRemoteThread) | Sysmon collector → ES |
-| Action: Kill Process | ✅ | EDR API call (Defender/CrowdStrike/SentinelOne) | Existing remediation orchestrator |
-
-### 1.5 Service Triggered (`serviceTriggered`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Service Name, Display Name, Startup type, Host, Status, Severity | ✅ | EventID 7045 (service installed) + 4697 + EID 12/13 | Windows Service log parser |
-| Action: Stop Service | ✅ | WMI/PowerShell remoting via existing AAP runner | — |
-
-### 1.6 Recent Alerts (`recentAlerts`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Time, Alert label, Type tag, MITRE technique, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` + correlation engine output | Existing alert-profile API |
-| Linked graph node (`viewOnGraph`) | ✅ | Internal entity-id mapping | — |
-
-### 1.7 Resource / File Access (`resourceFileAccess`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Host, File Name, Location, Change Type | ✅ | File-server auditing (ADAudit Plus File Server module) + SharePoint audit | Existing FS collector + Graph API |
-
-### 1.8 UEBA Risk Profile (`uebaProfile`)
+#### 1.8 UEBA Risk Profile (`uebaProfile`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -194,7 +168,7 @@ WHERE  u.OBJECT_GUID = :userGuid;
 | Anomalies Detected | ✅ | UEBA model output | Existing |
 | Account Type | ✅ | LDAP `adminCount` + group memberships | LDAP |
 
-### 1.9 Login Statistics (7 days) (`loginStatistics`)
+#### 1.9 Login Statistics (7 days) (`loginStatistics`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -203,7 +177,7 @@ WHERE  u.OBJECT_GUID = :userGuid;
 | Off-Hours Logins | ✅ | ES filter on hour-of-day vs business window | Existing |
 | Unique Hosts | ✅ | ES `terms` agg on `Workstation` | Existing |
 
-### 1.10 Cloud Identities & Assets (`cloudIdentities`)
+#### 1.10 Cloud Identities & Assets (`cloudIdentities`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -211,7 +185,7 @@ WHERE  u.OBJECT_GUID = :userGuid;
 | Azure Roles | ✅ | Graph API `directoryRoles` | Existing |
 | Conditional Access (count) | ✅ | Graph API `conditionalAccessPolicies` | Existing |
 
-### 1.11 Identity Risk Assessment (`identityRisk`)
+#### 1.11 Identity Risk Assessment (`identityRisk`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -221,16 +195,7 @@ WHERE  u.OBJECT_GUID = :userGuid;
 | Stale Account / Service Account flags | ✅ | LDAP attributes + heuristic | ADAP |
 | Last Password Change | ✅ | LDAP `pwdLastSet` | ADAP |
 
-### 1.12 Network Activity (24h) (`networkActivity`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| DNS Query (Domain, Resolution, Source Host) | ✅ | Sysmon EventID 22 + DNS-server logs | Existing collector |
-| Firewall Allow / Deny (Dst, Proto, Bytes, Duration) | ✅ | Firewall syslog (Fortinet/PA/Checkpoint) | Existing parsers |
-| Proxy log (URL, Method, UA) | ✅ | Proxy syslog | Existing |
-| VPN Connection (Src, Assigned, Proto, Duration) | ✅ | VPN gateway logs | Existing |
-
-### 1.13 Threat Intelligence Context (`threatIntelContext`)
+#### 1.13 Threat Intelligence Context (`threatIntelContext`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -239,53 +204,112 @@ WHERE  u.OBJECT_GUID = :userGuid;
 | First Seen (Global) | ❌ | Not in product | — |
 | MITRE Techniques | 🟡 | Per-alert-profile mapping | `ITSAlertProfileConfigurations.MITRE_TECHNIQUE_ID` |
 
-### 1.14 DLP Incidents (`dlpIncidents`)
+#### 1.14 DLP Incidents (`dlpIncidents`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Policy, Action, File, Destination | ✅ | DataSecurity Plus / Defender for Cloud Apps DLP | Existing connector |
 
-### 1.15 Account Lockouts (`accountLockouts`)
+### 🗂️ Tab — Activity
+
+> Sections in this tab: `logonActivity` · `networkActivity` · `processes` · `serviceTriggered` · `resourceFileAccess` · `recentAppAccess`
+
+#### 1.3 Logon Activity (`logonActivity`) — Timeline
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| User, Locking DC, Source Computer, EventID | ✅ | EventID 4740 (account locked) | ADAP account-lockout analyzer |
+| Timestamp, Logon Type (2/3/10), Target Host, Source IP, Status | ✅ | EventID 4624 / 4625 in Elasticsearch | Standard auth-log parser |
+| `dot` color (red/orange/green) | ✅ | Computed from UEBA peer-group baseline | UEBA scorer |
 
-### 1.16 Password Change / Reset History (`passwordHistory`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Operation, Caller, Target, Source, Result | ✅ | EventID 4723 (self) / 4724 (admin) — on-prem; Entra audit log — cloud | ADAP + M365MP |
-
-### 1.17 Group Membership Changes (`groupMembershipChanges`)
+#### 1.12 Network Activity (24h) (`networkActivity`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Operation, Group, Caller, Source | ✅ | EventID 4732/4756 — on-prem; Entra audit — cloud | ADAP + M365MP |
+| DNS Query (Domain, Resolution, Source Host) | ✅ | Sysmon EventID 22 + DNS-server logs | Existing collector |
+| Firewall Allow / Deny (Dst, Proto, Bytes, Duration) | ✅ | Firewall syslog (Fortinet/PA/Checkpoint) | Existing parsers |
+| Proxy log (URL, Method, UA) | ✅ | Proxy syslog | Existing |
+| VPN Connection (Src, Assigned, Proto, Duration) | ✅ | VPN gateway logs | Existing |
 
-### 1.18 Mailbox Forwarding Rules (`mailboxForwarding`)
+#### 1.4 Processes (`processes`) — Timeline (per user-launched processes)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Operation (New-InboxRule), Mailbox, Rule Name, ForwardTo, Creator IP | ✅ | Exchange Online audit log | M365 Manager Plus |
+| Process Name, Parent Process | ✅ | Sysmon EventID 1 + EID 8 (CreateRemoteThread) | Sysmon collector → ES |
+| Action: Kill Process | ✅ | EDR API call (Defender/CrowdStrike/SentinelOne) | Existing remediation orchestrator |
 
-### 1.19 Recent Application Access (`recentAppAccess`)
+#### 1.5 Service Triggered (`serviceTriggered`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Service Name, Display Name, Startup type, Host, Status, Severity | ✅ | EventID 7045 (service installed) + 4697 + EID 12/13 | Windows Service log parser |
+| Action: Stop Service | ✅ | WMI/PowerShell remoting via existing AAP runner | — |
+
+#### 1.7 Resource / File Access (`resourceFileAccess`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Host, File Name, Location, Change Type | ✅ | File-server auditing (ADAudit Plus File Server module) + SharePoint audit | Existing FS collector + Graph API |
+
+#### 1.19 Recent Application Access (`recentAppAccess`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Application, Source IP, Risk Level, Result | ✅ | Entra ID Sign-in logs | M365MP |
 
-### 1.20 Privileged Role Assignment Changes (`privilegedRoleChanges`)
+### 🗂️ Tab — Account Changes
+
+> Sections in this tab: `accountLockouts` · `passwordHistory` · `groupMembershipChanges` · `mailboxForwarding`
+
+#### 1.15 Account Lockouts (`accountLockouts`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| User, Locking DC, Source Computer, EventID | ✅ | EventID 4740 (account locked) | ADAP account-lockout analyzer |
+
+#### 1.16 Password Change / Reset History (`passwordHistory`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation, Caller, Target, Source, Result | ✅ | EventID 4723 (self) / 4724 (admin) — on-prem; Entra audit log — cloud | ADAP + M365MP |
+
+#### 1.17 Group Membership Changes (`groupMembershipChanges`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation, Group, Caller, Source | ✅ | EventID 4732/4756 — on-prem; Entra audit — cloud | ADAP + M365MP |
+
+#### 1.18 Mailbox Forwarding Rules (`mailboxForwarding`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation (New-InboxRule), Mailbox, Rule Name, ForwardTo, Creator IP | ✅ | Exchange Online audit log | M365 Manager Plus |
+
+### 🗂️ Tab — Recent Alerts
+
+> Sections in this tab: `recentAlerts`
+
+#### 1.6 Recent Alerts (`recentAlerts`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Time, Alert label, Type tag, MITRE technique, Source, Status, Severity | ✅ | `ITSAlertProfileConfigurations` + correlation engine output | Existing alert-profile API |
+| Linked graph node (`viewOnGraph`) | ✅ | Internal entity-id mapping | — |
+
+### 🗂️ Other Sections (not bound to a slider tab)
+
+> These sections exist in the data dictionary but are not currently routed to any tab in `entity-slider.js`. Kept here for completeness.
+
+#### 1.20 Privileged Role Assignment Changes (`privilegedRoleChanges`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Empty-state when none | ✅ | Entra audit log | Existing |
 
-### 1.21 Compliance & Regulatory Impact (`complianceImpact`) — **REMOVED**
+#### 1.21 Compliance & Regulatory Impact (`complianceImpact`) — **REMOVED**
 
 > Data block existed in `entities.js` but was never wired into any tab. Removed in the constant-vs-dynamic revision (see [entity_constant_vs_dynamic.md](entity_constant_vs_dynamic.md#1-user-entity--8-constant--11-dynamic)). Regulated-data narrative is now covered by **DLP Incidents** (§1.20) and the **Recommendations & Remediation** card (§1.22), which already calls out GDPR Art. 33 / PII exposure. Re-introduce only if PM commits a real `ITSComplianceMapping` source rather than hard-coded cards.
 
-### 1.22 Recommendations & Remediation (`remediationGuide`)
+#### 1.22 Recommendations & Remediation (`remediationGuide`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -299,10 +323,14 @@ WHERE  u.OBJECT_GUID = :userGuid;
 
 Tabs: **Overview · Host Activity · Persistence & Exfil · Alerts & Response**
 
-### 2.1 Risk Summary (`riskSummary`)
+### 🗂️ Tab — Overview
+
+> Sections in this tab: `riskSummary` · `deviceDetails` · `agentStatus` · `gpoApplied` · `securityEventSummary`
+
+#### 2.1 Risk Summary (`riskSummary`)
 Same field structure as User §1.1; `metrics` are device-specific ("Suspicious Processes", "C2 Connections"). All ✅ from `ITSEntityRiskScoreDetails`.
 
-### 2.2 Device Details (`deviceDetails`)
+#### 2.2 Device Details (`deviceDetails`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -313,31 +341,7 @@ Same field structure as User §1.1; `metrics` are device-specific ("Suspicious P
 | Hardware (CPU, RAM, Disk) | 🟡 | Asset-management integration (SCCM/Intune) | Optional connector |
 | BitLocker / Disk encryption | 🟡 | Intune compliance | Existing |
 
-### 2.3 Login Activity on Device (`loginActivity`)
-Same shape as User §1.3 but reverse-pivoted (who logged into this host). ✅ from EventID 4624 on the host.
-
-### 2.4 Processes on Host (`processesOnHost`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Process name, PID, Start time, Cmdline | ✅ | Sysmon EID 1 | Existing |
-
-### 2.5 Services on Host (`servicesOnHost`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Service Name, Display Name, Startup, User, Status | ✅ | EID 7045 + WMI snapshot | Existing |
-
-### 2.6 Users Logged On (`usersLoggedOn`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Active sessions (user, type, since) | ✅ | `quser` / `LogonSessions.exe` collector + 4624/4634 pairing | Existing |
-
-### 2.7 Recent Alerts on Device (`recentAlerts`)
-Same shape as User §1.6.
-
-### 2.8 Agent Status & Health (`agentStatus`)
+#### 2.8 Agent Status & Health (`agentStatus`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -345,25 +349,48 @@ Same shape as User §1.6.
 | Sysmon version, config hash | 🟡 | Sysmon registry key | Custom collector |
 | AV definitions date | ✅ | EDR API | Existing |
 
-### 2.9 GPO Applied to Device (`gpoApplied`)
+#### 2.9 GPO Applied to Device (`gpoApplied`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | GPO name, link OU, version, applied at | ✅ | ADManager Plus GPO module | Existing |
 
-### 2.10 Security Event Summary (24h Counters) (`securityEventSummary`)
+#### 2.10 Security Event Summary (24h Counters) (`securityEventSummary`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Per-EventID counts (4624, 4625, 4672, 4688, 7045, …) | ✅ | ES `date_histogram` + `terms` agg | Existing |
 
-### 2.11 USB Device Events (`usbDeviceEvents`)
+### 🗂️ Tab — Host Activity
+
+> Sections in this tab: `processesOnHost` · `servicesOnHost` · `usersLoggedOn` · `loginActivity`
+
+#### 2.4 Processes on Host (`processesOnHost`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Time, Vendor/Product, Serial, Action (insert/remove), Bytes copied | ✅ | EventID 6416/4663 + DataSecurity Plus | Existing |
+| Process name, PID, Start time, Cmdline | ✅ | Sysmon EID 1 | Existing |
 
-### 2.12 Scheduled Task Events (`scheduledTasks`)
+#### 2.5 Services on Host (`servicesOnHost`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Service Name, Display Name, Startup, User, Status | ✅ | EID 7045 + WMI snapshot | Existing |
+
+#### 2.6 Users Logged On (`usersLoggedOn`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Active sessions (user, type, since) | ✅ | `quser` / `LogonSessions.exe` collector + 4624/4634 pairing | Existing |
+
+#### 2.3 Login Activity on Device (`loginActivity`)
+Same shape as User §1.3 but reverse-pivoted (who logged into this host). ✅ from EventID 4624 on the host.
+
+### 🗂️ Tab — Persistence & Exfil
+
+> Sections in this tab: `scheduledTasks` · `usbDeviceEvents`
+
+#### 2.12 Scheduled Task Events (`scheduledTasks`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -371,11 +398,28 @@ Same shape as User §1.6.
 
 ---
 
+#### 2.11 USB Device Events (`usbDeviceEvents`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Time, Vendor/Product, Serial, Action (insert/remove), Bytes copied | ✅ | EventID 6416/4663 + DataSecurity Plus | Existing |
+
+### 🗂️ Tab — Alerts & Response
+
+> Sections in this tab: `recentAlerts`
+
+#### 2.7 Recent Alerts on Device (`recentAlerts`)
+Same shape as User §1.6.
+
 ## 3. IP Entity (`ip-tor`, `ip-internal`)
 
 Tabs: **Overview · Threat Intel · Connections · Logon Activity**
 
-### 3.1 Risk Summary (`riskSummary`)
+### 🗂️ Tab — Overview
+
+> Sections in this tab: `riskSummary` · `ipDetails` · `geoContext` · `associatedUsers` · `associatedDevices`
+
+#### 3.1 Risk Summary (`riskSummary`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -384,7 +428,7 @@ Tabs: **Overview · Threat Intel · Connections · Logon Activity**
 | Active Connections | ✅ | ES agg over firewall/IDS | Existing |
 | VirusTotal Detections (12/89) | ❌ | Not in product | — |
 
-### 3.2 IP Details (`ipDetails`)
+#### 3.2 IP Details (`ipDetails`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -392,53 +436,61 @@ Tabs: **Overview · Threat Intel · Connections · Logon Activity**
 | Reverse DNS (PTR) | 🟡 | DNS server logs / live `dig` | Existing or live |
 | Country, City | ✅ | MaxMind GeoIP (bundled) | Existing |
 
-### 3.3 Geo Context (`geoContext`)
+#### 3.3 Geo Context (`geoContext`)
 Same fields as §3.2 country/city + ASN. Map widget feeds from MaxMind. ✅.
 
-### 3.4 Threat Intelligence (`threatIntelligence`)
+#### 3.9 Associated Users / Devices (`associatedUsers`, `associatedDevices`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Pivot from IP → all users/devices that authenticated from / connected to this IP | ✅ | ES `terms` agg on auth logs filtered by IP | Existing |
+
+### 🗂️ Tab — Threat Intel
+
+> Sections in this tab: `threatIntelligence` · `idsAlerts` · `firewallSummary`
+
+#### 3.4 Threat Intelligence (`threatIntelligence`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Detection counts per vendor | 🟡 | Internal TI aggregator (Webroot, Anomali, OTX) | Existing |
 | Feed name, Category, Confidence, Last Updated | ✅ | Threat Analytics module | Existing |
 
-### 3.5 Connection History (`connectionHistory`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Direction, Source/Dest IP, Port, Bytes, Duration, Action, Device | ✅ | Firewall syslog (PA, Fortinet, Checkpoint, Cisco ASA) | Existing parsers |
-
-### 3.6 Firewall Action Summary (`firewallSummary`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Allow / Deny / Drop counts (24h) | ✅ | ES agg on firewall logs | Existing |
-
-### 3.7 DNS Query History (`dnsHistory`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Domain, Record Type, Resolution, Querying Process, Source (Sysmon EID 22) | ✅ | Sysmon EID 22 + DNS server logs | Existing |
-
-### 3.8 IDS/IPS Alerts (`idsAlerts`)
+#### 3.8 IDS/IPS Alerts (`idsAlerts`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Signature, Threat ID, Severity, Action, Source device | ✅ | Snort/Suricata/PaloAlto Threat Prevention syslog | Existing |
 
-### 3.9 Associated Users / Devices (`associatedUsers`, `associatedDevices`)
+#### 3.6 Firewall Action Summary (`firewallSummary`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Pivot from IP → all users/devices that authenticated from / connected to this IP | ✅ | ES `terms` agg on auth logs filtered by IP | Existing |
+| Allow / Deny / Drop counts (24h) | ✅ | ES agg on firewall logs | Existing |
 
-### 3.10 VPN Sessions (`vpnSessions`)
+### 🗂️ Tab — Connections
+
+> Sections in this tab: `connectionHistory` · `dnsHistory` · `vpnSessions` · `trafficSummary`
+
+#### 3.5 Connection History (`connectionHistory`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Direction, Source/Dest IP, Port, Bytes, Duration, Action, Device | ✅ | Firewall syslog (PA, Fortinet, Checkpoint, Cisco ASA) | Existing parsers |
+
+#### 3.7 DNS Query History (`dnsHistory`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Domain, Record Type, Resolution, Querying Process, Source (Sysmon EID 22) | ✅ | Sysmon EID 22 + DNS server logs | Existing |
+
+#### 3.10 VPN Sessions (`vpnSessions`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | User, Assigned IP, Tunnel type, Duration | ✅ | VPN gateway syslog | Existing |
 
-### 3.11 Traffic Summary (`trafficSummary`)
+#### 3.11 Traffic Summary (`trafficSummary`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
@@ -465,54 +517,70 @@ Tabs: same as IP (Overview · Threat Intel · Connections · Logon Activity).
 
 Tabs: **Overview · Config & Policy · Activity · Alerts & Response**
 
-### 5.1 Service Details (`serviceDetails` / `serviceInfo`)
+### 🗂️ Tab — Overview
+
+> Sections in this tab: `riskSummary` · `serviceDetails` · `serviceInfo`
+
+#### 5.1 Service Details (`serviceDetails` / `serviceInfo`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Service / Tenant / Workload name | ✅ | M365 Manager Plus tenant config | Existing |
 | Service Type (IDP, SaaS, Storage, OS-service) | ✅ | Internal classification | Existing |
 
-### 5.2 OAuth App Consent Grants (`oauthConsentGrants`)
+### 🗂️ Tab — Config & Policy
+
+> Sections in this tab: `oauthConsentGrants` · `conditionalAccess` · `dlpPolicies`
+
+#### 5.2 OAuth App Consent Grants (`oauthConsentGrants`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Operation, App, Consenting User, Permissions, Source IP, Admin Consent | ✅ | Entra ID audit log (`Consent to application`) | M365MP |
 
-### 5.3 Admin Activity on Service (`adminActivity`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Operation, Target, Caller, Workload, Source IP | ✅ | Unified Audit Log (Entra/Exchange/SharePoint) | M365MP |
-
-### 5.4 Conditional Access Policies (`conditionalAccess`)
+#### 5.4 Conditional Access Policies (`conditionalAccess`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | State (Enabled/Report-Only/Disabled), Scope, Conditions, Grant, Exclusions, Last Modified | ✅ | Graph API `conditionalAccessPolicies` | M365MP |
 
-### 5.5 Sign-In Audit (`signInAudit`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| User, IP, Location, App, MFA result, Risk, Result | ✅ | Entra ID Sign-in logs | M365MP |
-
-### 5.6 DLP Policies (`dlpPolicies`)
+#### 5.6 DLP Policies (`dlpPolicies`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Policy name, Scope, Action, Last triggered | ✅ | Defender for Cloud Apps DLP / Purview | Existing connector |
 
-### 5.7 File Access Anomaly / Sensitive Files (`fileAccessAnomaly`, `sensitiveFiles`)
+### 🗂️ Tab — Activity
+
+> Sections in this tab: `signInAudit` · `adminActivity` · `fileAccessAnomaly` · `sensitiveFiles` · `serviceTimeline` · `networkConnections` · `fileDrops` · `wmiEvents` · `processes`
+
+#### 5.5 Sign-In Audit (`signInAudit`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| User, IP, Location, App, MFA result, Risk, Result | ✅ | Entra ID Sign-in logs | M365MP |
+
+#### 5.3 Admin Activity on Service (`adminActivity`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Operation, Target, Caller, Workload, Source IP | ✅ | Unified Audit Log (Entra/Exchange/SharePoint) | M365MP |
+
+#### 5.7 File Access Anomaly / Sensitive Files (`fileAccessAnomaly`, `sensitiveFiles`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | File, User, Operation, Sensitivity tag | ✅ | SharePoint audit + Purview labels | M365MP |
 
-### 5.8 Service Timeline / Network Connections / File Drops / WMI / Processes (when service is OS-resident)
+#### 5.8 Service Timeline / Network Connections / File Drops / WMI / Processes (when service is OS-resident)
 
 All ✅ from Sysmon (EID 1, 3, 11, 19, 22) when the "service" is an on-host artifact like `WinUpdateSvc`. AI enrichment same as §1.4 / §1.12.
 
-### 5.9 Recent Alerts / Service Triggered
+### 🗂️ Tab — Alerts & Response
+
+> Sections in this tab: `recentAlerts` · `serviceTriggered`
+
+#### 5.9 Recent Alerts / Service Triggered
 
 Same as §1.6.
 
@@ -522,67 +590,79 @@ Same as §1.6.
 
 Tabs: **Overview · Anomalies · Activity**
 
-### 6.1 Risk Summary (`riskSummary`)
+### 🗂️ Tab — Overview
+
+> Sections in this tab: `riskSummary` · `processDetails` · `details` · `processTree` · `childProcesses` · `serviceTriggered` · `recentAlerts`
+
+#### 6.1 Risk Summary (`riskSummary`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | AMSI Detections (count), C2 Connection (Active), Payload (filename), Encoded Commands, Obfuscation type, Child processes | ✅ | Sysmon (EID 1, 3, 11), AMSI provider events (EID 4104) | Existing |
 
-### 6.2 Process Details (`processDetails`)
+#### 6.2 Process Details (`processDetails`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Process Name, PID, Parent, Cmdline, User, Integrity, Start, Status, Signature (publisher, validity), Session ID, Threads, Handles | ✅ | Sysmon EID 1 + EID 8 | Existing |
 
-### 6.3 Process Tree (`processTree`)
+#### 6.3 Process Tree (`processTree`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Level (Grandparent/Parent/Current/Child), User, Started, Cmdline, Status, Notes | ✅ | Sysmon EID 1 chain | Existing |
 
-### 6.4 Child Processes (`childProcesses`)
+#### 6.4 Child Processes (`childProcesses`)
 Same as §6.3 but filtered to direct children. ✅.
 
-### 6.5 AMSI Events (`amsiEvents`)
+### 🗂️ Tab — Anomalies
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Detection (Suspicious/Malicious), Content Preview, Scan Result, Action, Script Block ID | ✅ | EventID 4104 (PowerShell ScriptBlock) + AMSI provider | Existing |
+> Sections in this tab: `tokenAnomaly` · `amsiEvents` · `registryModifications` · `namedPipes`
 
-### 6.6 Token Anomaly / Token Usage (`tokenAnomaly`, `tokenUsage`)
+#### 6.6 Token Anomaly / Token Usage (`tokenAnomaly`, `tokenUsage`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | SeDebugPrivilege, SeImpersonate, NewToken events | ✅ | EventID 4672 + Sysmon EID 8 (CreateRemoteThread) | Existing |
 
-### 6.7 Registry Modifications (`registryModifications`)
+#### 6.5 AMSI Events (`amsiEvents`)
+
+| Field | Status | Product Source | How to Get |
+|-------|--------|----------------|------------|
+| Detection (Suspicious/Malicious), Content Preview, Scan Result, Action, Script Block ID | ✅ | EventID 4104 (PowerShell ScriptBlock) + AMSI provider | Existing |
+
+#### 6.7 Registry Modifications (`registryModifications`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Key, Operation (Set/Delete), Old/New Value | ✅ | Sysmon EID 12/13/14 | Existing |
 
-### 6.8 Named Pipes (`namedPipes`)
+#### 6.8 Named Pipes (`namedPipes`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Pipe Name, Operation (Create/Connect), Process | ✅ | Sysmon EID 17/18 | Existing |
 
-### 6.9 Network Activity (`networkActivity`)
+### 🗂️ Tab — Activity
+
+> Sections in this tab: `tokenUsage` · `networkActivity` · `fileOperations` · `processes` · `dllLoads` · `processDnsQueries`
+
+#### 6.9 Network Activity (`networkActivity`)
 Same as §1.12, scoped to the process. ✅ from Sysmon EID 3.
 
-### 6.10 File Operations (`fileOperations`)
+#### 6.10 File Operations (`fileOperations`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Operation (Create/Modify/Delete), Path, Hash | ✅ | Sysmon EID 11 + ADAP File Server | Existing |
 
-### 6.11 DLL Loads (`dllLoads`)
+#### 6.11 DLL Loads (`dllLoads`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | DLL Name, Path, Signed?, Loaded at | ✅ | Sysmon EID 7 | Existing (if EID 7 enabled — high-volume) |
 
-### 6.12 Process DNS Queries (`processDnsQueries`)
+#### 6.12 Process DNS Queries (`processDnsQueries`)
 Same as §1.12 DNS row, scoped to the process. ✅ from Sysmon EID 22.
 
 ---
@@ -591,34 +671,46 @@ Same as §1.12 DNS row, scoped to the process. ✅ from Sysmon EID 22.
 
 Tabs: **Overview · Scope · Response**
 
-### 7.1 Alert Details (`alertDetails`)
+### 🗂️ Tab — Overview
+
+> Sections in this tab: `alertDetails` · `triggerConditions` · `details`
+
+#### 7.1 Alert Details (`alertDetails`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Alert ID, Name, Severity, MITRE Tactic+Technique, Detection Type, First Triggered, Last Updated, Source Service, Status | ✅ | `ITSAlertProfileConfigurations` + correlation engine result | Existing |
 
-### 7.2 Trigger Conditions (`triggerConditions`)
+#### 7.2 Trigger Conditions (`triggerConditions`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Rule Name, Rule Type (Correlation/UEBA/Threat-Intel), Conditions, Threshold, Window | ✅ | Rule-engine config (`CorrelationRules` / UEBA model metadata) | Existing |
 
-### 7.3 Affected Entities (`affectedEntities`)
+### 🗂️ Tab — Scope
+
+> Sections in this tab: `affectedEntities` · `correlatedAlerts` · `processes`
+
+#### 7.3 Affected Entities (`affectedEntities`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | KV map of `{entity-id: role}` (Source, Target, Indicator, …) | ✅ | Alert-instance entity links | Existing |
 
-### 7.4 Correlated Alerts (`correlatedAlerts`)
+#### 7.4 Correlated Alerts (`correlatedAlerts`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
 | Alert name, Source, Severity, MITRE | ✅ | Alert-correlation graph (existing) | Existing |
 
-### 7.5 Service Triggered / Recent Alerts
+### 🗂️ Other Sections (not bound to a slider tab)
+
+> These sections exist in the data dictionary but are not currently routed to any tab in `entity-slider.js`. Kept here for completeness.
+
+#### 7.5 Service Triggered / Recent Alerts
 Same as §1.5 / §1.6 but scoped to this alert's response actions.
 
-### 7.6 Recommendations & Remediation
+#### 7.6 Recommendations & Remediation
 Same as §1.22 — primarily 🤖✚ AI-generated.
 
 ---
