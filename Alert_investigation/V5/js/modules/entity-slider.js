@@ -569,7 +569,13 @@ function renderSummaryCard(card) {
   card.metrics.forEach(m => {
     let val = m.value;
     // Resolve dynamic metric values at render time.
-    if (!val && m.dynamic === 'timeSinceFirst' && card.firstSeen) {
+    // 'lastAnomaly' ← LAST_ANOMALY_UPDATE_TIME from ITSEntityRiskScoreDetails.
+    // (Previously this slot was 'Dwell Time' / timeSinceFirst, computed from card.firstSeen —
+    //  but the schema has no FIRST_ANOMALY_TIME column, so that value was misleading.
+    //  See entity_data_mapping.md §1.1 for the rationale.)
+    if (!val && m.dynamic === 'lastAnomaly' && card.lastAnomaly) {
+      val = _humanizeDelta(_parseEntityTs(card.lastAnomaly)) + ' ago';
+    } else if (!val && m.dynamic === 'timeSinceFirst' && card.firstSeen) {
       val = _humanizeDelta(_parseEntityTs(card.firstSeen));
     }
     html += `<div class="em-sc-metric">`;

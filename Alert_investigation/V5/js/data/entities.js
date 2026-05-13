@@ -537,12 +537,13 @@ const ENTITIES = {
           severity: 'Critical',
           statusBadge: 'Compromised Account',
           metrics: [
-            { icon:'⚠', label:'Active Anomalies', value:'7', color:'#DD1616' },
+            { icon:'⚠', label:'Anomalies (session / lifetime)', value:'7 / 47', color:'#DD1616' },
             { icon:'🔐', label:'Failed Logins (24h)', value:'4', color:'#FF5900' },
-            { icon:'⏱', label:'Dwell Time', value:'', color:'#6366B3', dynamic:'timeSinceFirst' }
+            { icon:'⏱', label:'Last Anomaly', value:'', color:'#6366B3', dynamic:'lastAnomaly' }
           ],
           firstSeen: '11 May 2026 09:22:45',
-          lastActivity: '11 May 2026 10:36:22'
+          lastActivity: '11 May 2026 10:36:22',
+          lastAnomaly: '11 May 2026 10:36:22'
         }
       },
       usersDetails: {
