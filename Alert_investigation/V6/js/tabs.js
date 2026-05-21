@@ -1,0 +1,1 @@
+/* tab click handlers wired up in app.js */

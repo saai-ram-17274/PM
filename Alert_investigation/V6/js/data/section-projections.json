@@ -1,0 +1,594 @@
+{
+  "_meta": {
+    "generated": "2026-05-18",
+    "version": "1.0.0",
+    "purpose": "Static field projections per slider section. Every entry declares the fixed _source / SQL-select projection the backend must fetch for that section, independent of the entity instance. Source of truth: entity_data_mapping.md §9.",
+    "status_legend": {
+      "ok": "field exists in product backend, populates reliably",
+      "partial": "field requires aggregation or conditional logic (🟡 in doc)",
+      "unavailable": "backing source not present in current build (❌ — omitted from rows[])"
+    },
+    "common_envelope": {
+      "sectionId": "string",
+      "label": "string",
+      "status": "ok | partial | unavailable",
+      "statusReason": "string (when partial/unavailable)",
+      "rows | kv | timeline": "array | object (shape per section render mode)",
+      "truncated": "boolean",
+      "queriedAt": "ISO-8601 timestamp"
+    }
+  },
+  "sections": {
+    "riskSummary": {
+      "label": "Risk Summary",
+      "usedBy": ["user", "device", "ip", "domain", "service", "alert"],
+      "backingSource": "ITSEntityRiskScoreDetails (Postgres) + ZLogs ES aggs for host/IP-scoped metrics",
+      "renderMode": "kv",
+      "projection": [
+        { "field": "riskScore", "source": "ITSEntityRiskScoreDetails.RISK_SCORE", "type": "decimal", "status": "ok" },
+        { "field": "severity", "source": "ITSEntityRiskScoreDetails.SESSION_SEVERITY → ITSRiskSeverityDetails.SEVERITY_NAME", "type": "enum", "status": "ok" },
+        { "field": "statusBadge", "source": "ITSAlertProfileConfigurations rule categories (derived)", "type": "enum", "status": "partial" },
+        { "field": "detectionCountSession", "source": "ITSEntityRiskScoreDetails.DETECTION_COUNT", "type": "integer", "status": "ok" },
+        { "field": "detectionCountLifetime", "source": "ITSEntityRiskScoreDetails.OVERALL_DETECTION_COUNT", "type": "integer", "status": "ok" },
+        { "field": "lastAnomalyTime", "source": "ITSEntityRiskScoreDetails.LAST_ANOMALY_UPDATE_TIME", "type": "timestamp", "status": "ok" },
+        { "field": "loginSuccess24h", "source": "ZLogs count(EVENTID=4624 AND HOSTNAME=<host>)", "type": "integer_agg", "status": "ok", "scope": "device" },
+        { "field": "loginFailure24h", "source": "ZLogs count(EVENTID=4625 AND HOSTNAME=<host>)", "type": "integer_agg", "status": "ok", "scope": "device" },
+        { "field": "torAnonymizerFlag", "source": "ZLogs THREAT_CATEGORIES contains Tor/Anonymizer", "type": "boolean_derived", "status": "ok", "scope": "ip_external" },
+        { "field": "threatFeedsFlaggedCount", "source": "ZLogs count(THREAT_SOURCE=<ip>)", "type": "integer_agg", "status": "ok", "scope": "ip_external" },
+        { "field": "activeConnections24h", "source": "ZLogs count(DST_IP=<ip>) firewall families", "type": "integer_agg", "status": "ok", "scope": "ip_external" },
+        { "field": "virusTotalDetections", "source": "REST POST /RestAPI/V2/threat/getVirusTotalAnalysisData (on-demand)", "type": "string_ratio", "status": "partial", "scope": "ip_external", "requires": "tenant VT API key" }
+      ]
+    },
+    "usersDetails": {
+      "label": "User Details",
+      "usedBy": ["user"],
+      "backingSource": "APFDiscADUserDetails (AD) OR APFDiscAADUserDetails (Entra)",
+      "renderMode": "kv",
+      "filter": "OBJECT_GUID=<user_guid> AND APP_CONFIG_ID=<ad_config_id> (AD) OR OBJECT_ID=<aad_id> AND APP_CONFIG_ID=<azure_config_id> (Entra)",
+      "projection": [
+        { "field": "displayName", "source": "DISPLAY_NAME", "type": "string", "status": "ok" },
+        { "field": "samAccountName", "source": "APFDiscADUserDetails.SAM_ACCOUNT_NAME", "type": "string", "status": "ok", "vendors": ["AD"] },
+        { "field": "upn", "source": "LOGON_NAME (AD) / USER_PRINCIPAL_NAME (Entra)", "type": "string", "status": "ok" },
+        { "field": "email", "source": "EMAIL_ADDRESS", "type": "string", "status": "ok" },
+        { "field": "jobTitle", "source": "TITLE", "type": "string", "status": "ok" },
+        { "field": "department", "source": "DEPARTMENT", "type": "string", "status": "ok" },
+        { "field": "manager", "source": "MANAGER + MANAGER_DN (AD) / MANAGER w/ lookup (Entra)", "type": "string_join", "status": "ok" },
+        { "field": "lastLogonTime", "source": "LAST_LOGON_TIME (AD) / ES max(createdDateTime) (Entra)", "type": "timestamp", "status": "partial", "note": "Entra path retention-bounded" },
+        { "field": "ouName", "source": "OU_NAME", "type": "string", "status": "ok", "vendors": ["AD"] },
+        { "field": "whenCreated", "source": "WHEN_CREATED", "type": "timestamp", "status": "ok" },
+        { "field": "accountStatus", "source": "ACCOUNT_STATUS (AD) / ACCOUNT_ENABLED (Entra)", "type": "boolean", "status": "ok" },
+        { "field": "primaryGroup", "source": "PRIMARY_GROUP_GUID → APFDiscADGroupDetails", "type": "string_join", "status": "ok", "vendors": ["AD"] }
+      ]
+    },
+    "deviceDetails": {
+      "label": "Device Details",
+      "usedBy": ["device"],
+      "backingSource": "APFDiscADComputerDetails table",
+      "renderMode": "kv",
+      "filter": "COMPUTER_NAME=<hostname> AND APP_CONFIG_ID=<ad_config_id>",
+      "projection": [
+        { "field": "hostname", "source": "COMPUTER_NAME", "type": "string", "status": "ok" },
+        { "field": "fqdn", "source": "DNS_NAME", "type": "string", "status": "ok" },
+        { "field": "operatingSystem", "source": "OPERATING_SYSTEM", "type": "string", "status": "ok" },
+        { "field": "domain", "source": "DOMAIN_NAME", "type": "string", "status": "ok" },
+        { "field": "ouName", "source": "OU_NAME", "type": "string", "status": "ok" },
+        { "field": "distinguishedName", "source": "DISTINGUISHED_NAME", "type": "string", "status": "ok" },
+        { "field": "managedBy", "source": "MANAGED_BY_DN → APFDiscADUserDetails", "type": "string_join", "status": "ok" },
+        { "field": "lastLogon", "source": "LAST_LOGON_TIMESTAMP", "type": "timestamp", "status": "ok" },
+        { "field": "lastBoot", "source": "ZLogs max(@timestamp WHERE EVENTID=6005 AND HOSTNAME=<host>)", "type": "timestamp_agg", "status": "ok" },
+        { "field": "created", "source": "CREATION_TIME", "type": "timestamp", "status": "ok" },
+        { "field": "modified", "source": "MODIFIED_TIME", "type": "timestamp", "status": "ok" },
+        { "field": "status", "source": "COMPUTER_STATUS", "type": "boolean", "status": "ok" },
+        { "field": "role", "source": "ROLE", "type": "enum", "status": "ok" },
+        { "field": "trustedForDelegation", "source": "TRUSTED_FOR_DELEGATION", "type": "boolean", "status": "ok" },
+        { "field": "lapsExpiry", "source": "LAPS_EXPIRATION_TIME", "type": "timestamp", "status": "ok" }
+      ]
+    },
+    "logonActivity": {
+      "label": "Logon Activity",
+      "usedBy": ["user", "device", "ip"],
+      "backingSource": "ZLogs ES — Windows Security EID 4624/4625/4634/4647",
+      "renderMode": "timeline",
+      "filters": {
+        "user": "EVENTID IN (4624,4625,4634,4647) AND USERNAME=<user>",
+        "device": "EVENTID IN (4624,4625,4634,4647) AND HOSTNAME=<device>",
+        "ip": "EVENTID IN (4624,4625) AND IPADDRESS=<ip>"
+      },
+      "sort": "@timestamp DESC",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "eventId", "source": "EVENTID", "type": "integer", "status": "ok" },
+        { "field": "logonType", "source": "LOGONTYPE", "type": "enum", "status": "ok" },
+        { "field": "targetHost", "source": "HOSTNAME", "type": "string", "status": "ok" },
+        { "field": "sourceIp", "source": "IPADDRESS", "type": "string", "status": "ok" },
+        { "field": "workstationName", "source": "WORKSTATION_NAME", "type": "string", "status": "ok" },
+        { "field": "authPackage", "source": "AUTHENTICATIONPACKAGENAME", "type": "string", "status": "ok" },
+        { "field": "resultStatus", "source": "derived from EVENTID + SUB_STATUS", "type": "enum", "status": "ok" }
+      ]
+    },
+    "networkActivity": {
+      "label": "Network Activity",
+      "usedBy": ["user", "process"],
+      "backingSource": "ZLogs ES — DNS (EID 1033/1034 / Sysmon 22) + Firewall syslog",
+      "renderMode": "timeline",
+      "_userAttributionCaveat": "None of these sources carry USERNAME. For user entity, requires two-step pivot: (1) resolve HOSTNAME/SRC_IP via concurrent Windows 4624 sessions, (2) filter network logs by those host/IP values. Status values below are for the user entity; for process entity all rows except firewall ones are 'ok'.",
+      "projection": [
+        { "field": "typeLabel", "source": "derived (DNS/Firewall/Proxy/VPN)", "type": "enum_derived", "status": "ok" },
+        { "field": "domainQueried", "source": "QUERY_NAME", "type": "string", "status": "partial", "hosttype": ["windows"], "statusByEntity": { "user": "partial", "process": "ok" } },
+        { "field": "resolution", "source": "QUERY_RESULTS / ANSWER_RECORDS", "type": "string", "status": "partial", "hosttype": ["windows"], "statusByEntity": { "user": "partial", "process": "ok" } },
+        { "field": "sourceHost", "source": "HOSTNAME", "type": "string", "status": "ok", "hosttype": ["windows"] },
+        { "field": "queryProcess", "source": "Sysmon EID 22 IMAGE", "type": "string", "status": "partial", "requires": "Sysmon", "statusByEntity": { "user": "partial", "process": "ok" } },
+        { "field": "destinationPort", "source": "DST_PORT", "type": "integer", "status": "partial", "hosttype": ["paloalto","checkpoint","fortinet","cisco"] },
+        { "field": "protocol", "source": "PROTOCOL_TR (L4 only)", "type": "enum", "status": "partial", "hosttype": ["paloalto","checkpoint","fortinet","cisco"] },
+        { "field": "bytesSent", "source": "SENT_BYTES", "type": "integer", "status": "partial", "hosttype": ["paloalto","fortinet","sophos","firepower","topsec"], "coverage": { "checkpoint": "unavailable_as_parsed_column" } },
+        { "field": "bytesReceived", "source": "RECEIVED_BYTES", "type": "integer", "status": "partial", "hosttype": ["paloalto","fortinet","sophos","firepower","topsec"], "coverage": { "checkpoint": "unavailable_as_parsed_column" } },
+        { "field": "packetsSent", "source": "SENT_PACKETS", "type": "integer", "status": "partial", "hosttype": ["paloalto","fortinet"] },
+        { "field": "packetsReceived", "source": "RECEIVED_PACKETS", "type": "integer", "status": "partial", "hosttype": ["paloalto","fortinet"] }
+      ]
+    },
+    "processes": {
+      "label": "Processes",
+      "usedBy": ["user", "device", "process", "alert", "service"],
+      "backingSource": "ZLogs ES — Windows EID 4688 / Sysmon EID 1",
+      "renderMode": "timeline",
+      "filter": "(EVENTID=4688 OR SYSMON_EVENTID=1) AND (USERNAME=<user> OR HOSTNAME=<device> OR PARENT_PROCESS_NAME=<process>)",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "processName", "source": "PROCESSNAME", "type": "string", "status": "ok" },
+        { "field": "pid", "source": "PROCESS_ID", "type": "integer", "status": "ok" },
+        { "field": "parentProcess", "source": "PARENT_PROCESS_NAME", "type": "string", "status": "ok" },
+        { "field": "commandLine", "source": "COMMAND_LINE", "type": "string", "status": "partial", "requires": "GPO 'ProcessCreationIncludeCmdLine' OR Sysmon" },
+        { "field": "executingUser", "source": "USERNAME + DOMAIN", "type": "string", "status": "ok" },
+        { "field": "integrityLevel", "source": "INTEGRITY_LEVEL", "type": "enum", "status": "partial" },
+        { "field": "status", "source": "derived constant 'Started'", "type": "enum", "status": "ok" }
+      ]
+    },
+    "serviceTriggered": {
+      "label": "Service Triggered",
+      "usedBy": ["user", "device", "service", "process", "alert"],
+      "backingSource": "ZLogs ES — Windows EID 7045/7046/7047",
+      "renderMode": "timeline",
+      "filter": "EVENTID IN (7045,7046,7047) AND (HOSTNAME=<device> OR CALLER_USERNAME=<user>)",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "eventTypeLabel", "source": "derived from EVENTID", "type": "enum", "status": "ok" },
+        { "field": "serviceName", "source": "SERVICENAME", "type": "string", "status": "ok" },
+        { "field": "displayName", "source": "DISPLAY_NAME", "type": "string", "status": "ok" },
+        { "field": "serviceAccount", "source": "SERVICEACCOUNT", "type": "string", "status": "ok" },
+        { "field": "binaryPath", "source": "IMAGEPATH", "type": "string", "status": "ok" },
+        { "field": "startType", "source": "SERVICESTARTTYPE", "type": "enum", "status": "ok" },
+        { "field": "host", "source": "HOSTNAME", "type": "string", "status": "ok" },
+        { "field": "severity", "source": "derived from correlation rule", "type": "enum_derived", "status": "partial" }
+      ]
+    },
+    "threatIntelligence": {
+      "label": "Threat Intelligence",
+      "usedBy": ["ip", "domain", "service"],
+      "backingSource": "ZLogs ES (TI-enriched events) + ADSThreatAnalyticsFeeds (feed registry) + on-demand VirusTotal REST",
+      "renderMode": "timeline",
+      "filter": "THREAT_SOURCE=<ioc> OR REMOTEIP=<ioc>",
+      "sort": "THREAT_REPUTATION ASC",
+      "projection": [
+        { "field": "engines", "source": "terms agg on THREAT_SERVER", "type": "string_array_agg", "status": "ok", "values": ["ATA", "appsense", "customer-feed-name"] },
+        { "field": "categories", "source": "terms agg on THREAT_CATEGORIES", "type": "string_array_agg", "status": "ok" },
+        { "field": "worstReputation", "source": "min(THREAT_REPUTATION)", "type": "integer_agg", "status": "ok", "note": "lower = worse" },
+        { "field": "eventsFlaggedCount", "source": "count(THREAT_SOURCE=<ioc>)", "type": "integer_agg", "status": "ok" },
+        { "field": "feedSubscriptionStatus", "source": "ADSThreatAnalyticsFeeds.ANALYTICS_FEED_TYPE/VERSION/FILE_META", "type": "string", "status": "ok" },
+        { "field": "lastFeedUpdate", "source": "ADSThreatAnalyticsFeeds row timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "virusTotalDetections", "source": "REST POST /RestAPI/V2/threat/getVirusTotalAnalysisData (on-demand)", "type": "string_ratio", "status": "partial", "requires": "tenant VT API key" }
+      ]
+    },
+    "idsAlerts": {
+      "label": "IDS/IPS Alerts",
+      "usedBy": ["ip", "domain"],
+      "backingSource": "ZLogs ES — perimeter firewall/IPS syslog (PA / CheckPoint / Fortinet / Cisco). No native IDS in product.",
+      "renderMode": "timeline",
+      "filter": "hosttype IN ('paloalto device','checkpoint device','fortinet device','cisco device') AND (SRC_IP=<ioc> OR DST_IP=<ioc>)",
+      "sort": "@timestamp DESC",
+      "_projectionContract": "Truly static. Every event returns ALL 16 columns. No derivation, no per-vendor branching. If a vendor's parser didn't emit a column, value is null and slider renders a dash.",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp" },
+        { "field": "hosttype", "source": "hosttype", "type": "enum" },
+        { "field": "deviceName", "source": "DEVICE_NAME", "type": "string" },
+        { "field": "srcIp", "source": "SRC_IP", "type": "string" },
+        { "field": "srcPort", "source": "SRC_PORT", "type": "integer" },
+        { "field": "dstIp", "source": "DST_IP", "type": "string" },
+        { "field": "dstPort", "source": "DST_PORT", "type": "integer" },
+        { "field": "protocol", "source": "PROTOCOL_TR", "type": "string", "note": "L4 only: tcp/udp/icmp" },
+        { "field": "threatId", "source": "THREAT_ID", "type": "string" },
+        { "field": "protectionName", "source": "PROTECTION_NAME", "type": "string" },
+        { "field": "attack", "source": "ATTACK", "type": "string" },
+        { "field": "subtype", "source": "SUBTYPE", "type": "string" },
+        { "field": "severityLevel", "source": "COALESCE(SEVERITYLEVEL, SEVERITY)", "type": "string" },
+        { "field": "actionTag", "source": "ACTION_TAG", "type": "string" },
+        { "field": "action", "source": "ACTION", "type": "string" },
+        { "field": "rawMessage", "source": "MESSAGE", "type": "string", "note": "truncated to 500 chars; fallback for vendors whose parser didn't extract a signature column" }
+      ],
+      "_vendorPopulationReference": {
+        "_note": "Informational only. Documents which columns each parser fills so analyst knows what 'blank' means. NOT consumed by frontend.",
+        "paloalto device": ["threatId", "subtype", "severityLevel", "actionTag", "rawMessage"],
+        "checkpoint device": ["protectionName", "attack", "severityLevel", "action", "rawMessage"],
+        "fortinet device": ["subtype", "actionTag", "rawMessage"],
+        "cisco device": ["rawMessage"]
+      }
+    },
+    "firewallSummary": {
+      "label": "Firewall Action Summary",
+      "usedBy": ["ip", "domain"],
+      "backingSource": "ZLogs ES — firewall syslog aggregated",
+      "renderMode": "kv",
+      "filter": "(SRC_IP=<ioc> OR DST_IP=<ioc>) AND hosttype IN ('paloalto device','checkpoint device','fortinet device','cisco device')",
+      "projection": [
+        { "field": "totalFlows", "source": "count(*)", "type": "integer_agg", "status": "ok" },
+        { "field": "allowed", "source": "count(ACTION_TAG=allow OR ACTION=accept)", "type": "integer_agg", "status": "ok" },
+        { "field": "denied", "source": "count(ACTION_TAG IN (deny,drop) OR ACTION IN (deny,drop))", "type": "integer_agg", "status": "ok" },
+        { "field": "topDestinationPorts", "source": "terms agg on DST_PORT (top-10, raw port number)", "type": "integer_array_agg", "status": "ok" },
+        { "field": "topTransportProtocols", "source": "terms agg on PROTOCOL_TR (L4 only)", "type": "string_array_agg", "status": "ok" },
+        { "field": "sourceFirewallDevices", "source": "terms agg on DEVICE_NAME", "type": "string_array_agg", "status": "ok" }
+      ]
+    },
+    "connectionHistory": {
+      "label": "Connection History",
+      "usedBy": ["ip", "domain"],
+      "backingSource": "ZLogs ES — firewall/proxy syslog",
+      "renderMode": "timeline",
+      "filter": "(SRC_IP=<ioc> OR DST_IP=<ioc>) AND hosttype IN ('paloalto device','checkpoint device','fortinet device','cisco device','proxy')",
+      "sort": "@timestamp DESC",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "direction", "source": "derived from RFC1918 SRC/DST", "type": "enum_derived", "status": "ok" },
+        { "field": "srcIp", "source": "SRC_IP", "type": "string", "status": "ok" },
+        { "field": "srcPort", "source": "SRC_PORT", "type": "integer", "status": "ok" },
+        { "field": "dstIp", "source": "DST_IP", "type": "string", "status": "ok" },
+        { "field": "dstPort", "source": "DST_PORT", "type": "integer", "status": "ok" },
+        { "field": "bytesSent", "source": "SENT_BYTES", "type": "integer", "status": "ok", "coverage": { "paloalto": "ok", "fortinet": "ok", "sophos": "ok", "firepower": "ok", "topsec": "ok", "checkpoint": "partial" } },
+        { "field": "bytesReceived", "source": "RECEIVED_BYTES", "type": "integer", "status": "ok", "coverage": { "paloalto": "ok", "fortinet": "ok", "sophos": "ok", "firepower": "ok", "topsec": "ok", "checkpoint": "partial" } },
+        { "field": "duration", "source": "DURATION", "type": "integer", "status": "partial" },
+        { "field": "action", "source": "ACTION_TAG / ACTION", "type": "enum", "status": "ok" },
+        { "field": "firewallDevice", "source": "DEVICE_NAME / HOSTNAME", "type": "string", "status": "ok" },
+        { "field": "protocol", "source": "PROTOCOL_TR (L4 only)", "type": "string", "status": "ok" }
+      ]
+    },
+    "dnsHistory": {
+      "label": "DNS Query History",
+      "usedBy": ["ip", "domain"],
+      "backingSource": "ZLogs ES — Windows DNS Server (EID 1033/1034) / Sysmon EID 22",
+      "renderMode": "timeline",
+      "filter": "(QUERY_NAME=<domain> OR QUERY_RESULTS contains <ioc>) AND (EVENTID IN (1033,1034) OR SYSMON_EVENTID=22)",
+      "sort": "@timestamp DESC",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "domainQueried", "source": "QUERY_NAME", "type": "string", "status": "ok" },
+        { "field": "recordType", "source": "RECORD_TYPE", "type": "string", "status": "ok" },
+        { "field": "resolution", "source": "ANSWER_RECORDS / QUERY_RESULTS", "type": "string", "status": "ok" },
+        { "field": "queryingProcess", "source": "Sysmon IMAGE (EID 22)", "type": "string", "status": "partial", "requires": "Sysmon" },
+        { "field": "queryingHost", "source": "HOSTNAME", "type": "string", "status": "ok" },
+        { "field": "queryStatus", "source": "QUERY_STATUS", "type": "enum", "status": "ok" }
+      ]
+    },
+    "recentAlerts": {
+      "label": "Recent Alerts",
+      "usedBy": ["user", "device", "ip", "domain", "service", "process", "alert"],
+      "backingSource": "ITSAlertProfileConfigurations + alert instance store + ITSDetectionRuleVsMitre",
+      "renderMode": "timeline",
+      "filter": "alert.source_entity=<entity_id>",
+      "sort": "first_triggered DESC",
+      "projection": [
+        { "field": "alertId", "source": "ALERT_PROFILE_ID + instance UID", "type": "string", "status": "ok" },
+        { "field": "alertName", "source": "ITSAlertProfileConfigurations.DISPLAY_NAME", "type": "string", "status": "ok" },
+        { "field": "alertType", "source": "ALERT_TYPE", "type": "enum", "status": "ok" },
+        { "field": "severity", "source": "SEVERITY", "type": "enum", "status": "ok" },
+        { "field": "mitreTactic", "source": "ITSDetectionRuleVsMitre.TACTIC (join)", "type": "string_join", "status": "partial" },
+        { "field": "mitreTechnique", "source": "ITSDetectionRuleVsMitre.TECHNIQUE_NAME (join)", "type": "string_join", "status": "partial" },
+        { "field": "firstTriggered", "source": "instance creation timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "status", "source": "workflow state", "type": "enum", "status": "ok" },
+        { "field": "linkedEntityId", "source": "alert-entity link", "type": "string", "status": "ok" }
+      ]
+    },
+    "accountLockouts": {
+      "label": "Account Lockouts",
+      "usedBy": ["user"],
+      "backingSource": "ZLogs ES — Windows Security EID 4740",
+      "renderMode": "timeline",
+      "filter": "EVENTID=4740 AND TARGETUSER=<user>",
+      "sort": "@timestamp DESC",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "targetUser", "source": "TARGETUSER", "type": "string", "status": "ok" },
+        { "field": "lockingDc", "source": "HOSTNAME", "type": "string", "status": "ok" },
+        { "field": "sourceComputer", "source": "REMOTEHOST / WORKSTATION_NAME", "type": "string", "status": "partial" },
+        { "field": "eventId", "source": "EVENTID (4740)", "type": "integer", "status": "ok" },
+        { "field": "riskLabel", "source": "derived from correlation rule", "type": "enum_derived", "status": "partial" }
+      ]
+    },
+    "passwordHistory": {
+      "label": "Password Change / Reset History",
+      "usedBy": ["user"],
+      "backingSource": "ZLogs ES — Windows EID 4723/4724 OR Entra UAL Change/Reset user password",
+      "renderMode": "timeline",
+      "filter": "(EVENTID IN (4723,4724) AND TARGETUSER=<user>) OR (OPERATION IN ('Change user password.','Reset user password.') AND OBJECTID=<user_upn>)",
+      "sort": "@timestamp DESC",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "operation", "source": "derived from EVENTID / OPERATION", "type": "enum", "status": "ok" },
+        { "field": "caller", "source": "USERNAME+DOMAIN (Windows) / USERID (Entra)", "type": "string", "status": "ok" },
+        { "field": "targetUser", "source": "TARGETUSER / OBJECTID", "type": "string", "status": "ok" },
+        { "field": "sourceHost", "source": "HOSTNAME / Entra Workload", "type": "string", "status": "ok" },
+        { "field": "clientIp", "source": "CLIENTIP (Entra only)", "type": "string", "status": "partial", "coverage": { "windows": "unavailable", "m365": "ok" } },
+        { "field": "result", "source": "SEVERITY / RESULT", "type": "enum", "status": "ok" }
+      ]
+    },
+    "groupMembershipChanges": {
+      "label": "Group Membership Changes",
+      "usedBy": ["user"],
+      "backingSource": "ZLogs ES — Windows EID 4728/4729/4732/4733/4756/4757 OR Entra UAL Add/Remove member to group",
+      "renderMode": "timeline",
+      "filter": "(EVENTID IN (4728,4729,4732,4733,4756,4757) AND (TARGETUSER=<user> OR GROUPNAME contains <user>)) OR (OPERATION IN ('Add member to group','Remove member from group') AND (OBJECTID=<user_upn> OR PARAMETERS.Group.DisplayName contains <user>))",
+      "sort": "@timestamp DESC",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "operation", "source": "derived from EVENTID / OPERATION", "type": "enum", "status": "ok" },
+        { "field": "groupName", "source": "GROUPNAME+GROUPDOMAIN / PARAMETERS.Group.DisplayName", "type": "string", "status": "ok" },
+        { "field": "memberChanged", "source": "TARGETUSER+MEMBERSID / PARAMETERS.Member.userPrincipalName", "type": "string", "status": "ok" },
+        { "field": "caller", "source": "USERNAME+DOMAIN / USERID", "type": "string", "status": "ok" },
+        { "field": "sourceHost", "source": "HOSTNAME / Entra source", "type": "string", "status": "ok" }
+      ]
+    },
+    "mailboxForwarding": {
+      "label": "Mailbox Forwarding Rules",
+      "usedBy": ["user"],
+      "backingSource": "ZLogs ES — M365 UAL Audit.Exchange",
+      "renderMode": "timeline",
+      "filter": "hosttype=m365 AND OPERATION IN ('New-InboxRule','Set-InboxRule','Set-Mailbox','Set-TransportRule') AND OBJECTID=<user_mailbox>",
+      "sort": "@timestamp DESC",
+      "requires": "M365 connector onboarded",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp (UAL CreationTime)", "type": "timestamp", "status": "ok" },
+        { "field": "operation", "source": "OPERATION", "type": "string", "status": "ok" },
+        { "field": "mailbox", "source": "OBJECTID", "type": "string", "status": "ok" },
+        { "field": "caller", "source": "USERID", "type": "string", "status": "ok" },
+        { "field": "ruleName", "source": "PARAMETERS.Name", "type": "string", "status": "ok" },
+        { "field": "forwardTo", "source": "PARAMETERS.ForwardTo / ForwardingSmtpAddress / RedirectTo", "type": "string", "status": "ok" },
+        { "field": "clientIp", "source": "CLIENTIP", "type": "string", "status": "ok" },
+        { "field": "result", "source": "RESULT", "type": "enum", "status": "ok" }
+      ]
+    },
+    "uebaProfile": {
+      "label": "UEBA Risk Profile",
+      "usedBy": ["user"],
+      "backingSource": "ITSEntityRiskScoreDetails + ADSAnomalyDetectionUniqueEntities + UEBAEntityNotes",
+      "renderMode": "kv",
+      "filter": "ITSEntityRiskScoreDetails.ENTITY_ID=<user_id> AND ENTITY_TYPE='user' INNER JOIN ADSAnomalyDetectionUniqueEntities",
+      "projection": [
+        { "field": "riskScore", "source": "RISK_SCORE × 100", "type": "integer", "status": "ok" },
+        { "field": "lastAnomalyFired", "source": "LAST_ANOMALY_UPDATE_TIME", "type": "timestamp", "status": "ok" },
+        { "field": "lastScoreUpdate", "source": "LAST_UPDATE_TIME", "type": "timestamp", "status": "ok" },
+        { "field": "underObservation", "source": "ADSAnomalyDetectionUniqueEntities.IS_SURVEILLED", "type": "boolean", "status": "ok" },
+        { "field": "detectionSource", "source": "ADSAnomalyDetectionUniqueEntities.SOURCE", "type": "string", "status": "ok" },
+        { "field": "analystNotes", "source": "UEBAEntityNotes.NOTE", "type": "string", "status": "ok" }
+      ]
+    },
+    "loginStatistics": {
+      "label": "Login Statistics (7 days)",
+      "usedBy": ["user"],
+      "backingSource": "ZLogs ES — Windows Security 4624/4625 over 7-day window",
+      "renderMode": "kv",
+      "filter": "USERNAME=<user> AND EVENTID IN (4624,4625) AND @timestamp >= now-7d",
+      "projection": [
+        { "field": "totalLogins", "source": "count(EVENTID IN (4624,4625))", "type": "integer_agg", "status": "ok" },
+        { "field": "successfulLogins", "source": "count(EVENTID=4624)", "type": "integer_agg", "status": "ok" },
+        { "field": "failedLogins", "source": "count(EVENTID=4625)", "type": "integer_agg", "status": "ok" },
+        { "field": "uniqueSourceIps", "source": "terms agg on IPADDRESS (4624)", "type": "string_array_agg", "status": "ok" },
+        { "field": "offHoursLogins", "source": "count(EVENTID=4624) filtered via L3CWorkingHourHandler.isOffHours()", "type": "integer_agg", "status": "partial" },
+        { "field": "uniqueTargetHosts", "source": "terms agg on HOSTNAME (4624)", "type": "string_array_agg", "status": "ok" }
+      ]
+    },
+    "cloudIdentities": {
+      "label": "Cloud Identities & Assets",
+      "usedBy": ["user"],
+      "backingSource": "APFDiscAADUserDetails",
+      "renderMode": "kv",
+      "filter": "USER_PRINCIPAL_NAME=<user_upn> AND APP_CONFIG_ID=<azure_config_id>",
+      "requires": "M365 connector onboarded",
+      "projection": [
+        { "field": "upn", "source": "USER_PRINCIPAL_NAME", "type": "string", "status": "ok" },
+        { "field": "syncSource", "source": "ONPREMISES_SYNC_ENABLED", "type": "boolean", "status": "ok" },
+        { "field": "accountEnabled", "source": "ACCOUNT_ENABLED", "type": "boolean", "status": "ok" },
+        { "field": "licensed", "source": "IS_LICENSED", "type": "boolean", "status": "ok" },
+        { "field": "lastDirSync", "source": "DAYS_SINCE_LAST_DIR_SYNC / LAST_DIRSYNC_TIME", "type": "integer_or_timestamp", "status": "partial" },
+        { "field": "strongPasswordRequired", "source": "STRONG_PASSWORD_REQUIRED", "type": "boolean", "status": "ok" },
+        { "field": "daysSincePasswordChange", "source": "DAYS_SINCE_PASSWORD_CHANGE", "type": "integer", "status": "partial" },
+        { "field": "hiddenFromAddressList", "source": "HIDDEN_FROM_ADDRESS_LIST", "type": "boolean", "status": "ok" }
+      ]
+    },
+    "identityRisk": {
+      "label": "Identity Risk Assessment",
+      "usedBy": ["user"],
+      "backingSource": "APFDiscADUserDetails + optional join APFDiscADGroupMemberDetails/APFDiscADGroupDetails",
+      "renderMode": "kv",
+      "projection": [
+        { "field": "passwordAgeDays", "source": "PASSWORD_LAST_SET (client derives now − value)", "type": "integer_derived", "status": "ok" },
+        { "field": "daysSinceLastLogon", "source": "DAYS_SINCE_LAST_LOGON", "type": "integer", "status": "ok" },
+        { "field": "accountStatus", "source": "ACCOUNT_STATUS + LOCK_OUT_TIME", "type": "enum", "status": "ok" },
+        { "field": "passwordNeverExpires", "source": "PWD_NEV_EXP_FLAG", "type": "boolean", "status": "ok" },
+        { "field": "smartcardRequired", "source": "SMART_CARD_FOR_INTERACTIVE_LOGIN", "type": "boolean", "status": "ok" },
+        { "field": "trustedForKerberosDelegation", "source": "TRUSTED_FOR_DELEGATION", "type": "boolean", "status": "ok" },
+        { "field": "badPasswordCount", "source": "BAD_PASSWORD_COUNT", "type": "integer", "status": "ok" },
+        { "field": "privilegedGroupMembership", "source": "join APFDiscADGroupMemberDetails+APFDiscADGroupDetails where SID_STRING matches well-known admin RIDs (512/519/518/544)", "type": "string_array_join", "status": "ok" }
+      ]
+    },
+    "processDetails": {
+      "label": "Process Details",
+      "usedBy": ["process"],
+      "backingSource": "ZLogs ES — Windows EID 4688 + Sysmon EID 1",
+      "renderMode": "kv",
+      "projection": [
+        { "field": "processName", "source": "PROCESSNAME", "type": "string", "status": "ok" },
+        { "field": "pid", "source": "PROCESS_ID", "type": "integer", "status": "ok" },
+        { "field": "parentProcess", "source": "PARENT_PROCESS_NAME", "type": "string", "status": "ok" },
+        { "field": "commandLine", "source": "COMMAND_LINE", "type": "string", "status": "partial" },
+        { "field": "executingUser", "source": "USERNAME+DOMAIN", "type": "string", "status": "ok" },
+        { "field": "integrityLevel", "source": "INTEGRITY_LEVEL", "type": "enum", "status": "partial" },
+        { "field": "startTime", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "status", "source": "derived 'Running'/'Exited'", "type": "enum_derived", "status": "partial" },
+        { "field": "codeSignatureStatus", "source": "SIGNATURE_STATUS (Sysmon)", "type": "enum", "status": "partial" },
+        { "field": "sessionId", "source": "SESSION_ID", "type": "integer", "status": "ok" }
+      ]
+    },
+    "amsiEvents": {
+      "label": "AMSI Events (Script Content)",
+      "usedBy": ["process"],
+      "backingSource": "ZLogs ES — Windows PowerShell EID 4104 with AMSI",
+      "renderMode": "timeline",
+      "filter": "EVENTID=4104 AND (AMSI_RESULT IN (Suspicious,Malicious) OR AMSI_SCAN_RESULT=DETECTED) AND PROCESSNAME contains powershell",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "amsiDetectionLevel", "source": "AMSI_RESULT", "type": "enum", "status": "ok" },
+        { "field": "scriptContentPreview", "source": "SCRIPTBLOCK_TEXT (first 500 chars)", "type": "string", "status": "ok" },
+        { "field": "scanResult", "source": "AMSI_SCAN_RESULT", "type": "enum", "status": "ok" },
+        { "field": "actionTaken", "source": "derived from policy", "type": "enum_derived", "status": "partial" },
+        { "field": "scriptBlockId", "source": "SCRIPTBLOCK_ID", "type": "string", "status": "ok" }
+      ]
+    },
+    "registryModifications": {
+      "label": "Registry Modifications",
+      "usedBy": ["process"],
+      "backingSource": "ZLogs ES — Sysmon EID 12/13/14",
+      "renderMode": "timeline",
+      "filter": "SYSMON_EVENTID IN (12,13,14) AND PROCESSNAME=<process_name>",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "operation", "source": "Sysmon EID type", "type": "enum", "status": "ok" },
+        { "field": "registryKeyPath", "source": "REGISTRY_KEY_PATH", "type": "string", "status": "ok" },
+        { "field": "valueName", "source": "VALUE_NAME", "type": "string", "status": "partial" },
+        { "field": "oldValue", "source": "OLD_VALUE", "type": "string", "status": "partial" },
+        { "field": "newValue", "source": "NEW_VALUE", "type": "string", "status": "partial" },
+        { "field": "process", "source": "PROCESSNAME+PROCESS_ID", "type": "string", "status": "ok" }
+      ]
+    },
+    "tokenAnomaly": {
+      "label": "Token Anomaly",
+      "usedBy": ["process"],
+      "backingSource": "ZLogs ES — Windows EID 4672 + Sysmon EID 8",
+      "renderMode": "timeline",
+      "filter": "(EVENTID=4672 AND PRIVILEGE_NAME contains 'Se') OR SYSMON_EVENTID=8 AND PROCESSNAME=<process_name>",
+      "projection": [
+        { "field": "anomalyType", "source": "derived (SeDebugPrivilege / SeImpersonate / CreateRemoteThread)", "type": "enum_derived", "status": "partial" },
+        { "field": "privilegeName", "source": "PRIVILEGE_NAME", "type": "string", "status": "ok" },
+        { "field": "process", "source": "PROCESSNAME", "type": "string", "status": "ok" },
+        { "field": "caller", "source": "USERNAME", "type": "string", "status": "ok" },
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" }
+      ]
+    },
+    "fileOperations": {
+      "label": "File Operations",
+      "usedBy": ["process"],
+      "backingSource": "ZLogs ES — Sysmon EID 11",
+      "renderMode": "timeline",
+      "filter": "SYSMON_EVENTID=11 AND PROCESSNAME=<process_name>",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "operation", "source": "Create/Delete/Modify (EID 11)", "type": "enum", "status": "partial" },
+        { "field": "filePath", "source": "FILE_PATH", "type": "string", "status": "ok" },
+        { "field": "fileSize", "source": "FILE_SIZE", "type": "integer", "status": "ok" },
+        { "field": "hashSha256", "source": "FILE_HASH / HASH_SHA256", "type": "string", "status": "ok" },
+        { "field": "signed", "source": "SIGNED", "type": "boolean", "status": "ok" },
+        { "field": "process", "source": "PROCESSNAME+PROCESS_ID", "type": "string", "status": "ok" }
+      ]
+    },
+    "dllLoads": {
+      "label": "DLL Loads",
+      "usedBy": ["process"],
+      "backingSource": "ZLogs ES — Sysmon EID 7 (high-volume)",
+      "renderMode": "timeline",
+      "filter": "SYSMON_EVENTID=7 AND PROCESSNAME=<process_name>",
+      "sort": "@timestamp DESC",
+      "limit": 50,
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "dllName", "source": "IMAGE_NAME", "type": "string", "status": "ok" },
+        { "field": "dllPath", "source": "IMAGE_PATH", "type": "string", "status": "ok" },
+        { "field": "signed", "source": "SIGNED", "type": "boolean", "status": "ok" },
+        { "field": "loadedByProcess", "source": "PROCESSNAME+PROCESS_ID", "type": "string", "status": "ok" },
+        { "field": "loadAddress", "source": "BASE_ADDRESS", "type": "string", "status": "partial" }
+      ]
+    },
+    "processDnsQueries": {
+      "label": "Process DNS Queries",
+      "usedBy": ["process"],
+      "backingSource": "ZLogs ES — Sysmon EID 22",
+      "renderMode": "timeline",
+      "filter": "SYSMON_EVENTID=22 AND PROCESSNAME=<process_name>",
+      "projection": [
+        { "field": "timestamp", "source": "@timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "domainQueried", "source": "QUERY_NAME", "type": "string", "status": "ok" },
+        { "field": "recordType", "source": "RECORD_TYPE", "type": "string", "status": "ok" },
+        { "field": "resolution", "source": "QUERY_RESULTS", "type": "string", "status": "ok" },
+        { "field": "queryingProcess", "source": "PROCESSNAME+PROCESS_ID", "type": "string", "status": "ok" }
+      ]
+    },
+    "alertDetails": {
+      "label": "Alert Details",
+      "usedBy": ["alert"],
+      "backingSource": "ITSAlertProfileConfigurations + alert instance + ITSDetectionRuleVsMitre",
+      "renderMode": "kv",
+      "projection": [
+        { "field": "alertName", "source": "DISPLAY_NAME", "type": "string", "status": "ok" },
+        { "field": "alertId", "source": "instance UID", "type": "string", "status": "ok" },
+        { "field": "alertSource", "source": "ALERT_TYPE", "type": "enum", "status": "ok" },
+        { "field": "severity", "source": "SEVERITY", "type": "enum", "status": "ok" },
+        { "field": "confidence", "source": "CONFIDENCE_SCORE (if present)", "type": "integer_pct", "status": "partial" },
+        { "field": "rule", "source": "RULE_NAME", "type": "string", "status": "ok" },
+        { "field": "mitreAttack", "source": "ITSDetectionRuleVsMitre.TACTIC/TECHNIQUE_NAME (join)", "type": "string_join", "status": "partial" },
+        { "field": "firstSeen", "source": "instance creation timestamp", "type": "timestamp", "status": "ok" },
+        { "field": "status", "source": "workflow state", "type": "enum", "status": "ok" },
+        { "field": "assignedTo", "source": "analyst assignment", "type": "string", "status": "partial" },
+        { "field": "incidentId", "source": "linked incident", "type": "string", "status": "partial" },
+        { "field": "correlation", "source": "count of linked alerts", "type": "integer", "status": "partial" }
+      ]
+    }
+  },
+  "pendingInventory": {
+    "_note": "Section IDs referenced by entity-slider.js but not yet ground-truthed. Do not fabricate projections.",
+    "sections": {
+      "threatIntelContext": { "usedBy": ["user"], "likelySource": "ZLogs THREAT_* fields filtered by user's recent activity" },
+      "dlpIncidents": { "usedBy": ["user"], "likelySource": "M365 DLP / Audit.DLP UAL events" },
+      "resourceFileAccess": { "usedBy": ["user"], "likelySource": "Windows EID 4663 + file-server audit" },
+      "recentAppAccess": { "usedBy": ["user"], "likelySource": "M365 sign-in audit / SaaS proxy logs" },
+      "agentStatus": { "usedBy": ["device"], "likelySource": "EDR/MDE agent health endpoint (likely not in ZLogs)" },
+      "gpoApplied": { "usedBy": ["device"], "likelySource": "APFDiscADComputerDetails + GPO RSoP discovery" },
+      "processesOnHost": { "usedBy": ["device"], "likelySource": "same projection as processes (§9.6) — verify filter" },
+      "servicesOnHost": { "usedBy": ["device"], "likelySource": "Windows EID 7045 host-scoped" },
+      "usersLoggedOn": { "usedBy": ["device"], "likelySource": "4624 host-scoped distinct-user agg" },
+      "loginActivity": { "usedBy": ["device"], "likelySource": "same as logonActivity (§9.4) — confirm alias" },
+      "scheduledTasks": { "usedBy": ["device"], "likelySource": "Windows EID 4698/4699/4700/4701/4702" },
+      "usbDeviceEvents": { "usedBy": ["device"], "likelySource": "Windows EID 6416/6420 (Plug-and-Play)" },
+      "localAccountLifecycle": { "usedBy": ["device"], "likelySource": "Windows EID 4720/4722/4725/4726 host-scoped" },
+      "ipDetails": { "usedBy": ["ip", "domain"], "likelySource": "derived: IPADDRESS/HOSTNAME + MaxMind GeoIP + ADSCountries.xml lookup" },
+      "associatedUsers": { "usedBy": ["ip", "domain"], "likelySource": "Windows 4624/4625 + IPADDRESS pivot" },
+      "associatedDevices": { "usedBy": ["ip", "domain"], "likelySource": "Windows 4624 + HOSTNAME pivot" },
+      "vpnSessions": { "usedBy": ["ip", "domain"], "likelySource": "firewall VPN logs (PA GlobalProtect / Fortinet SSLVPN / Cisco AnyConnect)" },
+      "trafficSummary": { "usedBy": ["ip", "domain"], "likelySource": "aggregate variant of connectionHistory" },
+      "serviceDetails": { "usedBy": ["service"], "likelySource": "unclear — possibly correlation rule definition" },
+      "serviceInfo": { "usedBy": ["service"], "likelySource": "same as serviceDetails — confirm if duplicate" },
+      "oauthConsentGrants": { "usedBy": ["service"], "likelySource": "M365 UAL Add OAuth2PermissionGrant / Consent to application" },
+      "conditionalAccess": { "usedBy": ["service"], "likelySource": "Entra CA policy snapshot (Graph API)" },
+      "dlpPolicies": { "usedBy": ["service"], "likelySource": "M365 DLP policy snapshot" },
+      "signInAudit": { "usedBy": ["service"], "likelySource": "M365 Audit.AzureActiveDirectory SignIn records" },
+      "adminActivity": { "usedBy": ["service"], "likelySource": "M365 UAL admin operations" },
+      "fileAccessAnomaly": { "usedBy": ["service"], "likelySource": "SharePoint/OneDrive FileAccessed UAL events with anomaly score" },
+      "sensitiveFiles": { "usedBy": ["service"], "likelySource": "M365 sensitivity-label tagged file access" },
+      "serviceTimeline": { "usedBy": ["service"], "likelySource": "aggregated timeline across UAL records" },
+      "networkConnections": { "usedBy": ["service"], "likelySource": "Sysmon EID 3 scoped to service-related process" },
+      "fileDrops": { "usedBy": ["service"], "likelySource": "Sysmon EID 11 scoped" },
+      "wmiEvents": { "usedBy": ["service"], "likelySource": "Sysmon EID 19/20/21" },
+      "processTree": { "usedBy": ["process"], "likelySource": "computed graph from EID 4688/Sysmon-1 parent chain" },
+      "childProcesses": { "usedBy": ["process"], "likelySource": "inverse of processTree" },
+      "namedPipes": { "usedBy": ["process"], "likelySource": "Sysmon EID 17/18" },
+      "tokenUsage": { "usedBy": ["process"], "likelySource": "similar to tokenAnomaly minus anomaly filter" },
+      "triggerConditions": { "usedBy": ["alert"], "likelySource": "rule definition from ITSAlertProfileConfigurations" },
+      "affectedEntities": { "usedBy": ["alert"], "likelySource": "alert-entity link table" },
+      "correlatedAlerts": { "usedBy": ["alert"], "likelySource": "correlation engine output" }
+    }
+  }
+}
