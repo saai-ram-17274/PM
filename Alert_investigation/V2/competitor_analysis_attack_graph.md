@@ -21,6 +21,30 @@
 | **Blast Radius (Advanced)** | Right-click a node → "View blast radius" shows **possible lateral movement paths** (up to 7 hops). Shows attack path from entry point to critical targets. Paths shown with directional edges. |
 | **Unique Features** | - AI-generated incident description via Copilot<br>- "Go Hunt" button on any entity for advanced hunting queries<br>- Blast radius replaces older "Attack Path Analysis"<br>- MITRE ATT&CK kill chain alignment in summary view |
 
+### Per-Entity Actions (right-click / "•••" menu on a graph node)
+
+Defender XDR exposes a different action list **per entity type**, surfaced both on the graph node context menu and in the entity side pane. This is the differentiator behind their "act without losing context" pitch.
+
+**Sources (verified 2026-05-19):**
+- [Take response actions on a device — Defender for Endpoint](https://learn.microsoft.com/en-us/defender-endpoint/respond-machine-alerts)
+- [Take response actions on a user account](https://learn.microsoft.com/en-us/defender-xdr/investigate-users)
+- [Take response actions on a file](https://learn.microsoft.com/en-us/defender-endpoint/respond-file-alerts)
+- Screenshot match: user-supplied device context menu (matches Defender portal Device node menu)
+
+| Entity type | Actions surfaced on the node menu |
+|---|---|
+| **Device** | Open device page · Device value (Low/Normal/High) · Manage tags · Report device inaccuracy · Run Antivirus Scan · Collect Investigation Package · Restrict App Execution · Initiate Automated Investigation · Initiate Live Response Session · Isolate Device · Ask Defender Experts · Action center · Go hunt · Turn on troubleshooting mode · Policy sync |
+| **User** | Open user page · Confirm user compromised · Mark as safe · Require user to sign in again · Disable user in AD · Suspend user in Entra ID · Reset password · Investigate priority score · Go hunt · View timeline |
+| **File** | Open file page · Stop and quarantine file · Add indicator (block / allow) · Download file · Collect file · Ask Defender Experts · Submit for deep analysis · Go hunt |
+| **IP address** | Open IP page · Add indicator (block) · Allow/Block in firewall · Go hunt · View related alerts · Investigate prevalence |
+| **URL / Domain** | Open URL page · Add indicator (block / allow) · Submit URL · Go hunt · View detonation report |
+| **Mailbox** | Open mailbox page · Soft delete email · Hard delete email · Move to Inbox/Junk · Block sender · Go hunt · Submission report |
+| **Cloud app / OAuth app** | Open app page · Disable app · Revoke OAuth consent · Mark app as banned · Go hunt |
+| **Cloud resource** | Open resource page · View in Defender for Cloud · Add recommendation · Go hunt |
+| **Process** | Open process tree · Stop process · Quarantine parent file · Go hunt |
+
+**Pattern observed:** every entity type gets (1) a deep-link "Open … page", (2) a hunting pivot ("Go hunt"), (3) **2–6 type-specific response actions** that map to a contain/disrupt/recover verb, and (4) a metadata action ("manage tags", "device value", "report inaccuracy") for asset-management hygiene. Destructive actions (Isolate, Stop & quarantine, Disable user) are visually separated near the bottom of the menu.
+
 ### Screenshot References
 - Attack story graph: `https://learn.microsoft.com/en-us/defender-xdr/media/investigate-incidents/play-alert-attack-story.gif`
 - Entity details pane: `https://learn.microsoft.com/en-us/defender-xdr/media/investigate-incidents/review-entity-details-attack-story.gif`

@@ -28,7 +28,7 @@ V5 ships **20 demo entities** across **8 entity types**. Each entity type has it
 | Type | Tab Layout | Demo Entities |
 |------|-----------|---------------|
 | **user** | Overview · Risk & Identity · Activity · Account Changes · Recent Alerts | `user-m-henderson`, `user-admin` |
-| **device** | Overview · Host Activity · Persistence & Exfil · Alerts & Response | `dev-ws045` (implicit; see processes/services) |
+| **device** | Overview · Host Activity · Device Activity · Alerts & Response | `dev-ws045` (implicit; see processes/services) |
 | **ip** | Overview · Threat Intel · Connections · Logon Activity | `ip-tor`, `ip-internal` |
 | **domain** | Overview · Threat Intel · Connections · Logon Activity | `domain-c2` (implicit) |
 | **service** | Overview · Config & Policy · Activity · Alerts & Response | `svc-azure-ad`, `svc-sharepoint`, `svc-oauth`, `svc-winupdatesvc` |
@@ -178,108 +178,162 @@ WHERE  u.OBJECT_GUID = :userGuid;
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Azure AD UPN + Tenant + License (P1/P2/E5) | ✅ | M365 Manager Plus / Cloud Security Plus | Graph API `users/{id}` + `subscribedSkus` |
-| Azure Roles | ✅ | Graph API `directoryRoles` | Existing |
-| Conditional Access (count) | ✅ | Graph API `conditionalAccessPolicies` | Existing |
+| UPN | ✅ | M365 Entra discovery | `APFDiscAADUserDetails.USER_PRINCIPAL_NAME` |
+| Sync Source | ✅ | M365 Entra discovery | `APFDiscAADUserDetails.ONPREMISES_SYNC_ENABLED` |
+| Cloud Account | ✅ | M365 Entra discovery | `APFDiscAADUserDetails.ACCOUNT_ENABLED` + `IS_LICENSED` |
+| Last Dir Sync | ✅ | M365 Entra discovery | `APFDiscAADUserDetails.DAYS_SINCE_LAST_DIR_SYNC` |
+| Strong Password Required | ✅ | M365 Entra discovery | `APFDiscAADUserDetails.STRONG_PASSWORD_REQUIRED` |
+| Days Since Password Change | ✅ | M365 Entra discovery | `APFDiscAADUserDetails.DAYS_SINCE_PASSWORD_CHANGE` |
+| Hidden From Address List | ✅ | M365 Entra discovery | `APFDiscAADUserDetails.HIDDEN_FROM_ADDRESS_LIST` |
 
 #### 1.11 Identity Risk Assessment (`identityRisk`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Password Age (vs policy) | ✅ | LDAP `pwdLastSet` + domain pwd policy | ADAP |
-| Group Memberships | ✅ | LDAP `memberOf` | ADAP |
-| Privileged Groups + WriteDACL findings | 🟡 | ADAP risk-report module + ADMP Governance attack-path | Existing (Governance module) |
-| Stale Account / Service Account flags | ✅ | LDAP attributes + heuristic | ADAP |
-| Last Password Change | ✅ | LDAP `pwdLastSet` | ADAP |
+| Password Age (days) | ✅ | AD discovery | `APFDiscADUserDetails.PASSWORD_LAST_SET` (now − value) |
+| Days Since Last Logon | ✅ | AD discovery | `APFDiscADUserDetails.DAYS_SINCE_LAST_LOGON` |
+| Account Status (Enabled/Disabled/Locked) | ✅ | AD discovery | `APFDiscADUserDetails.ACCOUNT_STATUS` + `LOCK_OUT_TIME` |
+| Password Never Expires | ✅ | AD discovery | `APFDiscADUserDetails.PWD_NEV_EXP_FLAG` |
+| Smartcard Required | ✅ | AD discovery | `APFDiscADUserDetails.SMART_CARD_FOR_INTERACTIVE_LOGIN` |
+| Trusted for Kerberos Delegation | ✅ | AD discovery | `APFDiscADUserDetails.TRUSTED_FOR_DELEGATION` |
+| Bad Password Count | ✅ | AD discovery | `APFDiscADUserDetails.BAD_PASSWORD_COUNT` |
+| Privileged Group Membership | ✅ | AD discovery + well-known SID list | `APFDiscADGroupMemberDetails` join `APFDiscADGroupDetails` on `FRONTLINK_OBJECT_ID = group.UNIQUE_ID` filtered by `SID_STRING LIKE '%-512' / '-519' / '-518' / '-544'` |
 
 #### 1.13 Threat Intelligence Context (`threatIntelContext`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Primary IOC | 🟡 | Log360 Threat Analytics module | Internal IP/domain enrichment cache |
-| VirusTotal verdict | ❌ | Not in product | — |
-| First Seen (Global) | ❌ | Not in product | — |
-| MITRE Techniques | 🟡 | Per-alert-profile mapping | `ITSAlertProfileConfigurations.MITRE_TECHNIQUE_ID` |
-
-#### 1.14 DLP Incidents (`dlpIncidents`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Policy, Action, File, Destination | ✅ | DataSecurity Plus / Defender for Cloud Apps DLP | Existing connector |
+| Primary IOC | ✅ | ELA event | Source/Destination IP or domain from the triggering alert event |
+| Reputation Verdict (Critical / Malicious / Suspicious) | ✅ | ELA Threat Analytics | `THREAT_REPUTATION.REPUTATION_SCORE` keyed on the IOC (1=Critical, 2=Malicious, 3=Suspicious) |
+| Threat Category | ✅ | ELA Threat Analytics | `THREAT_REPUTATION.THREAT_CATEGORY` (e.g. C2, Tor, Phishing, Malware) |
+| Threat Feed / Vendor | ✅ | ELA Threat Analytics | `THREAT_REPUTATION.SOURCE` (Webroot BrightCloud / STIX feed / custom) |
+| First Seen (Local) | ✅ | ELA Threat Analytics | `THREAT_REPUTATION.FIRST_SEEN_TIME` (first time this IOC was observed by ELA) |
+| VirusTotal verdict | 🟡 | Log360 ATA add-on | VT API integration — only if Advanced Threat Analytics module is licensed |
+| MITRE Techniques | ✅ | Per-alert-profile mapping | `ITSAlertProfileConfigurations.MITRE_TECHNIQUE_ID` |
 
 ### 🗂️ Tab — Activity
 
-> Sections in this tab: `logonActivity` · `networkActivity` · `processes` · `serviceTriggered` · `resourceFileAccess` · `recentAppAccess`
+> Sections in this tab: `logonActivity` · `networkActivity` · `processes` · `serviceTriggered` · `resourceFileAccess`
 
 #### 1.3 Logon Activity (`logonActivity`) — Timeline
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Timestamp, Logon Type (2/3/10), Target Host, Source IP, Status | ✅ | EventID 4624 / 4625 in Elasticsearch | Standard auth-log parser |
-| `dot` color (red/orange/green) | ✅ | Computed from UEBA peer-group baseline | UEBA scorer |
+| Timestamp | ✅ | ELA | `TIME` field on the parsed event |
+| EventID | ✅ | ELA | `EVENTID` (success: 528 / 540 / 4624; failure: 529-537 / 539 / 4625; logoff: 538 / 4634) |
+| Logon Type | ✅ | ELA | `LOGONTYPE` (2=Interactive, 3=Network, 7=Unlock, 10=RemoteInteractive, 11=CachedInteractive) |
+| Target Host | ✅ | ELA | `HOSTNAME` (host that received the event) |
+| Source IP / Workstation | ✅ | ELA | `IPADDRESS` / `REMOTEHOST` / `WORKSTATION_NAME` |
+| Authentication Package | ✅ | ELA | `AUTHENTICATIONPACKAGENAME` (NTLM / Kerberos / Negotiate) |
 
 #### 1.12 Network Activity (24h) (`networkActivity`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| DNS Query (Domain, Resolution, Source Host) | ✅ | Sysmon EventID 22 + DNS-server logs | Existing collector |
-| Firewall Allow / Deny (Dst, Proto, Bytes, Duration) | ✅ | Firewall syslog (Fortinet/PA/Checkpoint) | Existing parsers |
-| Proxy log (URL, Method, UA) | ✅ | Proxy syslog | Existing |
-| VPN Connection (Src, Assigned, Proto, Duration) | ✅ | VPN gateway logs | Existing |
+| Type label | ✅ | ELA | Derived from device-type / log format at parse time |
+| DNS Query (Domain, Resolution, Source Host) | ✅ | ELA | Windows DNS Server analytical log OR Sysmon EID 22 — fields parsed into `QUERY_NAME`, `QUERY_RESULTS`, `HOSTNAME` |
 
 #### 1.4 Processes (`processes`) — Timeline (per user-launched processes)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Process Name, Parent Process | ✅ | Sysmon EventID 1 + EID 8 (CreateRemoteThread) | Sysmon collector → ES |
-| Action: Kill Process | ✅ | EDR API call (Defender/CrowdStrike/SentinelOne) | Existing remediation orchestrator |
+| Process Name | ✅ | ELA | Win EID 4688 `New Process Name` OR Sysmon EID 1 `Image` → parsed into `PROCESSNAME` |
+| Parent Process | ✅ | ELA | EID 4688 `Creator Process Name` / Sysmon EID 1 `ParentImage` |
+| Command Line | ✅ | ELA | EID 4688 (if `ProcessCreationIncludeCmdLine` GPO enabled) / Sysmon EID 1 `CommandLine` |
+| Executing User | ✅ | ELA | `USERNAME` + `DOMAIN` on the 4688 / Sysmon-1 event |
+| Action: Kill Process | 🟡 | Log360 Incident Workflow → EDR API | Custom workflow calling Defender / CrowdStrike / SentinelOne; **not native** |
 
 #### 1.5 Service Triggered (`serviceTriggered`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Service Name, Display Name, Startup type, Host, Status, Severity | ✅ | EventID 7045 (service installed) + 4697 + EID 12/13 | Windows Service log parser |
-| Action: Stop Service | ✅ | WMI/PowerShell remoting via existing AAP runner | — |
+| Service Name, Display Name | ✅ | ELA | EID 7045 `Service Name` / `Service File Name`; EID 4697 `Subject` + `Service Name` |
+| Startup Type, Account | ✅ | ELA | EID 7045 `Service Type` + `Start Type` + `Service Account` |
+| Host | ✅ | ELA | `HOSTNAME` of the event |
+| Severity | 🟡 | Log360 correlation | Derived from alert profile fired on the 7045 event (not a native field) |
+| Action: Stop Service | 🟡 | Log360 Incident Workflow | Custom workflow with `sc stop` / PSRemoting step; **not one-click native** |
 
 #### 1.7 Resource / File Access (`resourceFileAccess`)
 
 | Field | Status | Product Source | How to Get |
 |-------|--------|----------------|------------|
-| Host, File Name, Location, Change Type | ✅ | File-server auditing (ADAudit Plus File Server module) + SharePoint audit | Existing FS collector + Graph API |
-
-#### 1.19 Recent Application Access (`recentAppAccess`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Application, Source IP, Risk Level, Result | ✅ | Entra ID Sign-in logs | M365MP |
+| Host | ✅ | ELA | `HOSTNAME` of the file server |
+| File Name / Object Path | 🟡 | ELA + SACL | Win EID 4663 `OBJECTNAME` — requires SACL enabled on the share |
+| Change Type | 🟡 | ELA | Derived from EID 4663 `ACCESSMASK` bits (0x1=Read, 0x2=Write, 0x10000=Delete) |
+| Accessing Process | ✅ | ELA | EID 4663 `PROCESSNAME` |
+| SharePoint / OneDrive activity | 🟡 | M365 Manager Plus | O365 Unified Audit Log; requires M365MP licence |
 
 ### 🗂️ Tab — Account Changes
 
 > Sections in this tab: `accountLockouts` · `passwordHistory` · `groupMembershipChanges` · `mailboxForwarding`
+>
+> **Ingest paths used in this tab:**
+> - **Windows agent → ZLogs** — Domain Controller security events parsed by [Windows.xml](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Windows/Windows.xml) / [WMIWindows-Security.xml](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Windows/WMIWindows-Security.xml) and indexed into Elasticsearch (ZLogs).
+> - **M365 cloud-account → ZLogs** — Tenant onboarded via `M365CustomLogUploadImpl` ([Java](../../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/adminpanel/customlogupload/cloudaccount/M365CustomLogUploadImpl.java)); a scheduler (`/RestAPI/WC/M365ScheduleActions`) polls the **O365 Management Activity API** (`manage.office.com/api/v1.0/{tenant}/activity/feed/subscriptions/content`) for content types `Audit.AzureActiveDirectory`, `Audit.Exchange`, `Audit.General`, `Audit.SharePoint` and ingests every record into the same ZLogs index. Graph is used only for tenant validation.
+> - **APF discovery** — Current state (`APFDiscADUserDetails`, `APFDiscADGroupDetails`, `APFDiscAADUserDetails`, `APFDiscAADGroupDetails`) for joins like *current group membership* or *current lockout state*.
 
 #### 1.15 Account Lockouts (`accountLockouts`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| User, Locking DC, Source Computer, EventID | ✅ | EventID 4740 (account locked) | ADAP account-lockout analyzer |
+Trigger: Windows EventID `4740` written by the DC that detected the bad-password threshold breach.
+
+| Slider field | Status | ZLogs column | Where it comes from |
+|---|---|---|---|
+| User | ✅ | `TARGETUSER` | Parser rule `RULE_ID:200160` for `EVENTID=4740` ([Windows.xml L909](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Windows/Windows.xml)) |
+| Locking DC | ✅ | `HOSTNAME` | Envelope — DC that wrote the event |
+| Source Computer | ✅ | `REMOTEHOST` | Caller Computer Name extracted by same rule (empty for RDP/service-triggered lockouts) |
+| Event ID | ✅ | `EVENTID` = `4740` | Envelope |
+| Time | ✅ | `EVENT_TIME` | Envelope |
+| Risk label | ✅ | `RISK_LEVEL` = `High`, `IENAME` = `Windows User Account LockedOut` | Set by parser transforms |
+
+> **Not in 4740** — *unlock time*, *unlocked-by*, *cause*, *bad-password trail*. To enrich: query ZLogs for `EVENTID=4767` ([RULE_ID:2502193](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Windows/WMIWindows-Security.xml)) on the same `TARGETUSER` for unlock; query `EVENTID=4625` in the preceding window for the failed-logon trail; read `APFDiscADUserDetails.LOCK_OUT_TIME` / `BAD_PASSWORD_COUNT` for current state.
 
 #### 1.16 Password Change / Reset History (`passwordHistory`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Operation, Caller, Target, Source, Result | ✅ | EventID 4723 (self) / 4724 (admin) — on-prem; Entra audit log — cloud | ADAP + M365MP |
+Unifies on-prem AD and Microsoft Entra ID (cloud) password events — both land in the same ZLogs index via different ingest paths.
+
+| Slider field | Status | ZLogs column | Where it comes from |
+|---|---|---|---|
+| Operation | ✅ | derived from `EVENTID` (AD) or `OPERATION` (Entra) | AD: `4723` self-change · `4724` admin-reset (Windows agent). Entra: `Change user password.` · `Reset user password.` (M365 cloud-account, content type `Audit.AzureActiveDirectory`) |
+| Caller | ✅ | `USERNAME` + `DOMAIN` (AD) / `USERID` (Entra) | Subject of the 4723/4724 event for AD; `UserId` (acting UPN) for Entra |
+| Target | ✅ | `TARGETUSER` (AD) / `OBJECTID` (Entra) | Account whose password was changed |
+| Source host | ✅ | `HOSTNAME` (AD) / `Workload`→`SOURCE=AzureActiveDirectory` (Entra) | DC for AD; tenant for Entra |
+| Client IP | 🟡 | `CLIENTIP` (Entra only) | Populated only on Entra records — AD `4723/4724` carries no client IP |
+| Result | ✅ | `SEVERITY` (AD) / `RESULT` (Entra) | `success`/`failure` for AD; `Succeeded`/`Failed` for Entra |
+| Time | ✅ | `EVENT_TIME` | Envelope |
+
+> **Unified slider query** — `(EVENTID in (4723,4724) AND TARGETUSER=<user>) OR (OPERATION in ('Change user password.','Reset user password.') AND OBJECTID=<userUPN>)`. Cloud-only users have **no** `4723/4724` record — only the Entra side; hybrid users may produce both (Entra → on-prem write-back fires `4724` on the DC).
 
 #### 1.17 Group Membership Changes (`groupMembershipChanges`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Operation, Group, Caller, Source | ✅ | EventID 4732/4756 — on-prem; Entra audit — cloud | ADAP + M365MP |
+Same dual-ingest pattern: AD security-group changes via Windows agent, Entra group changes via M365 cloud-account.
+
+| Slider field | Status | ZLogs column | Where it comes from |
+|---|---|---|---|
+| Operation | ✅ | derived from `EVENTID` (AD) or `OPERATION` (Entra) | AD add: `4728/4732/4756` · AD remove: `4729/4733/4757` (parser [`RULE_ID:200164`](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Windows/Windows.xml)). Entra: `Add member to group` · `Remove member from group` |
+| Group | ✅ | `GROUPNAME` (+ `GROUPDOMAIN`) for AD; `OBJECTID`/`PARAMETERS.Group.DisplayName` for Entra | Direct extraction by parser |
+| Member added/removed | ✅ | `TARGETUSER` (+ `MEMBERSID`) for AD; `PARAMETERS.Member.userPrincipalName` for Entra | Same |
+| Caller | ✅ | `USERNAME` + `DOMAIN` (AD) / `USERID` (Entra) | Acting admin UPN |
+| Source host | ✅ | `HOSTNAME` (AD) / `SOURCE=AzureActiveDirectory` (Entra) | DC for AD; tenant for Entra |
+| Time | ✅ | `EVENT_TIME` | Envelope |
+
+> **Current state vs change history** — ZLogs answers *who changed what when*. For *current membership of this group right now*, join `APFDiscADGroupDetails` (on-prem) / `APFDiscAADGroupDetails` (cloud) discovered by APF — both already in cloud schema.
 
 #### 1.18 Mailbox Forwarding Rules (`mailboxForwarding`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Operation (New-InboxRule), Mailbox, Rule Name, ForwardTo, Creator IP | ✅ | Exchange Online audit log | M365 Manager Plus |
+Exchange Online only. No on-prem Exchange path. Source: M365 cloud-account → O365 Mgmt Activity API content type `Audit.Exchange` → ZLogs.
+
+| Slider field | Status | ZLogs column | Where it comes from |
+|---|---|---|---|
+| Operation | ✅ | `OPERATION` | `New-InboxRule` · `Set-InboxRule` · `Set-Mailbox` (when `ForwardingSmtpAddress` set) · `Set-TransportRule` |
+| Mailbox | ✅ | `OBJECTID` | Mailbox UPN/SMTP from the cmdlet record |
+| Caller | ✅ | `USERID` | Acting principal UPN |
+| Rule Name | ✅ | `PARAMETERS.Name` | Parsed from the `Parameters` blob of the cmdlet record |
+| ForwardTo | ✅ | `PARAMETERS.ForwardTo` / `ForwardingSmtpAddress` / `RedirectTo` | Same blob — name varies by cmdlet |
+| Client IP | ✅ | `CLIENTIP` | Exchange UAL `ClientIP` |
+| Result | ✅ | `RESULT` | `Succeeded` / `Failed` |
+| Time | ✅ | `EVENT_TIME` | `CreationTime` from UAL |
+
+> **Why this row exists** — auto-forwarding to an external address is a classic post-compromise data-exfil signal. The slider should flag rules whose `ForwardTo` is outside the tenant's accepted-domains list (resolvable from APF Exchange discovery).
 
 ### 🗂️ Tab — Recent Alerts
 
@@ -318,88 +372,171 @@ WHERE  u.OBJECT_GUID = :userGuid;
 
 ## 2. DEVICE Entity (`dev-ws045` — CORP-WS-045)
 
-Tabs: **Overview · Host Activity · Persistence & Exfil · Alerts & Response**
+Tabs: **Overview · Host Activity · Device Activity · Alerts & Response**
 
 ### 🗂️ Tab — Overview
 
-> Sections in this tab: `riskSummary` · `deviceDetails` · `agentStatus` · `gpoApplied` · `securityEventSummary`
+> Sections in this tab: `riskSummary` · `deviceDetails` · `agentStatus` · `gpoApplied`
+>
+> **Ingest paths used in this tab:**
+> - **APF AD discovery → `APFDiscADComputerDetails`** ([data-dictionary.xml L1661](../../../REPOS/ADSF-DD-DML/product_package/conf/adsf/common/appfw/discovery/application/ad/data-dictionary.xml)) — current state of the AD computer object pulled by APF's AD application.
+> - **Windows agent → ZLogs** — security-channel events from this host (boot, GPO refresh, per-EventID counters).
+> - **Agent registry tables** (`ELACONFIGUREDLOGCOLLECTION` + heartbeat) — Log360 Cloud agent health.
 
 #### 2.1 Risk Summary (`riskSummary`)
-Same field structure as User §1.1; `metrics` are device-specific ("Suspicious Processes", "C2 Connections"). All ✅ from `ITSEntityRiskScoreDetails`.
+Same field structure as User §1.1. Pulls from `ITSEntityRiskScoreDetails` filtered by `ENTITY_TYPE='device'`.
+
+**Device-specific metric tiles (24h, host-scoped):**
+
+| Tile | Status | Source / Query |
+|---|---|---|
+| Login Success (24h) | ✅ | ZLogs `EVENTID=4624 AND HOSTNAME=<host> AND TARGETUSER NOT LIKE '%$' AND TARGETUSER NOT IN ('SYSTEM','LOCAL SERVICE','NETWORK SERVICE','ANONYMOUS LOGON')` — count over last 24h. Parser: [WMIWindows-Security.xml](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Windows/WMIWindows-Security.xml). Filter excludes machine accounts (`$`-suffixed) and well-known service principals so the count reflects human-driven sessions on this host. |
+| Login Failure (24h) | ✅ | ZLogs `EVENTID=4625 AND HOSTNAME=<host>` — count over last 24h. Click-through to Host Activity tab reveals `SUB_STATUS` breakdown (`0xC000006A` bad password / `0xC0000064` bad username / `0xC0000234` locked / `0xC000006F` outside hours). |
+
+**Color rule:** Success neutral (green if non-zero, grey if zero); Failure red if > rolling-7d-median × 3, orange if > median × 1.5, else neutral.
+
+**Replaces:** earlier `Suspicious Processes` / `Rogue Services` / `Tor Connections` tiles — those were derived from correlation-rule output and overlapped with the Alerts tab; the logon counters are direct host-side telemetry.
 
 #### 2.2 Device Details (`deviceDetails`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Hostname, FQDN, OS, OS Build | ✅ | AD computer object + Sysmon system info | ADAP + Sysmon EID 1 |
-| Domain, OU | ✅ | AD `distinguishedName` | ADAP |
-| Last Logon, Last Boot | ✅ | AD `lastLogonTimestamp` + Sysmon EID 6005 | Existing |
-| Owner / Primary User | ✅ | AD `managedBy` + heuristic on logon counts | ADAP |
-| Hardware (CPU, RAM, Disk) | 🟡 | Asset-management integration (SCCM/Intune) | Optional connector |
-| BitLocker / Disk encryption | 🟡 | Intune compliance | Existing |
+| Slider field | Status | ZLogs / APF source |
+|---|---|---|
+| Hostname | ✅ | `APFDiscADComputerDetails.COMPUTER_NAME` |
+| FQDN / DNS Name | ✅ | `APFDiscADComputerDetails.DNS_NAME` |
+| OS | ✅ | `APFDiscADComputerDetails.OPERATING_SYSTEM` |
+| Domain | ✅ | `APFDiscADComputerDetails.DOMAIN_NAME` |
+| OU | ✅ | `APFDiscADComputerDetails.OU_NAME` + `OU_DN_NAME` |
+| Distinguished Name | ✅ | `APFDiscADComputerDetails.DISTINGUISHED_NAME` |
+| Owner / Managed-By | ✅ | `APFDiscADComputerDetails.MANAGER` + `MANAGED_BY_DN` (resolve DN → user via join to `APFDiscADUserDetails.DISTINGUISHED_NAME`) |
+| Last Logon | ✅ | `APFDiscADComputerDetails.LAST_LOGON_TIMESTAMP` |
+| Last Boot | ✅ | ZLogs `EVENTID=6005` (event log started) on this host |
+| Created / Modified | ✅ | `APFDiscADComputerDetails.CREATION_TIME` / `MODIFIED_TIME` |
+| Computer Status | ✅ | `APFDiscADComputerDetails.COMPUTER_STATUS` |
+| Role | ✅ | `APFDiscADComputerDetails.ROLE` (Workstation / Member-Server / DC) |
+| Trusted for Delegation | ✅ | `APFDiscADComputerDetails.TRUSTED_FOR_DELEGATION` |
+| LAPS password expiry | ✅ | `APFDiscADComputerDetails.LAPS_EXPIRATION_TIME` |
+
+> **Out of scope for core Log360 Cloud** — hardware (CPU/RAM/Disk) is not in AD and there is no Intune/SCCM connector in core today. Primary-user heuristic (top `USERNAME` from 4624 over 30d) is doable but not a stored field.
 
 #### 2.8 Agent Status & Health (`agentStatus`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| EDR (Defender / CrowdStrike / SentinelOne) status, version, last check-in | ✅ | EDR API | Existing connectors |
-| Sysmon version, config hash | 🟡 | Sysmon registry key | Custom collector |
-| AV definitions date | ✅ | EDR API | Existing |
+| Slider field | Status | Source |
+|---|---|---|
+| Log360 Cloud agent — version, last sync, status | ✅ | agent registration + heartbeat tables (`LCCommonDataProvider`) — *Last Sync* = timestamp of the most recent agent contact with the cloud collector |
+| Collector ID | ✅ | agent registration record (cloud-collector binding) |
+
+> EDR (Defender / CrowdStrike / SentinelOne) version + AV definitions are **only** available when an EDR cloud-source connector is onboarded — same onboarding pattern as M365.
 
 #### 2.9 GPO Applied to Device (`gpoApplied`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| GPO name, link OU, version, applied at | ✅ | ADManager Plus GPO module | Existing |
+| Slider field | Status | ZLogs query |
+|---|---|---|
+| GPO change events on the DC | ✅ | `EVENTID in (5136, 5137, 5141)` AND `OBJECTTYPE=groupPolicyContainer` (Windows agent on DC → ZLogs) |
+| GPO link/unlink to OU | ✅ | `EVENTID=5136` on `gPLink` attribute changes |
+| Last GPO refresh on host | ✅ | `EVENTID=1502` on this host (Group Policy success) |
 
-#### 2.10 Security Event Summary (24h Counters) (`securityEventSummary`)
-
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Per-EventID counts (4624, 4625, 4672, 4688, 7045, …) | ✅ | ES `date_histogram` + `terms` agg | Existing |
+> Log360 Cloud has **no "ADManager Plus GPO module"** to call — live "what's applied right now" requires `gpresult` from the agent (not in core today).
 
 ### 🗂️ Tab — Host Activity
 
 > Sections in this tab: `processesOnHost` · `servicesOnHost` · `usersLoggedOn` · `loginActivity`
+>
+> **Ingest path:** Windows agent → ZLogs (`windows-*` index), filtered by `HOSTNAME=<host>`. Parsers: [Windows.xml](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Windows/Windows.xml), [WMIWindows-Security.xml](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Windows/WMIWindows-Security.xml).
 
-#### 2.4 Processes on Host (`processesOnHost`)
+#### 2.4 Processes on Host (`processesOnHost`) — retitled "Processes Started on Host"
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Process name, PID, Start time, Cmdline | ✅ | Sysmon EID 1 | Existing |
+| Slider field | Status | ZLogs source |
+|---|---|---|
+| Time | ✅ | `@timestamp` |
+| Process | ✅ | Sysmon EID 1 `IMAGE` **or** Security EID 4688 `PROCESS` |
+| PID | ✅ | `PROCESS_ID` |
+| User | ✅ | `USERNAME` + `DOMAIN` |
+| Command line | 🟡 | Sysmon EID 1 `COMMAND_LINE` (always) **or** EID 4688 `PROCESS_COMMAND_LINE` (only if `Audit: Include cmdline in process creation` GPO is enabled) |
+| Status ("Started") | ✅ | EID 1 / 4688 are *creation* events, not live-state. Label is **"Started"**, not "Running". |
+| Action: ⊘ Kill Process | ✅ (SOAR) | Renders as playbook trigger; handed off to remediation pipeline (no direct agent kill channel today). |
 
-#### 2.5 Services on Host (`servicesOnHost`)
+#### 2.5 Services on Host (`servicesOnHost`) — retitled "Services Installed on Host"
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Service Name, Display Name, Startup, User, Status | ✅ | EID 7045 + WMI snapshot | Existing |
+| Slider field | Status | ZLogs source |
+|---|---|---|
+| Time | ✅ | `@timestamp` of EID 7045 |
+| Service / Display Name | ✅ | `SERVICENAME` |
+| Account | ✅ | `SERVICEACCOUNT` |
+| Binary | ✅ | `IMAGEPATH` |
+| Start Type | ✅ | `SERVICESTARTTYPE` (Auto / Manual / Disabled) |
+| Status ("Installed") | ✅ | EID 7045 = install-time event. Label is **"Installed"**, not "Running". |
+| ~~Signed~~ | ❌ **Removed** | Not in EID 7045 envelope; agent does not perform PE-signature lookup. |
+| Action: ⊘ Stop Service | ✅ (SOAR) | Playbook trigger; same handoff pattern as Kill Process. |
 
-#### 2.6 Users Logged On (`usersLoggedOn`)
+#### 2.6 Recent Logon Sessions (`usersLoggedOn`) — retitled from "Users Logged On"
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Active sessions (user, type, since) | ✅ | `quser` / `LogonSessions.exe` collector + 4624/4634 pairing | Existing |
+> Reframed: Log360 Cloud agent does **not** ship live `quser` / `LogonSessions.exe` output. Sessions are **derived** by pairing 4624 (logon) with 4634 / 4647 (logoff) on `LOGON_ID`.
+
+| Slider field | Status | ZLogs derivation |
+|---|---|---|
+| User | ✅ | `TARGETUSER` (filter `$`-suffix + SYSTEM / LOCAL SERVICE / NETWORK SERVICE / ANONYMOUS LOGON) |
+| Logon Type | ✅ | `LOGON_TYPE` (2 = Interactive, 3 = Network, 10 = RDP, 5 = Service) |
+| Source | ✅ | `WORKSTATION_NAME` / `IPADDRESS` from 4624 |
+| Session start | ✅ | `@timestamp` of latest 4624 with that `LOGON_ID` |
+| Session state | 🟡 | **Active** if no 4634/4647 paired yet, else **Logged-off**. Caveat: agent may have missed the 4634; honest fallback is "Last seen active at …". |
+| Duration | 🟡 | (4634/4647 ts − 4624 ts) or "(ongoing since …)" if no logoff seen. |
 
 #### 2.3 Login Activity on Device (`loginActivity`)
-Same shape as User §1.3 but reverse-pivoted (who logged into this host). ✅ from EventID 4624 on the host.
 
-### 🗂️ Tab — Persistence & Exfil
+Same shape as User §1.3, reverse-pivoted (filter `HOSTNAME=<host>` instead of `TARGETUSER=<user>`).
 
-> Sections in this tab: `scheduledTasks` · `usbDeviceEvents`
+| Slider field | Status | ZLogs source |
+|---|---|---|
+| Time | ✅ | `@timestamp` |
+| User | ✅ | `TARGETUSER` |
+| Logon Type | ✅ | `LOGON_TYPE` |
+| Source IP | ✅ | `IPADDRESS` (from 4624 / 4625) |
+| Status | ✅ | EID 4624 = Success; EID 4625 = Failure with `STATUS` + `SUB_STATUS` (e.g. `0xC000006A` bad password, `0xC0000064` bad username, `0xC0000234` locked, `0xC000006F` outside hours). |
+| ~~MFA~~ | ❌ **Removed** | Windows 4624/4625 has no MFA field for local/domain auth. |
+| Risk | 🟡 | Derived — only present if a correlation rule fired on this event. |
+
+### 🗂️ Tab — Device Activity
+
+> Sections in this tab: `scheduledTasks` · `usbDeviceEvents` · `localAccountLifecycle`
+>
+> **Ingest path:** Windows agent → ZLogs (`windows-*` index), filtered by `HOSTNAME=<host>`. Parser: [WMIWindows-Security.xml](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Windows/WMIWindows-Security.xml).
 
 #### 2.12 Scheduled Task Events (`scheduledTasks`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Task Name, Action, Trigger, Author, Result | ✅ | EventID 4698/4699/4700/4701/4702 | Existing |
-
----
+| Slider field | Status | ZLogs source |
+|---|---|---|
+| Time | ✅ | `@timestamp` |
+| Event | ✅ | EID `4698` Created · `4699` Deleted · `4700` Enabled · `4701` Disabled · `4702` Updated |
+| Task Name | ✅ | `TASKNAME` |
+| User (caller) | ✅ | `USERNAME` + `DOMAIN` |
+| Command | ✅ | `COMMAND` (parsed from `TaskContent` XML) |
+| Trigger | ✅ | parsed from `TaskContent` XML (StartBoundary / Boot / Logon) |
 
 #### 2.11 USB Device Events (`usbDeviceEvents`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Time, Vendor/Product, Serial, Action (insert/remove), Bytes copied | ✅ | EventID 6416/4663 + DataSecurity Plus | Existing |
+| Slider field | Status | ZLogs source |
+|---|---|---|
+| Time | ✅ | `@timestamp` |
+| Event | ✅ | EID `6416` PnP device added/removed |
+| Device | ✅ | `DEVICEDESCRIPTION` + `DEVICEID` |
+| Class | ✅ | `CLASSNAME` (Mass Storage / HID / Printer) |
+| User | ✅ | `USERNAME` |
+| ~~Bytes copied~~ | 🟡 | EID 4663 (file access) requires SACL on removable-drive paths — not on by default; show only when audit policy is configured. |
+
+#### 2.13 Local Account Lifecycle (`localAccountLifecycle`)
+
+> Local SAM events on **this host** (distinct from domain account changes which surface on the user entity §1.15-§1.18). High signal for local backdoor / privilege escalation.
+
+| Slider field | Status | ZLogs source |
+|---|---|---|
+| Time | ✅ | `@timestamp` |
+| Event | ✅ | EID `4720` Local user created · `4722` Enabled · `4724` Password reset · `4725` Disabled · `4726` Deleted · `4732` Added to local group · `4733` Removed from local group |
+| Account | ✅ | `TARGETUSER` (the account being modified) |
+| Caller | ✅ | `USERNAME` + `DOMAIN` (the actor) |
+| Group | ✅ | `GROUPNAME` (for 4732/4733 — most commonly `BUILTIN\Administrators`) |
+| Account Type | ✅ | derived: `Local` if `TARGETDOMAIN = HOSTNAME`, else suppress (domain account — belongs on user entity) |
+
+> **Filter rule:** show only events where `TARGETDOMAIN = HOSTNAME` of this device, so the section never duplicates domain-account changes already shown on the user entity's Account Changes tab.
 
 ### 🗂️ Tab — Alerts & Response
 
@@ -414,56 +551,125 @@ Tabs: **Overview · Threat Intel · Connections · Logon Activity**
 
 ### 🗂️ Tab — Overview
 
-> Sections in this tab: `riskSummary` · `ipDetails` · `geoContext` · `associatedUsers` · `associatedDevices`
+> Sections in this tab: `riskSummary` · `ipDetails` · `associatedUsers` · `associatedDevices`
+>
+> The previous standalone `geoContext` section is **merged into `ipDetails`** (Country/City, VPN-Proxy, TI Feed Match are now KV rows in §3.2).
 
 #### 3.1 Risk Summary (`riskSummary`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| "Tor Exit Node: Confirmed" | 🟡 | Log360 Threat Analytics + Tor consensus list | Internal TI cache |
-| Threat Feeds Flagged (5) | ✅ | Threat Analytics aggregator | Existing |
-| Active Connections | ✅ | ES agg over firewall/IDS | Existing |
-| VirusTotal Detections (12/89) | ❌ | Not in product | — |
+**External public IP (`ip-tor`):**
+
+| Tile / Field | Status | ZLogs / source |
+|---|---|---|
+| Risk Score, Severity, Status badge | ✅ | `ITSEntityRiskScoreDetails` |
+| 🌐 Tor / Anonymizer flag | ✅ | `ADSThreatAnalyticsFeeds` category lookup |
+| ⚠ Threat Feeds Flagged (count) | ✅ | `ADSThreatAnalyticsFeeds` aggregator (Webroot, Anomali, OTX, customer feeds) |
+| 🔗 Active Connections (24h) | ✅ | ES `count` agg on firewall syslog where `DST_IP=<ip>` |
+| 🦠 VirusTotal Detections | 🟡 | Periodic VT enrichment job (default 6 h refresh) calls `virustotal.com/api/v3/ip_addresses/{ip}` for IPs flagged by correlation rules; cached `detection_count / total_engines` stored in `ITSEntityRiskScoreDetails.TI_ENRICHMENT_BLOB`. Requires VT API key in tenant settings. |
+
+**Internal IP (`ip-internal`):**
+
+| Tile / Field | Status | ZLogs / source |
+|---|---|---|
+| Risk Score, Severity | ✅ | `ITSEntityRiskScoreDetails` |
+| 🏢 Network Zone | ✅ | derived: subnet → zone mapping (RFC1918 / config-defined) |
+| 👤 Currently Assigned User | ✅ | latest 4624 with `IPADDRESS=<ip>` (filter machine accounts) |
+| 🔗 Unique Destinations (24h) | ✅ | ES `cardinality` agg on firewall `DST_IP` where `SRC_IP=<ip>` |
+| 📡 Traffic Volume (24h) | ✅ | ES `sum` on firewall `BYTES_SENT` + `BYTES_RECEIVED` |
+| ⚠ Anomalous Flows | ✅ | count of correlation-rule hits on this IP |
 
 #### 3.2 IP Details (`ipDetails`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| IP, Version, Type (Tor/Public/Private/VPN) | 🟡 | Threat Analytics + RFC1918 check | Existing + heuristic |
-| Reverse DNS (PTR) | 🟡 | DNS server logs / live `dig` | Existing or live |
-| Country, City | ✅ | MaxMind GeoIP (bundled) | Existing |
+**External public IP:**
 
-#### 3.3 Geo Context (`geoContext`)
-Same fields as §3.2 country/city + ASN. Map widget feeds from MaxMind. ✅.
+| KV row | Status | Source |
+|---|---|---|
+| IP Address | ✅ | input |
+| Network Type | ✅ | derived: RFC1918 check + Threat Analytics category (Tor / Public / VPN) |
+| Country / City | ✅ | MaxMind GeoIP-Lite (bundled) |
+| ASN / Org | ✅ | MaxMind GeoIP-Lite ASN db (bundled) |
+| Reverse DNS (PTR) | 🟡 | DNS server logs if collected, else live `dig` from cloud collector |
+| VPN / Proxy | ✅ | `ADSThreatAnalyticsFeeds` category |
+| Threat Feed Match | ✅ | `ADSThreatAnalyticsFeeds` |
+| Firewall Events (24h) | ✅ | ES `count` + `terms` on firewall syslog (`ACTION=allow|deny`) |
+| Top Transport Protocols | ✅ | ES `terms` agg on `protocol_tr` (values are L4 only — `tcp`, `udp`, `icmp`, `ipv6-icmp`; **not** application-layer names like `HTTPS`/`DNS`) |
+| Top Destination Ports | ✅ | ES `terms` agg on `DST_PORT` (raw port number; analyst infers service from well-known port mapping) |
+
+**Internal IP:**
+
+| KV row | Status | Source |
+|---|---|---|
+| IP Address | ✅ | input |
+| Network Type | ✅ | "Internal — Private (RFC1918)" |
+| Subnet / Zone | ✅ | derived from IP + collector subnet table |
+| Hostname (resolved) | ✅ | reverse DNS lookup OR latest `WORKSTATION_NAME` from 4624 |
+| DHCP Lease (current window) | 🟡 | DHCP server logs (EID 10 / 20 / 31 from `Microsoft-Windows-DHCP-Server`) — only if customer collects DHCP logs |
+| Threat Feed Match | ✅ | always "Not listed (internal)" for RFC1918 |
+
+
+#### 3.3 Geo Context (`geoContext`) — **REMOVED**
+
+> Previously a 3-row standalone section (Country, VPN/Proxy, TI Feed Match). All three rows are now folded into `ipDetails` (§3.2). The `geoContext` block is kept in `entities.js` with `hidden: true` for now — safe to delete in a later cleanup pass.
 
 #### 3.9 Associated Users / Devices (`associatedUsers`, `associatedDevices`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Pivot from IP → all users/devices that authenticated from / connected to this IP | ✅ | ES `terms` agg on auth logs filtered by IP | Existing |
+| Pivot | Status | Source |
+|---|---|---|
+| Top-N users authenticated FROM this IP (Windows logons) | ✅ | ES `terms` agg on `TARGETUSER` from `hosttype="windows" AND EVENTID IN (4624,4625) AND IPADDRESS=<ip>` |
+| Top-N internal hosts that connected TO this IP (outbound) | ✅ | ES `terms` agg on firewall syslog `SRC_IP` where `DST_IP=<ip>` |
+| Top-N internal hosts that received connections FROM this IP (inbound) | ✅ | ES `terms` agg on firewall syslog `DST_IP` where `SRC_IP=<ip>` |
+| Source firewall device(s) that observed this IP | ✅ | ES `terms` agg on `DEVICE_NAME` |
+| Linked device entity (internal IPs only) | ✅ | match `IPADDRESS` → `APFDiscADComputerDetails.DNS_NAME` via reverse DNS |
 
 ### 🗂️ Tab — Threat Intel
 
-> Sections in this tab: `threatIntelligence` · `idsAlerts` · `firewallSummary`
+> Sections in this tab: `threatIntelligence` · `idsAlerts`
+>
+> `firewallSummary` was previously listed here — removed on 18 May 2026 because the same flow data is already represented in the Connections tab via `connectionHistory` + `trafficSummary`; showing it twice was redundant.
+>
+> **Important boundary** — Log360 Cloud does **not** ship its own IDS/IPS engine. Every entry in this tab comes from one of two ingest paths: (1) the customer's **perimeter firewall/IPS syslog** (PaloAlto Threat Prevention, CheckPoint IPS blade, Fortinet IPS) or (2) **Log360 Threat Analytics** (in-line ingest-time enrichment via `ThreatDataEnrichment` + on-demand VirusTotal lookup). Snort / Suricata are **not** in the product — they were in an earlier doc draft and have been removed.
 
 #### 3.4 Threat Intelligence (`threatIntelligence`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Detection counts per vendor | 🟡 | Internal TI aggregator (Webroot, Anomali, OTX) | Existing |
-| Feed name, Category, Confidence, Last Updated | ✅ | Threat Analytics module | Existing |
+**How TI verdicts are actually fetched** (grounded in [ThreatDataEnrichment.java](../../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/zqueue/logenrichment/threat/ThreatDataEnrichment.java)):
+
+- At ingest time, every event passes through `ThreatDataEnrichment.processRecords()` which extracts source/dest IPs, URLs and domains and looks them up in [ThreatDataCache](../../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/threat/data/ThreatDataCache.java) (in-process LRU, capacity 2000) → on miss falls through to [RedisJVMThreatCache](../../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/threat/data/RedisJVMThreatCache.java) (Redis-backed shared cache).
+- Two engines populate the cache: **ATA** (Log360 Threat Analytics — Webroot + customer-loaded feeds, default `THREAT_SERVER` value) and **AppSense** (Zoho TIP via `TIPAgent.searchIP()`).
+- When a hit is found, the verdict is written **onto the log event itself** as four fields (see [Configuration.java](../../../REPOS/adsf/source/java_source/com/manageengine/ads/fw/common/threat/Configuration.java) lines 33-35): `THREAT_SOURCE` (matched IOC string), `THREAT_REPUTATION` (integer score, lower = worse), `THREAT_CATEGORIES` (JSON array e.g. `["Tor","Anonymizer"]`), `THREAT_SERVER` (which engine matched).
+- The slider therefore reads TI data by **aggregating over already-enriched log events** — no separate per-IOC verdict table to query.
+
+| KV / row | Status | Source |
+|---|---|---|
+| TI engines that matched (`Webroot / ATA`, `AppSense`, customer feeds) | ✅ | ES `terms` agg on `THREAT_SERVER` field, filtered by `THREAT_SOURCE = <ip>`. Distinct values present in code: `ATA` (default) and `appsense`; customer-loaded feeds appear under `ATA`. |
+| Threat Categories (e.g. `Tor`, `Anonymizer`, `Phishing`) | ✅ | ES `terms` agg on `THREAT_CATEGORIES` field — array values written by `ThreatDataEnrichment.addThreatFieldsToLog()`. |
+| Worst Reputation Score | ✅ | ES `min` agg on `THREAT_REPUTATION` field (lower = worse, per Webroot convention). |
+| Events Flagged (count) | ✅ | ES `count` over events where `THREAT_SOURCE = <ip>`. |
+| Feed Subscription Status (which feeds the tenant has loaded) | ✅ | `ADSThreatAnalyticsFeeds` table — feed-registry only (`ANALYTICS_FEED_TYPE`, `ANALYTICS_FEED_VERSION`, `ANALYTICS_FEED_FILE_META`). Use for the "Last Feed Update" timestamp, NOT for per-IOC verdicts. |
+| VirusTotal detection (`detection_count / total_engines`) | 🟡 | **On-demand** REST call: analyst-triggered or correlation-rule-triggered POST to `/RestAPI/V2/threat/getVirusTotalAnalysisData` ([VirusTotalActionHandler](../../../REPOS/log360_cloud/source/cloud/com/zoho/log360/server/rest/version2/threat/handler/ThreatAPIHandler.java) line 128). **Not** a periodic enrichment job. Results cached client-side per session. Requires VT API key in tenant settings; row hidden when key not configured. |
 
 #### 3.8 IDS/IPS Alerts (`idsAlerts`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Signature, Threat ID, Severity, Action, Source device | ✅ | Snort/Suricata/PaloAlto Threat Prevention syslog | Existing |
+All entries come from customer perimeter syslog. Field availability varies by vendor:
+
+| Vendor | hosttype | Parser | Parsed signature field | Action field | Severity |
+|---|---|---|---|---|---|
+| PaloAlto Threat Prevention | `paloalto device` | [PaloAlto-Threat.xml](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/PaloAlto/PaloAlto-Threat.xml) | `THREAT_ID` ✅ | `ACTION_TAG` ✅ | derived from `THREAT_ID` lookup |
+| CheckPoint IPS blade | `checkpoint device` | [CheckPoint.xml](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/CheckPoint/CheckPoint.xml) | `PROTECTION_NAME` ✅, `ATTACK` ✅ | `ACTION` ✅ | `SEVERITY` / `SEVERITYLEVEL` ✅ |
+| Fortinet IPS | `fortinet device` | [Fortinet-Attacks.xml](../../../REPOS/itsf/product_package/conf/itsf/common/LogFormats/DeviceTypes/Fortinet/Fortinet-Attacks.xml) | `SUBTYPE` (coarse: `ips` / `virus` / `webfilter`) — signature name is **not** a parsed column, lives in raw `message` body | `ACTION_TAG` ✅ | not parsed as a dedicated column |
+| Cisco ASA / FTD | `cisco device` | (Cisco directory exists but no IPS-specific parsed fields found in this grep pass) | 🟡 raw text only | 🟡 | 🟡 |
+| ~~Snort / Suricata~~ | — | ❌ **No parser in product** | — | — | — |
+
+> **Practical impact for the slider** — a PA or CheckPoint IPS event renders with full structured details; a Fortinet IPS event renders with `SUBTYPE` + `ACTION_TAG` and the analyst must click "View raw" to read the signature; a Cisco IPS event renders mostly as raw message text.
 
 #### 3.6 Firewall Action Summary (`firewallSummary`)
 
-| Field | Status | Product Source | How to Get |
-|-------|--------|----------------|------------|
-| Allow / Deny / Drop counts (24h) | ✅ | ES agg on firewall logs | Existing |
+| KV row | Status | Source |
+|---|---|---|
+| Total Flows | ✅ | ES `count` over firewall syslog filtered by IP |
+| Allowed / Denied | ✅ | ES `terms` agg on `ACTION_TAG` (PA/Fortinet) or `ACTION` (CheckPoint) |
+| Top Destination Ports | ✅ | ES `terms` agg on `DST_PORT` — raw port number, no L7 label fabrication |
+| Top Transport Protocols | ✅ | ES `terms` agg on `protocol_tr` (L4 only: `tcp`, `udp`, `icmp`) |
+| Source Devices | ✅ | ES `terms` agg on `DEVICE_NAME` / `hosttype` |
 
 ### 🗂️ Tab — Connections
 
@@ -767,7 +973,7 @@ Same as §1.22 — primarily 🤖✚ AI-generated.
 | Risk Score (0–100) | ✅ | `ITSEntityRiskScoreDetails.RISK_SCORE` (combined source+target) | Existing scorer |
 | Risk Bar (color: green/yellow/orange/red) | ✅ | Computed client-side from risk | Threshold mapping |
 | Data Volume (e.g. `4.2 MB`) | 🟡 | `ZLogs SUM(BYTES_SENT + BYTES_RECEIVED)` | Available for FW/proxy/DLP logs only |
-| First Seen / Last Seen | ✅ | `ZLogs MIN/MAX(_zl_timestamp)` | ES min/max agg |
+| ~~First Seen / Last Seen~~ — **REMOVED** | ❌ | Was `ZLogs MIN/MAX(_zl_timestamp)` over the source→target edge. Silently truncated by log retention so `MIN()` answers "first time we saw this edge **within retention**", not the true first sighting. Misleading; dropped. The edge timestamps shown elsewhere (alert record creation, event-distribution sparkline) come from non-retention-bounded sources. | — |
 
 ### 8.6 Event Distribution (Sparkline, 12 buckets)
 
@@ -834,7 +1040,7 @@ These are the actual fields populated for each of the 16 demo edges in [v4-extra
 | `relation` | string (canonical) | ✅ | `'CommunicatedWith'` |
 | `count` | number | ✅ | `47` |
 | `risk` | number 0–100 | ✅ | `96` |
-| `firstSeen` / `lastSeen` | ISO-ish string | ✅ | `'03 Apr 2026 15:20:05'` |
+| `firstSeen` / `lastSeen` | ISO-ish string | 🟡 (legacy / optional) | `'03 Apr 2026 15:20:05'` — retention-bounded; new edges should omit |
 | `evidence.summary` | string | ✅ | `'Reverse shell traffic, 47 C2 beacon attempts detected'` |
 | `evidence.findings[]` | string[] | ✅ | `['47 beacons in 5 min', 'Fixed interval: 6.3s ±0.2s', …]` |
 | `evidence.confidence` | number 0–100 | ✅ | `99` |
@@ -877,7 +1083,7 @@ These are the actual fields populated for each of the 16 demo edges in [v4-extra
 | Event Distribution (sparkline) | `ZLogs COUNT(*) GROUP BY time_bucket` | ✅ Exists | 🤖✚ Pattern-shape labelling |
 | Behavioral Baseline | UEBA `DashBoardAnomalyDataProvider` | ✅ Exists | 🤖✚ Baseline rationale |
 | Risk Score | `ITSEntityRiskScoreDetails` | ✅ Exists | 🤖✚ Path-criticality rerank |
-| First/Last Seen | `ZLogs MIN/MAX(_zl_timestamp)` | ✅ Exists | — |
+| ~~First/Last Seen~~ | ❌ removed | retention-truncated | — |
 | MITRE Mapping | `ITSDetectionRuleVsMitre` | 🟡 RULE-type only | 🤖 Fill gaps for UEBA/correlation |
 | Detection Rule | `ITSAlertProfileConfigurations` | ✅ Exists | 🤖✚ Plain-English explanation |
 | Threat Intel | `ThreatAnalyticsIntermediateProcessor` + VT | 🟡 Limited vendors | 🤖 VT, GreyNoise, urlscan, ThreatFox, Censys, Shodan |
@@ -931,8 +1137,8 @@ Quick lookup: which sections appear in which entity tab.
 | `recentAlerts` | user, device, service, process | (varies) |
 | `agentStatus`, `gpoApplied`, `securityEventSummary` | device | Overview |
 | `processesOnHost`, `servicesOnHost`, `usersLoggedOn`, `loginActivity` | device | Host Activity |
-| `scheduledTasks`, `usbDeviceEvents` | device | Persistence & Exfil |
-| `threatIntelligence`, `idsAlerts`, `firewallSummary` | ip, domain | Threat Intel |
+| `scheduledTasks`, `usbDeviceEvents`, `localAccountLifecycle` | device | Device Activity |
+| `threatIntelligence`, `idsAlerts` | ip, domain | Threat Intel |
 | `connectionHistory`, `dnsHistory`, `vpnSessions`, `trafficSummary`, `associatedUsers`, `associatedDevices` | ip, domain | Connections |
 | `oauthConsentGrants`, `conditionalAccess`, `dlpPolicies` | service | Config & Policy |
 | `signInAudit`, `adminActivity`, `fileAccessAnomaly`, `sensitiveFiles`, `serviceTimeline`, `networkConnections`, `fileDrops`, `wmiEvents` | service | Activity |
@@ -986,9 +1192,632 @@ If we ship AI augmentation, the highest-leverage fields to target first:
 
 ---
 
+## 9. APPENDIX — Static Field Projections per Section
+
+> **Purpose**: For each section ID rendered by the slider, declare the **fixed** ES `_source` / SQL-select projection that the backend must fetch, independent of the entity instance. This is the contract between the slider front-end and the API. No dynamic field selection — analyst sees the same column set every time; blanks appear where a vendor / source didn't emit a field.
+>
+> **Companion machine-readable config**: [`js/data/section-projections.json`](js/data/section-projections.json) — same data, JSON-shaped, for runtime consumption.
+>
+> **Coverage**: 29 sections fully inventoried below from real backend sources (data-dictionary.xml / parser XMLs / verified ES fields). **~38 additional section IDs** (listed in §9.31) are referenced by the slider but not yet ground-truthed — they will be added as code/parser audits complete. **Do not fabricate** projections for the pending list.
+
+### 9.1 `riskSummary`
+**Used by**: user · device · ip · domain · service · alert
+**Backing source**: `ITSEntityRiskScoreDetails` table (Postgres) + ZLogs ES for host/IP-scoped aggregates
+
+| Field | Backend source | Type | Hosttypes/source | Status |
+|---|---|---|---|---|
+| Risk Score (0–100) | `ITSEntityRiskScoreDetails.RISK_SCORE` | decimal | all | ✅ |
+| Severity | `ITSEntityRiskScoreDetails.SESSION_SEVERITY` → join `ITSRiskSeverityDetails.SEVERITY_NAME` | enum (join) | all | ✅ |
+| Status Badge | Derived from `ITSAlertProfileConfigurations` rule categories | enum (derived) | all | 🟡 |
+| Active Anomalies (session / lifetime) | `DETECTION_COUNT` + `OVERALL_DETECTION_COUNT` | integer | all | ✅ |
+| Last Anomaly | `LAST_ANOMALY_UPDATE_TIME` | timestamp | all | ✅ |
+| Login Success 24h (device) | ZLogs `count(EVENTID=4624 AND HOSTNAME=<host>)` | integer (agg) | windows | ✅ |
+| Login Failure 24h (device) | ZLogs `count(EVENTID=4625 AND HOSTNAME=<host>)` | integer (agg) | windows | ✅ |
+| Tor / Anonymizer flag (ext IP) | ZLogs `THREAT_CATEGORIES` contains `Tor`/`Anonymizer` | boolean (derived) | all (TI-enabled) | ✅ |
+| Threat Feeds Flagged count (ext IP) | ZLogs `count(THREAT_SOURCE=<ip>)` | integer (agg) | all (TI-enabled) | ✅ |
+| Active Connections 24h (ext IP) | ZLogs `count(DST_IP=<ip>)` | integer (agg) | paloalto/checkpoint/fortinet/cisco | ✅ |
+| VirusTotal Detections (ext IP) | On-demand REST `/RestAPI/V2/threat/getVirusTotalAnalysisData` | string (ratio) | all (if VT key) | 🟡 |
+
+**Filter**: `entity-type-specific` (see per-tab filters)
+
+### 9.2 `usersDetails`
+**Used by**: user
+**Backing source**: `APFDiscADUserDetails` (AD) OR `APFDiscAADUserDetails` (Entra)
+
+| Field | Backend source | Type | Source | Status |
+|---|---|---|---|---|
+| Display Name | `DISPLAY_NAME` (both) | string | AD/Entra | ✅ |
+| SAM Account Name | `APFDiscADUserDetails.SAM_ACCOUNT_NAME` | string | AD only | ✅/❌ |
+| UPN | `LOGON_NAME` (AD) / `USER_PRINCIPAL_NAME` (Entra) | string | AD/Entra | ✅ |
+| Email | `EMAIL_ADDRESS` (both) | string | AD/Entra | ✅ |
+| Job Title | `TITLE` (both) | string | AD/Entra | ✅ |
+| Department | `DEPARTMENT` (both) | string | AD/Entra | ✅ |
+| Manager | `MANAGER` + `MANAGER_DN` (AD) / `MANAGER` w/ lookup (Entra) | string (join) | AD/Entra | ✅ |
+| Last Logon | `LAST_LOGON_TIME` (AD) / ES `max(createdDateTime)` (Entra) | timestamp | AD ✅ / Entra 🟡 | mixed |
+| OU Name | `OU_NAME` | string | AD only | ✅/❌ |
+| Account Created | `WHEN_CREATED` (both) | timestamp | AD/Entra | ✅ |
+| Account Status | `ACCOUNT_STATUS` (AD) / `ACCOUNT_ENABLED` (Entra) | boolean | AD/Entra | ✅ |
+| Primary Group | `PRIMARY_GROUP_GUID` → join `APFDiscADGroupDetails` | string (join) | AD only | ✅/❌ |
+
+**Filter**: `OBJECT_GUID=<user_guid> AND APP_CONFIG_ID=<ad_config_id>` (AD) OR `OBJECT_ID=<aad_id> AND APP_CONFIG_ID=<azure_config_id>` (Entra)
+
+### 9.3 `deviceDetails`
+**Used by**: device
+**Backing source**: `APFDiscADComputerDetails` table
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Hostname | `COMPUTER_NAME` | string | ✅ |
+| FQDN | `DNS_NAME` | string | ✅ |
+| Operating System | `OPERATING_SYSTEM` | string | ✅ |
+| Domain | `DOMAIN_NAME` | string | ✅ |
+| OU Name | `OU_NAME` | string | ✅ |
+| Distinguished Name | `DISTINGUISHED_NAME` | string | ✅ |
+| Managed-By | `MANAGED_BY_DN` → join `APFDiscADUserDetails` | string (join) | ✅ |
+| Last Logon | `LAST_LOGON_TIMESTAMP` | timestamp | ✅ |
+| Last Boot | ZLogs `max(@timestamp WHERE EVENTID=6005 AND HOSTNAME=<host>)` | timestamp (agg) | ✅ |
+| Created | `CREATION_TIME` | timestamp | ✅ |
+| Modified | `MODIFIED_TIME` | timestamp | ✅ |
+| Status | `COMPUTER_STATUS` | boolean | ✅ |
+| Role | `ROLE` | enum | ✅ |
+| Trusted for Delegation | `TRUSTED_FOR_DELEGATION` | boolean | ✅ |
+| LAPS Password Expiry | `LAPS_EXPIRATION_TIME` | timestamp | ✅ |
+
+**Filter**: `COMPUTER_NAME=<hostname> AND APP_CONFIG_ID=<ad_config_id>`
+
+### 9.4 `logonActivity`
+**Used by**: user · device · ip
+**Backing source**: ZLogs ES — Windows Security EID 4624/4625/4634/4647
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Timestamp | `@timestamp` | timestamp | ✅ |
+| Event ID | `EVENTID` (4624/4625/4634/4647) | integer | ✅ |
+| Logon Type | `LOGONTYPE` (2/3/7/10/11) | integer → enum | ✅ |
+| Target Host | `HOSTNAME` | string | ✅ |
+| Source IP | `IPADDRESS` | string | ✅ |
+| Workstation Name | `WORKSTATION_NAME` | string | ✅ |
+| Authentication Package | `AUTHENTICATIONPACKAGENAME` | string | ✅ |
+| Result Status | derived from `EVENTID` + `SUB_STATUS` (4625) | enum | ✅ |
+
+**Filter**:
+- For user: `EVENTID IN (4624,4625,4634,4647) AND USERNAME=<user>`
+- For device: `EVENTID IN (4624,4625,4634,4647) AND HOSTNAME=<device>`
+- For IP: `EVENTID IN (4624,4625) AND IPADDRESS=<ip>`
+
+### 9.5 `networkActivity`
+**Used by**: user · process
+**Backing source**: ZLogs ES — DNS (EID 1033/1034 / Sysmon 22) + Firewall syslog
+
+> **User-attribution caveat** — None of these sources carry a `USERNAME` field. For the **user** entity this section requires a two-step pivot: (1) resolve which `HOSTNAME`/`SRC_IP` values map to the user via concurrent Windows 4624 sessions in the time window, then (2) filter network logs by those host/IP values. That pivot is why most rows are 🟡 for `user`. For the **process** entity rows are ✅ because Sysmon ties events directly to `PROCESSNAME`+`PROCESS_ID`.
+
+| Field | Backend source | Type | Hosttype | Status (user / process) |
+|---|---|---|---|---|
+| Type Label | derived (DNS/Firewall/Proxy/VPN) | enum (derived) | various | ✅ / ✅ |
+| Domain Queried | `QUERY_NAME` | string | windows | 🟡 / ✅ |
+| Resolution | `QUERY_RESULTS` / `ANSWER_RECORDS` | string | windows | 🟡 / ✅ |
+| Source Host | `HOSTNAME` | string | windows | ✅ / ✅ |
+| Query Process | Sysmon EID 22 `IMAGE` | string | windows (Sysmon) | 🟡 / ✅ |
+| Destination Port | `DST_PORT` | integer | firewall families | 🟡 / — |
+| Protocol | `PROTOCOL_TR` (L4: tcp/udp/icmp) | enum | firewall families | 🟡 / — |
+| Bytes Sent | `SENT_BYTES` | integer | paloalto/fortinet/sophos/firepower/topsec | 🟡 / — |
+| Bytes Received | `RECEIVED_BYTES` | integer | paloalto/fortinet/sophos/firepower/topsec | 🟡 / — |
+| Packets Sent | `SENT_PACKETS` | integer | paloalto/fortinet | 🟡 / — |
+| Packets Received | `RECEIVED_PACKETS` | integer | paloalto/fortinet | 🟡 / — |
+
+> **CheckPoint exception** — byte counts are present only in the raw message text for CheckPoint, not as parsed columns. CheckPoint flows will render blanks in the bytes columns.
+
+### 9.6 `processes`
+**Used by**: user · device · process · alert · service
+**Backing source**: ZLogs ES — Windows Security EID 4688 / Sysmon EID 1
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Timestamp | `@timestamp` | timestamp | ✅ |
+| Process Name | `PROCESSNAME` | string | ✅ |
+| PID | `PROCESS_ID` | integer | ✅ |
+| Parent Process | `PARENT_PROCESS_NAME` | string | ✅ |
+| Command Line | `COMMAND_LINE` (4688 conditional / Sysmon always) | string | 🟡 |
+| Executing User | `USERNAME` + `DOMAIN` | string | ✅ |
+| Integrity Level | `INTEGRITY_LEVEL` | enum | 🟡 |
+| Status | derived constant "Started" | enum | ✅ |
+
+**Filter**: `(EVENTID=4688 OR SYSMON_EVENTID=1) AND (USERNAME=<user> OR HOSTNAME=<device> OR PARENT_PROCESS_NAME=<process>)`
+
+### 9.7 `serviceTriggered`
+**Used by**: user · device · service · process · alert
+**Backing source**: ZLogs ES — Windows Security EID 7045/7046/7047
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Timestamp | `@timestamp` | timestamp | ✅ |
+| Event Type Label | derived from `EVENTID` | enum | ✅ |
+| Service Name | `SERVICENAME` | string | ✅ |
+| Display Name | `DISPLAY_NAME` | string | ✅ |
+| Service Account | `SERVICEACCOUNT` | string | ✅ |
+| Binary Path | `IMAGEPATH` | string | ✅ |
+| Start Type | `SERVICESTARTTYPE` | enum | ✅ |
+| Host | `HOSTNAME` | string | ✅ |
+| Severity | derived from correlation rule | enum (derived) | 🟡 |
+
+**Filter**: `EVENTID IN (7045,7046,7047) AND (HOSTNAME=<device> OR CALLER_USERNAME=<user>)`
+
+### 9.8 `threatIntelligence`
+**Used by**: ip · domain · service
+**Backing source**: ZLogs ES (TI-enriched events) + `ADSThreatAnalyticsFeeds` (feed registry only) + on-demand VirusTotal REST
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| TI Engines matched | `terms` agg on `THREAT_SERVER` (values: `ATA`, `appsense`, customer-feed-name) | string[] (agg) | ✅ |
+| Threat Categories | `terms` agg on `THREAT_CATEGORIES` | string[] (agg) | ✅ |
+| Worst Reputation | `min(THREAT_REPUTATION)` (lower = worse) | integer (agg) | ✅ |
+| Events Flagged count | `count(THREAT_SOURCE=<ioc>)` | integer (agg) | ✅ |
+| Feed Subscription Status | `ADSThreatAnalyticsFeeds.ANALYTICS_FEED_TYPE/VERSION/FILE_META` | string | ✅ |
+| Last Feed Update | `ADSThreatAnalyticsFeeds` row timestamp | timestamp | ✅ |
+| VirusTotal Detections | REST `POST /RestAPI/V2/threat/getVirusTotalAnalysisData` (on-demand, client cache) | string (ratio) | 🟡 |
+
+**Filter**: `THREAT_SOURCE=<ioc> OR REMOTEIP=<ioc>` ORDER BY `THREAT_REPUTATION ASC`
+
+### 9.9 `idsAlerts`
+**Used by**: ip · domain
+**Backing source**: ZLogs ES — perimeter firewall/IPS syslog (PA / CheckPoint / Fortinet / Cisco). **No native IDS in product.**
+
+> **Static projection** — the same 13 columns are always returned for every event regardless of vendor. The backend reads each parsed field directly from ZLogs; if the vendor's parser didn't emit a given field, the column is `null`/empty and the slider renders a dash. **No per-vendor branching, no derived signature strings.** If multiple vendor fields could represent "the signature" (e.g. PA's `THREAT_ID` vs CP's `PROTECTION_NAME`), each has its own column — the slider does not collapse them.
+
+| # | Field | ES source (raw, no derivation) | Type |
+|---|---|---|---|
+| 1 | `timestamp` | `@timestamp` | timestamp |
+| 2 | `hosttype` | `hosttype` | enum (paloalto device / checkpoint device / fortinet device / cisco device) |
+| 3 | `deviceName` | `DEVICE_NAME` (firewall hostname that logged the event) | string |
+| 4 | `srcIp` | `SRC_IP` | string |
+| 5 | `srcPort` | `SRC_PORT` | integer |
+| 6 | `dstIp` | `DST_IP` | string |
+| 7 | `dstPort` | `DST_PORT` | integer |
+| 8 | `protocol` | `PROTOCOL_TR` (L4 only: tcp/udp/icmp) | string |
+| 9 | `threatId` | `THREAT_ID` | string |
+| 10 | `protectionName` | `PROTECTION_NAME` | string |
+| 11 | `attack` | `ATTACK` | string |
+| 12 | `subtype` | `SUBTYPE` | string |
+| 13 | `severityLevel` | `SEVERITYLEVEL` (or `SEVERITY` when `SEVERITYLEVEL` absent — same column read with COALESCE) | string |
+| 14 | `actionTag` | `ACTION_TAG` | string |
+| 15 | `action` | `ACTION` | string |
+| 16 | `rawMessage` | `MESSAGE` (truncated to 500 chars) — fallback for vendors whose parser didn't extract a signature column | string |
+
+**Vendor population reference** (informational only — not part of the projection; documents which columns each parser actually fills so analyst knows what "blank" means):
+
+| Column | PaloAlto | CheckPoint | Fortinet | Cisco |
+|---|---|---|---|---|
+| `threatId` | populated | empty | empty | empty |
+| `protectionName` | empty | populated | empty | empty |
+| `attack` | empty | populated | empty | empty |
+| `subtype` | populated (`vulnerability`/`spyware`/`virus`) | empty | populated (`ips`/`virus`/`webfilter`) | empty |
+| `severityLevel` | populated (derived from threat-id lookup at parse time) | populated | empty | empty |
+| `actionTag` | populated | empty | populated | empty |
+| `action` | empty | populated | empty | empty |
+| `rawMessage` | always | always | always (Fortinet signature name lives here) | always (entire alert lives here) |
+
+**Filter**: `hosttype IN ('paloalto device','checkpoint device','fortinet device','cisco device') AND (SRC_IP=<ioc> OR DST_IP=<ioc>)` ORDER BY `@timestamp DESC`
+
+**UI render shape** (slider event card) — the 16-column backend response is projected down to **5 fixed rows** that are identical for every event, regardless of vendor. Empty backend fields render as an em-dash (`—`):
+
+| Row label | Derived from backend columns |
+|---|---|
+| Signature | `threatId` lookup name (PA) → else `protectionName` (CP) → else first line of `rawMessage` (Fortinet/Cisco) |
+| Threat ID | `threatId` (PA only — blank elsewhere) |
+| Severity | `severityLevel` |
+| Action | `actionTag` (PA/Fortinet) → else `action` (CP) |
+| Source Device | `deviceName` |
+
+### 9.10 `firewallSummary`
+**Used by**: ip · domain
+**Backing source**: ZLogs ES — firewall syslog aggregated
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Total Flows | `count(SRC_IP=<ioc> OR DST_IP=<ioc>)` | integer (agg) | ✅ |
+| Allowed | `count(ACTION_TAG=allow OR ACTION=accept)` | integer (agg) | ✅ |
+| Denied | `count(ACTION_TAG IN (deny,drop) OR ACTION IN (deny,drop))` | integer (agg) | ✅ |
+| Top Destination Ports | `terms` agg on `DST_PORT` (top-10, raw port number) | integer[] (agg) | ✅ |
+| Top Transport Protocols | `terms` agg on `PROTOCOL_TR` (L4 only) | string[] (agg) | ✅ |
+| Source Firewall Devices | `terms` agg on `DEVICE_NAME` | string[] (agg) | ✅ |
+
+**Filter**: `(SRC_IP=<ioc> OR DST_IP=<ioc>) AND hosttype IN (paloalto,checkpoint,fortinet,cisco)`
+
+### 9.11 `connectionHistory`
+**Used by**: ip · domain
+**Backing source**: ZLogs ES — firewall/proxy syslog
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Timestamp | `@timestamp` | timestamp | ✅ |
+| Direction | derived from RFC1918 SRC/DST | enum (derived) | ✅ |
+| Source IP / Port | `SRC_IP` / `SRC_PORT` | string / int | ✅ |
+| Destination IP / Port | `DST_IP` / `DST_PORT` | string / int | ✅ |
+| Bytes Sent | `SENT_BYTES` | integer | ✅ (PA/Fortinet/Sophos/FirePower/Topsec) · 🟡 CheckPoint (raw msg only) |
+| Bytes Received | `RECEIVED_BYTES` | integer | ✅ (PA/Fortinet/Sophos/FirePower/Topsec) · 🟡 CheckPoint (raw msg only) |
+| Duration | `DURATION` | integer | 🟡 |
+| Action | `ACTION_TAG` / `ACTION` | enum | ✅ |
+| Firewall Device | `DEVICE_NAME` / `HOSTNAME` | string | ✅ |
+| Protocol | `PROTOCOL_TR` (L4 only) | string | ✅ |
+
+**Filter**: `(SRC_IP=<ioc> OR DST_IP=<ioc>) AND hosttype IN (paloalto,checkpoint,fortinet,cisco,proxy)` ORDER BY `@timestamp DESC`
+
+**UI render shape** (slider event card) — backend returns the full column set above; the slider projects each row to **9 fixed labels**, identical across every event and every IP entity. `Action` / `Device` render as `—` for endpoint-/flow-only sources (Sysmon, Windows) where there is no firewall in the path:
+
+| Row label | Backend column |
+|---|---|
+| Direction | derived (RFC1918 SRC vs DST) |
+| Source | `SRC_IP` (+ optional reverse-DNS host) |
+| Destination | `DST_IP` (+ optional reverse-DNS host) |
+| Port | `DST_PORT` |
+| Bytes Sent | `SENT_BYTES` |
+| Bytes Received | `RECEIVED_BYTES` |
+| Duration | `DURATION` |
+| Action | `ACTION_TAG` / `ACTION` (— if absent) |
+| Device | `HOSTNAME` of firewall appliance (— if non-firewall source) |
+
+### 9.12 `dnsHistory`
+**Used by**: ip · domain
+**Backing source**: ZLogs ES — Windows DNS Server (EID 1033/1034) / Sysmon EID 22
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Timestamp | `@timestamp` | timestamp | ✅ |
+| Domain Queried | `QUERY_NAME` | string | ✅ |
+| Record Type | `RECORD_TYPE` | string | ✅ |
+| Resolution | `ANSWER_RECORDS` / `QUERY_RESULTS` | string | ✅ |
+| Querying Process | Sysmon `IMAGE` (EID 22) | string | 🟡 |
+| Querying Host | `HOSTNAME` | string | ✅ |
+| Query Status | `QUERY_STATUS` | enum | ✅ |
+
+**Filter**: `(QUERY_NAME=<domain> OR QUERY_RESULTS contains <ioc>) AND (EVENTID IN (1033,1034) OR SYSMON_EVENTID=22)` ORDER BY `@timestamp DESC`
+
+**UI render shape** (slider event card) — projected to **4 fixed rows**. Backing source (Sysmon EID 22 vs Windows DNS EID 1033/1034) is documented here, not shown per-row, to avoid collision with network "source" semantics:
+
+| Row label | Backend column |
+|---|---|
+| Domain | `QUERY_NAME` |
+| Record Type | `RECORD_TYPE` |
+| Resolution | `ANSWER_RECORDS` / `QUERY_RESULTS` |
+| Querying Process | Sysmon `IMAGE` (EID 22) — — when backing source is Windows DNS Server logs |
+
+### 9.13 `recentAlerts`
+**Used by**: user · device · ip · domain · service · process · alert
+**Backing source**: `ITSAlertProfileConfigurations` + alert instance store + `ITSDetectionRuleVsMitre` (MITRE join)
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Alert ID | rule `ALERT_PROFILE_ID` + instance UID | string | ✅ |
+| Alert Name | `ITSAlertProfileConfigurations.DISPLAY_NAME` | string | ✅ |
+| Alert Source / Type | `ALERT_TYPE` | enum | ✅ |
+| Severity | `SEVERITY` | enum | ✅ |
+| MITRE Tactic + Technique | `ITSDetectionRuleVsMitre.TACTIC/TECHNIQUE_NAME` (join) | string (join) | 🟡 |
+| First Triggered | instance creation timestamp | timestamp | ✅ |
+| Status | workflow state | enum | ✅ |
+| Linked Entity ID | alert-entity link | string | ✅ |
+
+**Filter**: `alert.source_entity=<entity_id>` ORDER BY `first_triggered DESC`
+
+### 9.14 `accountLockouts`
+**Used by**: user
+**Backing source**: ZLogs ES — Windows Security EID 4740
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Timestamp | `@timestamp` | timestamp | ✅ |
+| Target User | `TARGETUSER` | string | ✅ |
+| Locking DC | `HOSTNAME` | string | ✅ |
+| Source Computer | `REMOTEHOST` / `WORKSTATION_NAME` | string | 🟡 |
+| Event ID | `EVENTID` (4740) | integer | ✅ |
+| Risk Label | derived from correlation rule | enum | 🟡 |
+
+**Filter**: `EVENTID=4740 AND TARGETUSER=<user>` ORDER BY `@timestamp DESC`
+
+### 9.15 `passwordHistory`
+**Used by**: user
+**Backing source**: ZLogs ES — Windows EID 4723/4724 OR Entra UAL `Change/Reset user password`
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Timestamp | `@timestamp` | timestamp | ✅ |
+| Operation | derived from `EVENTID` / `OPERATION` | enum | ✅ |
+| Caller | `USERNAME`+`DOMAIN` / Entra `USERID` | string | ✅ |
+| Target User | `TARGETUSER` / Entra `OBJECTID` | string | ✅ |
+| Source Host | `HOSTNAME` / Entra `Workload=AzureActiveDirectory` | string | ✅ |
+| Client IP | Entra `CLIENTIP` (not on Windows) | string | Windows ❌ · Entra ✅ |
+| Result | `SEVERITY` / Entra `RESULT` | enum | ✅ |
+
+**Filter**: `(EVENTID IN (4723,4724) AND TARGETUSER=<user>) OR (OPERATION IN ('Change user password.','Reset user password.') AND OBJECTID=<user_upn>)` ORDER BY `@timestamp DESC`
+
+### 9.16 `groupMembershipChanges`
+**Used by**: user
+**Backing source**: ZLogs ES — Windows EID 4728/4729/4732/4733/4756/4757 OR Entra UAL `Add/Remove member to group`
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Timestamp | `@timestamp` | timestamp | ✅ |
+| Operation | derived from `EVENTID` / Entra `OPERATION` | enum | ✅ |
+| Group Name | `GROUPNAME`+`GROUPDOMAIN` / Entra `PARAMETERS.Group.DisplayName` | string | ✅ |
+| Member Added/Removed | `TARGETUSER`+`MEMBERSID` / Entra `PARAMETERS.Member.userPrincipalName` | string | ✅ |
+| Caller (admin) | `USERNAME`+`DOMAIN` / Entra `USERID` | string | ✅ |
+| Source Host | `HOSTNAME` / Entra source | string | ✅ |
+
+**Filter**: see strict DSL in subagent report.
+
+### 9.17 `mailboxForwarding`
+**Used by**: user
+**Backing source**: ZLogs ES — M365 UAL `Audit.Exchange`, ops `New/Set-InboxRule`, `Set-Mailbox`, `Set-TransportRule`
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Timestamp | `@timestamp` (UAL `CreationTime`) | timestamp | ✅ |
+| Operation | `OPERATION` | string | ✅ |
+| Mailbox | `OBJECTID` | string | ✅ |
+| Caller | `USERID` | string | ✅ |
+| Rule Name | `PARAMETERS.Name` | string | ✅ |
+| Forward To / Redirect | `PARAMETERS.ForwardTo` / `ForwardingSmtpAddress` / `RedirectTo` | string | ✅ |
+| Client IP | `CLIENTIP` | string | ✅ |
+| Result | `RESULT` | enum | ✅ |
+
+**Filter**: `hosttype=m365 AND OPERATION IN ('New-InboxRule','Set-InboxRule','Set-Mailbox','Set-TransportRule') AND OBJECTID=<user_mailbox>` ORDER BY `@timestamp DESC`
+
+### 9.18 `uebaProfile`
+**Used by**: user
+**Backing source**: `ITSEntityRiskScoreDetails` + `ADSAnomalyDetectionUniqueEntities` + `UEBAEntityNotes`
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Risk Score (0–100) | `RISK_SCORE × 100` | integer | ✅ |
+| Last Anomaly Fired | `LAST_ANOMALY_UPDATE_TIME` | timestamp | ✅ |
+| Last Score Update | `LAST_UPDATE_TIME` | timestamp | ✅ |
+| Under Observation | `ADSAnomalyDetectionUniqueEntities.IS_SURVEILLED` | boolean | ✅ |
+| Detection Source | `ADSAnomalyDetectionUniqueEntities.SOURCE` | string | ✅ |
+| Analyst Notes | `UEBAEntityNotes.NOTE` | string | ✅ |
+
+**Filter**: `ITSEntityRiskScoreDetails.ENTITY_ID=<user_id> AND ENTITY_TYPE='user'` INNER JOIN `ADSAnomalyDetectionUniqueEntities`
+
+### 9.19 `loginStatistics`
+**Used by**: user
+**Backing source**: ZLogs ES — Windows Security 4624/4625 over 7-day window
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Total Logins | `count(EVENTID IN (4624,4625))` | integer (agg) | ✅ |
+| Successful Logins | `count(EVENTID=4624)` | integer (agg) | ✅ |
+| Failed Logins | `count(EVENTID=4625)` | integer (agg) | ✅ |
+| Unique Source IPs | `terms` agg on `IPADDRESS` (4624) | string[] (agg) | ✅ |
+| Off-Hours Logins | `count(EVENTID=4624)` filtered via `L3CWorkingHourHandler.isOffHours()` | integer (agg) | 🟡 |
+| Unique Target Hosts | `terms` agg on `HOSTNAME` (4624) | string[] (agg) | ✅ |
+
+**Filter**: `USERNAME=<user> AND EVENTID IN (4624,4625) AND @timestamp >= now-7d`
+
+### 9.20 `cloudIdentities`
+**Used by**: user (conditional — requires M365 onboarding)
+**Backing source**: `APFDiscAADUserDetails`
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| UPN | `USER_PRINCIPAL_NAME` | string | ✅ |
+| Sync Source | `ONPREMISES_SYNC_ENABLED` | boolean | ✅ |
+| Cloud Account Status | `ACCOUNT_ENABLED` | boolean | ✅ |
+| Licensed | `IS_LICENSED` | boolean | ✅ |
+| Last Dir Sync | `DAYS_SINCE_LAST_DIR_SYNC` / `LAST_DIRSYNC_TIME` | integer/timestamp | 🟡 |
+| Strong Password Required | `STRONG_PASSWORD_REQUIRED` | boolean | ✅ |
+| Password Days Since Change | `DAYS_SINCE_PASSWORD_CHANGE` | integer | 🟡 |
+| Hidden From Address List | `HIDDEN_FROM_ADDRESS_LIST` | boolean | ✅ |
+
+**Filter**: `USER_PRINCIPAL_NAME=<user_upn> AND APP_CONFIG_ID=<azure_config_id>` (only render when tenant has M365 connector)
+
+### 9.21 `identityRisk`
+**Used by**: user
+**Backing source**: `APFDiscADUserDetails` + optional join `APFDiscADGroupMemberDetails`/`APFDiscADGroupDetails`
+
+| Field | Backend source | Type | Status |
+|---|---|---|---|
+| Password Age (days) | `PASSWORD_LAST_SET` (client derives) | integer (derived) | ✅ |
+| Days Since Last Logon | `DAYS_SINCE_LAST_LOGON` | integer | ✅ |
+| Account Status | `ACCOUNT_STATUS` + `LOCK_OUT_TIME` | enum | ✅ |
+| Password Never Expires | `PWD_NEV_EXP_FLAG` | boolean | ✅ |
+| Smartcard Required | `SMART_CARD_FOR_INTERACTIVE_LOGIN` | boolean | ✅ |
+| Trusted for Kerberos Delegation | `TRUSTED_FOR_DELEGATION` | boolean | ✅ |
+| Bad Password Count | `BAD_PASSWORD_COUNT` | integer | ✅ |
+| Privileged Group Membership | join `APFDiscADGroupMemberDetails`+`APFDiscADGroupDetails` where `SID_STRING` matches well-known admin RIDs (512/519/518/544) | string[] (join) | ✅ |
+
+### 9.22 `processDetails`
+**Used by**: process
+**Backing source**: ZLogs ES — Windows EID 4688 + Sysmon EID 1
+
+| Field | Backend source | Status |
+|---|---|---|
+| Process Name | `PROCESSNAME` | ✅ |
+| PID | `PROCESS_ID` | ✅ |
+| Parent Process | `PARENT_PROCESS_NAME` | ✅ |
+| Command Line | `COMMAND_LINE` | 🟡 |
+| Executing User | `USERNAME`+`DOMAIN` | ✅ |
+| Integrity Level | `INTEGRITY_LEVEL` | 🟡 |
+| Start Time | `@timestamp` | ✅ |
+| Status | derived "Running"/"Exited" | 🟡 |
+| Code Signature Status | `SIGNATURE_STATUS` (Sysmon) | 🟡 |
+| Session ID | `SESSION_ID` | ✅ |
+| ~~Thread Count~~ | not in logs (live-process only via EDR) | ❌ |
+| ~~Handle Count~~ | not in logs (live-process only via EDR) | ❌ |
+
+### 9.23 `amsiEvents`
+**Used by**: process
+**Backing source**: ZLogs ES — Windows PowerShell EID 4104 with AMSI
+
+| Field | Backend source | Status |
+|---|---|---|
+| Timestamp | `@timestamp` | ✅ |
+| AMSI Detection Level | `AMSI_RESULT` | ✅ |
+| Script Content Preview | `SCRIPTBLOCK_TEXT` (first 500 chars) | ✅ |
+| Scan Result | `AMSI_SCAN_RESULT` | ✅ |
+| Action Taken | derived from policy | 🟡 |
+| Script Block ID | `SCRIPTBLOCK_ID` | ✅ |
+
+**Filter**: `EVENTID=4104 AND (AMSI_RESULT IN (Suspicious,Malicious) OR AMSI_SCAN_RESULT=DETECTED) AND PROCESSNAME contains powershell`
+
+### 9.24 `registryModifications`
+**Used by**: process
+**Backing source**: ZLogs ES — Sysmon EID 12/13/14
+
+| Field | Backend source | Status |
+|---|---|---|
+| Timestamp | `@timestamp` | ✅ |
+| Operation | Sysmon EID type | ✅ |
+| Registry Key Path | `REGISTRY_KEY_PATH` | ✅ |
+| Value Name | `VALUE_NAME` | 🟡 |
+| Old Value | `OLD_VALUE` | 🟡 |
+| New Value | `NEW_VALUE` | 🟡 |
+| Process | `PROCESSNAME`+`PROCESS_ID` | ✅ |
+
+**Filter**: `SYSMON_EVENTID IN (12,13,14) AND PROCESSNAME=<process_name>`
+
+### 9.25 `tokenAnomaly`
+**Used by**: process
+**Backing source**: ZLogs ES — Windows EID 4672 + Sysmon EID 8
+
+| Field | Backend source | Status |
+|---|---|---|
+| Anomaly Type | derived (SeDebugPrivilege / SeImpersonate / CreateRemoteThread) | 🟡 |
+| Privilege Name | `PRIVILEGE_NAME` | ✅ |
+| Process | `PROCESSNAME` | ✅ |
+| Caller | `USERNAME` | ✅ |
+| Timestamp | `@timestamp` | ✅ |
+
+**Filter**: `(EVENTID=4672 AND PRIVILEGE_NAME contains 'Se') OR SYSMON_EVENTID=8 AND PROCESSNAME=<process_name>`
+
+### 9.26 `fileOperations`
+**Used by**: process
+**Backing source**: ZLogs ES — Sysmon EID 11
+
+| Field | Backend source | Status |
+|---|---|---|
+| Timestamp | `@timestamp` | ✅ |
+| Operation | Create/Delete/Modify (EID 11) | 🟡 |
+| File Path | `FILE_PATH` | ✅ |
+| File Size | `FILE_SIZE` | ✅ |
+| Hash (SHA256) | `FILE_HASH`/`HASH_SHA256` | ✅ |
+| Signed | `SIGNED` | ✅ |
+| Process | `PROCESSNAME`+`PROCESS_ID` | ✅ |
+
+**Filter**: `SYSMON_EVENTID=11 AND PROCESSNAME=<process_name>`
+
+### 9.27 `dllLoads`
+**Used by**: process
+**Backing source**: ZLogs ES — Sysmon EID 7 (high-volume)
+
+| Field | Backend source | Status |
+|---|---|---|
+| Timestamp | `@timestamp` | ✅ |
+| DLL Name | `IMAGE_NAME` | ✅ |
+| DLL Path | `IMAGE_PATH` | ✅ |
+| Signed | `SIGNED` | ✅ |
+| Loaded By Process | `PROCESSNAME`+`PROCESS_ID` | ✅ |
+| Load Address | `BASE_ADDRESS` | 🟡 |
+
+**Filter**: `SYSMON_EVENTID=7 AND PROCESSNAME=<process_name>` ORDER BY `@timestamp DESC` LIMIT 50
+
+### 9.28 `processDnsQueries`
+**Used by**: process
+**Backing source**: ZLogs ES — Sysmon EID 22
+
+| Field | Backend source | Status |
+|---|---|---|
+| Timestamp | `@timestamp` | ✅ |
+| Domain Queried | `QUERY_NAME` | ✅ |
+| Record Type | `RECORD_TYPE` | ✅ |
+| Resolution | `QUERY_RESULTS` | ✅ |
+| Querying Process | `PROCESSNAME`+`PROCESS_ID` | ✅ |
+
+**Filter**: `SYSMON_EVENTID=22 AND PROCESSNAME=<process_name>`
+
+### 9.29 `alertDetails`
+**Used by**: alert
+**Backing source**: `ITSAlertProfileConfigurations` + alert instance + `ITSDetectionRuleVsMitre`
+
+| Field | Backend source | Status |
+|---|---|---|
+| Alert Name | `DISPLAY_NAME` | ✅ |
+| Alert ID | instance UID | ✅ |
+| Alert Source | `ALERT_TYPE` | ✅ |
+| Severity | `SEVERITY` | ✅ |
+| Confidence | `CONFIDENCE_SCORE` (if present) | 🟡 |
+| Rule | `RULE_NAME` | ✅ |
+| MITRE ATT&CK | `ITSDetectionRuleVsMitre.TACTIC`/`TECHNIQUE_NAME` (join) | 🟡 |
+| First Seen | instance creation timestamp | ✅ |
+| Status | workflow state | ✅ |
+| Assigned To | analyst assignment | 🟡 |
+| Incident ID | linked incident | 🟡 |
+| Correlation | count of linked alerts | 🟡 |
+
+### 9.30 Common payload envelope (every section)
+
+Regardless of section, every API response wraps the projected fields in this envelope so the slider can render section-status uniformly:
+
+| Envelope field | Type | Meaning |
+|---|---|---|
+| `sectionId` | string | matches one of §9.1–9.29 IDs |
+| `label` | string | display label |
+| `status` | enum: `ok` / `partial` / `unavailable` | `partial` = some fields 🟡, `unavailable` = backing source not configured (e.g. M365 not onboarded for `cloudIdentities`) |
+| `statusReason` | string | when `partial`/`unavailable`, explain why (`"M365 connector not configured"`, `"Sysmon not deployed on this host"`, `"VT API key missing"`) |
+| `rows` or `kv` or `timeline` | array/object | actual projected payload — shape determined by the section's render mode in [entity-slider.js](js/modules/entity-slider.js) |
+| `truncated` | boolean | true if result set was capped by `LIMIT` (e.g. `dllLoads` LIMIT 50) |
+| `queriedAt` | timestamp | server-side query execution time |
+
+### 9.31 Pending inventory — sections referenced by the slider but not yet ground-truthed
+
+These section IDs appear in [entity-slider.js](js/modules/entity-slider.js) tab definitions but their static projections have not been verified against parser XMLs / data-dictionary.xml. **Do not fabricate projections — to be added as code/parser audits complete.**
+
+| Section ID | Used by | Likely backing source (unverified — needs audit) |
+|---|---|---|
+| `threatIntelContext` | user | ZLogs `THREAT_*` fields filtered by user's recent activity |
+| `dlpIncidents` | user | M365 DLP / `Audit.DLP` UAL events |
+| `resourceFileAccess` | user | Windows EID 4663 + file-server audit |
+| `recentAppAccess` | user | M365 sign-in audit / SaaS proxy logs |
+| `agentStatus` | device | EDR/MDE agent health endpoint (likely not in ZLogs) |
+| `gpoApplied` | device | `APFDiscADComputerDetails` + GPO RSoP discovery |
+| `processesOnHost` | device | same projection as `processes` (§9.6) — verify filter |
+| `servicesOnHost` | device | Windows EID 7045 host-scoped — verify columns |
+| `usersLoggedOn` | device | 4624 host-scoped distinct-user agg — verify |
+| `loginActivity` | device | same as `logonActivity` (§9.4) — confirm alias |
+| `scheduledTasks` | device | Windows EID 4698/4699/4700/4701/4702 |
+| `usbDeviceEvents` | device | Windows EID 6416/6420 (Plug-and-Play) |
+| `localAccountLifecycle` | device | Windows EID 4720/4722/4725/4726 host-scoped |
+| `ipDetails` | ip · domain | derived: `IPADDRESS`/`HOSTNAME` + MaxMind GeoIP + `ADSCountries.xml` lookup |
+| `associatedUsers` | ip · domain | Windows 4624/4625 + IPADDRESS pivot |
+| `associatedDevices` | ip · domain | Windows 4624 + HOSTNAME pivot |
+| `vpnSessions` | ip · domain | firewall VPN logs (PA GlobalProtect / Fortinet SSLVPN / Cisco AnyConnect) |
+| `trafficSummary` | ip · domain | aggregate variant of `connectionHistory` |
+| `serviceDetails` | service | unclear — possibly correlation rule definition for the service entity |
+| `serviceInfo` | service | same as `serviceDetails` — confirm if duplicate |
+| `oauthConsentGrants` | service | M365 UAL `Add OAuth2PermissionGrant`/`Consent to application` |
+| `conditionalAccess` | service | Entra CA policy snapshot (likely from Graph API, not ZLogs) |
+| `dlpPolicies` | service | M365 DLP policy snapshot |
+| `signInAudit` | service | M365 `Audit.AzureActiveDirectory` SignIn records |
+| `adminActivity` | service | M365 UAL admin operations |
+| `fileAccessAnomaly` | service | SharePoint/OneDrive `FileAccessed` UAL events with anomaly score |
+| `sensitiveFiles` | service | M365 sensitivity-label tagged file access |
+| `serviceTimeline` | service | aggregated timeline across UAL records for the service |
+| `networkConnections` | service | Sysmon EID 3 scoped to service-related process |
+| `fileDrops` | service | Sysmon EID 11 scoped |
+| `wmiEvents` | service | Sysmon EID 19/20/21 |
+| `processTree` | process | computed graph from EID 4688/Sysmon-1 parent chain |
+| `childProcesses` | process | inverse of `processTree` |
+| `namedPipes` | process | Sysmon EID 17/18 |
+| `tokenUsage` | process | similar to `tokenAnomaly` minus the anomaly filter |
+| `triggerConditions` | alert | rule definition from `ITSAlertProfileConfigurations` |
+| `affectedEntities` | alert | alert-entity link table |
+| `correlatedAlerts` | alert | correlation engine output |
+
+---
+
 ## 14. Changelog
 
 | Date | Change |
 |------|--------|
+| 18 May 2026 | Slider UI hardening: enforced uniform row-key contract on `idsAlerts` (5 rows), `connectionHistory` (9 rows across both IP entities), `dnsHistory` (4 rows). Dropped `firewallSummary` from the Threat Intel tab (ip + domain) — redundant with `connectionHistory` + `trafficSummary` under Connections. Added "UI render shape" tables to §9.9 / §9.11 / §9.12 documenting the projection from backend columns to fixed slider row labels. |
+| 18 May 2026 | Added §9 APPENDIX — Static Field Projections per Section (29 sections fully inventoried with backend-grounded ES `_source` / SQL-select projections; 38 sections listed as pending inventory). Companion JSON config at `js/data/section-projections.json`. Per-section common envelope (§9.30) standardizes status/truncation/queriedAt across all responses. |
+| 18 May 2026 | §3.4 Threat Intelligence rewritten to match actual code path: `ThreatDataEnrichment` writes `THREAT_SOURCE/REPUTATION/CATEGORIES/SERVER` fields onto every TI-matched event at ingest; verdicts queryable as ES aggs (not a separate verdict-cache table). Engines verified in code: `ATA` (default) + `appsense` (Zoho TIP). VT corrected from "periodic 6h job" to on-demand REST `/RestAPI/V2/threat/getVirusTotalAnalysisData`. `ADSThreatAnalyticsFeeds` clarified as feed-registry metadata only. Per-vendor breakdown restored as ✅ via `terms` agg on `THREAT_SERVER`. |
 | 07 May 2026 | Added §8 EDGE RELATION Slider data-source mapping (13 sub-sections covering flow diagram, MITRE, detection rule, connection properties, sparkline, behavioral baseline, threat intel, geo, evidence, per-edge schema, demo inventory of 16 edges, data-source summary). Renumbered subsequent sections 8→13. |
 | 07 May 2026 | Initial V5 mapping. Mirrors V4 structure but adds explicit **AI Enrichment** column showing what AI agents can fetch beyond product backend (live IOC enrichment, WHOIS, MITRE mapping, narrative generation, compliance drafting, script deobfuscation). Covers 8 entity types, ~50 distinct sections. Cross-references the canonical relation catalog. |

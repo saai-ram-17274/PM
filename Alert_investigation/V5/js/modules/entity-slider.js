@@ -225,20 +225,20 @@ function renderEntitySliderBody(entityId) {
       { id:'recentAlerts', label:'Recent Alerts', sections:['recentAlerts'] }
     ],
     device: [
-      { id:'overview', label:'Overview', sections:['riskSummary','deviceDetails','agentStatus','gpoApplied','securityEventSummary'] },
+      { id:'overview', label:'Overview', sections:['riskSummary','deviceDetails','agentStatus','gpoApplied'] },
       { id:'host', label:'Host Activity', sections:['processesOnHost','servicesOnHost','usersLoggedOn','loginActivity'] },
-      { id:'persistence', label:'Persistence & Exfil', sections:['scheduledTasks','usbDeviceEvents'] },
+      { id:'persistence', label:'Device Activity', sections:['scheduledTasks','usbDeviceEvents','localAccountLifecycle'] },
       { id:'alerts', label:'Alerts & Response', sections:['recentAlerts'] }
     ],
     ip: [
-      { id:'overview', label:'Overview', sections:['riskSummary','ipDetails','geoContext','associatedUsers','associatedDevices'] },
-      { id:'threat', label:'Threat Intel', sections:['threatIntelligence','idsAlerts','firewallSummary'] },
+      { id:'overview', label:'Overview', sections:['riskSummary','ipDetails','associatedUsers','associatedDevices'] },
+      { id:'threat', label:'Threat Intel', sections:['threatIntelligence','idsAlerts'] },
       { id:'connections', label:'Connections', sections:['connectionHistory','dnsHistory','vpnSessions','trafficSummary'] },
       { id:'logon', label:'Logon Activity', sections:['logonActivity'] }
     ],
     domain: [
-      { id:'overview', label:'Overview', sections:['riskSummary','ipDetails','geoContext','associatedUsers','associatedDevices'] },
-      { id:'threat', label:'Threat Intel', sections:['threatIntelligence','idsAlerts','firewallSummary'] },
+      { id:'overview', label:'Overview', sections:['riskSummary','ipDetails','associatedUsers','associatedDevices'] },
+      { id:'threat', label:'Threat Intel', sections:['threatIntelligence','idsAlerts'] },
       { id:'connections', label:'Connections', sections:['connectionHistory','dnsHistory','vpnSessions','trafficSummary'] },
       { id:'logon', label:'Logon Activity', sections:['logonActivity'] }
     ],
@@ -562,7 +562,7 @@ function renderSummaryCard(card) {
   // Legacy fallback: firstSeen / lastActivity (kept for non-user entities until each is reviewed).
   // Rationale: 'First Seen' from ES min(@timestamp) is silently truncated by log retention,
   // so it's misleading on its own — prefer a real DB-backed field per entity type.
-  // See entity_data_mapping.md §1.1.
+  // See entity_data_mapping.md §1.1.OVERALL_DETECTION_COUNT
   html += '<div class="em-sc-time-row">';
   if (Array.isArray(card.heroChips) && card.heroChips.length) {
     card.heroChips.forEach(c => { html += `<span>${c.label}: ${c.value}</span>`; });
