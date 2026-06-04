@@ -1,0 +1,6 @@
+{
+  "$schema_version": "1.0",
+  "description": "ITSF report groups that did not match any sub-section id in the spec. Either (a) extend GROUP_RULES in V6/tools/bridge_spec_to_itsf.py, or (b) add a new B/E/OB/OE id to device_and_other_entity_spec.md.",
+  "by_group_name": [],
+  "raw": []
+}

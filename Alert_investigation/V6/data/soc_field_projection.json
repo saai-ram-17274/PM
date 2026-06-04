@@ -1,0 +1,2326 @@
+{
+  "Windows": {
+    "B4": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "DOMAIN",
+      "REMOTEIP",
+      "HOSTNAME",
+      "LOGONTYPE",
+      "RESULT",
+      "FAILUREREASON"
+    ],
+    "B5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "TARGETUSER",
+      "ACTION",
+      "GROUP",
+      "DOMAIN",
+      "RESULT",
+      "EVENTID"
+    ],
+    "B9": [
+      "TIME",
+      "REMOTEIP",
+      "SOURCEPORT",
+      "TARGETIP",
+      "PROTOCOL",
+      "ACTION",
+      "POLICY"
+    ],
+    "B10": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "REMOTEIP",
+      "SHARENAME",
+      "FILENAME",
+      "ACCESSES",
+      "ACTION",
+      "RESULT"
+    ],
+    "E2": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "OBJECT",
+      "RESULT",
+      "ACTION"
+    ],
+    "E3": [
+      "TIME",
+      "PROCESSNAME",
+      "PARENTPROCESSNAME",
+      "COMMANDLINE",
+      "ACCOUNT_NAME"
+    ],
+    "E4": [
+      "TIME",
+      "SERVICENAME",
+      "SERVICEACCOUNT",
+      "RESULT",
+      "EVENTID"
+    ],
+    "E5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "ACTION",
+      "COMMANDLINE",
+      "SERVICEACCOUNT"
+    ],
+    "E6": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "VENDORNAME",
+      "ACTION"
+    ],
+    "E10": [
+      "TIME",
+      "REMOTEIP",
+      "TARGETIP",
+      "INTELLIGENCE",
+      "CATEGORY",
+      "RISK_LEVEL",
+      "ACTION",
+      "POLICY"
+    ],
+    "E12": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "REMOTEIP",
+      "OBJECT",
+      "OLDVALUE",
+      "NEWVALUE",
+      "RESULT"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "EVENTID",
+      "RISK_LEVEL",
+      "SERVICENAME",
+      "ACTION",
+      "MESSAGE"
+    ],
+    "E18": [
+      "TIME",
+      "FILENAME",
+      "ACTION",
+      "ACCOUNT_NAME",
+      "PROCESSNAME",
+      "OLDVALUE",
+      "NEWVALUE"
+    ],
+    "B3": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "LOGONID",
+      "LOGONTYPE",
+      "REMOTEIP",
+      "HOSTNAME",
+      "DOMAIN",
+      "EVENTID"
+    ]
+  },
+  "Sysmon": {
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "PROTOCOL",
+      "IENAME"
+    ],
+    "E3": [
+      "TIME",
+      "PROCESSNAME",
+      "PARENTPROCESSNAME",
+      "COMMANDLINE",
+      "USERNAME",
+      "INTEGRITYLEVEL",
+      "HASHES",
+      "SIGNATURESTATUS"
+    ],
+    "E4": [
+      "TIME",
+      "RESULT",
+      "EVENTID"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "OBJECTNAME",
+      "RESULT"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "EVENTID",
+      "SEVERITY",
+      "IENAME",
+      "MESSAGE"
+    ],
+    "E18": [
+      "TIME",
+      "FILENAME",
+      "IENAME",
+      "USERNAME",
+      "PROCESSNAME",
+      "HASHES"
+    ]
+  },
+  "Win_Archive": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "DOMAIN",
+      "REMOTEIP",
+      "HOSTNAME",
+      "LOGONTYPE",
+      "FAILUREREASON",
+      "EVENTID"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "TARGETUSER",
+      "IENAME",
+      "GROUPNAME",
+      "DOMAIN",
+      "EVENTID"
+    ],
+    "B9": [
+      "TIME",
+      "REMOTEIP",
+      "SOURCEPORT",
+      "TARGETIP",
+      "IENAME",
+      "POLICY"
+    ],
+    "B10": [
+      "TIME",
+      "USERNAME",
+      "REMOTEIP",
+      "SHARENAME",
+      "OBJECTNAME",
+      "ACCESSES",
+      "IENAME"
+    ],
+    "E2": [
+      "TIME",
+      "USERNAME",
+      "OBJECT",
+      "IENAME"
+    ],
+    "E3": [
+      "TIME",
+      "PROCESSNAME",
+      "USERNAME"
+    ],
+    "E4": [
+      "TIME",
+      "SERVICENAME",
+      "SERVICEACCOUNT",
+      "EVENTID"
+    ],
+    "E5": [
+      "TIME",
+      "USERNAME",
+      "IENAME",
+      "SERVICEACCOUNT"
+    ],
+    "E6": [
+      "TIME",
+      "USERNAME",
+      "VENDORNAME",
+      "IENAME"
+    ],
+    "E10": [
+      "TIME",
+      "REMOTEIP",
+      "TARGETIP",
+      "INTELLIGENCE",
+      "CATEGORY",
+      "RISK_LEVEL",
+      "IENAME",
+      "POLICY"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "REMOTEIP",
+      "OBJECT",
+      "OLDVALUE",
+      "NEWVALUE"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "EVENTID",
+      "RISK_LEVEL",
+      "SERVICENAME",
+      "IENAME",
+      "MESSAGE"
+    ],
+    "E18": [
+      "TIME",
+      "OBJECTNAME",
+      "IENAME",
+      "USERNAME",
+      "PROCESSNAME",
+      "OLDVALUE",
+      "NEWVALUE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "LOGONID",
+      "LOGONTYPE",
+      "REMOTEIP",
+      "HOSTNAME",
+      "DOMAIN",
+      "EVENTID"
+    ]
+  },
+  "Terminal_Windows": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "HOSTNAME",
+      "EVENTID"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "HOSTNAME",
+      "EVENTID"
+    ]
+  },
+  "FIM": {
+    "E18": [
+      "TIME",
+      "IENAME"
+    ]
+  },
+  "Printer_Windows": {
+    "E19": [
+      "TIME",
+      "DOCNAME",
+      "PRINTER"
+    ]
+  },
+  "Unix": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "HOSTNAME",
+      "LOGONTYPE",
+      "RESULT"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "TARGETUSER",
+      "IENAME",
+      "GROUPNAME",
+      "RESULT"
+    ],
+    "E3": [
+      "TIME",
+      "USERNAME"
+    ],
+    "E6": [
+      "TIME",
+      "USERNAME",
+      "IENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SEVERITY",
+      "IENAME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "SERVICE_NAME",
+      "IENAME",
+      "DESCRIPTION"
+    ],
+    "E15": [
+      "TIME",
+      "USERNAME",
+      "FILENAME",
+      "IENAME",
+      "RESULT"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "LOGONID",
+      "LOGONTYPE",
+      "HOSTNAME"
+    ]
+  },
+  "Sys_Archive": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "DOMAIN",
+      "HOSTNAME",
+      "LOGONTYPE",
+      "RESULT"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "TARGETUSER",
+      "IENAME",
+      "GROUPNAME",
+      "DOMAIN",
+      "RESULT"
+    ],
+    "E3": [
+      "TIME",
+      "USERNAME"
+    ],
+    "E6": [
+      "TIME",
+      "USERNAME",
+      "IENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SEVERITY",
+      "IENAME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "SERVICE_NAME",
+      "IENAME",
+      "MESSAGE"
+    ],
+    "E15": [
+      "TIME",
+      "USERNAME",
+      "FILE_NAME",
+      "IENAME",
+      "RESULT"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "LOGONID",
+      "LOGONTYPE",
+      "HOSTNAME",
+      "DOMAIN"
+    ]
+  },
+  "AS400": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "HOSTNAME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "SERVICE",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "HOSTNAME"
+    ]
+  },
+  "MSSQL": {
+    "B4": [
+      "TIME",
+      "HOSTNAME"
+    ],
+    "B5": [
+      "TIME",
+      "IENAME"
+    ],
+    "B7": [
+      "TIME",
+      "IENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SEVERITY",
+      "IENAME",
+      "RULENAME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "IENAME",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "HOSTNAME"
+    ]
+  },
+  "Oracle": {
+    "B5": [
+      "TIME",
+      "ACTION",
+      "STATUS"
+    ],
+    "B7": [
+      "TIME",
+      "ACTION",
+      "OBJECT",
+      "STATUS"
+    ],
+    "E10": [
+      "TIME",
+      "SEVERITY",
+      "ACTION"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "ACTION",
+      "MESSAGE"
+    ]
+  },
+  "MySQL": {
+    "B4": [
+      "TIME",
+      "HOSTNAME"
+    ],
+    "B7": [
+      "TIME",
+      "DATABASENAME",
+      "IENAME"
+    ],
+    "E7": [
+      "TIME",
+      "DATABASENAME",
+      "IENAME",
+      "STATEMENT"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "IENAME",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "HOSTNAME"
+    ]
+  },
+  "PGSQL": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "HOSTNAME",
+      "STATUS"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "ACTION",
+      "STATUS"
+    ],
+    "B7": [
+      "TIME",
+      "USERNAME",
+      "DATABASENAME",
+      "ACTION",
+      "STATUS"
+    ],
+    "E7": [
+      "TIME",
+      "USERNAME",
+      "DATABASENAME",
+      "ACTION",
+      "STATEMENT",
+      "STATUS"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "ACTION",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "HOSTNAME"
+    ]
+  },
+  "DB2": {
+    "B4": [
+      "TIME",
+      "HOSTNAME",
+      "STATUSCODE"
+    ],
+    "B7": [
+      "TIME",
+      "DATABASENAME",
+      "IENAME",
+      "OBJECTNAME",
+      "SCHEMANAME",
+      "STATUSCODE"
+    ],
+    "E7": [
+      "TIME",
+      "DATABASENAME",
+      "IENAME",
+      "OBJECTNAME",
+      "STATEMENT",
+      "STATUSCODE"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "IENAME",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "HOSTNAME"
+    ]
+  },
+  "ApacheAccessLogs": {
+    "B8": [
+      "TIME"
+    ],
+    "E8": [
+      "TIME",
+      "referrer"
+    ],
+    "E10": [
+      "TIME",
+      "RISK_LEVEL"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "RISK_LEVEL",
+      "DESCRIPTION"
+    ]
+  },
+  "IIS_W3C_web": {
+    "B8": [
+      "TIME",
+      "USERNAME"
+    ],
+    "E8": [
+      "TIME",
+      "USERNAME",
+      "IENAME"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "OLDVALUE",
+      "NEWVALUE"
+    ]
+  },
+  "IIS_W3C_ftp": {
+    "E12": [
+      "TIME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "MESSAGE"
+    ],
+    "E15": [
+      "TIME"
+    ]
+  },
+  "Hypervisor": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "DOMAIN",
+      "HOSTNAME",
+      "LOGONTYPE",
+      "RESULT"
+    ],
+    "B11": [
+      "TIME",
+      "VMNAME",
+      "USERNAME",
+      "IENAME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "SERVICE_NAME",
+      "IENAME",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "LOGONID",
+      "LOGONTYPE",
+      "HOSTNAME",
+      "DOMAIN"
+    ]
+  },
+  "vCenter": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "REMOTEIP",
+      "HOSTNAME",
+      "REASON"
+    ],
+    "B7": [
+      "TIME",
+      "USERNAME",
+      "REMOTEIP",
+      "EVENTNAME",
+      "TARGET"
+    ],
+    "E16": [
+      "TIME",
+      "USERNAME",
+      "REMOTEIP",
+      "DATACENTER",
+      "EVENTNAME",
+      "TARGET"
+    ],
+    "E18": [
+      "TIME",
+      "FILE",
+      "EVENTNAME",
+      "USERNAME",
+      "OLDVALUE",
+      "NEWVALUE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "REMOTEIP",
+      "HOSTNAME"
+    ]
+  },
+  "SNMP": {
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "MESSAGE"
+    ],
+    "E14": [
+      "TIME",
+      "SEVERITY",
+      "MESSAGE"
+    ]
+  },
+  "Cisco": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "RESULT",
+      "REASON"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "ACTION",
+      "GROUPNAME",
+      "RESULT"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "DESTINATION_IP",
+      "DEST_PORT",
+      "PROTOCOL",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DESTINATION_IP",
+      "INTELLIGENCE",
+      "RISK_LEVEL",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E11": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "DURATION",
+      "RESULT"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "RESULT"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "RISK_LEVEL",
+      "ACTION",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DURATION"
+    ]
+  },
+  "FirePower": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "REASON"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "ACTION"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "POLICY"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "PRIORITY",
+      "ACTION",
+      "POLICY"
+    ],
+    "E11": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "PRIORITY",
+      "ACTION",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "PaloAlto": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "RESULT",
+      "REASON"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "CATEGORY",
+      "SEVERITY",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E11": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "RESULT"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "Fortinet": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "DOMAIN",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "STATUS",
+      "REASON",
+      "EVENTID"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "ACTION",
+      "DOMAIN",
+      "STATUS",
+      "EVENTID"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "VIRUS_NAME",
+      "SEVERITY",
+      "ACTION"
+    ],
+    "E11": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "DURATION",
+      "STATUS"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "STATUS"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "EVENTID",
+      "SEVERITY",
+      "SERVICENAME",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DOMAIN",
+      "DURATION",
+      "EVENTID"
+    ]
+  },
+  "CheckPoint": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "REASON"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "ACTION",
+      "GROUPNAME"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "PROTOCOL",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SEVERITY",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "SERVICENAME",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DURATION"
+    ]
+  },
+  "Juniper": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "REASON"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "RULE"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SEVERITY",
+      "ACTION",
+      "RULE"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "SERVICE_NAME",
+      "ACTION",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "SonicWall": {
+    "B4": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "DOMAIN",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "REASON",
+      "EVENTID"
+    ],
+    "B5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "IENAME",
+      "DOMAIN",
+      "EVENTID"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "PROTOCOL",
+      "IENAME",
+      "RULENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SIGNATURE_ID",
+      "INTELLIGENCE",
+      "RISK_LEVEL",
+      "IENAME",
+      "RULENAME"
+    ],
+    "E12": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "EVENTID",
+      "RISK_LEVEL",
+      "IENAME",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DOMAIN",
+      "DURATION",
+      "EVENTID"
+    ]
+  },
+  "WatchGuard": {
+    "B4": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "DOMAIN",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "ERROR"
+    ],
+    "B5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "ACTION",
+      "DOMAIN"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SIGNATURE_ID",
+      "VIRUS_NAME",
+      "SEVERITY",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E12": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "OBJECT"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "SERVICE_NAME",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DOMAIN"
+    ]
+  },
+  "NetScreen": {
+    "B4": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "STATUS",
+      "REASON",
+      "EVENTID"
+    ],
+    "B5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "ACTION",
+      "STATUS",
+      "EVENTID"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "CATEGORY",
+      "SEVERITY",
+      "ACTION"
+    ],
+    "E12": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "STATUS"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "EVENTID",
+      "SEVERITY",
+      "ACTION",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "EVENTID"
+    ]
+  },
+  "Barracuda": {
+    "B4": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "REASON",
+      "EVENTID"
+    ],
+    "B5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "ACTION",
+      "GROUPNAME",
+      "EVENTID"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SEVERITY",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E12": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "OBJECT"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "EVENTID",
+      "SEVERITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DURATION",
+      "EVENTID"
+    ]
+  },
+  "pfSense": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "REASON"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "IENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "PRIORITY",
+      "IENAME"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "PRIORITY",
+      "IENAME",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "ForcePoint": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "CATEGORY",
+      "SEVERITY",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "Sophos": {
+    "B4": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "STATUS",
+      "REASON"
+    ],
+    "B5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "ACTION",
+      "GROUPNAME",
+      "STATUS"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SIGNATURE_ID",
+      "VIRUS_NAME",
+      "CATEGORY",
+      "SEVERITY",
+      "ACTION"
+    ],
+    "E12": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "STATUS"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DURATION"
+    ]
+  },
+  "Topsec": {
+    "B4": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "RESULT"
+    ],
+    "B5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "ACTION",
+      "RESULT"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "PRIORITY",
+      "ACTION"
+    ],
+    "E12": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "RESULT"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "PRIORITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DURATION"
+    ]
+  },
+  "Sangfor": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SEVERITY",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E11": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "Stormshield": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "DOMAINNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "ACTION",
+      "DOMAINNAME"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SEVERITY",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "TARGET",
+      "OLDVALUE",
+      "NEWVALUE"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DOMAINNAME",
+      "DURATION"
+    ]
+  },
+  "Arista": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "STATUS",
+      "REASON"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "RULENAME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "ACTION",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "Dell": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "DOMAIN",
+      "IPADDRESS",
+      "HOSTNAME",
+      "STATUS"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "IENAME",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "HOSTNAME",
+      "DOMAIN"
+    ]
+  },
+  "F5": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "STATUS",
+      "ERROR"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SIGNATURE_ID",
+      "INTELLIGENCE",
+      "SEVERITY",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "OBJECTNAME",
+      "STATUS"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "H3C": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "DOMAINNAME",
+      "IPADDRESS",
+      "HOSTNAME",
+      "STATUS",
+      "REASON"
+    ],
+    "B9": [
+      "TIME",
+      "IPADDRESS",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E10": [
+      "TIME",
+      "IPADDRESS",
+      "DEST_IP",
+      "CATEGORY",
+      "SEVERITY",
+      "ACTION",
+      "CVE",
+      "POLICY_NAME"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "STATUS"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "SERVICENAME",
+      "ACTION",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "HOSTNAME",
+      "DOMAINNAME"
+    ]
+  },
+  "HP": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "REASON"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "IENAME",
+      "MESSAGE"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "Huawei": {
+    "B4": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "STATUS",
+      "REASON"
+    ],
+    "B5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "ACTION",
+      "STATUS"
+    ],
+    "B9": [
+      "TIME",
+      "SOURCE_IP",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DEST_IP",
+      "SIGNATURE_ID",
+      "VIRUS_NAME",
+      "CATEGORY",
+      "SEVERITY",
+      "ACTION"
+    ],
+    "E12": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "TARGET",
+      "STATUS"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "SOURCE_IP",
+      "HOSTNAME",
+      "DURATION"
+    ]
+  },
+  "Meraki": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "HOSTNAME"
+    ],
+    "B9": [
+      "TIME",
+      "IPADDRESS",
+      "SOURCE_PORT",
+      "DEST_IP",
+      "DEST_PORT",
+      "PROTOCOL",
+      "ACTION"
+    ],
+    "E10": [
+      "TIME",
+      "IPADDRESS",
+      "DEST_IP",
+      "SIGNATURE_ID",
+      "CATEGORY",
+      "PRIORITY",
+      "ACTION"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "PRIORITY",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "HOSTNAME",
+      "DURATION"
+    ]
+  },
+  "EMC Isilon": {
+    "E18": [
+      "TIME"
+    ]
+  },
+  "QNAP NAS": {
+    "E18": [
+      "TIME"
+    ]
+  },
+  "SynologyNAS": {
+    "E18": [
+      "TIME"
+    ]
+  },
+  "AWS": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "DOMAIN",
+      "IPADDRESS",
+      "HOSTNAME",
+      "FAILUREREASON"
+    ],
+    "B8": [
+      "TIME",
+      "IPADDRESS",
+      "USERNAME",
+      "HTTPMETHOD",
+      "USERAGENT"
+    ],
+    "B9": [
+      "TIME",
+      "IPADDRESS",
+      "PROTOCOL",
+      "ACTION",
+      "POLICY_NAME"
+    ],
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "ACTION",
+      "SEVERITY",
+      "MESSAGE"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "HOSTNAME",
+      "DOMAIN"
+    ]
+  },
+  "azure_active_directory": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "HOSTNAME",
+      "RESULT",
+      "FAILUREREASON"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "OPERATION",
+      "RESULT"
+    ],
+    "B7": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "OPERATION",
+      "RESULT"
+    ],
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "OPERATION",
+      "RESULT",
+      "RISK_LEVEL",
+      "MESSAGE"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "RESULT"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "HOSTNAME"
+    ]
+  },
+  "exchange_online": {
+    "B7": [
+      "TIME",
+      "IPADDRESS",
+      "OPERATION",
+      "TARGET",
+      "RESULT"
+    ],
+    "B9": [
+      "TIME",
+      "IPADDRESS",
+      "OPERATION"
+    ],
+    "OB3": [
+      "TIME",
+      "IPADDRESS",
+      "OPERATION",
+      "TARGET",
+      "RESULT",
+      "DESCRIPTION"
+    ],
+    "E10": [
+      "TIME",
+      "IPADDRESS",
+      "OPERATION"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SERVICENAME",
+      "OPERATION",
+      "DESCRIPTION"
+    ],
+    "E18": [
+      "TIME",
+      "OPERATION"
+    ]
+  },
+  "m365_general": {
+    "OB3": [
+      "TIME",
+      "IPADDRESS",
+      "OPERATION",
+      "TARGET",
+      "RESULT",
+      "DESCRIPTION"
+    ]
+  },
+  "sharepoint_online": {
+    "OB3": [
+      "TIME",
+      "IPADDRESS",
+      "OPERATION",
+      "TARGET",
+      "RESULT",
+      "DESCRIPTION"
+    ]
+  },
+  "Salesforce": {
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "ACTION",
+      "OBJECT",
+      "STATUS",
+      "SEVERITY",
+      "DESCRIPTION"
+    ]
+  },
+  "ADAP": {
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "REMOTEIP",
+      "IENAME",
+      "OBJECTNAME",
+      "RISK_LEVEL",
+      "DESCRIPTION"
+    ],
+    "E8": [
+      "TIME",
+      "REMOTEIP",
+      "USERNAME",
+      "CATEGORY",
+      "IENAME",
+      "USERAGENT"
+    ]
+  },
+  "ADMP": {
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "E8": [
+      "TIME",
+      "USERNAME",
+      "ACTION"
+    ]
+  },
+  "ADSSP": {
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "IENAME",
+      "DESCRIPTION"
+    ],
+    "E8": [
+      "TIME",
+      "USERNAME",
+      "IENAME"
+    ]
+  },
+  "OPM": {
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "IPADDRESS",
+      "IENAME",
+      "SEVERITY",
+      "DESCRIPTION"
+    ],
+    "E8": [
+      "TIME",
+      "IPADDRESS",
+      "USERNAME",
+      "IENAME"
+    ]
+  },
+  "SDP": {
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "IENAME",
+      "DESCRIPTION"
+    ],
+    "E8": [
+      "TIME",
+      "USERNAME",
+      "IENAME",
+      "referrer"
+    ]
+  },
+  "UEM": {
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "DOMAINNAME",
+      "EVENTID"
+    ],
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "SEVERITY",
+      "MESSAGE"
+    ]
+  },
+  "ERP": {
+    "OB3": [
+      "TIME",
+      "OPERATION",
+      "SEVERITY",
+      "MESSAGE"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "SEVERITY",
+      "OPERATION",
+      "MESSAGE"
+    ],
+    "E18": [
+      "TIME",
+      "OPERATION"
+    ]
+  },
+  "SAP": {
+    "B4": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "HOSTNAME"
+    ],
+    "B5": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "IENAME"
+    ],
+    "E10": [
+      "TIME",
+      "IENAME"
+    ],
+    "E12": [
+      "TIME",
+      "ACCOUNT_NAME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "IENAME",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "ACCOUNT_NAME",
+      "HOSTNAME"
+    ]
+  },
+  "McAfee": {
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "IENAME",
+      "SEVERITY",
+      "MESSAGE"
+    ],
+    "E10": [
+      "TIME",
+      "VIRUS_NAME",
+      "CATEGORY",
+      "SEVERITY",
+      "IENAME"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "EVENTID",
+      "SEVERITY",
+      "IENAME",
+      "MESSAGE"
+    ]
+  },
+  "Symantec_Endpoint_Protection": {
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "REMOTEIP",
+      "ACTION",
+      "OBJECT",
+      "STATUS",
+      "DESCRIPTION"
+    ]
+  },
+  "Symantec_DLP": {
+    "OB3": [
+      "TIME",
+      "SEVERITY",
+      "MESSAGE"
+    ]
+  },
+  "Trend_Micro": {
+    "B4": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ],
+    "B5": [
+      "TIME",
+      "USERNAME",
+      "ACTION"
+    ],
+    "E10": [
+      "TIME",
+      "SOURCE_IP",
+      "DESTINATION_IP",
+      "CATEGORY",
+      "ACTION"
+    ],
+    "E12": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "OLDVALUE"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "ACTION",
+      "DESCRIPTION"
+    ],
+    "B3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "HOSTNAME"
+    ]
+  },
+  "FireEye": {
+    "OB3": [
+      "TIME",
+      "ACTION",
+      "SEVERITY",
+      "MESSAGE"
+    ]
+  },
+  "MalwareBytes": {
+    "OB3": [
+      "TIME",
+      "USERNAME",
+      "SOURCE_IP",
+      "ACTION",
+      "STATUS",
+      "SEVERITY",
+      "DESCRIPTION"
+    ]
+  },
+  "CEF_Format": {
+    "OB3": [
+      "TIME",
+      "SOURCE_IP",
+      "ACTION",
+      "DESCRIPTION"
+    ]
+  },
+  "ThreatAnalytics": {
+    "E10": [
+      "TIME",
+      "IPADDRESS",
+      "DESTINATION_IP",
+      "CATEGORY"
+    ]
+  },
+  "Qualys": {
+    "OB3": [
+      "TIME",
+      "RESULT",
+      "MESSAGE"
+    ]
+  },
+  "Nessus": {
+    "OB3": [
+      "TIME",
+      "DESCRIPTION"
+    ]
+  },
+  "Nexpose": {
+    "OB3": [
+      "TIME",
+      "STATUS",
+      "MESSAGE"
+    ]
+  },
+  "OpenVas": {
+    "OB3": [
+      "MESSAGE"
+    ]
+  },
+  "NMAP": {
+    "OB3": [
+      "TIME",
+      "STATUS",
+      "MESSAGE"
+    ]
+  },
+  "DHCP_Linux": {
+    "OB3": [
+      "TIME",
+      "DESCRIPTION"
+    ],
+    "E13": [
+      "TIME",
+      "HOSTNAME",
+      "DESCRIPTION"
+    ]
+  },
+  "DHCP_Windows": {
+    "OB3": [
+      "TIME",
+      "MESSAGE"
+    ],
+    "E13": [
+      "TIME",
+      "hostname",
+      "MESSAGE"
+    ]
+  }
+}

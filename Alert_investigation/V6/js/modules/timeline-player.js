@@ -132,24 +132,6 @@ const TIMELINE_STEPS = [
       ['dev-ws045', 'svc-sharepoint'],
       ['user-m-henderson', 'svc-sharepoint']
     ]
-  },
-  {
-    offsetMin: 94,
-    tier: 'predicted',
-    title: '[Predicted] LSASS credential dump on CORP-WS-045',
-    narrative: 'AI projects the attacker will run procdump / comsvcs to extract cleartext credentials and Kerberos tickets from LSASS — converting the workstation foothold into reusable domain creds.',
-    mitre: 'T1003.001 · OS Credential Dumping: LSASS Memory',
-    entities: ['dev-ws045', 'proc-credump-predicted'],
-    edges: [['dev-ws045', 'proc-credump-predicted']]
-  },
-  {
-    offsetMin: 102,
-    tier: 'predicted',
-    title: '[Predicted] Administrator pivots to DC-01',
-    narrative: 'Using the freshly-dumped credentials, AI expects an RDP or SMB login from Administrator to the domain controller DC-01 within ~8 minutes — the canonical lateral-movement step before domain-wide impact.',
-    mitre: 'T1021.002 · Remote Services: SMB · TA0008 · Lateral Movement',
-    entities: ['user-admin', 'dev-dc01-predicted'],
-    edges: [['user-admin', 'dev-dc01-predicted']]
   }
 ];
 
@@ -319,17 +301,12 @@ function _tlRenderSlider() {
     const cls = [
       'tl-row',
       isActive ? 'active' : '',
-      i < _tlIndex ? 'past' : '',
-      s.tier === 'predicted' ? 'predicted' : ''
+      i < _tlIndex ? 'past' : ''
     ].filter(Boolean).join(' ');
-    const marker = s.tier === 'predicted'
-      ? '⏱'
-      : (i < _tlIndex ? '✓' : isActive ? '▶' : '•');
-    const tierBadge = s.tier === 'predicted'
-      ? '<span class="tl-tier-badge predicted">⏱ PREDICTED</span>'
-      : '<span class="tl-tier-badge observed">● OBSERVED</span>';
+    const marker = i < _tlIndex ? '✓' : isActive ? '▶' : '•';
+    const tierBadge = '<span class="tl-tier-badge observed">● OBSERVED</span>';
     const detail = isActive ? `
-      <div class="tl-row-detail ${s.tier === 'predicted' ? 'predicted' : ''}">
+      <div class="tl-row-detail">
         <div class="tl-detail-row">
           <span class="tl-detail-time">${_tlFormat(s.offsetMin)}</span>
           ${tierBadge}

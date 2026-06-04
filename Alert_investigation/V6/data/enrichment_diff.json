@@ -1,0 +1,4155 @@
+{
+  "Arista": {
+    "B3": {
+      "added": [
+        "MESSAGE",
+        "MODE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "MESSAGE",
+        "MODE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/Arista/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "MESSAGE",
+        "MODE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON",
+        "MESSAGE",
+        "MODE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON"
+      ],
+      "source": "reports/Devices/Arista/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "PROTOCOL_TR",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULENAME",
+        "PROTOCOL_TR",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/Arista/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "SOURCE_IP",
+        "USERNAME",
+        "COMMAND",
+        "MODE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "MESSAGE",
+        "SOURCE_IP",
+        "USERNAME",
+        "COMMAND",
+        "MODE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/Arista/PredefinedReports.xml"
+    }
+  },
+  "Barracuda": {
+    "B3": {
+      "added": [
+        "USERNAME",
+        "MESSAGE",
+        "DESCRIPTION",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION",
+        "EVENTID",
+        "USERNAME",
+        "MESSAGE",
+        "DESCRIPTION",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Barracuda/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "USERNAME",
+        "DURATION",
+        "MESSAGE",
+        "DESCRIPTION"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON",
+        "EVENTID",
+        "USERNAME",
+        "DURATION",
+        "MESSAGE",
+        "DESCRIPTION"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Barracuda/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "SOURCE_IP",
+        "USERNAME",
+        "HOSTNAME",
+        "MESSAGE",
+        "OBJECT"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "GROUPNAME",
+        "EVENTID",
+        "SOURCE_IP",
+        "USERNAME",
+        "HOSTNAME",
+        "MESSAGE",
+        "OBJECT"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "GROUPNAME",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Barracuda/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "URL_SITE",
+        "HOSTNAME",
+        "PROTOCOL_TR"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME",
+        "URL_SITE",
+        "HOSTNAME",
+        "PROTOCOL_TR"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/Barracuda/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "MESSAGE",
+        "NEW_STATUS",
+        "NOTES",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION",
+        "MESSAGE",
+        "NEW_STATUS",
+        "NOTES",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/Barracuda/PredefinedReports.xml"
+    }
+  },
+  "CheckPoint": {
+    "B3": {
+      "added": [
+        "MESSAGE",
+        "REASON",
+        "MODE",
+        "PRIVATE_IP",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION",
+        "MESSAGE",
+        "REASON",
+        "MODE",
+        "PRIVATE_IP",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "source": "reports/Devices/CheckPoint/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "MESSAGE",
+        "MODE",
+        "PRIVATE_IP",
+        "DURATION",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON",
+        "MESSAGE",
+        "MODE",
+        "PRIVATE_IP",
+        "DURATION",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON"
+      ],
+      "source": "reports/Devices/CheckPoint/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "MESSAGE",
+        "SOURCE_IP",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "GROUPNAME",
+        "HOSTNAME",
+        "MESSAGE",
+        "SOURCE_IP",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "GROUPNAME"
+      ],
+      "source": "reports/Devices/CheckPoint/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "PROTOCOL",
+        "ACTION",
+        "RULENAME",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "PROTOCOL",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/CheckPoint/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "HOSTNAME",
+        "ATTACK",
+        "DESCRIPTION",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION",
+        "RULENAME",
+        "HOSTNAME",
+        "ATTACK",
+        "DESCRIPTION",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/CheckPoint/PredefinedReports.xml"
+    },
+    "E12": {
+      "added": [
+        "HOSTNAME",
+        "DIRECTION",
+        "VALUE",
+        "STAGE",
+        "COMMAND",
+        "HOSTID",
+        "FIELD3"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DIRECTION",
+        "VALUE",
+        "STAGE",
+        "COMMAND",
+        "HOSTID",
+        "FIELD3"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP"
+      ],
+      "source": "reports/Devices/CheckPoint/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "SERVICENAME",
+        "ACTION",
+        "DESCRIPTION",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "SERVICENAME",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/CheckPoint/PredefinedReports.xml"
+    }
+  },
+  "Cisco": {
+    "B3": {
+      "added": [
+        "REMOTEHOST",
+        "PORT",
+        "DESTINATION_IP",
+        "FIELD4",
+        "INTERFACE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION",
+        "REMOTEHOST",
+        "PORT",
+        "DESTINATION_IP",
+        "FIELD4",
+        "INTERFACE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "source": "reports/Devices/Cisco/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "REMOTEHOST",
+        "PORT",
+        "DESTINATION_IP",
+        "FIELD4"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "RESULT",
+        "REASON",
+        "REMOTEHOST",
+        "PORT",
+        "DESTINATION_IP",
+        "FIELD4"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "RESULT",
+        "REASON"
+      ],
+      "source": "reports/Devices/Cisco/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "PRIVILEGE",
+        "PASSWORD",
+        "NAME",
+        "TYPE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "GROUPNAME",
+        "RESULT",
+        "HOSTNAME",
+        "PRIVILEGE",
+        "PASSWORD",
+        "NAME",
+        "TYPE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "GROUPNAME",
+        "RESULT"
+      ],
+      "source": "reports/Devices/Cisco/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "REMOTEHOST",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "DESTINATION_IP",
+        "DEST_PORT",
+        "PROTOCOL",
+        "ACTION",
+        "RULENAME",
+        "HOSTNAME",
+        "REMOTEHOST",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "DESTINATION_IP",
+        "DEST_PORT",
+        "PROTOCOL",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/Cisco/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "HOSTNAME",
+        "IENAME",
+        "REMOTEHOST"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "DESTINATION_IP",
+        "INTELLIGENCE",
+        "RISK_LEVEL",
+        "ACTION",
+        "RULENAME",
+        "HOSTNAME",
+        "IENAME",
+        "REMOTEHOST"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "DESTINATION_IP",
+        "INTELLIGENCE",
+        "RISK_LEVEL",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/Cisco/PredefinedReports.xml"
+    },
+    "E11": {
+      "added": [
+        "HOSTNAME",
+        "REMOTEHOST",
+        "MESSAGE",
+        "FIELD5",
+        "FIELD3"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "DURATION",
+        "RESULT",
+        "HOSTNAME",
+        "REMOTEHOST",
+        "MESSAGE",
+        "FIELD5",
+        "FIELD3"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "DURATION",
+        "RESULT"
+      ],
+      "source": "reports/Devices/Cisco/PredefinedReports.xml"
+    },
+    "E12": {
+      "added": [
+        "HOSTNAME",
+        "INTERFACE",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "RESULT",
+        "HOSTNAME",
+        "INTERFACE",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "RESULT"
+      ],
+      "source": "reports/Devices/Cisco/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "USERNAME",
+        "REMOTEHOST",
+        "SOURCE",
+        "SEVERITY",
+        "COMMANDEXECUTED"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "RISK_LEVEL",
+        "ACTION",
+        "MESSAGE",
+        "USERNAME",
+        "REMOTEHOST",
+        "SOURCE",
+        "SEVERITY",
+        "COMMANDEXECUTED"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "RISK_LEVEL",
+        "ACTION",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/Cisco/PredefinedReports.xml"
+    }
+  },
+  "Dell": {
+    "B3": {
+      "added": [
+        "MESSAGE",
+        "HOSTID",
+        "MODE",
+        "CONNECTION_TYPE",
+        "SOURCE_IP"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "DOMAIN",
+        "MESSAGE",
+        "HOSTID",
+        "MODE",
+        "CONNECTION_TYPE",
+        "SOURCE_IP"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "source": "reports/Devices/Dell/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "MESSAGE",
+        "HOSTID",
+        "MODE",
+        "CONNECTION_TYPE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "DOMAIN",
+        "IPADDRESS",
+        "HOSTNAME",
+        "STATUS",
+        "MESSAGE",
+        "HOSTID",
+        "MODE",
+        "CONNECTION_TYPE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "DOMAIN",
+        "IPADDRESS",
+        "HOSTNAME",
+        "STATUS"
+      ],
+      "source": "reports/Devices/Dell/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "TYPE",
+        "FAN_ID",
+        "STATUS",
+        "ID",
+        "NEW_STATUS"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "IENAME",
+        "MESSAGE",
+        "TYPE",
+        "FAN_ID",
+        "STATUS",
+        "ID",
+        "NEW_STATUS"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "IENAME",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/Dell/PredefinedReports.xml"
+    }
+  },
+  "F5": {
+    "B3": {
+      "added": [
+        "STARTTIME",
+        "ACCESS_RIGHT",
+        "ENDTIME",
+        "REASON",
+        "SEVERITY",
+        "MSG_ID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STARTTIME",
+        "ACCESS_RIGHT",
+        "ENDTIME",
+        "REASON",
+        "SEVERITY",
+        "MSG_ID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/F5/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "STARTTIME",
+        "ACCESS_RIGHT",
+        "ENDTIME",
+        "REASON"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "ERROR",
+        "STARTTIME",
+        "ACCESS_RIGHT",
+        "ENDTIME",
+        "REASON"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "ERROR"
+      ],
+      "source": "reports/Devices/F5/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "RULENAME",
+        "MESSAGE",
+        "HOSTNAME"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME",
+        "RULENAME",
+        "MESSAGE",
+        "HOSTNAME"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/F5/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "IDS_NAME",
+        "ATTACK_ID"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SIGNATURE_ID",
+        "INTELLIGENCE",
+        "SEVERITY",
+        "ACTION",
+        "POLICY_NAME",
+        "IDS_NAME",
+        "ATTACK_ID"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SIGNATURE_ID",
+        "INTELLIGENCE",
+        "SEVERITY",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/F5/PredefinedReports.xml"
+    },
+    "E12": {
+      "added": [
+        "DESCRIPTION",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "SEVERITY",
+        "TRANSACTION"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "OBJECTNAME",
+        "STATUS",
+        "DESCRIPTION",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "SEVERITY",
+        "TRANSACTION"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "OBJECTNAME",
+        "STATUS"
+      ],
+      "source": "reports/Devices/F5/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "MODULE",
+        "OBJECTNAME",
+        "COMMAND",
+        "USERNAME",
+        "MSG_ID"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION",
+        "MODULE",
+        "OBJECTNAME",
+        "COMMAND",
+        "USERNAME",
+        "MSG_ID"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/F5/PredefinedReports.xml"
+    }
+  },
+  "FirePower": {
+    "B3": {
+      "added": [
+        "IENAME",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "IENAME",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/FirePower/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "IENAME",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCE",
+        "FACILITY"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON",
+        "IENAME",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCE",
+        "FACILITY"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON"
+      ],
+      "source": "reports/Devices/FirePower/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "URL_SITE",
+        "PROTOCOL_TR"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY",
+        "HOSTNAME",
+        "URL_SITE",
+        "PROTOCOL_TR"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY"
+      ],
+      "source": "reports/Devices/FirePower/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "PRIORITY",
+        "ACTION",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "PRIORITY",
+        "ACTION",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/FirePower/PredefinedReports.xml"
+    }
+  },
+  "ForcePoint": {
+    "B3": {
+      "added": [
+        "HOSTID",
+        "DESCRIPTION",
+        "MODE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "HOSTID",
+        "DESCRIPTION",
+        "MODE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/ForcePoint/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "HOSTID",
+        "DESCRIPTION",
+        "MODE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "HOSTID",
+        "DESCRIPTION",
+        "MODE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/ForcePoint/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTID",
+        "CATEGORY",
+        "RULE_ID"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME",
+        "HOSTID",
+        "CATEGORY",
+        "RULE_ID"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/ForcePoint/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "HOSTID",
+        "RULE_ID",
+        "DEST_SERVICE"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "CATEGORY",
+        "SEVERITY",
+        "ACTION",
+        "POLICY_NAME",
+        "HOSTID",
+        "RULE_ID",
+        "DEST_SERVICE"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "CATEGORY",
+        "SEVERITY",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/ForcePoint/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "HOSTID",
+        "SOURCE",
+        "PRODUCT_NAME",
+        "IENAME",
+        "REMOTEHOST"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION",
+        "HOSTID",
+        "SOURCE",
+        "PRODUCT_NAME",
+        "IENAME",
+        "REMOTEHOST"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/ForcePoint/PredefinedReports.xml"
+    }
+  },
+  "Fortinet": {
+    "B3": {
+      "added": [
+        "REMOTE_IP",
+        "USER_INTERFACE",
+        "REASON"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN",
+        "DURATION",
+        "EVENTID",
+        "REMOTE_IP",
+        "USER_INTERFACE",
+        "REASON"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN",
+        "DURATION",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Fortinet/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "REMOTE_IP",
+        "USER_INTERFACE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "DOMAIN",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON",
+        "EVENTID",
+        "REMOTE_IP",
+        "USER_INTERFACE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "DOMAIN",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Fortinet/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "CONF_OBJECT",
+        "DESCRIPTION",
+        "CONF_ATTR"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "DOMAIN",
+        "STATUS",
+        "EVENTID",
+        "HOSTNAME",
+        "CONF_OBJECT",
+        "DESCRIPTION",
+        "CONF_ATTR"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "DOMAIN",
+        "STATUS",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Fortinet/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "DURATION",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "DURATION",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION"
+      ],
+      "source": "reports/Devices/Fortinet/PredefinedReports.xml"
+    },
+    "E11": {
+      "added": [
+        "HOSTNAME",
+        "REMOTE_IP",
+        "PRIVATE_IP",
+        "HOSTID",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "DURATION",
+        "STATUS",
+        "HOSTNAME",
+        "REMOTE_IP",
+        "PRIVATE_IP",
+        "HOSTID",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "DURATION",
+        "STATUS"
+      ],
+      "source": "reports/Devices/Fortinet/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "USERNAME",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "SEVERITY",
+        "SERVICENAME",
+        "ACTION",
+        "DESCRIPTION",
+        "USERNAME",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "SEVERITY",
+        "SERVICENAME",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/Fortinet/PredefinedReports.xml"
+    }
+  },
+  "H3C": {
+    "B3": {
+      "added": [
+        "SOURCE_IP",
+        "REMOTE_IP",
+        "HOSTID",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "DOMAINNAME",
+        "SOURCE_IP",
+        "REMOTE_IP",
+        "HOSTID",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "DOMAINNAME"
+      ],
+      "source": "reports/Devices/H3C/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "SOURCE_IP",
+        "REMOTE_IP",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "DOMAINNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "STATUS",
+        "REASON",
+        "SOURCE_IP",
+        "REMOTE_IP",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "DOMAINNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "STATUS",
+        "REASON"
+      ],
+      "source": "reports/Devices/H3C/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "PROTOCOL_TR",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "after": [
+        "TIME",
+        "IPADDRESS",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME",
+        "PROTOCOL_TR",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "before": [
+        "TIME",
+        "IPADDRESS",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/H3C/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "NEW_TIME",
+        "OLD_TIME",
+        "SOURCE_IP",
+        "USERNAME"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "SERVICENAME",
+        "ACTION",
+        "MESSAGE",
+        "NEW_TIME",
+        "OLD_TIME",
+        "SOURCE_IP",
+        "USERNAME"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "SERVICENAME",
+        "ACTION",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/H3C/PredefinedReports.xml"
+    }
+  },
+  "HP": {
+    "B3": {
+      "added": [
+        "MESSAGE",
+        "AUTH_MECHANISM",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "MESSAGE",
+        "AUTH_MECHANISM",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/HP/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "MESSAGE",
+        "AUTH_MECHANISM",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON",
+        "MESSAGE",
+        "AUTH_MECHANISM",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON"
+      ],
+      "source": "reports/Devices/HP/PredefinedReports.xml"
+    },
+    "E12": {
+      "added": [
+        "MESSAGE",
+        "COMMANDEXECUTED",
+        "HOSTNAME",
+        "VLAN_ID",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "MESSAGE",
+        "COMMANDEXECUTED",
+        "HOSTNAME",
+        "VLAN_ID",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP"
+      ],
+      "source": "reports/Devices/HP/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "NOTES",
+        "COUNT",
+        "NAME",
+        "REASON",
+        "NEW_STATUS"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "IENAME",
+        "MESSAGE",
+        "NOTES",
+        "COUNT",
+        "NAME",
+        "REASON",
+        "NEW_STATUS"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "IENAME",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/HP/PredefinedReports.xml"
+    }
+  },
+  "Huawei": {
+    "B3": {
+      "added": [
+        "ROLE",
+        "USERNAME",
+        "DESCRIPTION",
+        "SERVICE_TYPE",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION",
+        "ROLE",
+        "USERNAME",
+        "DESCRIPTION",
+        "SERVICE_TYPE",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "source": "reports/Devices/Huawei/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "ROLE",
+        "USERNAME",
+        "DESCRIPTION",
+        "SERVICE_TYPE"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON",
+        "ROLE",
+        "USERNAME",
+        "DESCRIPTION",
+        "SERVICE_TYPE"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON"
+      ],
+      "source": "reports/Devices/Huawei/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "SOURCE_IP",
+        "USERNAME",
+        "HOSTNAME",
+        "MESSAGE",
+        "VPN_NAME",
+        "TYPE"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "STATUS",
+        "SOURCE_IP",
+        "USERNAME",
+        "HOSTNAME",
+        "MESSAGE",
+        "VPN_NAME",
+        "TYPE"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "STATUS"
+      ],
+      "source": "reports/Devices/Huawei/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "PROTOCOL_TR",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME",
+        "PROTOCOL_TR",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/Huawei/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "MESSAGE",
+        "STATUS",
+        "COMMAND",
+        "SOURCE_IP",
+        "USERNAME"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION",
+        "MESSAGE",
+        "STATUS",
+        "COMMAND",
+        "SOURCE_IP",
+        "USERNAME"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/Huawei/PredefinedReports.xml"
+    }
+  },
+  "IIS_W3C_ftp": {
+    "E12": {
+      "added": [
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    }
+  },
+  "IIS_W3C_web": {
+    "E12": {
+      "added": [
+        "HOSTNAME",
+        "EVENTID",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "HOSTNAME",
+        "EVENTID",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "OLDVALUE",
+        "NEWVALUE"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    }
+  },
+  "Juniper": {
+    "B3": {
+      "added": [
+        "CLASSNAME",
+        "MODE",
+        "HOSTID",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "CLASSNAME",
+        "MODE",
+        "HOSTID",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/Juniper/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "CLASSNAME",
+        "MODE",
+        "HOSTID",
+        "SOURCE_PORT",
+        "DEST_IP"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON",
+        "CLASSNAME",
+        "MODE",
+        "HOSTID",
+        "SOURCE_PORT",
+        "DEST_IP"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON"
+      ],
+      "source": "reports/Devices/Juniper/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULE",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULE"
+      ],
+      "source": "reports/Devices/Juniper/PredefinedReports.xml"
+    },
+    "E12": {
+      "added": [
+        "HOSTNAME",
+        "INTERFACE",
+        "ADMIN_STATUS",
+        "OPERATOR_STATUS",
+        "COMMAND",
+        "PROCESS",
+        "PATH"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "INTERFACE",
+        "ADMIN_STATUS",
+        "OPERATOR_STATUS",
+        "COMMAND",
+        "PROCESS",
+        "PATH"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP"
+      ],
+      "source": "reports/Devices/Juniper/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "USERNAME",
+        "PROCESS",
+        "ZONE",
+        "REASON"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "SERVICE_NAME",
+        "ACTION",
+        "MESSAGE",
+        "USERNAME",
+        "PROCESS",
+        "ZONE",
+        "REASON"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "SERVICE_NAME",
+        "ACTION",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/Juniper/PredefinedReports.xml"
+    }
+  },
+  "Meraki": {
+    "B3": {
+      "added": [
+        "MESSAGE",
+        "REMOTEHOST",
+        "HOSTID",
+        "PRIVATE_IP"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "DURATION",
+        "MESSAGE",
+        "REMOTEHOST",
+        "HOSTID",
+        "PRIVATE_IP"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "source": "reports/Devices/Meraki/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "MESSAGE",
+        "REMOTEHOST",
+        "HOSTID",
+        "PRIVATE_IP"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "MESSAGE",
+        "REMOTEHOST",
+        "HOSTID",
+        "PRIVATE_IP"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/Meraki/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "SOURCE_IP",
+        "USERNAME",
+        "HOSTNAME"
+      ],
+      "after": [
+        "TIME",
+        "IPADDRESS",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "PROTOCOL",
+        "ACTION",
+        "SOURCE_IP",
+        "USERNAME",
+        "HOSTNAME"
+      ],
+      "before": [
+        "TIME",
+        "IPADDRESS",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "PROTOCOL",
+        "ACTION"
+      ],
+      "source": "reports/Devices/Meraki/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "PRIORITY",
+        "ACTION",
+        "DESCRIPTION",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "PRIORITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/Meraki/PredefinedReports.xml"
+    }
+  },
+  "NetScreen": {
+    "B3": {
+      "added": [
+        "USERNAME",
+        "MODE",
+        "HOSTID",
+        "SOURCE_PORT",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "EVENTID",
+        "USERNAME",
+        "MODE",
+        "HOSTID",
+        "SOURCE_PORT",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/NetScreen/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "USERNAME",
+        "MODE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON",
+        "EVENTID",
+        "USERNAME",
+        "MODE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/NetScreen/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "HOSTID",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "STATUS",
+        "EVENTID",
+        "HOSTNAME",
+        "USERNAME",
+        "HOSTID",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "STATUS",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/NetScreen/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID",
+        "USERNAME"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID",
+        "USERNAME"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION"
+      ],
+      "source": "reports/Devices/NetScreen/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "USERNAME",
+        "CENTIGRADE",
+        "NOTES",
+        "COUNT"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "SEVERITY",
+        "ACTION",
+        "MESSAGE",
+        "USERNAME",
+        "CENTIGRADE",
+        "NOTES",
+        "COUNT"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "SEVERITY",
+        "ACTION",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/NetScreen/PredefinedReports.xml"
+    }
+  },
+  "PaloAlto": {
+    "B3": {
+      "added": [
+        "REMOTEHOST",
+        "REASON",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCEHOST"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REMOTEHOST",
+        "REASON",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCEHOST"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/PaloAlto/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "REMOTEHOST",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCEHOST"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "RESULT",
+        "REASON",
+        "REMOTEHOST",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCEHOST"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "RESULT",
+        "REASON"
+      ],
+      "source": "reports/Devices/PaloAlto/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "PROTOCOL_TR"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULENAME",
+        "HOSTNAME",
+        "USERNAME",
+        "PROTOCOL_TR"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/PaloAlto/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "DEST_PORT"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "CATEGORY",
+        "SEVERITY",
+        "ACTION",
+        "RULENAME",
+        "HOSTNAME",
+        "USERNAME",
+        "DEST_PORT"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "CATEGORY",
+        "SEVERITY",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/PaloAlto/PredefinedReports.xml"
+    },
+    "E11": {
+      "added": [
+        "HOSTNAME",
+        "REASON",
+        "PRIVATE_IP",
+        "SOURCEHOST",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "RESULT",
+        "HOSTNAME",
+        "REASON",
+        "PRIVATE_IP",
+        "SOURCEHOST",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "RESULT"
+      ],
+      "source": "reports/Devices/PaloAlto/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "MESSAGE",
+        "PACKAGE_NAME",
+        "NEW_VERSION",
+        "SOURCEHOST",
+        "USERNAME"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION",
+        "MESSAGE",
+        "PACKAGE_NAME",
+        "NEW_VERSION",
+        "SOURCEHOST",
+        "USERNAME"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/PaloAlto/PredefinedReports.xml"
+    }
+  },
+  "Sangfor": {
+    "B3": {
+      "added": [
+        "HOSTID",
+        "MESSAGE",
+        "DESCRIPTION",
+        "SOURCE",
+        "SEVERITY"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "HOSTID",
+        "MESSAGE",
+        "DESCRIPTION",
+        "SOURCE",
+        "SEVERITY"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/Sangfor/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "HOSTID",
+        "MESSAGE",
+        "DESCRIPTION",
+        "SOURCE",
+        "SEVERITY"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "HOSTID",
+        "MESSAGE",
+        "DESCRIPTION",
+        "SOURCE",
+        "SEVERITY"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/Sangfor/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "SOURCE",
+        "TYPE"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "SOURCE",
+        "TYPE"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/Sangfor/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "HOSTNAME",
+        "SOURCE",
+        "IDS_NAME",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "SOURCE",
+        "IDS_NAME",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/Sangfor/PredefinedReports.xml"
+    },
+    "E11": {
+      "added": [
+        "HOSTNAME",
+        "DESCRIPTION",
+        "HOSTID",
+        "IENAME",
+        "MESSAGE",
+        "SOURCE",
+        "TYPE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DESCRIPTION",
+        "HOSTID",
+        "IENAME",
+        "MESSAGE",
+        "SOURCE",
+        "TYPE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP"
+      ],
+      "source": "reports/Devices/Sangfor/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "MESSAGE",
+        "SOURCE",
+        "TYPE",
+        "FACILITY",
+        "SOURCE_IP"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION",
+        "MESSAGE",
+        "SOURCE",
+        "TYPE",
+        "FACILITY",
+        "SOURCE_IP"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/Sangfor/PredefinedReports.xml"
+    }
+  },
+  "SonicWall": {
+    "B3": {
+      "added": [
+        "USERNAME",
+        "DEST_IP",
+        "DEST_PORT"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN",
+        "DURATION",
+        "EVENTID",
+        "USERNAME",
+        "DEST_IP",
+        "DEST_PORT"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN",
+        "DURATION",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/SonicWall/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "USERNAME",
+        "DEST_IP",
+        "DEST_PORT"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "DOMAIN",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON",
+        "EVENTID",
+        "USERNAME",
+        "DEST_IP",
+        "DEST_PORT"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "DOMAIN",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/SonicWall/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "ACCOUNT_TYPE",
+        "DESCRIPTION",
+        "NOTES"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "IENAME",
+        "DOMAIN",
+        "EVENTID",
+        "HOSTNAME",
+        "USERNAME",
+        "ACCOUNT_TYPE",
+        "DESCRIPTION",
+        "NOTES"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "IENAME",
+        "DOMAIN",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/SonicWall/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "PROTOCOL",
+        "IENAME",
+        "RULENAME",
+        "HOSTNAME",
+        "USERNAME"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "PROTOCOL",
+        "IENAME",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/SonicWall/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "USERNAME",
+        "DEST_IP",
+        "DEST_PORT",
+        "SOURCE_IP"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "RISK_LEVEL",
+        "IENAME",
+        "DESCRIPTION",
+        "USERNAME",
+        "DEST_IP",
+        "DEST_PORT",
+        "SOURCE_IP"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "RISK_LEVEL",
+        "IENAME",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/SonicWall/PredefinedReports.xml"
+    }
+  },
+  "Sophos": {
+    "B3": {
+      "added": [
+        "USERNAME",
+        "GROUPNAME",
+        "HOSTID",
+        "AUTH_MECHANISM",
+        "AUTH_CLIENT"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION",
+        "USERNAME",
+        "GROUPNAME",
+        "HOSTID",
+        "AUTH_MECHANISM",
+        "AUTH_CLIENT"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "source": "reports/Devices/Sophos/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "USERNAME",
+        "GROUPNAME",
+        "HOSTID",
+        "AUTH_MECHANISM"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON",
+        "USERNAME",
+        "GROUPNAME",
+        "HOSTID",
+        "AUTH_MECHANISM"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STATUS",
+        "REASON"
+      ],
+      "source": "reports/Devices/Sophos/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTID",
+        "DESCRIPTION"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "GROUPNAME",
+        "STATUS",
+        "HOSTNAME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTID",
+        "DESCRIPTION"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "GROUPNAME",
+        "STATUS"
+      ],
+      "source": "reports/Devices/Sophos/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "POLICY_NAME"
+      ],
+      "source": "reports/Devices/Sophos/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "MESSAGE",
+        "USERNAME",
+        "SOURCE_IP",
+        "PROCESS",
+        "OPERATION"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION",
+        "MESSAGE",
+        "USERNAME",
+        "SOURCE_IP",
+        "PROCESS",
+        "OPERATION"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/Sophos/PredefinedReports.xml"
+    }
+  },
+  "Stormshield": {
+    "B3": {
+      "added": [
+        "DESCRIPTION",
+        "HOSTID",
+        "SESSIONID",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAINNAME",
+        "DURATION",
+        "DESCRIPTION",
+        "HOSTID",
+        "SESSIONID",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAINNAME",
+        "DURATION"
+      ],
+      "source": "reports/Devices/Stormshield/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "DESCRIPTION",
+        "HOSTID",
+        "SESSIONID",
+        "MESSAGE",
+        "SOURCE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "DOMAINNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DESCRIPTION",
+        "HOSTID",
+        "SESSIONID",
+        "MESSAGE",
+        "SOURCE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "DOMAINNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/Stormshield/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "SOURCE_IP",
+        "CONF_OBJECT",
+        "HOSTID",
+        "DESCRIPTION",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "DOMAINNAME",
+        "HOSTNAME",
+        "SOURCE_IP",
+        "CONF_OBJECT",
+        "HOSTID",
+        "DESCRIPTION",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "DOMAINNAME"
+      ],
+      "source": "reports/Devices/Stormshield/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULENAME",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/Stormshield/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "HOSTNAME",
+        "SOURCE_PORT",
+        "DEST_PORT",
+        "PROTOCOL_TR"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION",
+        "RULENAME",
+        "HOSTNAME",
+        "SOURCE_PORT",
+        "DEST_PORT",
+        "PROTOCOL_TR"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/Stormshield/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "SOURCE_IP",
+        "USERNAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION",
+        "SOURCE_IP",
+        "USERNAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/Stormshield/PredefinedReports.xml"
+    }
+  },
+  "Topsec": {
+    "B3": {
+      "added": [
+        "USERNAME",
+        "OPERATION",
+        "HOSTID",
+        "DESCRIPTION",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION",
+        "USERNAME",
+        "OPERATION",
+        "HOSTID",
+        "DESCRIPTION",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "source": "reports/Devices/Topsec/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "USERNAME",
+        "OPERATION",
+        "HOSTID",
+        "DESCRIPTION",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "RESULT",
+        "USERNAME",
+        "OPERATION",
+        "HOSTID",
+        "DESCRIPTION",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "RESULT"
+      ],
+      "source": "reports/Devices/Topsec/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "ROLE",
+        "HOSTID",
+        "TYPE",
+        "SOURCE_IP"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "RESULT",
+        "HOSTNAME",
+        "USERNAME",
+        "ROLE",
+        "HOSTID",
+        "TYPE",
+        "SOURCE_IP"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "RESULT"
+      ],
+      "source": "reports/Devices/Topsec/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "SOURCE",
+        "CONNECTION",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "HOSTNAME",
+        "SOURCE",
+        "CONNECTION",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION"
+      ],
+      "source": "reports/Devices/Topsec/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "HOSTNAME",
+        "SOURCE",
+        "DESCRIPTION",
+        "HOSTID",
+        "TYPE"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "PRIORITY",
+        "ACTION",
+        "HOSTNAME",
+        "SOURCE",
+        "DESCRIPTION",
+        "HOSTID",
+        "TYPE"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "PRIORITY",
+        "ACTION"
+      ],
+      "source": "reports/Devices/Topsec/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "TYPE",
+        "SOURCE",
+        "USERNAME",
+        "SEVERITY",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "PRIORITY",
+        "ACTION",
+        "DESCRIPTION",
+        "TYPE",
+        "SOURCE",
+        "USERNAME",
+        "SEVERITY",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "PRIORITY",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/Topsec/PredefinedReports.xml"
+    }
+  },
+  "WatchGuard": {
+    "B3": {
+      "added": [
+        "USERNAME",
+        "HOSTID",
+        "SOURCE_PORT",
+        "MESSAGE",
+        "PRIVATE_IP"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN",
+        "USERNAME",
+        "HOSTID",
+        "SOURCE_PORT",
+        "MESSAGE",
+        "PRIVATE_IP"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "source": "reports/Devices/WatchGuard/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "USERNAME",
+        "HOSTID",
+        "SOURCE_PORT",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "DOMAIN",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "ERROR",
+        "USERNAME",
+        "HOSTID",
+        "SOURCE_PORT",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "DOMAIN",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "ERROR"
+      ],
+      "source": "reports/Devices/WatchGuard/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "HOSTID",
+        "SERVER",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "DOMAIN",
+        "HOSTNAME",
+        "USERNAME",
+        "HOSTID",
+        "SERVER",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "ACTION",
+        "DOMAIN"
+      ],
+      "source": "reports/Devices/WatchGuard/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "URL_SITE"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULENAME",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "URL_SITE"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "RULENAME"
+      ],
+      "source": "reports/Devices/WatchGuard/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "USERNAME",
+        "OPERATION",
+        "MESSAGE",
+        "OBJECT"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "SERVICE_NAME",
+        "ACTION",
+        "DESCRIPTION",
+        "USERNAME",
+        "OPERATION",
+        "MESSAGE",
+        "OBJECT"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "SERVICE_NAME",
+        "ACTION",
+        "DESCRIPTION"
+      ],
+      "source": "reports/Devices/WatchGuard/PredefinedReports.xml"
+    }
+  },
+  "Win_Archive": {
+    "B10": {
+      "added": [
+        "HOSTNAME",
+        "REMOTEHOST",
+        "SHAREPATH"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "SHARENAME",
+        "OBJECTNAME",
+        "ACCESSES",
+        "IENAME",
+        "HOSTNAME",
+        "REMOTEHOST",
+        "SHAREPATH"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "SHARENAME",
+        "OBJECTNAME",
+        "ACCESSES",
+        "IENAME"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "B3": {
+      "added": [
+        "SEVERITY",
+        "PROCESSNAME"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "LOGONID",
+        "LOGONTYPE",
+        "REMOTEIP",
+        "HOSTNAME",
+        "DOMAIN",
+        "EVENTID",
+        "SEVERITY",
+        "PROCESSNAME"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "LOGONID",
+        "LOGONTYPE",
+        "REMOTEIP",
+        "HOSTNAME",
+        "DOMAIN",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "PROCESSNAME",
+        "REMOTEHOST"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "DOMAIN",
+        "REMOTEIP",
+        "HOSTNAME",
+        "LOGONTYPE",
+        "FAILUREREASON",
+        "EVENTID",
+        "PROCESSNAME",
+        "REMOTEHOST"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "DOMAIN",
+        "REMOTEIP",
+        "HOSTNAME",
+        "LOGONTYPE",
+        "FAILUREREASON",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "HOSTNAME",
+        "MACHINENAME",
+        "TARGETDOMAIN"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "TARGETUSER",
+        "IENAME",
+        "GROUPNAME",
+        "DOMAIN",
+        "EVENTID",
+        "HOSTNAME",
+        "MACHINENAME",
+        "TARGETDOMAIN"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "TARGETUSER",
+        "IENAME",
+        "GROUPNAME",
+        "DOMAIN",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "MESSAGE",
+        "EVENTID"
+      ],
+      "after": [
+        "TIME",
+        "REMOTEIP",
+        "TARGETIP",
+        "INTELLIGENCE",
+        "CATEGORY",
+        "RISK_LEVEL",
+        "IENAME",
+        "POLICY",
+        "MESSAGE",
+        "EVENTID"
+      ],
+      "before": [
+        "TIME",
+        "REMOTEIP",
+        "TARGETIP",
+        "INTELLIGENCE",
+        "CATEGORY",
+        "RISK_LEVEL",
+        "IENAME",
+        "POLICY"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E12": {
+      "added": [
+        "HOSTNAME",
+        "TARGETUSER",
+        "ACCESSRIGHT",
+        "CATEGORY"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "OBJECT",
+        "OLDVALUE",
+        "NEWVALUE",
+        "HOSTNAME",
+        "TARGETUSER",
+        "ACCESSRIGHT",
+        "CATEGORY"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "OBJECT",
+        "OLDVALUE",
+        "NEWVALUE"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "USERNAME",
+        "REMOTEHOST",
+        "DOMAIN"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "RISK_LEVEL",
+        "SERVICENAME",
+        "IENAME",
+        "MESSAGE",
+        "USERNAME",
+        "REMOTEHOST",
+        "DOMAIN"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "RISK_LEVEL",
+        "SERVICENAME",
+        "IENAME",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E18": {
+      "added": [
+        "HOSTNAME",
+        "FILETYPE",
+        "PREVVAL"
+      ],
+      "after": [
+        "TIME",
+        "OBJECTNAME",
+        "IENAME",
+        "USERNAME",
+        "PROCESSNAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "HOSTNAME",
+        "FILETYPE",
+        "PREVVAL"
+      ],
+      "before": [
+        "TIME",
+        "OBJECTNAME",
+        "IENAME",
+        "USERNAME",
+        "PROCESSNAME",
+        "OLDVALUE",
+        "NEWVALUE"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E2": {
+      "added": [
+        "HOSTNAME",
+        "DN",
+        "OBJECTNAME",
+        "GUID",
+        "DISPLAYNAME",
+        "ACCESSES"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "OBJECT",
+        "IENAME",
+        "HOSTNAME",
+        "DN",
+        "OBJECTNAME",
+        "GUID",
+        "DISPLAYNAME",
+        "ACCESSES"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "OBJECT",
+        "IENAME"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E3": {
+      "added": [
+        "HOSTNAME",
+        "DOMAIN",
+        "SERVICENAME",
+        "EVENTID",
+        "SEVERITY",
+        "LOGONID",
+        "PROCESSID"
+      ],
+      "after": [
+        "TIME",
+        "PROCESSNAME",
+        "USERNAME",
+        "HOSTNAME",
+        "DOMAIN",
+        "SERVICENAME",
+        "EVENTID",
+        "SEVERITY",
+        "LOGONID",
+        "PROCESSID"
+      ],
+      "before": [
+        "TIME",
+        "PROCESSNAME",
+        "USERNAME"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E4": {
+      "added": [
+        "SERVICETYPE",
+        "OBJECTNAME",
+        "USERNAME",
+        "HOSTNAME",
+        "MESSAGE",
+        "DOMAIN"
+      ],
+      "after": [
+        "TIME",
+        "SERVICENAME",
+        "SERVICEACCOUNT",
+        "EVENTID",
+        "SERVICETYPE",
+        "OBJECTNAME",
+        "USERNAME",
+        "HOSTNAME",
+        "MESSAGE",
+        "DOMAIN"
+      ],
+      "before": [
+        "TIME",
+        "SERVICENAME",
+        "SERVICEACCOUNT",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E6": {
+      "added": [
+        "HOSTNAME",
+        "DOMAIN",
+        "OBJECTNAME",
+        "EVENTID",
+        "LOGONID",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "VENDORNAME",
+        "IENAME",
+        "HOSTNAME",
+        "DOMAIN",
+        "OBJECTNAME",
+        "EVENTID",
+        "LOGONID",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "VENDORNAME",
+        "IENAME"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    }
+  },
+  "Windows": {
+    "B10": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "REMOTEIP",
+        "SHARENAME",
+        "FILENAME",
+        "ACCESSES",
+        "ACTION",
+        "RESULT",
+        "HOSTNAME",
+        "USERNAME"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "REMOTEIP",
+        "SHARENAME",
+        "FILENAME",
+        "ACCESSES",
+        "ACTION",
+        "RESULT"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "B3": {
+      "added": [
+        "USERNAME",
+        "SEVERITY"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "LOGONID",
+        "LOGONTYPE",
+        "REMOTEIP",
+        "HOSTNAME",
+        "DOMAIN",
+        "EVENTID",
+        "USERNAME",
+        "SEVERITY"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "LOGONID",
+        "LOGONTYPE",
+        "REMOTEIP",
+        "HOSTNAME",
+        "DOMAIN",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "USERNAME",
+        "PROCESSNAME"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "DOMAIN",
+        "REMOTEIP",
+        "HOSTNAME",
+        "LOGONTYPE",
+        "RESULT",
+        "FAILUREREASON",
+        "USERNAME",
+        "PROCESSNAME"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "DOMAIN",
+        "REMOTEIP",
+        "HOSTNAME",
+        "LOGONTYPE",
+        "RESULT",
+        "FAILUREREASON"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "B5": {
+      "added": [
+        "USERNAME",
+        "HOSTNAME"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "TARGETUSER",
+        "ACTION",
+        "GROUP",
+        "DOMAIN",
+        "RESULT",
+        "EVENTID",
+        "USERNAME",
+        "HOSTNAME"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "TARGETUSER",
+        "ACTION",
+        "GROUP",
+        "DOMAIN",
+        "RESULT",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E10": {
+      "added": [
+        "MESSAGE",
+        "EVENTID"
+      ],
+      "after": [
+        "TIME",
+        "REMOTEIP",
+        "TARGETIP",
+        "INTELLIGENCE",
+        "CATEGORY",
+        "RISK_LEVEL",
+        "ACTION",
+        "POLICY",
+        "MESSAGE",
+        "EVENTID"
+      ],
+      "before": [
+        "TIME",
+        "REMOTEIP",
+        "TARGETIP",
+        "INTELLIGENCE",
+        "CATEGORY",
+        "RISK_LEVEL",
+        "ACTION",
+        "POLICY"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E12": {
+      "added": [
+        "USERNAME",
+        "HOSTNAME",
+        "TARGETUSER"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "REMOTEIP",
+        "OBJECT",
+        "OLDVALUE",
+        "NEWVALUE",
+        "RESULT",
+        "USERNAME",
+        "HOSTNAME",
+        "TARGETUSER"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "REMOTEIP",
+        "OBJECT",
+        "OLDVALUE",
+        "NEWVALUE",
+        "RESULT"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "USERNAME",
+        "REMOTEHOST",
+        "DOMAIN"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "RISK_LEVEL",
+        "SERVICENAME",
+        "ACTION",
+        "MESSAGE",
+        "USERNAME",
+        "REMOTEHOST",
+        "DOMAIN"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "EVENTID",
+        "RISK_LEVEL",
+        "SERVICENAME",
+        "ACTION",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E18": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "OBJECTNAME"
+      ],
+      "after": [
+        "TIME",
+        "FILENAME",
+        "ACTION",
+        "ACCOUNT_NAME",
+        "PROCESSNAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "HOSTNAME",
+        "USERNAME",
+        "OBJECTNAME"
+      ],
+      "before": [
+        "TIME",
+        "FILENAME",
+        "ACTION",
+        "ACCOUNT_NAME",
+        "PROCESSNAME",
+        "OLDVALUE",
+        "NEWVALUE"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E2": {
+      "added": [
+        "USERNAME",
+        "HOSTNAME",
+        "DN",
+        "OBJECTNAME",
+        "GUID"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "OBJECT",
+        "RESULT",
+        "ACTION",
+        "USERNAME",
+        "HOSTNAME",
+        "DN",
+        "OBJECTNAME",
+        "GUID"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "OBJECT",
+        "RESULT",
+        "ACTION"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E3": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "DOMAIN",
+        "SERVICENAME",
+        "EVENTID"
+      ],
+      "after": [
+        "TIME",
+        "PROCESSNAME",
+        "PARENTPROCESSNAME",
+        "COMMANDLINE",
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "USERNAME",
+        "DOMAIN",
+        "SERVICENAME",
+        "EVENTID"
+      ],
+      "before": [
+        "TIME",
+        "PROCESSNAME",
+        "PARENTPROCESSNAME",
+        "COMMANDLINE",
+        "ACCOUNT_NAME"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E4": {
+      "added": [
+        "SERVICETYPE",
+        "OBJECTNAME",
+        "USERNAME",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "after": [
+        "TIME",
+        "SERVICENAME",
+        "SERVICEACCOUNT",
+        "RESULT",
+        "EVENTID",
+        "SERVICETYPE",
+        "OBJECTNAME",
+        "USERNAME",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "before": [
+        "TIME",
+        "SERVICENAME",
+        "SERVICEACCOUNT",
+        "RESULT",
+        "EVENTID"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    },
+    "E6": {
+      "added": [
+        "HOSTNAME",
+        "USERNAME",
+        "DOMAIN",
+        "OBJECTNAME",
+        "EVENTID",
+        "LOGONID"
+      ],
+      "after": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "VENDORNAME",
+        "ACTION",
+        "HOSTNAME",
+        "USERNAME",
+        "DOMAIN",
+        "OBJECTNAME",
+        "EVENTID",
+        "LOGONID"
+      ],
+      "before": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "VENDORNAME",
+        "ACTION"
+      ],
+      "source": "reports/Devices/Windows/PredefinedReports.xml"
+    }
+  },
+  "pfSense": {
+    "B3": {
+      "added": [
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "source": "reports/Devices/pfSense/PredefinedReports.xml"
+    },
+    "B4": {
+      "added": [
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REASON"
+      ],
+      "source": "reports/Devices/pfSense/PredefinedReports.xml"
+    },
+    "B9": {
+      "added": [
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "PACK_LEN",
+        "TRACKER_ID"
+      ],
+      "after": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "IENAME",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "PACK_LEN",
+        "TRACKER_ID"
+      ],
+      "before": [
+        "TIME",
+        "SOURCE_IP",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "IENAME"
+      ],
+      "source": "reports/Devices/pfSense/PredefinedReports.xml"
+    },
+    "E12": {
+      "added": [
+        "HOSTNAME",
+        "INTERFACE",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "after": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "INTERFACE",
+        "MESSAGE",
+        "HOSTID"
+      ],
+      "before": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP"
+      ],
+      "source": "reports/Devices/pfSense/PredefinedReports.xml"
+    },
+    "E13": {
+      "added": [
+        "USERNAME",
+        "HOSTID",
+        "FW_DIRECTION",
+        "INTERFACE",
+        "PROTOCOL_TR"
+      ],
+      "after": [
+        "TIME",
+        "HOSTNAME",
+        "PRIORITY",
+        "IENAME",
+        "MESSAGE",
+        "USERNAME",
+        "HOSTID",
+        "FW_DIRECTION",
+        "INTERFACE",
+        "PROTOCOL_TR"
+      ],
+      "before": [
+        "TIME",
+        "HOSTNAME",
+        "PRIORITY",
+        "IENAME",
+        "MESSAGE"
+      ],
+      "source": "reports/Devices/pfSense/PredefinedReports.xml"
+    }
+  }
+}

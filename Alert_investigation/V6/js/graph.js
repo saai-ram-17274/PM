@@ -14,6 +14,10 @@ var ctxEntityId     = null;
 var sliderEntityId  = null; // entity currently displayed in the open slider
 const nodeRegistry  = {};
 const drillDownGroups = {};
+/* Per-(parent,category) collapse hub: a single edge from the parent ends in a
+   ✕ hub; all leaves branch off the hub. Clicking ✕ groups the leaves into a
+   single "Category (N)" count node; clicking that count node re-expands. */
+const groupHubs = {};
 
 /* Stubs the V4 modules occasionally call but are not relevant in V5.
    showToast is provided by js/modules/utils.js — do NOT redefine here. */
@@ -38,15 +42,14 @@ function attackVectorHTML(){
                   <span class="gcb-caret">▾</span>
                 </div>
                 <div class="gcb-menu" id="entityChipMenu">
-                  <div class="gcb-option active" data-val="all" onclick="pickEntityChip(this,'all','All Entities')">All Entities <span class="gcb-count">10</span></div>
-                  <div class="gcb-option" data-val="user" onclick="pickEntityChip(this,'user','Users')"><span class="gcb-dot" style="background:#2C66DD;"></span> Users <span class="gcb-count">2</span></div>
-                  <div class="gcb-option" data-val="asset" onclick="pickEntityChip(this,'asset','Assets')"><span class="gcb-dot" style="background:#198019;"></span> Assets <span class="gcb-count">2</span></div>
-                  <div class="gcb-option" data-val="ip" onclick="pickEntityChip(this,'ip','IP Addresses')"><span class="gcb-dot" style="background:#f97316;"></span> IP Addresses <span class="gcb-count">2</span></div>
-                  <div class="gcb-option" data-val="domain" onclick="pickEntityChip(this,'domain','Domains')"><span class="gcb-dot" style="background:#DD1616;"></span> Domains <span class="gcb-count">1</span></div>
-                  <div class="gcb-option" data-val="account" onclick="pickEntityChip(this,'account','Accounts')"><span class="gcb-dot" style="background:#0891b2;"></span> Accounts <span class="gcb-count">2</span></div>
-                  <div class="gcb-option" data-val="process" onclick="pickEntityChip(this,'process','File/Process')"><span class="gcb-dot" style="background:#7c3aed;"></span> File/Process <span class="gcb-count">0</span></div>
-                  <div class="gcb-option" data-val="location" onclick="pickEntityChip(this,'location','Location')"><span class="gcb-dot" style="background:#eab308;"></span> Location <span class="gcb-count">0</span></div>
-                  <div class="gcb-option" data-val="alert" onclick="pickEntityChip(this,'alert','Alerts')"><span class="gcb-dot" style="background:#DD1616;"></span> Alerts <span class="gcb-count">1</span></div>
+                  <div class="gcb-option active" data-val="all" onclick="pickEntityChip(this,'all','All Entities')">All Entities <span class="gcb-count">0</span></div>
+                  <div class="gcb-option" data-val="host" onclick="pickEntityChip(this,'host','Hosts')"><span class="gcb-dot" style="background:#198019;"></span> Hosts <span class="gcb-count">0</span></div>
+                  <div class="gcb-option" data-val="ip" onclick="pickEntityChip(this,'ip','IP Addresses')"><span class="gcb-dot" style="background:#f97316;"></span> IP Addresses <span class="gcb-count">0</span></div>
+                  <div class="gcb-option" data-val="domain" onclick="pickEntityChip(this,'domain','Domains')"><span class="gcb-dot" style="background:#DD1616;"></span> Domains <span class="gcb-count">0</span></div>
+                  <div class="gcb-option" data-val="user" onclick="pickEntityChip(this,'user','Users')"><span class="gcb-dot" style="background:#2C66DD;"></span> Users <span class="gcb-count">0</span></div>
+                  <div class="gcb-option" data-val="file" onclick="pickEntityChip(this,'file','Files')"><span class="gcb-dot" style="background:#0891b2;"></span> Files <span class="gcb-count">0</span></div>
+                  <div class="gcb-option" data-val="process" onclick="pickEntityChip(this,'process','Processes')"><span class="gcb-dot" style="background:#7c3aed;"></span> Processes <span class="gcb-count">0</span></div>
+                  <div class="gcb-option" data-val="other" onclick="pickEntityChip(this,'other','Others')"><span class="gcb-dot" style="background:#64748b;"></span> Others <span class="gcb-count">0</span></div>
                 </div>
               </div>
               <span class="cmd-pill cmd-pill-danger cmd-pill-clickable" id="cmdPillMalCount" onclick="toggleCmdPillPopup(event,'malicious')"><span class="cmd-pill-dot" style="background:#DD1616;"></span><span class="cmd-pill-num">0</span> Malicious<span class="cmd-pill-caret">▾</span></span>
@@ -54,23 +57,47 @@ function attackVectorHTML(){
             </div>
             <div class="cmd-pill-popup" id="cmdPillPopup"></div>
             <div class="cmd-spacer"></div>
-            <div style="position:relative;display:inline-block;">
-              <div class="gcb-chip" id="timeChip" onclick="toggleGraphChipMenu('timeChipMenu',this)">
-                <span class="gcb-icon">⏱</span>
-                <span class="gcb-label" id="timeChipLabel">Last 1 Hour</span>
-                <span class="gcb-caret">▾</span>
+            <div class="gcb-timewin" id="timeWindowCtl" title="Investigation window — anchored on the alert trigger time. Pick how far Before and After the trigger to pull events.">
+              <span class="gcb-icon">⏱</span>
+              <div style="position:relative;display:inline-block;">
+                <div class="gcb-chip gcb-twchip" id="beforeChip" onclick="toggleGraphChipMenu('beforeChipMenu',this)">
+                  <span class="gcb-tw-pre">Before</span>
+                  <span class="gcb-label" id="beforeChipLabel">1 Hr</span>
+                  <span class="gcb-caret">▾</span>
+                </div>
+                <div class="gcb-menu" id="beforeChipMenu">
+                  <div class="gcb-option" onclick="pickBeforeChip(this,'30 Min',0.5)">30 Min</div>
+                  <div class="gcb-option active" onclick="pickBeforeChip(this,'1 Hr',1)">1 Hr</div>
+                  <div class="gcb-option" onclick="pickBeforeChip(this,'2 Hrs',2)">2 Hrs</div>
+                  <div class="gcb-option" onclick="pickBeforeChip(this,'4 Hrs',4)">4 Hrs</div>
+                  <div class="gcb-option" onclick="pickBeforeChip(this,'8 Hrs',8)">8 Hrs</div>
+                  <div class="gcb-option" onclick="pickBeforeChip(this,'24 Hrs',24)">24 Hrs</div>
+                </div>
               </div>
-              <div class="gcb-menu" id="timeChipMenu">
-                <div class="gcb-option" onclick="pickTimeChip(this,'Last 30 Min')">Last 30 Min</div>
-                <div class="gcb-option active" onclick="pickTimeChip(this,'Last 1 Hour')">Last 1 Hour</div>
-                <div class="gcb-option" onclick="pickTimeChip(this,'Last 6 Hours')">Last 6 Hours</div>
-                <div class="gcb-option" onclick="pickTimeChip(this,'Last 12 Hours')">Last 12 Hours</div>
-                <div class="gcb-option" onclick="pickTimeChip(this,'Last 24 Hours')">Last 24 Hours</div>
+              <span class="gcb-tw-trigger" id="twTriggerPill" title="Alert trigger time (anchor)"><span class="gcb-tw-flag">⚑</span><span id="twTriggerTime">—</span></span>
+              <div style="position:relative;display:inline-block;">
+                <div class="gcb-chip gcb-twchip" id="afterChip" onclick="toggleGraphChipMenu('afterChipMenu',this)">
+                  <span class="gcb-tw-pre">After</span>
+                  <span class="gcb-label" id="afterChipLabel">1 Hr</span>
+                  <span class="gcb-caret">▾</span>
+                </div>
+                <div class="gcb-menu" id="afterChipMenu">
+                  <div class="gcb-option" onclick="pickAfterChip(this,'30 Min',0.5)">30 Min</div>
+                  <div class="gcb-option active" onclick="pickAfterChip(this,'1 Hr',1)">1 Hr</div>
+                  <div class="gcb-option" onclick="pickAfterChip(this,'2 Hrs',2)">2 Hrs</div>
+                  <div class="gcb-option" onclick="pickAfterChip(this,'4 Hrs',4)">4 Hrs</div>
+                  <div class="gcb-option" onclick="pickAfterChip(this,'8 Hrs',8)">8 Hrs</div>
+                  <div class="gcb-option" onclick="pickAfterChip(this,'Until now',null)">Until now</div>
+                </div>
               </div>
+              <button class="gcb-tw-analyze" id="twAnalyzeBtn" style="display:none;" onclick="analyzeTimeWindow()" title="Re-pull events for the updated investigation window">
+                <span class="gcb-tw-analyze-spin" id="twAnalyzeSpin"></span>
+                <span class="gcb-tw-analyze-label" id="twAnalyzeLabel">Analyze</span>
+              </button>
             </div>
-            <div class="gcb-chip gcb-chip-action" id="tlPlayBtn" onclick="openTimelinePlayer()" title="Play the attack chronologically">
+            <div class="gcb-chip gcb-chip-action" id="tlPlayBtn" style="display:none;" onclick="openTimelinePlayer()" title="Play the attack chronologically">
               <span class="gcb-icon">▶</span>
-              <span class="gcb-label">Play</span>
+              <span class="gcb-label">Attack Story</span>
             </div>
           </div>
 
@@ -81,9 +108,6 @@ function attackVectorHTML(){
               </marker>
               <marker id="arrow-norm" viewBox="0 0 10 10" refX="35" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="#2C66DD"/>
-              </marker>
-              <marker id="arrow-predicted" viewBox="0 0 10 10" refX="32" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#d97706"/>
               </marker>
               <filter id="glow-r" x="-50%" y="-50%" width="200%" height="200%">
                 <feGaussianBlur stdDeviation="4" result="b"/>
@@ -115,10 +139,6 @@ function attackVectorHTML(){
             <line x1="940" y1="570" x2="880" y2="420" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="svc-oauth" data-target="svc-sharepoint" data-label="AccessedFile"/>
             <line x1="120" y1="460" x2="120" y2="620" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="ip-tor" data-target="domain-c2" data-label="CommunicatedWith"/>
             <line x1="320" y1="580" x2="140" y2="640" class="graph-edge-mal" marker-end="url(#arrow-mal)" data-source="dev-ws045" data-target="domain-c2" data-label="CommunicatedWith"/>
-            <!-- PREDICTED edge: administrator -> DC-01 (LoginTo via RDP/SMB) -->
-            <line x1="635" y1="370" x2="685" y2="620" marker-end="url(#arrow-predicted)" data-predicted="1" data-source="user-admin" data-target="dev-dc01-predicted" data-label="LoginTo"/>
-            <!-- PREDICTED edge: dev-ws045 -> Credential Dump (ExecutedOn) — bridges admin abuse to DC pivot -->
-            <line x1="340" y1="590" x2="475" y2="645" marker-end="url(#arrow-predicted)" data-predicted="1" data-source="dev-ws045" data-target="proc-credump-predicted" data-label="ExecutedOn"/>
 
             <g class="graph-node" data-entity="alert-impossible-travel" onclick="openEntitySlider('alert-impossible-travel')" oncontextmenu="showGraphCtx(event,'alert-impossible-travel')">
               <circle cx="580" cy="65" r="24" fill="#ffffff" stroke="#DD1616" stroke-width="2" filter="url(#glow-r)"/>
@@ -172,23 +192,6 @@ function attackVectorHTML(){
               <text x="120" y="680" text-anchor="middle" font-size="8.5" fill="#DD1616" font-family="Inter,sans-serif" font-weight="600">c2-update.darkoperator.net</text>
               <text x="120" y="692" text-anchor="middle" font-size="7.5" fill="#8a94a6" font-family="Inter,sans-serif">(185.220.101.99 · C2 Server)</text>
             </g>
-            <!-- PREDICTED node: Domain Controller (AI-projected next step) -->
-            <g class="graph-node" data-entity="dev-dc01-predicted" data-predicted="1" onclick="showPredictionDetails('dev-dc01-predicted')" oncontextmenu="event.preventDefault();showPredictionDetails('dev-dc01-predicted')">
-              <circle cx="700" cy="640" r="20" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
-              <text x="700" y="645" text-anchor="middle" font-size="14" dominant-baseline="central">🖥</text>
-              <text class="predicted-glyph" x="717" y="630" text-anchor="middle">⏱</text>
-              <text x="700" y="670" text-anchor="middle" font-size="10" fill="#d97706" font-family="Inter,sans-serif" font-weight="600">DC-01</text>
-              <text class="predicted-sublabel" x="700" y="683" text-anchor="middle">PREDICTED · LATERAL MOVEMENT</text>
-            </g>
-            <!-- PREDICTED node: LSASS Credential Dump (bridges admin-creds-on-WS045 to DC-01 LoginTo) -->
-            <g class="graph-node" data-entity="proc-credump-predicted" data-predicted="1" onclick="showPredictionDetails('proc-credump-predicted')" oncontextmenu="event.preventDefault();showPredictionDetails('proc-credump-predicted')">
-              <circle cx="490" cy="660" r="18" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
-              <text x="490" y="664" text-anchor="middle" font-size="13" dominant-baseline="central">🔧</text>
-              <text class="predicted-glyph" x="506" y="650" text-anchor="middle">⏱</text>
-              <text x="490" y="686" text-anchor="middle" font-size="9.5" fill="#d97706" font-family="Inter,sans-serif" font-weight="600">LSASS Dump</text>
-              <text class="predicted-sublabel" x="490" y="698" text-anchor="middle">PREDICTED · CREDENTIAL ACCESS</text>
-            </g>
-
             <g class="edge-info-btn" data-label="TriggeredBy" data-source="alert-impossible-travel" data-target="user-m-henderson" onclick="showEdgeRelation(event,this)"><circle cx="430" cy="155" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="430" y="159" text-anchor="middle" font-size="11" dominant-baseline="central">⚡</text></g>
             <g class="edge-info-btn" data-label="DetectedOn" data-source="alert-impossible-travel" data-target="svc-azure-ad" onclick="showEdgeRelation(event,this)"><circle cx="740" cy="125" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="740" y="129" text-anchor="middle" font-size="11" dominant-baseline="central">🔍</text></g>
             <g class="edge-info-btn" data-label="AccessedFrom" data-source="user-m-henderson" data-target="ip-tor" onclick="showEdgeRelation(event,this)"><circle cx="185" cy="337" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="185" y="341" text-anchor="middle" font-size="11" dominant-baseline="central">🌐</text></g>
@@ -205,18 +208,11 @@ function attackVectorHTML(){
             <g class="edge-info-btn" data-label="AccessedFile" data-source="svc-oauth" data-target="svc-sharepoint" onclick="showEdgeRelation(event,this)"><circle cx="915" cy="490" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="915" y="494" text-anchor="middle" font-size="11" dominant-baseline="central">🎟</text></g>
             <g class="edge-info-btn" data-label="CommunicatedWith" data-source="ip-tor" data-target="domain-c2" onclick="showEdgeRelation(event,this)"><circle cx="120" cy="540" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="120" y="544" text-anchor="middle" font-size="11" dominant-baseline="central">📡</text></g>
             <g class="edge-info-btn" data-label="CommunicatedWith" data-source="dev-ws045" data-target="domain-c2" onclick="showEdgeRelation(event,this)"><circle cx="230" cy="610" r="10" fill="#fff" stroke="#ef4444" stroke-width="1.5"/><text x="230" y="614" text-anchor="middle" font-size="11" dominant-baseline="central">📡</text></g>
-            <!-- PREDICTED edge-info button: administrator -> DC-01 -->
-            <g class="edge-info-btn" data-predicted="1" data-label="LoginTo" data-source="user-admin" data-target="dev-dc01-predicted" onclick="showEdgePrediction(event,this)"><circle cx="660" cy="495" r="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/><text x="660" y="499" text-anchor="middle" font-size="11" dominant-baseline="central">🔐</text></g>
-            <!-- PREDICTED edge-info button: dev-ws045 -> Credential Dump -->
-            <g class="edge-info-btn" data-predicted="1" data-label="ExecutedOn" data-source="dev-ws045" data-target="proc-credump-predicted" onclick="showEdgePrediction(event,this)"><circle cx="407" cy="615" r="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/><text x="407" y="619" text-anchor="middle" font-size="11" dominant-baseline="central">▶</text></g>
           </svg>
 
           <div class="graph-canvas-toolbar">
             <span class="canvas-edge-tag"><span class="legend-line-red"></span> Malicious</span>
             <span class="canvas-edge-tag"><span class="legend-line-blue"></span> Normal</span>
-            <span style="margin:0 4px;border-left:1px solid #e2e8f0;height:14px;align-self:center;"></span>
-            <span class="canvas-edge-tag" id="legendAiCorrelated" title="Entities and relationships surfaced by AI from existing log evidence (observed, not predicted)"><span class="legend-ai-spark">\u2728</span> AI-correlated</span>
-            <span class="canvas-edge-tag" id="legendPredicted" title="AI-projected next attack step based on TTP patterns (not yet observed)"><span class="legend-predicted-glyph">⏱</span> Predicted</span>
             <span style="margin:0 4px;border-left:1px solid #e2e8f0;height:14px;align-self:center;"></span>
             <span class="canvas-edge-tag" style="cursor:pointer;" onclick="toggleRelGuide(event)" title="Relationship Guide">⟷ Relations</span>
           </div>
@@ -287,24 +283,44 @@ function initGraphChips() {
   if (critChip) critChip.textContent = critNodes;
 
   /* Update entity-type dropdown counts based on currently visible nodes */
-  const typeCounts = { user:0, device:0, ip:0, service:0, process:0, alert:0, domain:0 };
+  // Bucket nodes into the 7 dropdown categories (per device_and_other_entity_spec.md):
+  //   host    ← type=device          (id prefix dev-)
+  //   ip      ← type=ip              (id prefix ip-)
+  //   domain  ← type=domain          (id prefix domain-)
+  //   user    ← type=user            (id prefix user-)
+  //   file    ← type=file            (id prefix file-)
+  //   process ← type=process, plus type=service ONLY for OS-level services
+  //             (svc-winupdatesvc, svc-wuauserv, svc-spooler, ...)
+  //   other   ← type=service for SaaS tenants / cloud apps / tokens
+  //             (svc-azure-ad, svc-sharepoint, svc-oauth, ...), plus anything
+  //             else (incl. type=outline, hash, url, email, mailbox, token).
+  // The alert node is the centre of the graph and is intentionally NOT bucketed.
+  const SAAS_SVC_RE = /^svc-(azure|aad|sharepoint|exchange|m365|o365|onedrive|teams|salesforce|aws|gcp|okta|oauth|slack|saas)/i;
+  const buckets = { host:0, ip:0, domain:0, user:0, file:0, process:0, other:0 };
   let total = 0;
+  const classify = (eid, ent) => {
+    const t = ent && ent.type;
+    if (t === 'device'  || eid.startsWith('dev-'))    return 'host';
+    if (t === 'ip'      || eid.startsWith('ip-'))     return 'ip';
+    if (t === 'domain'  || eid.startsWith('domain-')) return 'domain';
+    if (t === 'user'    || eid.startsWith('user-'))   return 'user';
+    if (t === 'file'    || eid.startsWith('file-'))   return 'file';
+    if (t === 'process' || eid.startsWith('proc-'))   return 'process';
+    if (t === 'service' || eid.startsWith('svc-')) {
+      return SAAS_SVC_RE.test(eid) ? 'other' : 'process';
+    }
+    if (t === 'alert'   || eid.startsWith('alert-')) return null; // centre, not bucketed
+    return 'other';
+  };
   document.querySelectorAll('#graphSvg g.graph-node').forEach(n => {
     if (n.style.display === 'none') return;
     total++;
     const eid = n.getAttribute('data-entity') || '';
     const ent = (typeof ENTITIES !== 'undefined') ? ENTITIES[eid] : null;
-    const t = ent && ent.type;
-    if (t && typeCounts.hasOwnProperty(t)) { typeCounts[t]++; return; }
-    if (eid.startsWith('user-'))   typeCounts.user++;
-    else if (eid.startsWith('dev-'))    typeCounts.device++;
-    else if (eid.startsWith('ip-'))     typeCounts.ip++;
-    else if (eid.startsWith('svc-'))    typeCounts.service++;
-    else if (eid.startsWith('proc-'))   typeCounts.process++;
-    else if (eid.startsWith('alert-'))  typeCounts.alert++;
-    else if (eid.startsWith('domain-')) typeCounts.domain++;
+    const b = classify(eid, ent);
+    if (b) buckets[b]++;
   });
-  const countMap = { all:total, user:typeCounts.user, asset:typeCounts.device, ip:typeCounts.ip, account:typeCounts.service, process:typeCounts.process, alert:typeCounts.alert, domain:typeCounts.domain, location:0 };
+  const countMap = { all: total, ...buckets };
   const menu = document.getElementById('entityChipMenu');
   if (menu) {
     menu.querySelectorAll('.gcb-option').forEach(opt => {
@@ -313,6 +329,7 @@ function initGraphChips() {
       if (cEl && countMap.hasOwnProperty(v)) cEl.textContent = countMap[v];
     });
   }
+  if (typeof refreshTimeWindow === 'function') refreshTimeWindow();
 }
 function openInvestigationGraph() { initGraphChips(); }
 
@@ -440,13 +457,7 @@ document.addEventListener('keydown', e => {
    (before the user clicks "Start Investigation" in the Investigation tab)
    these nodes and any edges touching them are hidden, leaving only the
    entities present in the alert summary / sidebar. */
-const PARTIAL_HIDDEN_ENTITIES = ['svc-azure-ad','svc-sharepoint','svc-oauth','user-admin','domain-c2','dev-dc01-predicted','proc-credump-predicted'];
-
-/* Entities flagged as AI-PREDICTED (not yet observed). Rendered with
-   amber dashed outline + ⏱ glyph + PREDICTED sub-label. Predictions
-   are TTP-based projections of the most likely next attack step;
-   they should never be confused with observed events. */
-const PREDICTED_ENTITIES = new Set(['dev-dc01-predicted','proc-credump-predicted']);
+const PARTIAL_HIDDEN_ENTITIES = ['svc-azure-ad','svc-sharepoint','svc-oauth','user-admin','domain-c2'];
 
 function isAiInvestigated(){
   const d = (typeof currentAlertId !== 'undefined' && typeof ALERT_DETAIL !== 'undefined')
@@ -465,6 +476,12 @@ function applyAttackGraphPartialMode(){
 
   const hidden = new Set(PARTIAL_HIDDEN_ENTITIES);
   const partial = !isAiInvestigated();
+
+  /* The "Attack Story" replay button is only meaningful once the full
+     attack chain has been revealed — keep it hidden until the analyst
+     clicks "Start Investigation". */
+  const playBtn = document.getElementById('tlPlayBtn');
+  if (playBtn) playBtn.style.display = partial ? 'none' : '';
 
   /* Toggle node visibility */
   svg.querySelectorAll('g.graph-node').forEach(n => {
@@ -486,56 +503,6 @@ function applyAttackGraphPartialMode(){
     if (partial && edgeTouchesHidden(b)) b.style.display = 'none';
     else if (!partial) b.style.display = '';
   });
-
-  /* Tag AI-correlated nodes/edges with data-ai="1" once the investigation
-     has run, so CSS can render them with a dashed purple halo and a ✨
-     glyph. AI-correlated == any element touching an AI-only entity. */
-  const tagAi = !partial;
-  svg.querySelectorAll('g.graph-node').forEach(n => {
-    const eid = n.getAttribute('data-entity');
-    const isPredicted = PREDICTED_ENTITIES.has(eid);
-    if (tagAi && hidden.has(eid) && !isPredicted) {
-      n.setAttribute('data-ai', '1');
-      /* Inject the ✨ corner glyph exactly once per AI node */
-      if (!n.querySelector('.ai-spark-glyph')) {
-        const c = n.querySelector('circle');
-        if (c) {
-          const cx = parseFloat(c.getAttribute('cx'));
-          const cy = parseFloat(c.getAttribute('cy'));
-          const r  = parseFloat(c.getAttribute('r'));
-          const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          t.setAttribute('class', 'ai-spark-glyph');
-          t.setAttribute('x', cx + r * 0.85);
-          t.setAttribute('y', cy - r * 0.55);
-          t.setAttribute('text-anchor', 'middle');
-          t.setAttribute('pointer-events', 'none');
-          t.textContent = '\u2728';
-          n.appendChild(t);
-        }
-      }
-    } else if (!isPredicted) {
-      n.removeAttribute('data-ai');
-    }
-  });
-  svg.querySelectorAll('line[data-source]').forEach(l => {
-    if (tagAi && edgeTouchesHidden(l)) l.setAttribute('data-ai', '1');
-    else l.removeAttribute('data-ai');
-    /* Predicted edges already carry data-predicted="1" in markup;
-       toggle visibility based on partial mode */
-    if (l.getAttribute('data-predicted') === '1') {
-      l.style.display = partial ? 'none' : '';
-    }
-  });
-  svg.querySelectorAll('g.edge-info-btn').forEach(b => {
-    if (tagAi && edgeTouchesHidden(b)) b.setAttribute('data-ai', '1');
-    else b.removeAttribute('data-ai');
-    if (b.getAttribute('data-predicted') === '1') {
-      b.style.display = partial ? 'none' : '';
-    }
-  });
-
-  /* Toggle a container-level class so the legend chip can show/hide */
-  container.classList.toggle('av-ai-investigated', tagAi);
 
   /* Refresh chip counts to reflect what's visible */
   if (typeof initGraphChips === 'function') initGraphChips();

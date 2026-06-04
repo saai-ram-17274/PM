@@ -32,12 +32,104 @@ function pickEntityChip(optionEl, val, label) {
   legendFilter(val);
 }
 
-function pickTimeChip(optionEl, label) {
+/* ─── Investigation time window ─────────────────────────────────────
+ * The window is anchored on the alert TRIGGER time (not "now"), so the
+ * analyst can pull events both BEFORE the trigger (the lead-up: recon,
+ * initial access) and AFTER it (what the attacker did once the alert
+ * fired: lateral movement, exfil, persistence). Two independent
+ * dropdowns drive a From → To range shown to the right.            */
+let _twBeforeHrs = 1;        // hours before the trigger
+let _twAfterHrs  = 1;        // hours after the trigger; null => "Until now"
+
+/* Parse the current alert's trigger timestamp (e.g. "11 May 2026, 10:04:00"). */
+function _twTriggerDate() {
+  let raw = null;
+  try {
+    const d = (typeof currentAlertId !== 'undefined' && typeof ALERT_DETAIL !== 'undefined')
+      ? ALERT_DETAIL[currentAlertId] : null;
+    raw = d && (d.createdTime || d.timeGenerated);
+  } catch (e) {}
+  const t = raw ? Date.parse(String(raw).replace(',', '')) : NaN;
+  return isNaN(t) ? new Date('2026-05-11T10:04:00') : new Date(t);
+}
+
+function _twFmtTime(d) {
+  return d.toTimeString().slice(0, 8); // HH:MM:SS
+}
+function _twFmtFull(d) {
+  return d.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric',
+    hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+
+/* Recompute the investigation window from the trigger anchor + dropdown
+ * picks and paint the trigger pill with the full date & time. */
+function refreshTimeWindow() {
+  const trigger = _twTriggerDate();
+
+  const trigEl = document.getElementById('twTriggerTime');
+  if (trigEl) {
+    trigEl.textContent = _twFmtFull(trigger);
+    const pill = document.getElementById('twTriggerPill');
+    if (pill) pill.title = 'Alert trigger time (anchor) · ' + _twFmtFull(trigger);
+  }
+}
+
+/* The "Analyze" button only appears once the user changes the window; it
+ * disappears again after the (re-)analysis runs. */
+function _twShowAnalyze() {
+  const btn = document.getElementById('twAnalyzeBtn');
+  if (btn && !btn.classList.contains('loading')) btn.style.display = '';
+}
+
+function analyzeTimeWindow() {
+  const btn = document.getElementById('twAnalyzeBtn');
+  if (!btn || btn.disabled) return;
+  const canvas = document.getElementById('graphCanvas');
+  if (!canvas) return;
+
+  // Hide the button and show a loader over the graph while it "re-pulls".
+  btn.disabled = true;
+  btn.style.display = 'none';
+
+  let overlay = document.getElementById('graphLoadOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'graphLoadOverlay';
+    overlay.className = 'graph-load-overlay';
+    overlay.innerHTML = '<div class="graph-load-spin"></div>' +
+      '<div class="graph-load-text">Loading investigation window…</div>';
+    canvas.appendChild(overlay);
+  }
+  overlay.classList.add('show');
+
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    btn.disabled = false;
+    const beforeL = (document.getElementById('beforeChipLabel') || {}).textContent;
+    const afterL  = (document.getElementById('afterChipLabel') || {}).textContent;
+    showToast('⏱', 'Window analyzed: ' + beforeL + ' before → ' +
+      (_twAfterHrs === null ? 'now' : afterL + ' after') + ' trigger');
+  }, 1200);
+}
+
+function pickBeforeChip(optionEl, label, hrs) {
   optionEl.closest('.gcb-menu').querySelectorAll('.gcb-option').forEach(o => o.classList.remove('active'));
   optionEl.classList.add('active');
-  document.getElementById('timeChipLabel').textContent = label;
+  document.getElementById('beforeChipLabel').textContent = label;
+  _twBeforeHrs = hrs;
   closeAllChipMenus();
-  showToast('⏱', 'Time window: ' + label);
+  refreshTimeWindow();
+  _twShowAnalyze();
+}
+
+function pickAfterChip(optionEl, label, hrs) {
+  optionEl.closest('.gcb-menu').querySelectorAll('.gcb-option').forEach(o => o.classList.remove('active'));
+  optionEl.classList.add('active');
+  document.getElementById('afterChipLabel').textContent = label;
+  _twAfterHrs = hrs;
+  closeAllChipMenus();
+  refreshTimeWindow();
+  _twShowAnalyze();
 }
 
 // Close chip menus when clicking outside
@@ -47,13 +139,49 @@ document.addEventListener('click', e => {
   }
 });
 
-/* Entity type filter — highlight nodes of a specific type */
+/* Entity type filter — highlight nodes of a specific type.
+ * The 7 buckets here mirror the entity-chip dropdown in graph.js initGraphChips
+ * and the per-log-type mapping in V6/device_and_other_entity_spec.md:
+ *   host    = type=device                              (Device slider)
+ *   ip      = type=ip
+ *   domain  = type=domain
+ *   user    = type=user
+ *   file    = type=file
+ *   process = type=process; also type=service when the service is an OS-level
+ *             service (WinUpdateSvc, wuauserv, sshd, ...). Services folded in.
+ *   other   = type=service when it's a SaaS-tenant style node (SharePoint
+ *             Online, Azure AD, OAuth Token, M365, AWS, ...), plus anything
+ *             else (incl. type=outline, hash, url, email, mailbox, token).
+ *             Matches the Other slider in device_and_other_entity_spec.md §2.2.
+ * The alert node is the centre of the graph and is intentionally NOT a bucket.
+ */
 let activeLegendType = 'all';
+// SaaS-service id pattern: any 'service'-typed node whose id matches this is
+// a tenant / cloud-app / token — it belongs in Other, not Process.
+const SAAS_SVC_RE = /^svc-(azure|aad|sharepoint|exchange|m365|o365|onedrive|teams|salesforce|aws|gcp|okta|oauth|slack|saas)/i;
+function classifyEntityBucket(eid, ent) {
+  const t = ent && ent.type;
+  if (t === 'device'  || eid.startsWith('dev-'))    return 'host';
+  if (t === 'ip'      || eid.startsWith('ip-'))     return 'ip';
+  if (t === 'domain'  || eid.startsWith('domain-')) return 'domain';
+  if (t === 'user'    || eid.startsWith('user-'))   return 'user';
+  if (t === 'file'    || eid.startsWith('file-'))   return 'file';
+  if (t === 'process' || eid.startsWith('proc-'))   return 'process';
+  if (t === 'service' || eid.startsWith('svc-')) {
+    // Split: SaaS services / tokens → Other; OS-level services → Process.
+    return SAAS_SVC_RE.test(eid) ? 'other' : 'process';
+  }
+  if (t === 'alert'   || eid.startsWith('alert-'))  return 'alert';
+  return 'other';
+}
 function legendFilter(type) {
   activeLegendType = type;
   // Sync the chip label
   const chipLabel = document.getElementById('entityChipLabel');
-  const labels = { all:'All Entities', user:'Users', asset:'Assets', ip:'IP Addresses', domain:'Domains', process:'File/Process', account:'Accounts', location:'Location', alert:'Alerts' };
+  const labels = {
+    all:'All Entities', host:'Hosts', ip:'IP Addresses', domain:'Domains',
+    user:'Users', file:'Files', process:'Processes', other:'Others'
+  };
   if (chipLabel) chipLabel.textContent = labels[type] || type;
 
   const allNodes = document.querySelectorAll('#graphSvg g.graph-node');
@@ -71,27 +199,12 @@ function legendFilter(type) {
     return;
   }
 
-  // Map entity ID prefixes to types
-  const typeMap = {
-    'alert': ['alert-'],
-    'user': ['user-'],
-    'asset': ['dev-'],
-    'ip': ['ip-'],
-    'account': ['svc-'],
-    'domain': ['domain-'],
-    'process': ['proc-'],
-    'location': ['loc-']
-  };
-  const prefixes = typeMap[type] || [];
-
-  // Determine which nodes match
+  // Determine which nodes match the selected bucket
   const matchingIds = new Set();
   allNodes.forEach(n => {
-    const eid = n.getAttribute('data-entity');
-    const entityData = ENTITIES[eid];
-    const entityType = entityData ? entityData.type : null;
-    const matches = entityType === type || prefixes.some(p => eid.startsWith(p));
-    if (matches) matchingIds.add(eid);
+    const eid = n.getAttribute('data-entity') || '';
+    const ent = (typeof ENTITIES !== 'undefined') ? ENTITIES[eid] : null;
+    if (classifyEntityBucket(eid, ent) === type) matchingIds.add(eid);
   });
 
   // Build a lookup from circle position -> entity id

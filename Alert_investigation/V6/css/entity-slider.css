@@ -220,3 +220,81 @@
   font-size: 11.5px; color: var(--text-dim, #94a3b8); font-style: italic;
   padding: 8px 10px;
 }
+
+/* ── Blast Radius & Asset Exposure (AD attack graph) ───────────────── */
+.em-blast { display: flex; flex-direction: column; gap: 12px; }
+
+.em-blast-seed {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 8px;
+  background: linear-gradient(90deg, rgba(239,68,68,.10), rgba(124,58,237,.06));
+  border: 1px solid rgba(239,68,68,.25);
+}
+.em-blast-seed-ico { font-size: 16px; }
+.em-blast-seed-name { font-size: 13px; font-weight: 800; color: var(--text-primary); }
+.em-blast-seed-meta { font-size: 11px; color: var(--text-secondary); }
+.em-blast-seed-tier {
+  margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: .3px;
+  padding: 2px 8px; border-radius: 10px;
+  background: #fee2e2; color: #b91c1c;
+}
+
+.em-blast-stats { display: flex; flex-wrap: wrap; gap: 6px; }
+.em-blast-stat {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 10px; border-radius: 6px; font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--surface-3, #F7F8FB); border: 1px solid var(--border, #E5E7EB);
+}
+.em-blast-stat strong { font-size: 13px; font-weight: 800; color: var(--text-primary); }
+.em-blast-stat.crit { background: #fef2f2; border-color: rgba(239,68,68,.3); color: #dc2626; font-weight: 700; }
+
+.em-blast-toggle { display: inline-flex; gap: 2px; padding: 2px; border-radius: 7px; background: var(--surface-3, #F7F8FB); border: 1px solid var(--border, #E5E7EB); width: fit-content; }
+.em-blast-tg {
+  border: none; background: transparent; cursor: pointer;
+  font-size: 11px; font-weight: 700; color: var(--text-secondary);
+  padding: 5px 12px; border-radius: 5px; transition: all .15s;
+}
+.em-blast-tg.active { background: #fff; color: var(--text-primary); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+
+.em-blast-hint { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
+.em-blast-paths { display: flex; flex-direction: column; gap: 10px; }
+
+.em-blast-path {
+  border: 1px solid var(--border, #E5E7EB); border-radius: 8px;
+  padding: 10px; background: var(--surface-2, #fff);
+}
+.em-blast-path.crown { border-color: rgba(234,88,12,.4); background: rgba(234,88,12,.04); }
+.em-blast-path-hdr { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.em-blast-path-n { font-size: 10px; font-weight: 800; color: var(--text-dim, #94a3b8); }
+.em-blast-path-end { font-size: 12px; font-weight: 800; color: var(--text-primary); }
+.em-blast-crown { font-size: 9px; font-weight: 800; letter-spacing: .3px; padding: 1px 6px; border-radius: 3px; background: #fff7ed; color: #c2410c; }
+.em-blast-hops { margin-left: auto; font-size: 10px; color: var(--text-dim, #94a3b8); font-weight: 600; }
+
+.em-blast-chain { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.em-blast-node {
+  font-size: 11px; font-weight: 700; color: var(--text-primary);
+  padding: 3px 8px; border-radius: 5px;
+  background: var(--surface-3, #F7F8FB); border: 1px solid var(--border, #E5E7EB);
+  font-family: var(--mono, monospace);
+}
+.em-blast-node.crown-node { background: #fff7ed; border-color: rgba(234,88,12,.4); color: #9a3412; }
+.em-blast-edge { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; }
+.em-blast-rel {
+  font-size: 9px; font-weight: 800; letter-spacing: .3px;
+  padding: 2px 7px; border-radius: 10px; white-space: nowrap; cursor: help;
+}
+.em-blast-rel::after { content: ' →'; opacity: .5; }
+.em-blast-mitre { font-size: 8px; color: var(--text-dim, #94a3b8); font-family: var(--mono, monospace); }
+
+/* relation class colours */
+.em-blast-rel.rel-member { background: #e0e7ff; color: #3730a3; }
+.em-blast-rel.rel-own    { background: #ede9fe; color: #6d28d9; }
+.em-blast-rel.rel-acl    { background: #fef3c7; color: #b45309; }
+.em-blast-rel.rel-cred   { background: #ffedd5; color: #c2410c; }
+.em-blast-rel.rel-crit   { background: #fee2e2; color: #b91c1c; }
+.em-blast-rel.rel-deleg  { background: #cffafe; color: #0e7490; }
+.em-blast-rel.rel-trust  { background: #dcfce7; color: #15803d; }
+
+.em-blast-empty { font-size: 11.5px; color: var(--text-dim, #94a3b8); font-style: italic; padding: 8px 4px; }
+

@@ -33,7 +33,7 @@ const ENTITY_DISPLAY = {
 };
 
 const CRITICAL_REASONS = {
-  'alert-impossible-travel': 'Critical severity alert · UEBA Engine triggered · Confidence 92%',
+  'alert-impossible-travel': 'Critical severity alert · UEBA Engine triggered',
   'ip-tor': 'Known Tor exit node · AbuseIPDB confidence 100% · 5 threat feeds flagged',
   'user-m-henderson': 'UEBA Risk Score 94/100 · Compromised account',
   'svc-oauth': 'Unregistered app tokens · Issued post-compromise',

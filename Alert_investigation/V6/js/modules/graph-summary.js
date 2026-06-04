@@ -25,21 +25,31 @@ function updateGraphSummary() {
     if (c && (c.getAttribute('filter') || '').includes('glow-r')) critCount++;
   });
 
-  // Count by entity type
-  const typeCounts = { user:0, device:0, ip:0, service:0, process:0, alert:0 };
-  allNodes.forEach(n => {
-    const eid = n.getAttribute('data-entity');
-    const ent = ENTITIES[eid];
-    if (ent && typeCounts.hasOwnProperty(ent.type)) typeCounts[ent.type]++;
-    else {
-      // Infer type from prefix
-      if (eid.startsWith('user-')) typeCounts.user++;
-      else if (eid.startsWith('dev-')) typeCounts.device++;
-      else if (eid.startsWith('ip-')) typeCounts.ip++;
-      else if (eid.startsWith('svc-')) typeCounts.service++;
-      else if (eid.startsWith('proc-')) typeCounts.process++;
-      else if (eid.startsWith('alert-')) typeCounts.alert++;
+  // Count by entity type — must mirror the 7-bucket scheme used in graph.js
+  // initGraphChips (host / ip / domain / user / file / process / other).
+  // SaaS-typed service nodes (SharePoint, Azure AD, OAuth, ...) go to Other,
+  // not Process — see V6/device_and_other_entity_spec.md §2.2.
+  const SAAS_SVC_RE = /^svc-(azure|aad|sharepoint|exchange|m365|o365|onedrive|teams|salesforce|aws|gcp|okta|oauth|slack|saas)/i;
+  const buckets = { host:0, ip:0, domain:0, user:0, file:0, process:0, other:0 };
+  const classify = (eid, ent) => {
+    const t = ent && ent.type;
+    if (t === 'device'  || eid.startsWith('dev-'))    return 'host';
+    if (t === 'ip'      || eid.startsWith('ip-'))     return 'ip';
+    if (t === 'domain'  || eid.startsWith('domain-')) return 'domain';
+    if (t === 'user'    || eid.startsWith('user-'))   return 'user';
+    if (t === 'file'    || eid.startsWith('file-'))   return 'file';
+    if (t === 'process' || eid.startsWith('proc-'))   return 'process';
+    if (t === 'service' || eid.startsWith('svc-')) {
+      return SAAS_SVC_RE.test(eid) ? 'other' : 'process';
     }
+    if (t === 'alert'   || eid.startsWith('alert-')) return null; // centre, not bucketed
+    return 'other';
+  };
+  allNodes.forEach(n => {
+    const eid = n.getAttribute('data-entity') || '';
+    const ent = (typeof ENTITIES !== 'undefined') ? ENTITIES[eid] : null;
+    const b = classify(eid, ent);
+    if (b) buckets[b]++;
   });
 
   // Update command bar pills in-place (don't wipe entityChip dropdown)
@@ -48,7 +58,7 @@ function updateGraphSummary() {
   setNum('cmdPillCritCount', critCount);
 
   // Update entity chip menu counts
-  const countMap = { all:totalEntities, user:typeCounts.user, asset:typeCounts.device, ip:typeCounts.ip, account:typeCounts.service, process:typeCounts.process, alert:typeCounts.alert, domain:0, location:0 };
+  const countMap = { all: totalEntities, ...buckets };
   const entityMenu = document.getElementById('entityChipMenu');
   if (entityMenu) {
     entityMenu.querySelectorAll('.gcb-option').forEach(opt => {

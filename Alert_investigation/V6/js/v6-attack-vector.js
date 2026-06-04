@@ -344,60 +344,23 @@
       const eid = window.ctxEntityId;
       if (!eid) return;
 
-      // Gate: only after Start Investigation (consistent with reachability)
-      let gated = false;
-      try {
-        const aid = (typeof currentAlertId !== 'undefined') ? currentAlertId : null;
-        if (aid && typeof ALERT_DETAIL !== 'undefined') {
-          gated = !!(ALERT_DETAIL[aid] && ALERT_DETAIL[aid].aiInvestigatedRuntime);
-        }
-      } catch (_) {}
-
-      const playbooks = V6_PLAYBOOKS_BY_TYPE[type] || [];
+      // V6: the slider Actions menu is investigation-only — it offers exactly
+      // two pivots, "Entity timeline" and "Investigate entity". All response
+      // playbooks (contain / disrupt / hygiene) live in the dedicated actions
+      // panel, not in this dropdown.
+      const KEEP_ACTIONS = new Set(['Entity timeline', 'Investigate entity']);
+      const playbooks = (V6_PLAYBOOKS_BY_TYPE[type] || []).filter(pb => KEEP_ACTIONS.has(pb.name));
       if (!playbooks.length) {
         // Keep V5 default dropdown if we have no per-type playbooks
         return;
       }
 
-      // Group by verb in display order
-      const verbOrder = ['contain','disrupt','investigate','hygiene'];
-      const groups = { contain:[], disrupt:[], investigate:[], hygiene:[] };
-      playbooks.forEach(pb => { (groups[pb.verb] || groups.investigate).push(pb); });
-
       let html = '';
-      // V6 CUT suggestion at the very top (if applicable)
-      const cut = V6_CUT_DATA[eid];
-      if (cut) {
-        html += `<div class="dropdown-item v6-cut-item" onclick="V6AV.openCutPanel('${esc(eid)}');closeDropdowns()">▶ ${esc(cut.title.split('—')[0].trim())} — Run playbooks</div>`;
-        html += `<div class="dropdown-sep"></div>`;
-      }
-
-      // Pre-investigation notice
-      if (!gated) {
-        html += `<div class="v6-dd-hint">Run <strong>Start Investigation</strong> to enable response actions</div>`;
-      }
-
-      verbOrder.forEach((verb, vi) => {
-        const items = groups[verb];
-        if (!items.length) return;
-        const v = V6_VERBS[verb];
-        if (vi > 0) html += `<div class="dropdown-sep"></div>`;
-        html += `<div class="v6-dd-grp"><span class="v6-verb ${v.cls}">${v.label}</span> <span class="v6-dd-grp-blurb">${esc(v.blurb)}</span></div>`;
-        items.forEach(pb => {
-          const disabled = !gated ? ' v6-dd-disabled' : '';
-          const riskCls = pb.risk === 'high' ? ' v6-dd-risk-high' : pb.risk === 'med' ? ' v6-dd-risk-med' : '';
-          const onclick = gated
-            ? `V6AV.runEntityAction('${esc(eid)}','${esc(pb.id)}');closeDropdowns()`
-            : `event.stopPropagation()`;
-          const metaBits = [];
-          if (pb.eta && pb.eta !== 'instant') metaBits.push(esc(pb.eta));
-          if (pb.confirm) metaBits.push('confirm');
-          html += `<div class="dropdown-item v6-dd-act${disabled}${riskCls}" onclick="${onclick}" title="${esc(pb.desc)}">
+      playbooks.forEach(pb => {
+        html += `<div class="dropdown-item v6-dd-act" onclick="V6AV.runEntityAction('${esc(eid)}','${esc(pb.id)}');closeDropdowns()" title="${esc(pb.desc)}">
             <span class="v6-dd-icon">${esc(pb.icon)}</span>
             <span class="v6-dd-name">${esc(pb.name)}</span>
-            <span class="v6-dd-meta">${metaBits.join(' · ')}</span>
           </div>`;
-        });
       });
 
       dd.innerHTML = html;
@@ -414,7 +377,7 @@
       const ret = orig.apply(this, arguments);
       try { injectReachabilityStrip(entityId); } catch (e) { console.warn('[V6AV] reach', e); }
       try { injectSliderActionsButton(entityId); } catch (e) { console.warn('[V6AV] sliderActions', e); }
-      try { injectHeaderTagChips(entityId); } catch (e) { console.warn('[V6AV] headerTags', e); }
+      // V6: entity overview no longer shows tag chips (Manage tags removed).
       // Defensive: scrub any prior fake log-details mounts from earlier sessions
       document.querySelectorAll('.v6-logdetails-block, .v6-logdetails-card').forEach(n => n.remove());
       try { applyBaselineFilter(entityId); } catch (e) { console.warn('[V6AV] baseline', e); }
@@ -464,7 +427,7 @@
   const V6_BASELINE_SECTIONS = {
     user:    new Set(['riskSummary','usersDetails','loginStatistics','logonActivity','accountLockouts','passwordHistory','groupMembershipChanges','recentAlerts']),
     device:  new Set(['riskSummary','deviceDetails','usersLoggedOn','loginActivity','localAccountLifecycle','recentAlerts']),
-    ip:      new Set(['riskSummary','ipDetails','associatedUsers','associatedDevices','logonActivity','recentAlerts']),
+    ip:      new Set(['riskSummary','ipDetails','associatedUsers','associatedDevices','recentAlerts']),
     service: new Set(['riskSummary','serviceDetails','serviceInfo','recentAlerts']),
     process: new Set(['riskSummary','processDetails','details','recentAlerts']),
     alert:   new Set(['alertDetails','triggerConditions','details','recentAlerts']),
@@ -974,7 +937,9 @@
     if (!slider) return;
     const e = (typeof ENTITIES !== 'undefined' ? ENTITIES : (window.ENTITIES || {}))[entityId];
     if (!e) return;
-    const playbooks = V6_PLAYBOOKS_BY_TYPE[e.type] || [];
+    // V6: slider Actions menu is investigation-only — only the two pivots.
+    const KEEP_ACTIONS = new Set(['Entity timeline', 'Investigate entity']);
+    const playbooks = (V6_PLAYBOOKS_BY_TYPE[e.type] || []).filter(pb => KEEP_ACTIONS.has(pb.name));
     if (!playbooks.length) return;
 
     // Mount point = the right-side action group in the slider header
@@ -1045,7 +1010,11 @@
     if (!ctx) return;
     const e = (typeof ENTITIES !== 'undefined' ? ENTITIES : (window.ENTITIES || {}))[entityId];
     if (!e) return;
-    const playbooks = V6_PLAYBOOKS_BY_TYPE[e.type] || [];
+    // V6: graph context menu is investigation-only — only the two pivots
+    // ("Entity timeline" + "Investigate entity"). Response playbooks are
+    // not surfaced here.
+    const KEEP_ACTIONS = new Set(['Entity timeline', 'Investigate entity']);
+    const playbooks = (V6_PLAYBOOKS_BY_TYPE[e.type] || []).filter(pb => KEEP_ACTIONS.has(pb.name));
     if (!playbooks.length) return;
 
     // Don't double-inject if user re-opens menu on same node
@@ -1059,19 +1028,7 @@
       }
     } catch (_) {}
 
-    // Skip playbooks whose intent is already covered by the existing ctx menu
-    // (avoid duplicates like "Force Password Reset", "Revoke Tokens", etc.)
-    const skipByType = {
-      user:    new Set(['openUserPage','forcePasswordReset','revokeTokens','disableUser']),
-      device:  new Set(['openDevicePage','isolateHost']),
-      ip:      new Set(['openIpPage','blockIp']),
-      service: new Set([]),
-      process: new Set(['killProcess']),
-      alert:   new Set(['openAlertPage','closeFalsePositive']),
-      domain:  new Set([])
-    };
-    const skip = skipByType[e.type] || new Set();
-    const items = playbooks.filter(pb => !skip.has(pb.id));
+    const items = playbooks;
     if (!items.length) return;
 
     // Build the V6 rows — always enabled, no investigation gating
@@ -1111,6 +1068,13 @@
     if (!slider) return;
     const body = document.getElementById('edsBody');
     if (!body) return;
+    // HIDDEN for all entities (per product decision 27 May 2026):
+    // Reachability section is suppressed in the entity slider. We still clear
+    // any stale card that an earlier render may have left in the DOM, then
+    // bail out before constructing a new one.
+    body.querySelectorAll('.v6-reach-card').forEach(c => c.remove());
+    return;
+    // eslint-disable-next-line no-unreachable
     // Mount inside the Overview tab panel (not the slider body root, so it
     // doesn't leak into Activity / Alerts / etc. tabs).
     const overview = body.querySelector('.eds-tab-panel[data-tab="overview"]');

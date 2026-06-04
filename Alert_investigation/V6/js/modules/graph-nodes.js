@@ -181,39 +181,63 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
   const ns = 'http://www.w3.org/2000/svg';
   const srcCircle = document.querySelector(`#graphSvg g.graph-node[data-entity="${parentEid}"] circle:not(.expand-indicator)`);
   if (!srcCircle || !svg) return;
-  const srcCx = parseFloat(srcCircle.getAttribute('cx'));
-  const srcCy = parseFloat(srcCircle.getAttribute('cy'));
+  const pCx = parseFloat(srcCircle.getAttribute('cx'));
+  const pCy = parseFloat(srcCircle.getAttribute('cy'));
   const firstG = svg.querySelector('g.graph-node');
 
   if (!drillDownGroups[parentEid]) drillDownGroups[parentEid] = {};
   if (!drillDownGroups[parentEid][category]) drillDownGroups[parentEid][category] = [];
 
-  // If already expanded, collapse instead (toggle)
-  if (drillDownGroups[parentEid][category].length > 0) {
-    collapseCategory(parentEid, category);
+  // If already expanded (leaves shown) or grouped (count node shown), collapse fully (toggle off)
+  if ((drillDownGroups[parentEid][category].length > 0) ||
+      (groupHubs[parentEid] && groupHubs[parentEid][category])) {
+    collapseGroupCategory(parentEid, category);
     return 'collapsed';
   }
 
   // Base angle per category to spread them in different directions
-  const baseAngles = { alert: -Math.PI * 0.6, process: Math.PI * 0.2, service: Math.PI * 0.7 };
+  const baseAngles = { alert: -Math.PI * 0.6, process: Math.PI * 0.2, service: Math.PI * 0.7, blast: -Math.PI * 0.15 };
   const baseAngle = baseAngles[category] || 0;
   let created = 0;
 
+  // ── Group hub: one edge from the parent ends in a ✕ collapse hub; every
+  //    leaf branches off the hub so the parent node stays uncluttered. ──
+  const hub = createGroupHub(parentEid, pCx, pCy, category, baseAngle, edgeLabel, iconChar, colorConfig);
+  const srcId = hub.hubId;
+  const srcCx = hub.cx;
+  const srcCy = hub.cy;
+  if (!groupHubs[parentEid]) groupHubs[parentEid] = {};
+  groupHubs[parentEid][category] = {
+    hubId: hub.hubId, gEl: hub.gEl, edgeEl: hub.edgeEl, lblEl: hub.lblEl,
+    cx: hub.cx, cy: hub.cy, entries, edgeLabel, iconChar, colorConfig, grouped: false
+  };
+
   entries.forEach((entry, i) => {
     let label = entry.details?.[colorConfig.labelKey] || entry.details?.[colorConfig.altLabelKey] || entry.details?.['Alert'] || '';
-    // Handle detailsGrid format (used by recent alerts)
+    // Handle detailsGrid format (used by recent alerts). Keep the timestamp so
+    // two distinct alerts that share a name (e.g. "LAN ARP Spoofing" at 09:43 and
+    // 09:41) stay unique and both get their own node instead of being deduped.
     if (!label && entry.detailsGrid && entry.detailsGrid[0]) {
-      label = entry.detailsGrid[0].label.replace(/^[\d:]+\s*/, '');
+      const rawGrid = entry.detailsGrid[0].label;
+      const tMatch = rawGrid.match(/^(\d{1,2}:\d{2})(?::\d{2})?\s*/);
+      const baseName = rawGrid.replace(/^[\d:]+\s*/, '');
+      label = tMatch ? `${baseName} (${tMatch[1]})` : baseName;
     }
     if (!label) label = category + ' ' + (i + 1);
+    // Per-entry edge label (falls back to the category default) so paths like
+    // blast-radius hops can show their own relation on each spoke.
+    const eLabel = entry.edgeLabel || edgeLabel;
+    // Per-entry icon (falls back to the category default) so blast-radius leaves
+    // can each show an icon for their AD object type (group/computer/asset…).
+    const iconForNode = entry.icon || iconChar;
     // Check by label if node already exists on graph
     const existing = findNodeByLabel(label);
     if (existing) {
       const existNodeId = existing.getAttribute('data-entity');
       if (!existNodeId) return;
 
-      // Check if an edge already exists from this parent to that node
-      const alreadyLinked = svg.querySelector('line[data-source="' + parentEid + '"][data-target="' + existNodeId + '"]');
+      // Check if an edge already exists from this hub to that node
+      const alreadyLinked = svg.querySelector('line[data-source="' + srcId + '"][data-target="' + existNodeId + '"]');
       if (alreadyLinked) {
         // Just pulse — already connected
         existing.style.transition = 'transform 0.3s ease';
@@ -232,23 +256,17 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
       crossEdge.setAttribute('x1', srcCx); crossEdge.setAttribute('y1', srcCy);
       crossEdge.setAttribute('x2', tgtCx); crossEdge.setAttribute('y2', tgtCy);
       crossEdge.setAttribute('class', isMal ? 'graph-edge-mal' : 'graph-edge-norm');
-      crossEdge.setAttribute('data-source', parentEid);
+      crossEdge.setAttribute('data-source', srcId);
       crossEdge.setAttribute('data-target', existNodeId);
-      crossEdge.setAttribute('data-label', edgeLabel);
+      crossEdge.setAttribute('data-label', eLabel);
       crossEdge.setAttribute('stroke-dasharray', '6,3'); // dashed to indicate cross-link
       crossEdge.style.opacity = '0';
       if (firstG) svg.insertBefore(crossEdge, firstG); else svg.appendChild(crossEdge);
 
-      const crossLbl = document.createElementNS(ns, 'text');
-      crossLbl.setAttribute('x', (srcCx + tgtCx) / 2);
-      crossLbl.setAttribute('y', (srcCy + tgtCy) / 2 - 6);
-      crossLbl.setAttribute('text-anchor', 'middle'); crossLbl.setAttribute('font-size', '7.5');
-      crossLbl.setAttribute('fill', isMal ? '#dc2626' : '#2563eb');
-      crossLbl.setAttribute('font-family', 'IBM Plex Mono,monospace');
-      crossLbl.setAttribute('style', 'paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;');
-      crossLbl.setAttribute('data-source', parentEid);
-      crossLbl.setAttribute('data-target', existNodeId);
-      crossLbl.textContent = edgeLabel;
+      const crossLbl = _branchRelBadge(
+        ns, (srcCx + tgtCx) / 2, (srcCy + tgtCy) / 2, eLabel, srcId, existNodeId,
+        isMal ? '#ef4444' : (colorConfig.normStroke || '#2C66DD')
+      );
       crossLbl.style.opacity = '0';
       if (firstG) svg.insertBefore(crossLbl, firstG); else svg.appendChild(crossLbl);
 
@@ -383,7 +401,7 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
     // Build the entity with rich sections first, then the raw details, then cascading
     ENTITIES[nodeId] = {
       type: category,
-      modalTitle: category === 'process' ? `Process Details · ${label}` : category === 'service' ? `Service Details · ${label}` : `Alert Details · ${label}`,
+      modalTitle: category === 'process' ? `Process Details · ${label}` : category === 'service' ? `Service Details · ${label}` : category === 'alert' ? `Alert Details · ${label}` : category === 'blast' ? `Attack Path · ${label}` : category === 'blastmember' ? `AD Object · ${label}` : `${label}`,
       sections: {
         ...builtSections,
         details: {
@@ -401,6 +419,15 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
       };
     }
 
+    // Allow callers (e.g. blast radius) to attach extra sections + top-level
+    // entity data (such as _blastMembers used for member expansion).
+    if (entry.extraSections) {
+      Object.assign(ENTITIES[nodeId].sections, entry.extraSections);
+    }
+    if (entry.entityExtra) {
+      Object.assign(ENTITIES[nodeId], entry.entityExtra);
+    }
+
     // Inject cascading investigation data so this node can be further expanded
     const cascading = generateCascadingData(category, label, parentEid, isMal, nodeId);
     if (cascading) {
@@ -415,9 +442,9 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
     edge.setAttribute('x1', srcCx); edge.setAttribute('y1', srcCy);
     edge.setAttribute('x2', cx); edge.setAttribute('y2', cy);
     edge.setAttribute('class', isMal ? 'graph-edge-mal' : 'graph-edge-norm');
-    edge.setAttribute('data-source', parentEid);
+    edge.setAttribute('data-source', srcId);
     edge.setAttribute('data-target', nodeId);
-    edge.setAttribute('data-label', edgeLabel);
+    edge.setAttribute('data-label', eLabel);
     edge.style.opacity = '0';
     if (firstG) svg.insertBefore(edge, firstG); else svg.appendChild(edge);
 
@@ -427,24 +454,18 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
       const typeColor = { alert:'#ef4444', process:'#d97706', service:'#0891b2' };
       const typeBg = { alert:'#fef2f2', process:'#fffbeb', service:'#ecfeff' };
       ENTITY_DISPLAY[nodeId] = {
-        icon: typeIcon[category] || iconChar,
+        icon: typeIcon[category] || iconForNode,
         name: label.length > 20 ? label.substring(0, 18) + '…' : label,
         color: isMal ? (colorConfig.malStroke || '#ef4444') : (typeColor[category] || '#555'),
         bg: isMal ? '#fef2f2' : (typeBg[category] || '#f5f7fa')
       };
     }
 
-    // Edge label
-    const edgeLblEl = document.createElementNS(ns, 'text');
-    edgeLblEl.setAttribute('x', (srcCx + cx) / 2);
-    edgeLblEl.setAttribute('y', (srcCy + cy) / 2 - 6);
-    edgeLblEl.setAttribute('text-anchor', 'middle'); edgeLblEl.setAttribute('font-size', '7.5');
-    edgeLblEl.setAttribute('fill', isMal ? '#dc2626' : '#2563eb');
-    edgeLblEl.setAttribute('font-family', 'IBM Plex Mono,monospace');
-    edgeLblEl.setAttribute('style', 'paint-order:stroke fill;stroke:#f5f7fa;stroke-width:3px;');
-    edgeLblEl.setAttribute('data-source', parentEid);
-    edgeLblEl.setAttribute('data-target', nodeId);
-    edgeLblEl.textContent = edgeLabel;
+    // Edge relation badge — clickable icon (matches main graph edge-info-btn)
+    const edgeLblEl = _branchRelBadge(
+      ns, (srcCx + cx) / 2, (srcCy + cy) / 2, eLabel, srcId, nodeId,
+      isMal ? '#ef4444' : (colorConfig.normStroke || '#2C66DD')
+    );
     edgeLblEl.style.opacity = '0';
     if (firstG) svg.insertBefore(edgeLblEl, firstG); else svg.appendChild(edgeLblEl);
 
@@ -465,7 +486,14 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
     if (isMal) circle.setAttribute('filter', 'url(#glow-r)');
 
     // Add expandable indicator ring (shows this node can be drilled deeper)
-    const hasCascade = entry.malicious || category !== 'alert'; // most nodes have cascading data
+    let hasCascade;
+    if (category === 'blast') {
+      hasCascade = !!(entry.entityExtra && entry.entityExtra._blastMembers && entry.entityExtra._blastMembers.length);
+    } else if (category === 'blastmember') {
+      hasCascade = false; // path members are leaves
+    } else {
+      hasCascade = entry.malicious || category !== 'alert'; // most nodes have cascading data
+    }
     if (hasCascade) {
       const expandRing = document.createElementNS(ns, 'circle');
       expandRing.setAttribute('cx', cx + 12); expandRing.setAttribute('cy', cy - 12);
@@ -487,7 +515,7 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
     iconEl.setAttribute('x', cx); iconEl.setAttribute('y', cy + 4);
     iconEl.setAttribute('text-anchor', 'middle'); iconEl.setAttribute('font-size', '12');
     iconEl.setAttribute('dominant-baseline', 'central');
-    iconEl.textContent = iconChar;
+    iconEl.textContent = iconForNode;
 
     const lblEl = document.createElementNS(ns, 'text');
     lblEl.setAttribute('x', cx); lblEl.setAttribute('y', cy + 26);
@@ -522,6 +550,158 @@ function branchChildNodes(parentEid, category, entries, edgeLabel, iconChar, col
   });
 
   return created;
+}
+
+/* ── Group hub: a single edge from the parent ends in a ✕ collapse hub;
+      leaves branch off the hub. Returns refs so the caller can track it. ── */
+function createGroupHub(parentEid, pCx, pCy, category, baseAngle, edgeLabel, iconChar, colorConfig) {
+  const svg = document.getElementById('graphSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const firstG = svg.querySelector('g.graph-node');
+  const hubId = `grp-${category}-${parentEid}`;
+  const D = 110;
+  const cx = Math.round(pCx + Math.cos(baseAngle) * D);
+  const cy = Math.round(pCy + Math.sin(baseAngle) * D);
+  const stroke = colorConfig.normStroke || '#8a94a6';
+
+  // parent → hub edge + label
+  const edge = document.createElementNS(ns, 'line');
+  edge.setAttribute('x1', pCx); edge.setAttribute('y1', pCy);
+  edge.setAttribute('x2', cx); edge.setAttribute('y2', cy);
+  edge.setAttribute('class', 'graph-edge-norm');
+  edge.setAttribute('data-source', parentEid);
+  edge.setAttribute('data-target', hubId);
+  edge.setAttribute('data-label', edgeLabel);
+  edge.style.opacity = '0';
+  if (firstG) svg.insertBefore(edge, firstG); else svg.appendChild(edge);
+
+  // No relation badge on the parent→hub edge — relations are shown only on the
+  // hub→spoke edges. The parent→hub edge just carries the group into the hub.
+  const lbl = null;
+
+  // hub node group (clicking it groups the leaves)
+  const g = document.createElementNS(ns, 'g');
+  g.setAttribute('class', 'graph-node graph-group-hub');
+  g.setAttribute('data-entity', hubId);
+  g.setAttribute('onclick', `groupCategory('${parentEid}','${category}')`);
+
+  const circle = document.createElementNS(ns, 'circle');
+  circle.setAttribute('cx', cx); circle.setAttribute('cy', cy);
+  circle.setAttribute('r', '13'); circle.setAttribute('fill', '#ffffff');
+  circle.setAttribute('stroke', stroke); circle.setAttribute('stroke-width', '2');
+  circle.setAttribute('stroke-dasharray', '3,2');
+
+  const iconEl = document.createElementNS(ns, 'text');
+  iconEl.setAttribute('x', cx); iconEl.setAttribute('y', cy + 4);
+  iconEl.setAttribute('text-anchor', 'middle'); iconEl.setAttribute('font-size', '11');
+  iconEl.setAttribute('dominant-baseline', 'central');
+  iconEl.textContent = iconChar;
+
+  // ✕ collapse badge (top-right)
+  const badge = document.createElementNS(ns, 'circle');
+  badge.setAttribute('cx', cx + 11); badge.setAttribute('cy', cy - 11);
+  badge.setAttribute('r', '5.5'); badge.setAttribute('fill', '#fee2e2');
+  badge.setAttribute('stroke', '#dc2626'); badge.setAttribute('stroke-width', '1');
+  const badgeTxt = document.createElementNS(ns, 'text');
+  badgeTxt.setAttribute('x', cx + 11); badgeTxt.setAttribute('y', cy - 11);
+  badgeTxt.setAttribute('text-anchor', 'middle'); badgeTxt.setAttribute('font-size', '7');
+  badgeTxt.setAttribute('dominant-baseline', 'central');
+  badgeTxt.setAttribute('fill', '#dc2626'); badgeTxt.setAttribute('font-weight', '700');
+  badgeTxt.textContent = '✕';
+
+  const lblEl = document.createElementNS(ns, 'text');
+  lblEl.setAttribute('x', cx); lblEl.setAttribute('y', cy + 24);
+  lblEl.setAttribute('text-anchor', 'middle'); lblEl.setAttribute('font-size', '8');
+  lblEl.setAttribute('fill', '#6b7280'); lblEl.setAttribute('font-family', 'Lato,sans-serif');
+  lblEl.setAttribute('font-weight', '600');
+  lblEl.textContent = 'collapse';
+
+  g.appendChild(circle); g.appendChild(iconEl); g.appendChild(badge); g.appendChild(badgeTxt); g.appendChild(lblEl);
+  svg.appendChild(g);
+  makeNodeDraggable(g, circle, iconEl, lblEl, hubId);
+
+  g.style.opacity = '0';
+  requestAnimationFrame(() => {
+    g.style.transition = 'opacity 0.3s ease';
+    edge.style.transition = 'opacity 0.3s ease';
+    g.style.opacity = '1'; edge.style.opacity = '0.7';
+  });
+
+  return { hubId, gEl: g, edgeEl: edge, lblEl: lbl, cx, cy };
+}
+
+/* ✕ clicked — shrink all leaves into the hub, which becomes a "Category (N)" count node */
+function groupCategory(parentEid, category) {
+  const hub = groupHubs[parentEid] && groupHubs[parentEid][category];
+  if (!hub || hub.grouped) return;
+  const leaves = (drillDownGroups[parentEid] && drillDownGroups[parentEid][category]) || [];
+  const count = leaves.length || (hub.entries ? hub.entries.length : 0);
+
+  // Remove the leaf nodes + their hub→leaf edges (the hub itself survives).
+  collapseCategory(parentEid, category);
+
+  hub.grouped = true;
+  const g = hub.gEl;
+  if (g) {
+    g.setAttribute('onclick', `expandGroup('${parentEid}','${category}')`);
+    const catLabel = category.charAt(0).toUpperCase() + category.slice(1);
+    const circles = g.querySelectorAll('circle');
+    const texts = g.querySelectorAll('text'); // [icon, badgeTxt, label]
+    if (circles[0]) circles[0].setAttribute('stroke-dasharray', '');
+    if (circles[1]) { circles[1].setAttribute('fill', '#dcfce7'); circles[1].setAttribute('stroke', '#16a34a'); }
+    if (texts[1]) { texts[1].textContent = '+'; texts[1].setAttribute('fill', '#16a34a'); }
+    if (texts[2]) { texts[2].textContent = `${catLabel} (${count})`; texts[2].setAttribute('fill', hub.colorConfig.normText || '#374151'); }
+  }
+
+  // Alerts own the process/service they exposed — collapse those too.
+  if (category === 'alert') _collapseAlertSiblings(parentEid);
+
+  setTimeout(() => updateGraphSummary(), 400);
+  showToast(hub.iconChar || '◆', `${count} ${category}(s) grouped`);
+}
+
+/* count node clicked — re-expand the leaves off a fresh hub */
+function expandGroup(parentEid, category) {
+  const hub = groupHubs[parentEid] && groupHubs[parentEid][category];
+  if (!hub) return;
+  const { entries, edgeLabel, iconChar, colorConfig } = hub;
+  const iconMap = { process: '⚙', service: '🔧', alert: '🔔' };
+  _removeHub(parentEid, category);
+  branchChildNodes(parentEid, category, entries, edgeLabel, iconChar || iconMap[category] || '◆', colorConfig);
+  setTimeout(() => updateGraphSummary(), 400);
+}
+
+/* Remove just the hub / count node + its parent edge */
+function _removeHub(parentEid, category) {
+  const hub = groupHubs[parentEid] && groupHubs[parentEid][category];
+  if (!hub) return;
+  if (hub.gEl) hub.gEl.remove();
+  if (hub.edgeEl) hub.edgeEl.remove();
+  if (hub.lblEl) hub.lblEl.remove();
+  if (groupHubs[parentEid]) delete groupHubs[parentEid][category];
+}
+
+/* Full toggle-off: remove leaves (if any) AND the hub/count node */
+function collapseGroupCategory(parentEid, category) {
+  if (drillDownGroups[parentEid] && drillDownGroups[parentEid][category] &&
+      drillDownGroups[parentEid][category].length > 0) {
+    collapseCategory(parentEid, category);
+  }
+  _removeHub(parentEid, category);
+  // Alerts own the process/service they exposed — collapse those too.
+  if (category === 'alert') _collapseAlertSiblings(parentEid);
+  setTimeout(() => updateGraphSummary(), 400);
+}
+
+/* When an alert is collapsed/grouped, also collapse the process & service
+   branches that were discovered through that alert on the same parent. */
+function _collapseAlertSiblings(parentEid) {
+  ['process', 'service'].forEach(c => {
+    const hasLeaves = drillDownGroups[parentEid] && drillDownGroups[parentEid][c] &&
+                      drillDownGroups[parentEid][c].length > 0;
+    const hasHub = groupHubs[parentEid] && groupHubs[parentEid][c];
+    if (hasLeaves || hasHub) collapseGroupCategory(parentEid, c);
+  });
 }
 
 /* Collapse a specific category of children */
@@ -581,39 +761,52 @@ function collapseCategory(parentEid, category) {
 /* Recursively collapse ALL children of a node (all categories) */
 function collapseAllChildren(nodeId) {
   const groups = drillDownGroups[nodeId];
-  if (!groups) return;
   const svg = document.getElementById('graphSvg');
-  for (const cat of Object.keys(groups)) {
-    const items = groups[cat];
-    if (!items || items.length === 0) continue;
-    items.forEach(item => {
-      // Always remove edge & label
-      if (item.edgeEl) item.edgeEl.remove();
-      if (item.lblEl) item.lblEl.remove();
+  if (groups) {
+    for (const cat of Object.keys(groups)) {
+      const items = groups[cat];
+      if (!items || items.length === 0) continue;
+      items.forEach(item => {
+        // Always remove edge & label
+        if (item.edgeEl) item.edgeEl.remove();
+        if (item.lblEl) item.lblEl.remove();
 
-      // Cross-links: only remove edge, not node
-      if (item.crossLink || !item.gEl) return;
+        // Cross-links: only remove edge, not node
+        if (item.crossLink || !item.gEl) return;
 
-      // Check if node still has other connections from a different parent
-      const otherEdges = svg ? svg.querySelectorAll('line[data-target="' + item.nodeId + '"]') : [];
-      const hasOtherConnection = Array.from(otherEdges).some(e => {
-        if (e === item.edgeEl) return false;
-        const eSrc = e.getAttribute('data-source');
-        if (eSrc === nodeId) return false;
-        return true;
+        // Check if node still has other connections from a different parent
+        const otherEdges = svg ? svg.querySelectorAll('line[data-target="' + item.nodeId + '"]') : [];
+        const hasOtherConnection = Array.from(otherEdges).some(e => {
+          if (e === item.edgeEl) return false;
+          const eSrc = e.getAttribute('data-source');
+          if (eSrc === nodeId) return false;
+          // Edges sourced from this node's own group hubs are part of this subtree
+          if (groupHubs[nodeId] && Object.values(groupHubs[nodeId]).some(h => h.hubId === eSrc)) return false;
+          return true;
+        });
+
+        if (hasOtherConnection) return; // Node stays
+
+        collapseAllChildren(item.nodeId); // recurse
+        if (item.gEl) item.gEl.remove();
+        delete nodeRegistry[item.nodeId];
+        delete ENTITIES[item.nodeId];
+        delete ENTITY_DISPLAY[item.nodeId];
       });
-
-      if (hasOtherConnection) return; // Node stays
-
-      collapseAllChildren(item.nodeId); // recurse
-      if (item.gEl) item.gEl.remove();
-      delete nodeRegistry[item.nodeId];
-      delete ENTITIES[item.nodeId];
-      delete ENTITY_DISPLAY[item.nodeId];
-    });
-    groups[cat] = [];
+      groups[cat] = [];
+    }
+    delete drillDownGroups[nodeId];
   }
-  delete drillDownGroups[nodeId];
+
+  // Tear down any group hubs / grouped count nodes this node owns. These live
+  // in groupHubs (not drillDownGroups), so without this the "Process (N)" /
+  // "Service (N)" hubs would be orphaned when their parent collapses.
+  if (groupHubs[nodeId]) {
+    for (const cat of Object.keys(groupHubs[nodeId])) {
+      _removeHub(nodeId, cat);
+    }
+    delete groupHubs[nodeId];
+  }
 }
 
 function ctxRelatedAlerts() {
@@ -638,19 +831,230 @@ function ctxRelatedAlerts() {
   }
 }
 
+// Map a branched-edge relation label to an icon so branched edges show the
+// same clickable relation badge style as the main graph (edge-info-btn).
+function _branchRelIcon(label) {
+  if (!label) return '🔗';
+  const L = String(label).toUpperCase().replace(/[\s-]+/g, '_');
+  const map = {
+    EXECUTED: '▶️', EXECUTED_ON: '▶️', EXECUTEDON: '▶️',
+    TRIGGERED: '⚡', TRIGGERED_BY: '⚡', TRIGGEREDBY: '⚡',
+    INVOLVED_IN: '🔔', INVOLVEDIN: '🔔',
+    ATTACK_PATH: '💥', ATTACKPATH: '💥',
+    PATH: '➡️',
+    MEMBEROF: '👥', MEMBER_OF: '👥',
+    ADD_MEMBER: '➕', ADDMEMBER: '➕',
+    WRITE_SPN: '🔑', WRITESPN: '🔑',
+    GENERIC_ALL: '🔓', GENERIC_WRITE: '🔓', GENERICALL: '🔓',
+    DC_SYNC_RIGHTS: '🏛', DC_SYNC: '🏛', DCSYNC: '🏛',
+    RESET_PASSWORD: '🔑', RESETPASSWORD: '🔑'
+  };
+  if (map[L]) return map[L];
+  try {
+    const canon = (typeof canonicalRelation === 'function') ? canonicalRelation(label) : label;
+    if (typeof REL_GUIDE !== 'undefined') {
+      const g = REL_GUIDE.find(r => r.key === canon);
+      if (g) return g.icon;
+    }
+  } catch (e) { /* REL_GUIDE not loaded */ }
+  return '🔗';
+}
+
+// Build a clickable relation badge (matches the main graph's edge-info-btn) at
+// the midpoint of a branched edge, wired to showEdgeRelation for the slider.
+function _branchRelBadge(ns, mx, my, eLabel, srcId, tgtId, color) {
+  const btn = document.createElementNS(ns, 'g');
+  btn.setAttribute('class', 'edge-info-btn');
+  btn.setAttribute('data-label', eLabel);
+  btn.setAttribute('data-source', srcId);
+  btn.setAttribute('data-target', tgtId);
+  btn.setAttribute('onclick', 'showEdgeRelation(event,this)');
+  const c = document.createElementNS(ns, 'circle');
+  c.setAttribute('cx', mx); c.setAttribute('cy', my);
+  c.setAttribute('r', '9'); c.setAttribute('fill', '#fff');
+  c.setAttribute('stroke', color); c.setAttribute('stroke-width', '1.5');
+  const t = document.createElementNS(ns, 'text');
+  t.setAttribute('x', mx); t.setAttribute('y', my + 0.5);
+  t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', '10');
+  t.setAttribute('dominant-baseline', 'central');
+  t.textContent = _branchRelIcon(eLabel);
+  btn.appendChild(c); btn.appendChild(t);
+  return btn;
+}
+
+// Infer an AD object type + icon from its name (used by blast-radius nodes so
+// each path/member shows a meaningful icon instead of a generic 💥).
+function _blastObjType(name, crownJewel) {
+  const n = (name || '').toLowerCase();
+  if (crownJewel) return { type: 'Crown Jewel', icon: '👑' };
+  if (/corp\.local|domain controller|\bdc\b|dc hashes|\bdc_/.test(n)) return { type: 'Domain / DC', icon: '🏛' };
+  if (/svc[_-]|service account|kerberoast|svc_/.test(n)) return { type: 'Service Account', icon: '🔑' };
+  if (/ou=|\bou-|\bou\b/.test(n)) return { type: 'Org Unit', icon: '🗂' };
+  if (/sharepoint|finance|\bshare\b|\bfile\b|sensitive|sql/.test(n)) return { type: 'Resource / Asset', icon: '📁' };
+  if (/ws-|-pc|corp-ws|computer|\bhost\b/.test(n)) return { type: 'Computer', icon: '🖥' };
+  if (/admin|editor|support|group|team|helpdesk-tier/.test(n)) return { type: 'Group', icon: '👥' };
+  if (/\.|user|helpdesk/.test(n)) return { type: 'User', icon: '👤' };
+  return { type: 'AD Object', icon: '📦' };
+}
+
+// Summarize, by entity type, everything reachable from the seed in the live
+// graph — used to "explain" the blast radius beyond the AD attack paths.
+function _blastImpactBreakdown(nodes, eid) {
+  const typeLabels = {
+    user: 'user', asset: 'device', device: 'device', ip: 'IP',
+    account: 'service', service: 'service', alert: 'alert',
+    process: 'process', domain: 'domain', file: 'file'
+  };
+  const counts = {};
+  nodes.forEach(id => {
+    if (id === eid) return;
+    let t;
+    if (/^grp-blast|^blas-ctx/.test(id)) t = 'AD object';
+    else if (/^grp-|-ctx-/.test(id)) return; // skip synthetic hubs of other categories
+    else {
+      const rawType = (ENTITIES[id] && ENTITIES[id].type) || (ENTITY_DISPLAY[id] && ENTITY_DISPLAY[id].type);
+      t = typeLabels[rawType] || rawType || 'entity';
+    }
+    counts[t] = (counts[t] || 0) + 1;
+  });
+  const plural = (label, n) => n <= 1 ? label
+    : label.endsWith('y') ? label.slice(0, -1) + 'ies' : label + 's';
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([t, n]) => `${n} ${plural(t, n)}`)
+    .join(', ');
+}
+
+// Render Blast Radius (attack paths) on the graph as a hub-and-spoke group
+// instead of in the slider/action panel. Each outgoing attack path becomes a
+// leaf node off a collapsible 💥 hub; the full hop chain lives in the node's
+// slider details and can be expanded on-graph into its member objects.
+function ctxBlastRadiusGraph() {
+  hideGraphCtx();
+  const eid = ctxEntityId;
+  const e = ENTITIES[eid];
+  if (!e) return;
+  const br = e.sections?.blastRadius?.blastRadius;
+  if (!br || !(br.outgoing && br.outgoing.length)) {
+    showToast('💥', `No blast radius data for ${e.modalTitle}`);
+    return;
+  }
+  // Only route NEW blast-radius paths for this entity. Any path whose target
+  // node is already on the canvas (shown by a previous expansion or another
+  // entity's blast radius) is skipped so we don't redraw / cross-link nodes
+  // that are already displayed.
+  const isExpanded = (drillDownGroups[eid] && drillDownGroups[eid]['blast'] && drillDownGroups[eid]['blast'].length > 0) ||
+                     (typeof groupHubs !== 'undefined' && groupHubs[eid] && groupHubs[eid]['blast']);
+  const outgoing = isExpanded
+    ? br.outgoing  // collapse path: keep full set so the toggle tears everything down
+    : br.outgoing.filter(p => !(typeof findNodeByLabel === 'function' && findNodeByLabel(p.target)));
+  if (!isExpanded && !outgoing.length) {
+    showToast('💥', `All blast-radius paths for ${e.modalTitle} are already on the graph`);
+    return;
+  }
+  const entries = outgoing.map(p => {
+    const hops = p.hops || [];
+    const chain = hops.map(h => `${h.from} —${h.rel}→ ${h.to}`).join('\n');
+    const firstRel = (hops[0] && hops[0].rel) || 'PATH';
+    const targetType = _blastObjType(p.target, p.crownJewel);
+    // Members = each object traversed along the path (the chain's `to` values).
+    const members = hops.map((h, idx) => {
+      const isLast = idx === hops.length - 1;
+      const cj = isLast && !!p.crownJewel;
+      const ti = _blastObjType(h.to, cj);
+      return { name: h.to, type: ti.type, icon: ti.icon, crownJewel: cj, rel: h.rel };
+    });
+    const stepKv = {};
+    hops.forEach((h, idx) => { stepKv[`Step ${idx + 1}`] = `${h.from} —${h.rel}→ ${h.to}`; });
+    const memberKv = {};
+    members.forEach(m => { memberKv[`${m.icon} ${m.name} (${m.type})`] = `via ${m.rel}`; });
+    return {
+      malicious: !!p.crownJewel, // path is a malicious attack only if it reaches a crown jewel
+      edgeLabel: firstRel,
+      icon: targetType.icon,
+      details: {
+        'Target': p.target,
+        'Object Type': targetType.type,
+        'Crown Jewel': p.crownJewel ? 'Yes 👑' : 'No',
+        'Hops': String(hops.length),
+        'Attack Path': chain
+      },
+      entityExtra: { _blastMembers: members },
+      extraSections: {
+        attackPath: { label: 'Attack Path', expanded: true, kv: stepKv },
+        pathMembers: { label: 'Objects in Path', expanded: true, kv: memberKv }
+      }
+    };
+  });
+  const result = branchChildNodes(eid, 'blast', entries, 'ATTACK_PATH', '💥', {
+    labelKey: 'Target', malStroke: '#dc2626', normStroke: '#f59e0b', malText: '#dc2626', normText: '#b45309'
+  });
+  if (result === 'collapsed') {
+    if (typeof _clearBlastHighlight === 'function') _clearBlastHighlight();
+    showToast('➖', `Blast radius collapsed for ${e.modalTitle}`);
+  } else {
+    updateGraphSummary();
+    const cj = outgoing.filter(p => p.crownJewel).length;
+    // Only the newly-routed AD attack paths are drawn for this entity — the
+    // rest of the existing graph is left untouched (no reachability dimming /
+    // highlighting of nodes that were already on the canvas).
+    showToast('💥', `${entries.length} AD attack path(s) · ${cj} → crown jewels`);
+  }
+}
+
+// Expand a blast-radius path node into the AD objects (members) along its path.
+// Crown-jewel members render red, flagging the path as a malicious attack.
+function ctxExpandBlastMembers() {
+  hideGraphCtx();
+  const nodeId = ctxEntityId;
+  const e = ENTITIES[nodeId];
+  const members = e && e._blastMembers;
+  if (!members || !members.length) {
+    showToast('👥', 'No path members to expand');
+    return;
+  }
+  const entries = members.map(m => ({
+    malicious: !!m.crownJewel,
+    icon: m.icon,
+    edgeLabel: m.rel || 'PATH',
+    details: {
+      'Object': m.name,
+      'Type': m.type,
+      'Crown Jewel': m.crownJewel ? 'Yes 👑' : 'No',
+      'Reached Via': m.rel || ''
+    }
+  }));
+  const result = branchChildNodes(nodeId, 'blastmember', entries, 'PATH', '📦', {
+    labelKey: 'Object', malStroke: '#dc2626', normStroke: '#0891b2', malText: '#dc2626', normText: '#0e7490'
+  });
+  if (result === 'collapsed') {
+    showToast('➖', 'Path members collapsed');
+  } else {
+    updateGraphSummary();
+    const cj = members.filter(m => m.crownJewel).length;
+    showToast('👥', cj ? `${members.length} objects · ⚠ ${cj} crown jewel — malicious path` : `${members.length} objects in path`);
+  }
+}
+
 function ctxShowProcess() {
   hideGraphCtx();
   const eid = ctxEntityId;
   const e = ENTITIES[eid];
   if (!e) return;
   const procSec = e.sections.processes || e.sections.processesOnHost;
-  if (!procSec || (!procSec.timeline?.length && !procSec.viewAllData?.length)) {
+  const svcSec = e.sections.serviceTriggered || e.sections.servicesOnHost;
+  const procEntries = procSec ? (procSec.viewAllData || procSec.timeline || []) : [];
+  const svcEntries = svcSec ? (svcSec.viewAllData || svcSec.timeline || []) : [];
+  // Services are surfaced as processes — render both as ONE unified "process"
+  // branch so the graph shows a single entity type instead of two parallel
+  // branches (process + service) hanging off the same parent.
+  const entries = procEntries.concat(svcEntries);
+  if (!entries.length) {
     showToast('⚙', `No processes found for ${e.modalTitle}`);
     return;
   }
-  const entries = procSec.viewAllData || procSec.timeline;
   const result = branchChildNodes(eid, 'process', entries, 'EXECUTED', '⚙', {
-    labelKey: 'Process Name', altLabelKey: 'Process', malStroke: '#ef4444', normStroke: '#16a34a', malText: '#dc2626', normText: '#16a34a'
+    labelKey: 'Process Name', altLabelKey: 'Service Name', malStroke: '#ef4444', normStroke: '#16a34a', malText: '#dc2626', normText: '#16a34a'
   });
   if (result === 'collapsed') {
     showToast('➖', `Process nodes collapsed for ${e.modalTitle}`);

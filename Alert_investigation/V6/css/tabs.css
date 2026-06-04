@@ -693,7 +693,7 @@
 .av-partial-note {
   position: absolute;
   left: 50%;
-  top: 14px;
+  top: 62px;
   transform: translateX(-50%);
   max-width: none;
   white-space: nowrap;

@@ -60,65 +60,52 @@ function showGraphCtx(evt, entityId) {
   let hasGraphActions = false;
   if (e && e.sections.recentAlerts) {
     hasGraphActions = true;
-    const expanded = groups.alert && groups.alert.length > 0;
+    const expanded = (groups.alert && groups.alert.length > 0) || !!(typeof groupHubs !== 'undefined' && groupHubs[entityId] && groupHubs[entityId].alert);
     const cnt = (e.sections.recentAlerts.viewAllData || e.sections.recentAlerts.timeline || []).length;
     const cntCls = cnt >= 2 ? ' critical' : (cnt > 0 ? ' has-data' : '');
     html += `<div class="ctx-item" onclick="ctxRelatedAlerts()">`;
     html += expanded ? '🔔 Hide Alert Profiles <span class="ctx-badge-collapse">−</span>' : `🔔 Alert Profiles <span class="ctx-badge-count${cntCls}">${cnt}</span>`;
     html += `</div>`;
   }
-  if (e && (e.sections.processes || e.sections.processesOnHost)) {
+  if (e && (e.sections.processes || e.sections.processesOnHost || e.sections.serviceTriggered || e.sections.servicesOnHost)) {
     hasGraphActions = true;
-    const expanded = groups.process && groups.process.length > 0;
+    const hubCats = (typeof groupHubs !== 'undefined' && groupHubs[entityId]) || {};
+    const expanded = (groups.process && groups.process.length > 0) || (groups.service && groups.service.length > 0) || !!hubCats.process || !!hubCats.service;
     const procSec = e.sections.processes || e.sections.processesOnHost;
-    const cnt = (procSec.viewAllData || procSec.timeline || []).length;
+    const svcSec = e.sections.serviceTriggered || e.sections.servicesOnHost;
+    const procCnt = procSec ? (procSec.viewAllData || procSec.timeline || []).length : 0;
+    const svcCnt = svcSec ? (svcSec.viewAllData || svcSec.timeline || []).length : 0;
+    const cnt = procCnt + svcCnt;
     const cntCls = cnt > 0 ? ' has-data' : '';
     html += `<div class="ctx-item" onclick="ctxShowProcess()">`;
     html += expanded ? '⚙ Hide Processes <span class="ctx-badge-collapse">−</span>' : `⚙ Processes <span class="ctx-badge-count${cntCls}">${cnt}</span>`;
     html += `</div>`;
   }
-  if (e && (e.sections.serviceTriggered || e.sections.servicesOnHost)) {
+  // Blast-radius path node → expand the AD objects (members) along the path
+  if (e && e._blastMembers && e._blastMembers.length) {
     hasGraphActions = true;
-    const expanded = groups.service && groups.service.length > 0;
-    const svcSec = e.sections.serviceTriggered || e.sections.servicesOnHost;
-    const cnt = (svcSec.viewAllData || svcSec.timeline || []).length;
-    const cntCls = cnt > 0 ? ' has-data' : '';
-    html += `<div class="ctx-item" onclick="ctxShowServices()">`;
-    html += expanded ? '🔧 Hide Services <span class="ctx-badge-collapse">−</span>' : `🔧 Services <span class="ctx-badge-count${cntCls}">${cnt}</span>`;
+    const bmExpanded = (groups.blastmember && groups.blastmember.length > 0) || !!(typeof groupHubs !== 'undefined' && groupHubs[entityId] && groupHubs[entityId].blastmember);
+    const cnt = e._blastMembers.length;
+    const cntCls = e._blastMembers.some(m => m.crownJewel) ? ' critical' : ' has-data';
+    html += `<div class="ctx-item" onclick="ctxExpandBlastMembers()">`;
+    html += bmExpanded ? '👥 Hide Path Members <span class="ctx-badge-collapse">−</span>' : `👥 Path Members <span class="ctx-badge-count${cntCls}">${cnt}</span>`;
     html += `</div>`;
   }
 
   // ── Core actions ──
   if (hasGraphActions) html += '<div class="ctx-sep"></div>';
   html += '<div class="ctx-item" onclick="ctxEntityDetails()">🔍 Entity Details</div>';
+  if (e && e.sections.blastRadius && (typeof isAiInvestigated === 'function' && isAiInvestigated())) {
+    const blastExpanded = (groups.blast && groups.blast.length > 0) || !!(typeof groupHubs !== 'undefined' && groupHubs[entityId] && groupHubs[entityId].blast);
+    html += '<div class="ctx-item" onclick="ctxBlastRadiusGraph()" style="color:#dc2626;">💥 ' + (blastExpanded ? 'Collapse Blast Radius' : 'Blast Radius') + ' <span style="margin-left:auto;font-size:9px;color:var(--text-dim);">attack paths</span></div>';
+  }
   html += '<div class="ctx-item" onclick="ctxSearchLogs()">📋 Search in Logs</div>';
 
   // ── More Actions (collapsible, Microsoft-style) ──
+  // V6: native investigative/triage items are removed — the only entries here
+  // are the two V6 pivots ("Entity timeline" + "Investigate entity") injected
+  // by v6-attack-vector.js after this menu is built.
   let moreHtml = '';
-  if (['user','device'].includes(type)) {
-    moreHtml += '<div class="ctx-item" onclick="ctxUebaTimeline()">📊 UEBA Timeline</div>';
-  }
-  if (['user','device','ip'].includes(type)) {
-    moreHtml += '<div class="ctx-item" onclick="ctxLoginActivity()">🔐 Login Activity</div>';
-  }
-  if (type === 'device') {
-    moreHtml += '<div class="ctx-item" onclick="hideGraphCtx();openEntitySlider(ctxEntityId);showActionPanel(\'vulnerabilities\',ctxEntityId)">🛡 Vulnerabilities</div>';
-    moreHtml += '<div class="ctx-item" onclick="hideGraphCtx();openEntitySlider(ctxEntityId);showActionPanel(\'isolateHost\',ctxEntityId)" style="color:#dc2626;">🔒 Isolate Host</div>';
-  }
-  if (type === 'user') {
-    moreHtml += '<div class="ctx-item" onclick="hideGraphCtx();openEntitySlider(ctxEntityId);showActionPanel(\'revokeTokens\',ctxEntityId)" style="color:#ea580c;">🔑 Revoke Tokens</div>';
-    moreHtml += '<div class="ctx-item" onclick="hideGraphCtx();openEntitySlider(ctxEntityId);showActionPanel(\'forcePasswordReset\',ctxEntityId)" style="color:#ea580c;">🔄 Force Password Reset</div>';
-  }
-  if (['user','ip'].includes(type)) {
-    moreHtml += `<div class="ctx-item" onclick="ctxBlockEntity()" style="color:#dc2626;">🚫 Block ${type === 'ip' ? 'IP' : 'Account'}</div>`;
-  }
-  if (type === 'process') {
-    moreHtml += '<div class="ctx-item" onclick="hideGraphCtx();openEntitySlider(ctxEntityId);showActionPanel(\'killProcess\',ctxEntityId)" style="color:#dc2626;">⊘ Kill Process</div>';
-  }
-  if (type === 'alert') {
-    moreHtml += '<div class="ctx-item" onclick="hideGraphCtx();openEntitySlider(ctxEntityId);showActionPanel(\'addToIncident\',ctxEntityId)">📌 Add to Incident</div>';
-    moreHtml += '<div class="ctx-item" onclick="hideGraphCtx();openEntitySlider(ctxEntityId);showActionPanel(\'closeAlert\',ctxEntityId)">✓ Close Alert</div>';
-  }
   if (moreHtml) {
     html += '<div class="ctx-sep"></div>';
     html += `<div class="ctx-more-toggle" onclick="this.classList.toggle('expanded');this.nextElementSibling.classList.toggle('expanded');reclampCtxMenu()">`;

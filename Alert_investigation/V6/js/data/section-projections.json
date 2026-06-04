@@ -552,6 +552,10 @@
     "_note": "Section IDs referenced by entity-slider.js but not yet ground-truthed. Do not fabricate projections.",
     "sections": {
       "threatIntelContext": { "usedBy": ["user"], "likelySource": "ZLogs THREAT_* fields filtered by user's recent activity" },
+      "darkWebExposure": { "usedBy": ["user"], "likelySource": "user_entity_spec.md UE3 — Constella dark-web/breach feed keyed on EMAIL_ADDRESS (license-gated)" },
+      "effectiveGroups": { "usedBy": ["user"], "likelySource": "user_entity_spec.md UE7 — transitive AD group expansion (tokenGroups / BloodHound-style)" },
+      "directReports": { "usedBy": ["user"], "likelySource": "user_entity_spec.md UE8 — AD manager/directReports attributes" },
+      "privilegedSurface": { "usedBy": ["user"], "likelySource": "user_entity_spec.md UE12 — PIM/role assignments + Tier-0 path analysis" },
       "dlpIncidents": { "usedBy": ["user"], "likelySource": "M365 DLP / Audit.DLP UAL events" },
       "resourceFileAccess": { "usedBy": ["user"], "likelySource": "Windows EID 4663 + file-server audit" },
       "recentAppAccess": { "usedBy": ["user"], "likelySource": "M365 sign-in audit / SaaS proxy logs" },

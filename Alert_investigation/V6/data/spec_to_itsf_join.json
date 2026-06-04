@@ -1,0 +1,6655 @@
+{
+  "$schema_version": "1.0",
+  "summary": {
+    "spec_logtypes": 83,
+    "spec_logtypes_with_reports": 75,
+    "spec_logtypes_without_reports": [
+      "Gateway_Server",
+      "IBM_Maximo",
+      "PMP",
+      "Syslog",
+      "SyslogApp",
+      "alerts",
+      "audit",
+      "m365_mailtrace"
+    ],
+    "itsf_groups_seen": 686,
+    "itsf_groups_mapped_to_section": 686,
+    "itsf_groups_unmapped": 0,
+    "itsf_reports_seen": 4463
+  },
+  "spec_to_itsf": {
+    "Windows": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Windows",
+        "WindowsWorkstation",
+        "ActiveDirectory"
+      ],
+      "spec_baseline": [
+        "B1",
+        "B3",
+        "B4",
+        "B5"
+      ],
+      "spec_enriched": [
+        "E3",
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 20,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 15,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Threat Detection",
+          "display": "its.reportgroups.Threat_Detection",
+          "report_count": 12,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "USB Storage Auditing",
+          "display": "its.reportgroups.usb_storage_auditing",
+          "report_count": 20,
+          "section": "E6"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Network Policy Server",
+          "display": "its.reportgroups.Network_Policy_Server",
+          "report_count": 7,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Domain Events",
+          "display": "its.reportgroups.Domain_Events",
+          "report_count": 6,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Program Inventory",
+          "display": "its.reportgroups.Program_Inventory",
+          "report_count": 13,
+          "section": "E4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Application Whitelisting",
+          "display": "its.reportgroups.Application_Whitelisting",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "DNS Server",
+          "display": "its.reportgroups.DNS_Server",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "AD DNS Server",
+          "display": "its.reportgroups.AD_DNS_Server",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Threat Detection From Antivirus",
+          "display": "its.reportgroups.Threat_Detection_From_Antivirus",
+          "report_count": 9,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Firewall Auditing",
+          "display": "its.reportgroups.Windows_Firewall_Auditing",
+          "report_count": 11,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Application Crashes",
+          "display": "its.reportgroups.Application_Crashes",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Backup and Restore",
+          "display": "its.reportgroups.Windows_Backup_and_Restore",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Registry Changes",
+          "display": "its.reportgroups.Registry_Changes",
+          "report_count": 10,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Network Share Auditing",
+          "display": "its.reportgroups.network_share_auditing",
+          "report_count": 22,
+          "section": "B10"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "File Integrity Monitor",
+          "display": "its.reportgroups.file_integrity_monitor",
+          "report_count": 16,
+          "section": "E18"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Trust Relationships Changes",
+          "display": "its.reportgroups.Trust_Relationships_Changes",
+          "report_count": 3,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "OU Changes",
+          "display": "its.reportgroups.OU_Changes",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "GPO Changes",
+          "display": "its.reportgroups.GPO_Changes",
+          "report_count": 3,
+          "section": "E2"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Domain Controller Logon Reports",
+          "display": "its.reportgroups.Domain_Controller_Logon_Reports",
+          "report_count": 23,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Policy Changes",
+          "display": "its.reportgroups.Policy_Changes",
+          "report_count": 8,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Computer Account Management",
+          "display": "its.reportgroups.Computer_Account_Management",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Group Management",
+          "display": "its.reportgroups.Group_Management",
+          "report_count": 13,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Local Account Management",
+          "display": "its.reportgroups.local_account_management",
+          "report_count": 23,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Process Tracking",
+          "display": "its.reportgroups.Process_Tracking",
+          "report_count": 12,
+          "section": "E3"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Logoff Reports",
+          "display": "its.reportgroups.Logoff_Reports",
+          "report_count": 6,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 21,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Important Events",
+          "display": "its.reportgroups.Windows_Important_Events",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Events",
+          "display": "its.reportgroups.Windows_Events",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Trend Reports",
+          "display": "its.reportgroups.Trend_Reports",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Startup Events",
+          "display": "its.reportgroups.Windows_Startup_Events",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Service Audit",
+          "display": "its.reportgroups.Service_Audit",
+          "report_count": 5,
+          "section": "E4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Eventlog Reports",
+          "display": "its.reportgroups.Eventlog_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Wireless Network Reports",
+          "display": "its.reportgroups.Wireless_Network_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Powershell Auditing",
+          "display": "its.reportgroups.powershell_auditing",
+          "report_count": 3,
+          "section": "E3"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Events",
+          "display": "its.reportgroups.Windows_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 7,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Logoff Reports",
+          "display": "its.reportgroups.Logoff_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 12,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Startup Events",
+          "display": "its.reportgroups.Windows_Startup_Events",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 10,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Firewall Auditing",
+          "display": "its.reportgroups.Windows_Firewall_Auditing",
+          "report_count": 11,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Scheduled Tasks",
+          "display": "its.reportgroups.Scheduled_Tasks",
+          "report_count": 5,
+          "section": "E5"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Process Tracking",
+          "display": "its.reportgroups.Process_Tracking",
+          "report_count": 4,
+          "section": "E3"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Registry Changes",
+          "display": "its.reportgroups.Registry_Changes",
+          "report_count": 10,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Service Audit",
+          "display": "its.reportgroups.Service_Audit",
+          "report_count": 4,
+          "section": "E4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Eventlog Reports",
+          "display": "its.reportgroups.Eventlog_Reports",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Removable Disk Auditing",
+          "display": "its.reportgroups.Removable_Disk_Auditing",
+          "report_count": 14,
+          "section": "E6"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Backup and Restore",
+          "display": "its.reportgroups.Windows_Backup_and_Restore",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Software Installations and Updates",
+          "display": "its.reportgroups.Software_Installations_and_Updates",
+          "report_count": 13,
+          "section": "E4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Threat Detection From Antivirus",
+          "display": "its.reportgroups.Threat_Detection_From_Antivirus",
+          "report_count": 9,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Threat Detection",
+          "display": "its.reportgroups.Threat_Detection",
+          "report_count": 9,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "User Logon Reports",
+          "display": "itsf.reportgroup.user_logon_reports",
+          "report_count": 11,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Local Logon-Logoff",
+          "display": "itsf.reportgroup.local_logon-logoff",
+          "report_count": 10,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "ADFS Auditing",
+          "display": "itsf.reportgroup.adfs_auditing",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Account Management",
+          "display": "itsf.reportgroup.account_management",
+          "report_count": 9,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "User Management",
+          "display": "itsf.reportgroup.user_management",
+          "report_count": 25,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Group Management",
+          "display": "itsf.reportgroup.group_management",
+          "report_count": 19,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Computer Management",
+          "display": "itsf.reportgroup.computer_management",
+          "report_count": 10,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "OU Management",
+          "display": "itsf.reportgroup.ou_management",
+          "report_count": 8,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "GPO Management",
+          "display": "itsf.reportgroup.gpo_management",
+          "report_count": 7,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "GPO Setting Changes",
+          "display": "itsf.reportgroup.gpo_setting_changes",
+          "report_count": 10,
+          "section": "E2"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Other AD Object Changes",
+          "display": "itsf.reportgroup.other_ad_object_changes",
+          "report_count": 9,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Permission Changes",
+          "display": "itsf.reportgroup.permission_changes",
+          "report_count": 10,
+          "section": "E18"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Configuration Auditing",
+          "display": "itsf.reportgroup.configuration_auditing",
+          "report_count": 8,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "DNS Changes",
+          "display": "itsf.reportgroup.dns_changes",
+          "report_count": 7,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "AzureAD Password Protection",
+          "display": "itsf.reportgroup.azuread_password_protection",
+          "report_count": 6,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Domain Object Changes",
+          "display": "itsf.reportgroup.domain_object_changes",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "LAPS Audit",
+          "display": "itsf.reportgroup.laps_audit",
+          "report_count": 2,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "DNS Server Events",
+          "display": "itsf.reportgroup.DNS_Server_Events",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "DC Credential Validation",
+          "display": "itsf.reportgroup.DC_Credential_Validation",
+          "report_count": 17,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Kerberos Events",
+          "display": "itsf.reportgroup.Kerberos_Events",
+          "report_count": 8,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Trust Relationships Changes",
+          "display": "its.reportgroups.Trust_Relationships_Changes",
+          "report_count": 3,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "AD Summary",
+          "display": null,
+          "report_count": 13,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "AD LDS Auditing",
+          "display": "itsf.reportgroup.ad_lds_auditing",
+          "report_count": 7,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Advanced DNS Server Audit",
+          "display": "itsf.reportgroup.advanced_dns_server_audit",
+          "report_count": 9,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "AD Replication Audit",
+          "display": "itsf.reportgroup.ad_replication_audit",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "LDAP Auditing",
+          "display": "itsf.reportgroup.ldap_auditing",
+          "report_count": 8,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Netlogon vulnerable Schannel Connection Audit",
+          "display": "itsf.reportgroup.netlogon_vulnerable_schannel_connection_audit",
+          "report_count": 5,
+          "section": "B4"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 729,
+      "report_count_by_section": {
+        "B4": 187,
+        "E13": 125,
+        "E10": 45,
+        "E6": 34,
+        "E4": 35,
+        "B9": 28,
+        "E12": 50,
+        "B10": 22,
+        "E18": 26,
+        "B5": 140,
+        "E2": 13,
+        "E3": 19,
+        "E5": 5
+      }
+    },
+    "Sysmon": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Sysmon"
+      ],
+      "spec_baseline": [],
+      "spec_enriched": [
+        "E3",
+        "E18"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Sysmon",
+          "group_name": "Sysmon Events",
+          "display": "its.report.Sysmon_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Sysmon",
+          "group_name": "Process Audit Reports",
+          "display": "its.report.Process_Audit_Report",
+          "report_count": 7,
+          "section": "E3"
+        },
+        {
+          "itsf_dir": "Sysmon",
+          "group_name": "Registry Audit Reports",
+          "display": "its.report.Regsitry_Audit_Report",
+          "report_count": 6,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Sysmon",
+          "group_name": "File Audit Reports",
+          "display": "its.report.File_Audit_Report",
+          "report_count": 9,
+          "section": "E18"
+        },
+        {
+          "itsf_dir": "Sysmon",
+          "group_name": "Library and Driver Reports",
+          "display": "its.report.Library_And_Driver_Reports",
+          "report_count": 2,
+          "section": "E4"
+        },
+        {
+          "itsf_dir": "Sysmon",
+          "group_name": "Network Audit Reports",
+          "display": "its.report.Network_Audit_Report",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Sysmon",
+          "group_name": "WMI Audit Reports",
+          "display": "its.report.WMI_Audit_Report",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Sysmon",
+          "group_name": "Sysmon Configuration Reports",
+          "display": "its.report.Configuration_Report",
+          "report_count": 2,
+          "section": "E12"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 33,
+      "report_count_by_section": {
+        "E13": 2,
+        "E3": 7,
+        "E12": 11,
+        "E18": 9,
+        "E4": 2,
+        "B9": 2
+      }
+    },
+    "Win_Archive": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Windows",
+        "WindowsWorkstation",
+        "ActiveDirectory"
+      ],
+      "spec_baseline": [
+        "B4",
+        "B5"
+      ],
+      "spec_enriched": [
+        "E3",
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 20,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 15,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Threat Detection",
+          "display": "its.reportgroups.Threat_Detection",
+          "report_count": 12,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "USB Storage Auditing",
+          "display": "its.reportgroups.usb_storage_auditing",
+          "report_count": 20,
+          "section": "E6"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Network Policy Server",
+          "display": "its.reportgroups.Network_Policy_Server",
+          "report_count": 7,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Domain Events",
+          "display": "its.reportgroups.Domain_Events",
+          "report_count": 6,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Program Inventory",
+          "display": "its.reportgroups.Program_Inventory",
+          "report_count": 13,
+          "section": "E4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Application Whitelisting",
+          "display": "its.reportgroups.Application_Whitelisting",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "DNS Server",
+          "display": "its.reportgroups.DNS_Server",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "AD DNS Server",
+          "display": "its.reportgroups.AD_DNS_Server",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Threat Detection From Antivirus",
+          "display": "its.reportgroups.Threat_Detection_From_Antivirus",
+          "report_count": 9,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Firewall Auditing",
+          "display": "its.reportgroups.Windows_Firewall_Auditing",
+          "report_count": 11,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Application Crashes",
+          "display": "its.reportgroups.Application_Crashes",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Backup and Restore",
+          "display": "its.reportgroups.Windows_Backup_and_Restore",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Registry Changes",
+          "display": "its.reportgroups.Registry_Changes",
+          "report_count": 10,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Network Share Auditing",
+          "display": "its.reportgroups.network_share_auditing",
+          "report_count": 22,
+          "section": "B10"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "File Integrity Monitor",
+          "display": "its.reportgroups.file_integrity_monitor",
+          "report_count": 16,
+          "section": "E18"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Trust Relationships Changes",
+          "display": "its.reportgroups.Trust_Relationships_Changes",
+          "report_count": 3,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "OU Changes",
+          "display": "its.reportgroups.OU_Changes",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "GPO Changes",
+          "display": "its.reportgroups.GPO_Changes",
+          "report_count": 3,
+          "section": "E2"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Domain Controller Logon Reports",
+          "display": "its.reportgroups.Domain_Controller_Logon_Reports",
+          "report_count": 23,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Policy Changes",
+          "display": "its.reportgroups.Policy_Changes",
+          "report_count": 8,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Computer Account Management",
+          "display": "its.reportgroups.Computer_Account_Management",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Group Management",
+          "display": "its.reportgroups.Group_Management",
+          "report_count": 13,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Local Account Management",
+          "display": "its.reportgroups.local_account_management",
+          "report_count": 23,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Process Tracking",
+          "display": "its.reportgroups.Process_Tracking",
+          "report_count": 12,
+          "section": "E3"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Logoff Reports",
+          "display": "its.reportgroups.Logoff_Reports",
+          "report_count": 6,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 21,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Important Events",
+          "display": "its.reportgroups.Windows_Important_Events",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Events",
+          "display": "its.reportgroups.Windows_Events",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Trend Reports",
+          "display": "its.reportgroups.Trend_Reports",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Windows Startup Events",
+          "display": "its.reportgroups.Windows_Startup_Events",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Service Audit",
+          "display": "its.reportgroups.Service_Audit",
+          "report_count": 5,
+          "section": "E4"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Eventlog Reports",
+          "display": "its.reportgroups.Eventlog_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Wireless Network Reports",
+          "display": "its.reportgroups.Wireless_Network_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Windows",
+          "group_name": "Powershell Auditing",
+          "display": "its.reportgroups.powershell_auditing",
+          "report_count": 3,
+          "section": "E3"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Events",
+          "display": "its.reportgroups.Windows_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 7,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Logoff Reports",
+          "display": "its.reportgroups.Logoff_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 12,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Startup Events",
+          "display": "its.reportgroups.Windows_Startup_Events",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 10,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Firewall Auditing",
+          "display": "its.reportgroups.Windows_Firewall_Auditing",
+          "report_count": 11,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Scheduled Tasks",
+          "display": "its.reportgroups.Scheduled_Tasks",
+          "report_count": 5,
+          "section": "E5"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Process Tracking",
+          "display": "its.reportgroups.Process_Tracking",
+          "report_count": 4,
+          "section": "E3"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Registry Changes",
+          "display": "its.reportgroups.Registry_Changes",
+          "report_count": 10,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Service Audit",
+          "display": "its.reportgroups.Service_Audit",
+          "report_count": 4,
+          "section": "E4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Eventlog Reports",
+          "display": "its.reportgroups.Eventlog_Reports",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Removable Disk Auditing",
+          "display": "its.reportgroups.Removable_Disk_Auditing",
+          "report_count": 14,
+          "section": "E6"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Windows Backup and Restore",
+          "display": "its.reportgroups.Windows_Backup_and_Restore",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Software Installations and Updates",
+          "display": "its.reportgroups.Software_Installations_and_Updates",
+          "report_count": 13,
+          "section": "E4"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Threat Detection From Antivirus",
+          "display": "its.reportgroups.Threat_Detection_From_Antivirus",
+          "report_count": 9,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "WindowsWorkstation",
+          "group_name": "Threat Detection",
+          "display": "its.reportgroups.Threat_Detection",
+          "report_count": 9,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "User Logon Reports",
+          "display": "itsf.reportgroup.user_logon_reports",
+          "report_count": 11,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Local Logon-Logoff",
+          "display": "itsf.reportgroup.local_logon-logoff",
+          "report_count": 10,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "ADFS Auditing",
+          "display": "itsf.reportgroup.adfs_auditing",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Account Management",
+          "display": "itsf.reportgroup.account_management",
+          "report_count": 9,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "User Management",
+          "display": "itsf.reportgroup.user_management",
+          "report_count": 25,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Group Management",
+          "display": "itsf.reportgroup.group_management",
+          "report_count": 19,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Computer Management",
+          "display": "itsf.reportgroup.computer_management",
+          "report_count": 10,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "OU Management",
+          "display": "itsf.reportgroup.ou_management",
+          "report_count": 8,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "GPO Management",
+          "display": "itsf.reportgroup.gpo_management",
+          "report_count": 7,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "GPO Setting Changes",
+          "display": "itsf.reportgroup.gpo_setting_changes",
+          "report_count": 10,
+          "section": "E2"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Other AD Object Changes",
+          "display": "itsf.reportgroup.other_ad_object_changes",
+          "report_count": 9,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Permission Changes",
+          "display": "itsf.reportgroup.permission_changes",
+          "report_count": 10,
+          "section": "E18"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Configuration Auditing",
+          "display": "itsf.reportgroup.configuration_auditing",
+          "report_count": 8,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "DNS Changes",
+          "display": "itsf.reportgroup.dns_changes",
+          "report_count": 7,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "AzureAD Password Protection",
+          "display": "itsf.reportgroup.azuread_password_protection",
+          "report_count": 6,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Domain Object Changes",
+          "display": "itsf.reportgroup.domain_object_changes",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "LAPS Audit",
+          "display": "itsf.reportgroup.laps_audit",
+          "report_count": 2,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "DNS Server Events",
+          "display": "itsf.reportgroup.DNS_Server_Events",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "DC Credential Validation",
+          "display": "itsf.reportgroup.DC_Credential_Validation",
+          "report_count": 17,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Kerberos Events",
+          "display": "itsf.reportgroup.Kerberos_Events",
+          "report_count": 8,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Trust Relationships Changes",
+          "display": "its.reportgroups.Trust_Relationships_Changes",
+          "report_count": 3,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "AD Summary",
+          "display": null,
+          "report_count": 13,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "AD LDS Auditing",
+          "display": "itsf.reportgroup.ad_lds_auditing",
+          "report_count": 7,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Advanced DNS Server Audit",
+          "display": "itsf.reportgroup.advanced_dns_server_audit",
+          "report_count": 9,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "AD Replication Audit",
+          "display": "itsf.reportgroup.ad_replication_audit",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "LDAP Auditing",
+          "display": "itsf.reportgroup.ldap_auditing",
+          "report_count": 8,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ActiveDirectory",
+          "group_name": "Netlogon vulnerable Schannel Connection Audit",
+          "display": "itsf.reportgroup.netlogon_vulnerable_schannel_connection_audit",
+          "report_count": 5,
+          "section": "B4"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 729,
+      "report_count_by_section": {
+        "B4": 187,
+        "E13": 125,
+        "E10": 45,
+        "E6": 34,
+        "E4": 35,
+        "B9": 28,
+        "E12": 50,
+        "B10": 22,
+        "E18": 26,
+        "B5": 140,
+        "E2": 13,
+        "E3": 19,
+        "E5": 5
+      }
+    },
+    "Terminal_Windows": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Terminal_Windows"
+      ],
+      "spec_baseline": [
+        "B3",
+        "B4"
+      ],
+      "spec_enriched": [],
+      "matched_groups": [
+        {
+          "itsf_dir": "Terminal_Windows",
+          "group_name": "Terminal Server Events",
+          "display": "its.reportgroups.Terminal_Server_Events",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Terminal_Windows",
+          "group_name": "Terminal Server Gateway Logons",
+          "display": "its.reportgroups.Terminal_Server_Gateway_Logons",
+          "report_count": 8,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Terminal_Windows",
+          "group_name": "Terminal Server Gateway Communications",
+          "display": "its.reportgroups.Terminal_Server_Gateway_Communications",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Terminal_Windows",
+          "group_name": "Terminal Server Gateway Top Reports",
+          "display": "its.reportgroups.Terminal_Server_Gateway_Top_Reports",
+          "report_count": 3,
+          "section": "B4"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 17,
+      "report_count_by_section": {
+        "B4": 17
+      }
+    },
+    "FIM": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Linux"
+      ],
+      "spec_baseline": [],
+      "spec_enriched": [
+        "E18"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Linux",
+          "group_name": "File Monitoring",
+          "display": "its.reportgroups.File_Monitoring",
+          "report_count": 10,
+          "section": "E18"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 10,
+      "report_count_by_section": {
+        "E18": 10
+      }
+    },
+    "Printer_Windows": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Printer_Windows"
+      ],
+      "spec_baseline": [],
+      "spec_enriched": [
+        "E19"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Printer_Windows",
+          "group_name": "Printer Events",
+          "display": "its.reportgroups.Printer_Events",
+          "report_count": 2,
+          "section": "E19"
+        },
+        {
+          "itsf_dir": "Printer_Windows",
+          "group_name": "Printer Auditing",
+          "display": "its.reportgroups.Printer_Auditing",
+          "report_count": 13,
+          "section": "E19"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 15,
+      "report_count_by_section": {
+        "E19": 15
+      }
+    },
+    "Unix": {
+      "slider": "device",
+      "itsf_dirs": [
+        "UnixLinux"
+      ],
+      "spec_baseline": [
+        "B1",
+        "B3",
+        "B4",
+        "B5"
+      ],
+      "spec_enriched": [
+        "E3",
+        "E4"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Risk Reports",
+          "display": "its.reportgroups.Unix_Risk_Reports",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix FTP Server Reports",
+          "display": "its.reportgroups.FTP_Server_Reports",
+          "report_count": 10,
+          "section": "E15"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Other Events",
+          "display": "its.reportgroups.Other_Events",
+          "report_count": 15,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix NFS Events",
+          "display": "its.reportgroups.NFS_Events",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Mail Server Reports",
+          "display": "its.reportgroups.Mail_Server_Reports",
+          "report_count": 22,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Removable Disk Auditing",
+          "display": "its.reportgroups.Removable_Disk_Auditing",
+          "report_count": 2,
+          "section": "E6"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix User Account Management",
+          "display": "its.reportgroups.User_Account_Management",
+          "report_count": 10,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 15,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 10,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Logoff Reports",
+          "display": "its.reportgroups.Logoff_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "SU Commands",
+          "display": "its.reportgroups.SU_Commands",
+          "report_count": 4,
+          "section": "E3"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Threats",
+          "display": "its.reportgroups.Threats",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Events",
+          "display": "its.reportgroups.Unix_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Trend Reports",
+          "display": "its.reportgroups.Trend_Reports",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 128,
+      "report_count_by_section": {
+        "E13": 67,
+        "E15": 10,
+        "E6": 2,
+        "B5": 10,
+        "B4": 30,
+        "E3": 4,
+        "E10": 5
+      }
+    },
+    "Syslog": {
+      "slider": "device",
+      "itsf_dirs": [],
+      "spec_baseline": [
+        "B4",
+        "B9"
+      ],
+      "spec_enriched": [
+        "E10",
+        "E12",
+        "E13"
+      ],
+      "matched_groups": [],
+      "unmapped_groups": [],
+      "report_count_total": 0,
+      "report_count_by_section": {}
+    },
+    "Sys_Archive": {
+      "slider": "device",
+      "itsf_dirs": [
+        "UnixLinux"
+      ],
+      "spec_baseline": [
+        "B4",
+        "B5"
+      ],
+      "spec_enriched": [
+        "E3",
+        "E4"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Risk Reports",
+          "display": "its.reportgroups.Unix_Risk_Reports",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix FTP Server Reports",
+          "display": "its.reportgroups.FTP_Server_Reports",
+          "report_count": 10,
+          "section": "E15"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Other Events",
+          "display": "its.reportgroups.Other_Events",
+          "report_count": 15,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix NFS Events",
+          "display": "its.reportgroups.NFS_Events",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Mail Server Reports",
+          "display": "its.reportgroups.Mail_Server_Reports",
+          "report_count": 22,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Removable Disk Auditing",
+          "display": "its.reportgroups.Removable_Disk_Auditing",
+          "report_count": 2,
+          "section": "E6"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix User Account Management",
+          "display": "its.reportgroups.User_Account_Management",
+          "report_count": 10,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 15,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 10,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Logoff Reports",
+          "display": "its.reportgroups.Logoff_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "SU Commands",
+          "display": "its.reportgroups.SU_Commands",
+          "report_count": 4,
+          "section": "E3"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Threats",
+          "display": "its.reportgroups.Threats",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Unix Events",
+          "display": "its.reportgroups.Unix_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "UnixLinux",
+          "group_name": "Trend Reports",
+          "display": "its.reportgroups.Trend_Reports",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 128,
+      "report_count_by_section": {
+        "E13": 67,
+        "E15": 10,
+        "E6": 2,
+        "B5": 10,
+        "B4": 30,
+        "E3": 4,
+        "E10": 5
+      }
+    },
+    "AS400": {
+      "slider": "device",
+      "itsf_dirs": [
+        "IBMAS400"
+      ],
+      "spec_baseline": [
+        "B4",
+        "B5"
+      ],
+      "spec_enriched": [],
+      "matched_groups": [
+        {
+          "itsf_dir": "IBMAS400",
+          "group_name": "AS/400 Events",
+          "display": "its.reportgroups.AS/400_Events",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "IBMAS400",
+          "group_name": "AS400 Reports",
+          "display": "its.reportgroups.AS400_Reports",
+          "report_count": 39,
+          "section": "B4"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 42,
+      "report_count_by_section": {
+        "E13": 3,
+        "B4": 39
+      }
+    },
+    "MSSQL": {
+      "slider": "device",
+      "itsf_dirs": [
+        "MSSQL"
+      ],
+      "spec_baseline": [
+        "B4",
+        "B7"
+      ],
+      "spec_enriched": [
+        "E7"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Events",
+          "display": "its.reportgroups.SQLServer_Events",
+          "report_count": 5,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer DDL Auditing Report",
+          "display": "its.reportgroups.DDL_Auditing_Report",
+          "report_count": 22,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer DML Auditing Report",
+          "display": "its.reportgroups.DML_Auditing_Report",
+          "report_count": 11,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Logon/Logout Events",
+          "display": "its.reportgroups.Logon_Logout_Events",
+          "report_count": 7,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Failed Logon Events",
+          "display": "its.reportgroups.Failed_Logon_Events",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Startup Shutdown Events",
+          "display": "its.reportgroups.Startup_Shutdown_Events",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Server Principal Changes",
+          "display": "its.reportgroups.Server_Principal_Changes",
+          "report_count": 11,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Database Principal Changes",
+          "display": "its.reportgroups.Database_Principal_Changes",
+          "report_count": 9,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Password Changes",
+          "display": "its.reportgroups.Password_Changes",
+          "report_count": 10,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Audit Changes",
+          "display": "its.reportgroups.Audit_Changes",
+          "report_count": 11,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Backup and Restore Events",
+          "display": "its.reportgroups.Backup_and_Restore_Events",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Advanced Auditing Reports",
+          "display": "its.reportgroups.Advanced_Auditing_Reports",
+          "report_count": 16,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Security Reports",
+          "display": "its.reportgroups.Security_Reports",
+          "report_count": 6,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQL Server System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQL Server Permission Denied Report",
+          "display": "its.reportgroups.Permission_Denied_Report",
+          "report_count": 4,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQL Server Integrity Report",
+          "display": "its.reportgroups.Integrity_Report",
+          "report_count": 5,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQL Server Authority Changes",
+          "display": "its.reportgroups.Authority_Changes",
+          "report_count": 4,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MSSQL",
+          "group_name": "SQLServer Server Trace Changes",
+          "display": "its.reportgroups.Trace_Changes",
+          "report_count": 4,
+          "section": "B7"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 140,
+      "report_count_by_section": {
+        "B7": 102,
+        "B4": 11,
+        "E13": 11,
+        "B5": 10,
+        "E10": 6
+      }
+    },
+    "Oracle": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Oracle"
+      ],
+      "spec_baseline": [
+        "B4",
+        "B7"
+      ],
+      "spec_enriched": [
+        "E7"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Oracle",
+          "group_name": "Oracle Events",
+          "display": "its.reportgroups.Oracle_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Oracle",
+          "group_name": "Oracle Auditing Report",
+          "display": "its.reportgroups.Auditing_Report",
+          "report_count": 24,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "Oracle",
+          "group_name": "Oracle Auditing Account Management",
+          "display": "its.reportgroups.Auditing_Account_Management",
+          "report_count": 14,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Oracle",
+          "group_name": "Oracle Auditing Server Report",
+          "display": "its.reportgroups.Auditing_Server_Report",
+          "report_count": 13,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "Oracle",
+          "group_name": "Oracle Security Reports",
+          "display": "its.reportgroups.Security_Reports",
+          "report_count": 4,
+          "section": "E10"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 57,
+      "report_count_by_section": {
+        "E13": 2,
+        "B7": 37,
+        "B5": 14,
+        "E10": 4
+      }
+    },
+    "MySQL": {
+      "slider": "device",
+      "itsf_dirs": [
+        "MySQL"
+      ],
+      "spec_baseline": [
+        "B4",
+        "B7"
+      ],
+      "spec_enriched": [
+        "E7"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "MySQL",
+          "group_name": "MySQL Events",
+          "display": "its.reportgroups.MySQL_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "MySQL",
+          "group_name": "MySQL Logon Events",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "MySQL",
+          "group_name": "MySQL General Statements Reports",
+          "display": "its.reportgroups.General_Statements_Reports",
+          "report_count": 5,
+          "section": "E7"
+        },
+        {
+          "itsf_dir": "MySQL",
+          "group_name": "MySQL Database Administrative Statements Reports",
+          "display": "its.reportgroups.Database_Administrative_Statements_Reports",
+          "report_count": 7,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "MySQL",
+          "group_name": "MySQL Server Events",
+          "display": "its.reportgroups.MySQL_Server_Events",
+          "report_count": 1,
+          "section": "B7"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 17,
+      "report_count_by_section": {
+        "E13": 2,
+        "B4": 2,
+        "E7": 5,
+        "B7": 8
+      }
+    },
+    "PGSQL": {
+      "slider": "device",
+      "itsf_dirs": [
+        "PGSQL"
+      ],
+      "spec_baseline": [
+        "B4",
+        "B7"
+      ],
+      "spec_enriched": [
+        "E7"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "PGSQL",
+          "group_name": "PGSQL Events",
+          "display": "its.reportgroups.PGSQL_events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "PGSQL",
+          "group_name": "PGSQL DDL Auditing",
+          "display": "its.reportgroups.DDL_Auditing_Report",
+          "report_count": 19,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "PGSQL",
+          "group_name": "PGSQL Logon Events",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "PGSQL",
+          "group_name": "PGSQL DML Auditing Report",
+          "display": "its.reportgroups.DML_Auditing_Report",
+          "report_count": 8,
+          "section": "E7"
+        },
+        {
+          "itsf_dir": "PGSQL",
+          "group_name": "PGSQL Account Management Auditing",
+          "display": "its.reportgroups.Auditing_Account_Management",
+          "report_count": 9,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "PGSQL",
+          "group_name": "PGSQL Database Administrative Statements Reports",
+          "display": "its.reportgroups.Database_Administrative_Statements_Reports",
+          "report_count": 3,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "PGSQL",
+          "group_name": "PGSQL Server Events",
+          "display": "its.reportgroups.PGSQL_Server_Events",
+          "report_count": 1,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "PGSQL",
+          "group_name": "PGSQL Overview",
+          "display": "its.reportgroups.PGSQL_Overview",
+          "report_count": 9,
+          "section": "B7"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 53,
+      "report_count_by_section": {
+        "E13": 2,
+        "B7": 32,
+        "B4": 2,
+        "E7": 8,
+        "B5": 9
+      }
+    },
+    "DB2": {
+      "slider": "device",
+      "itsf_dirs": [
+        "DB2"
+      ],
+      "spec_baseline": [
+        "B4",
+        "B7"
+      ],
+      "spec_enriched": [
+        "E7"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "DB2",
+          "group_name": "DB2 Events",
+          "display": "its.reportgroups.DB2_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "DB2",
+          "group_name": "DB2 DDL Auditing",
+          "display": "its.reportgroups.DDL_Auditing_Report",
+          "report_count": 18,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "DB2",
+          "group_name": "DB2 DML Auditing",
+          "display": "its.reportgroups.DML_Auditing_Report",
+          "report_count": 5,
+          "section": "E7"
+        },
+        {
+          "itsf_dir": "DB2",
+          "group_name": "DB2 Database Connection Auditing",
+          "display": "its.reportgroups.Database_Connection_Auditing",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "DB2",
+          "group_name": "DB2 Database Server Reports",
+          "display": "its.reportgroups.Database_Server_Reports",
+          "report_count": 6,
+          "section": "B7"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 33,
+      "report_count_by_section": {
+        "E13": 2,
+        "B7": 24,
+        "E7": 5,
+        "B4": 2
+      }
+    },
+    "ApacheAccessLogs": {
+      "slider": "device",
+      "itsf_dirs": [
+        "ApacheAccessLogs"
+      ],
+      "spec_baseline": [
+        "B8"
+      ],
+      "spec_enriched": [
+        "E8"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "ApacheAccessLogs",
+          "group_name": "Apache WebServer Events",
+          "display": "its.reportgroups.Apache_Server_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ApacheAccessLogs",
+          "group_name": "Apache WebServer Error Reports",
+          "display": "its.reportgroups.WebServer_Error_Reports",
+          "report_count": 18,
+          "section": "B8"
+        },
+        {
+          "itsf_dir": "ApacheAccessLogs",
+          "group_name": "Apache WebServer Top Reports",
+          "display": "its.reportgroups.WebServer_Top_Reports",
+          "report_count": 14,
+          "section": "E8"
+        },
+        {
+          "itsf_dir": "ApacheAccessLogs",
+          "group_name": "Apache WebServer Attack Reports",
+          "display": "its.reportgroups.WebServer_Attack_Reports",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "ApacheAccessLogs",
+          "group_name": "Apache Webserver Advanced Reports",
+          "display": "its.reportgroups.Webserver_advanced_reports",
+          "report_count": 3,
+          "section": "E8"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 42,
+      "report_count_by_section": {
+        "E13": 2,
+        "B8": 18,
+        "E8": 17,
+        "E10": 5
+      }
+    },
+    "IIS_W3C_web": {
+      "slider": "device",
+      "itsf_dirs": [
+        "IIS_W3C_web"
+      ],
+      "spec_baseline": [
+        "B8"
+      ],
+      "spec_enriched": [
+        "E8"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "IIS_W3C_web",
+          "group_name": "IIS WebServer Events",
+          "display": "its.reportgroups.IIS_WebServer_Events",
+          "report_count": 2,
+          "section": "E8"
+        },
+        {
+          "itsf_dir": "IIS_W3C_web",
+          "group_name": "IIS WebServer Reports",
+          "display": "its.reportgroups.WebServer_Reports",
+          "report_count": 18,
+          "section": "E8"
+        },
+        {
+          "itsf_dir": "IIS_W3C_web",
+          "group_name": "IIS WebServer Error Reports",
+          "display": "its.reportgroups.WebServer_Error_Reports",
+          "report_count": 28,
+          "section": "B8"
+        },
+        {
+          "itsf_dir": "IIS_W3C_web",
+          "group_name": "IIS WebServer Attack Reports",
+          "display": "its.reportgroups.WebServer_Attack_Reports",
+          "report_count": 12,
+          "section": "E8"
+        },
+        {
+          "itsf_dir": "IIS_W3C_web",
+          "group_name": "IIS WebServer Advanced Reports",
+          "display": "its.reportgroups.Server_Advanced_Reports",
+          "report_count": 2,
+          "section": "E8"
+        },
+        {
+          "itsf_dir": "IIS_W3C_web",
+          "group_name": "IIS Admin Configuration Reports",
+          "display": "IIS Admin Configuration Reports.ReportG",
+          "report_count": 8,
+          "section": "E12"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 70,
+      "report_count_by_section": {
+        "E8": 34,
+        "B8": 28,
+        "E12": 8
+      }
+    },
+    "IIS_W3C_ftp": {
+      "slider": "device",
+      "itsf_dirs": [
+        "IIS_W3C_ftp"
+      ],
+      "spec_baseline": [
+        "B8"
+      ],
+      "spec_enriched": [
+        "E15"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "IIS_W3C_ftp",
+          "group_name": "IIS FTP Server Events",
+          "display": "its.reportgroups.IIS_FTP_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "IIS_W3C_ftp",
+          "group_name": "IIS FTP Server Reports",
+          "display": "its.reportgroups.FTP_Server_Reports",
+          "report_count": 30,
+          "section": "E15"
+        },
+        {
+          "itsf_dir": "IIS_W3C_ftp",
+          "group_name": "IIS FTP Server Advanced Reports",
+          "display": "its.reportgroups.Server_Advanced_Reports",
+          "report_count": 2,
+          "section": "E15"
+        },
+        {
+          "itsf_dir": "IIS_W3C_ftp",
+          "group_name": "IIS Admin Configuration FTP Reports",
+          "display": "IIS Admin Configuration FTP Reports.ReportG",
+          "report_count": 8,
+          "section": "E12"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 42,
+      "report_count_by_section": {
+        "E13": 2,
+        "E15": 32,
+        "E12": 8
+      }
+    },
+    "Hypervisor": {
+      "slider": "device",
+      "itsf_dirs": [
+        "ESXi",
+        "Hyper-V"
+      ],
+      "spec_baseline": [
+        "B1",
+        "B11"
+      ],
+      "spec_enriched": [
+        "E16"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "ESXi",
+          "group_name": "VMWare Logons/Logoff",
+          "display": "its.reportgroups.VMWare_Logons/Logoff",
+          "report_count": 19,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ESXi",
+          "group_name": "Hypervisor Events",
+          "display": "its.reportgroups.Hypervisor_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ESXi",
+          "group_name": "VMWare System Events",
+          "display": "its.reportgroups.VMWare_System_Events",
+          "report_count": 13,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ESXi",
+          "group_name": "VMWare Server Events",
+          "display": "its.reportgroups.VMWare_Server_Events",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Hyper-V",
+          "group_name": "Hyper-V Server Events",
+          "display": "its.reportgroups.Hyper-V_Server_Events",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Hyper-V",
+          "group_name": "Hyper-V VM Management",
+          "display": "its.reportgroups.Hyper-V_VM_Management",
+          "report_count": 10,
+          "section": "B11"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 57,
+      "report_count_by_section": {
+        "B4": 19,
+        "E13": 28,
+        "B11": 10
+      }
+    },
+    "vCenter": {
+      "slider": "device",
+      "itsf_dirs": [
+        "vCenter"
+      ],
+      "spec_baseline": [
+        "B11"
+      ],
+      "spec_enriched": [
+        "E16"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "Cluster Changes",
+          "display": "its.reportgroups.Cluster_Changes",
+          "report_count": 4,
+          "section": "E16"
+        },
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "Datacenter Changes",
+          "display": "its.reportgroups.Datacenter_Changes",
+          "report_count": 3,
+          "section": "E16"
+        },
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "Datastore Changes",
+          "display": "its.reportgroups.Datastore_Changes",
+          "report_count": 6,
+          "section": "E16"
+        },
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "Folder Changes",
+          "display": "its.reportgroups.Folder_Changes",
+          "report_count": 4,
+          "section": "E16"
+        },
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "Permission Changes",
+          "display": "its.reportgroups.Permission_Changes",
+          "report_count": 3,
+          "section": "E18"
+        },
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "Resourcepool Changes",
+          "display": "its.reportgroups.Resourcepool_Changes",
+          "report_count": 4,
+          "section": "E16"
+        },
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "Role Changes",
+          "display": "its.reportgroups.Role_Changes",
+          "report_count": 3,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "VM Changes",
+          "display": "its.reportgroups.VM_Changes",
+          "report_count": 7,
+          "section": "E16"
+        },
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "Host Changes",
+          "display": "its.reportgroups.Host_Changes",
+          "report_count": 7,
+          "section": "E16"
+        },
+        {
+          "itsf_dir": "vCenter",
+          "group_name": "Logons/Logoff Reports",
+          "display": "its.reportgroups.Logons/Logoff_Reports",
+          "report_count": 3,
+          "section": "B4"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 44,
+      "report_count_by_section": {
+        "E16": 35,
+        "E18": 3,
+        "B7": 3,
+        "B4": 3
+      }
+    },
+    "SNMP": {
+      "slider": "device",
+      "itsf_dirs": [
+        "SNMPTrap"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E14"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "SNMPTrap",
+          "group_name": "SNMP Trap Type Reports",
+          "display": "its.reportgroups.SNMP_Trap_Type_Reports",
+          "report_count": 7,
+          "section": "E14"
+        },
+        {
+          "itsf_dir": "SNMPTrap",
+          "group_name": "SNMP Trap Severity Reports",
+          "display": "its.reportgroups.SNMP_Trap_Severity_Reports",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 9,
+      "report_count_by_section": {
+        "E14": 7,
+        "E13": 2
+      }
+    },
+    "Cisco": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Cisco"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E11",
+        "E12",
+        "E13"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Network Device Risk Reports",
+          "display": "its.reportgroups.Network_Risk_Reports",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Network Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "VPN Connection Status Report",
+          "display": "its.reportgroups.VPN_Connection_Status",
+          "report_count": 3,
+          "section": "E11"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Firewall VPN Users Reports",
+          "display": "its.reportgroups.Firewall_VPN_Users_Reports",
+          "report_count": 6,
+          "section": "E11"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Firewall Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 6,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Firewall Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 10,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Firewall Denied Connections",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Firewall Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 5,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "IDS/IPS Activity",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 6,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Router Traffic Errors",
+          "display": "its.reportgroups.Router_Traffic_Errors",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Router/Switch System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 13,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Firewall VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 13,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Router Traffic Report by Protocol",
+          "display": "its.reportgroups.Router_Traffic_Report_by_Protocol",
+          "report_count": 8,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Router Denied Connections",
+          "display": "its.reportgroups.Router_Denied_Connections",
+          "report_count": 5,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Firewall Threats",
+          "display": "its.reportgroups.Firewall_Threats",
+          "report_count": 8,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Router Accepted Connections",
+          "display": "its.reportgroups.Router_Accepted_Connections",
+          "report_count": 5,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Router Configuration Report",
+          "display": "its.reportgroups.Router_Configuration_Report",
+          "report_count": 12,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Router Logon Report",
+          "display": "its.reportgroups.Router_Logon_Report",
+          "report_count": 24,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Cisco Events",
+          "display": "its.reportgroups.Cisco_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Firewall Website Traffic Reports",
+          "display": "its.reportgroups.Website_Traffic_Reports",
+          "report_count": 5,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Cisco",
+          "group_name": "Cisco Common Reports",
+          "display": "its.reportgroups.Cisco_Common_Reports",
+          "report_count": 5,
+          "section": "B9"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 162,
+      "report_count_by_section": {
+        "E13": 29,
+        "E11": 9,
+        "B5": 6,
+        "B4": 47,
+        "B9": 45,
+        "E10": 14,
+        "E12": 12
+      }
+    },
+    "FirePower": {
+      "slider": "device",
+      "itsf_dirs": [
+        "FirePower"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E10"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Denied Traffic Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Website Traffic Reports",
+          "display": "its.reportgroups.Website_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 6,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Events",
+          "display": "its.reportgroups.FirePower_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Firewall VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 13,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Firewall VPN Users Reports",
+          "display": "its.reportgroups.Firewall_VPN_Users_Reports",
+          "report_count": 6,
+          "section": "E11"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Firewall Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 6,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "FirePower",
+          "group_name": "FirePower Firewall Threats",
+          "display": "its.reportgroups.Firewall_Threats",
+          "report_count": 8,
+          "section": "E10"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 70,
+      "report_count_by_section": {
+        "B9": 18,
+        "E10": 14,
+        "E13": 10,
+        "B4": 16,
+        "E11": 6,
+        "B5": 6
+      }
+    },
+    "PaloAlto": {
+      "slider": "device",
+      "itsf_dirs": [
+        "PaloAlto"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E8",
+        "E9",
+        "E10",
+        "E11"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto Security Reports",
+          "display": "its.reportgroups.Firewall_Security_Reports",
+          "report_count": 11,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto Threat Reports",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto FW Denied Connections",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto FW Traffic Allowed",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto Events",
+          "display": "its.reportgroups.PaloAlto_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "PaloAlto",
+          "group_name": "PaloAlto VPN Reports",
+          "display": "its.reportgroups.VPN_Reports",
+          "report_count": 6,
+          "section": "E11"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 55,
+      "report_count_by_section": {
+        "E13": 13,
+        "E10": 16,
+        "B9": 12,
+        "B4": 8,
+        "E11": 6
+      }
+    },
+    "Fortinet": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Fortinet"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E8",
+        "E9",
+        "E10",
+        "E11"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet Successful VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet Failed VPN Logon Reports",
+          "display": "its.reportgroups.Failed_VPN_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 6,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet FW Denied Connections",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet FW Traffic Allowed",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet FW Security Reports",
+          "display": "its.reportgroups.Firewall_Security_Reports",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet Policy Management",
+          "display": "its.reportgroups.Policy_Management",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet VPN IP Assigned Reports",
+          "display": "its.reportgroups.VPN_IP_Assigned_Report",
+          "report_count": 4,
+          "section": "E11"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 6,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Fortinet",
+          "group_name": "Fortinet Events",
+          "display": "its.reportgroups.Fortinet_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 70,
+      "report_count_by_section": {
+        "B4": 17,
+        "E10": 11,
+        "B9": 12,
+        "E13": 17,
+        "E12": 3,
+        "E11": 4,
+        "B5": 6
+      }
+    },
+    "CheckPoint": {
+      "slider": "device",
+      "itsf_dirs": [
+        "CheckPoint"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E11",
+        "E12"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint FW System Events Reports",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint FW Configuration Reports",
+          "display": "its.reportgroups.Configuration_Reports",
+          "report_count": 4,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint FW Account Management Reports",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 4,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint FW Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint FW Denied Connections Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint FW Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint FW Attack Reports",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint FW Successful Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint Events",
+          "display": "its.reportgroups.CheckPoint_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "CheckPoint",
+          "group_name": "CheckPoint VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 49,
+      "report_count_by_section": {
+        "E13": 12,
+        "E12": 4,
+        "B5": 4,
+        "B4": 12,
+        "B9": 12,
+        "E10": 5
+      }
+    },
+    "Juniper": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Juniper"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E11",
+        "E13"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper FW Denied Connections",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper FW Traffic Allowed",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 7,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 7,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper Configuration Reports",
+          "display": "its.reportgroups.Configuration_Reports",
+          "report_count": 4,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper Application Tracking Report",
+          "display": "its.reportgroups.Application_Tracking_Report",
+          "report_count": 5,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Juniper",
+          "group_name": "Juniper Events",
+          "display": "its.reportgroups.Juniper_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 58,
+      "report_count_by_section": {
+        "E13": 18,
+        "B9": 17,
+        "B4": 12,
+        "E10": 7,
+        "E12": 4
+      }
+    },
+    "SonicWall": {
+      "slider": "device",
+      "itsf_dirs": [
+        "SonicWall"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E10",
+        "E11"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicPoint Reports",
+          "display": "its.reportgroups.SonicPoint_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW Traffic Allowed",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW Denied Connections",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW Website Traffic",
+          "display": "its.reportgroups.Website_Traffic_Reports",
+          "report_count": 5,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW Firewall Connections",
+          "display": "its.reportgroups.Connections_Reports",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW Network Monitor Policy",
+          "display": "its.reportgroups.Policy_Management",
+          "report_count": 5,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 6,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 6,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW Rules Management",
+          "display": "its.reportgroups.Rule_Management",
+          "report_count": 4,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall FW Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 8,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall VPN Failed Logon Reports",
+          "display": "its.reportgroups.Failed_VPN_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "SonicWall",
+          "group_name": "SonicWall Events",
+          "display": "its.reportgroups.SonicWall_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 81,
+      "report_count_by_section": {
+        "B9": 25,
+        "B4": 17,
+        "E12": 9,
+        "E13": 18,
+        "B5": 6,
+        "E10": 6
+      }
+    },
+    "WatchGuard": {
+      "slider": "device",
+      "itsf_dirs": [
+        "WatchGuard"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E10",
+        "E11"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 4,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Policy Management",
+          "display": "its.reportgroups.Policy_Management",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard FW Website Traffic",
+          "display": "its.reportgroups.Website_Traffic_Reports",
+          "report_count": 5,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Denied connections Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Successful VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Unsuccessful VPN Logon Reports",
+          "display": "its.reportgroups.Failed_VPN_Logon_Reports",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "WatchGuard",
+          "group_name": "WatchGuard Events",
+          "display": "its.reportgroups.WatchGuard_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 56,
+      "report_count_by_section": {
+        "E13": 16,
+        "E10": 4,
+        "E12": 3,
+        "B5": 3,
+        "B4": 13,
+        "B9": 17
+      }
+    },
+    "NetScreen": {
+      "slider": "device",
+      "itsf_dirs": [
+        "NetScreen"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E12"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen Security Reports",
+          "display": "its.reportgroups.Firewall_Security_Reports",
+          "report_count": 3,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen Policy Management",
+          "display": "its.reportgroups.Policy_Management",
+          "report_count": 5,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen Denied Traffic Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "NetScreen",
+          "group_name": "NetScreen Events",
+          "display": "its.reportgroups.NetScreen_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 52,
+      "report_count_by_section": {
+        "E13": 16,
+        "E10": 8,
+        "E12": 5,
+        "B5": 3,
+        "B4": 8,
+        "B9": 12
+      }
+    },
+    "Barracuda": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Barracuda"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E10"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda FW Website Traffic",
+          "display": "its.reportgroups.Website_Traffic_Reports",
+          "report_count": 5,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda Denied Traffic Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda Security Reports",
+          "display": "its.reportgroups.Firewall_Security_Reports",
+          "report_count": 2,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda FW Rule Management",
+          "display": "its.reportgroups.Rule_Management",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda FW Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 9,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda Email Security Reports",
+          "display": "its.reportgroups.Email_Security_Reports",
+          "report_count": 4,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda Events",
+          "display": "its.reportgroups.Barracuda_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Barracuda",
+          "group_name": "Barracuda VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 67,
+      "report_count_by_section": {
+        "E13": 16,
+        "B9": 17,
+        "E10": 11,
+        "E12": 3,
+        "B4": 11,
+        "B5": 9
+      }
+    },
+    "pfSense": {
+      "slider": "device",
+      "itsf_dirs": [
+        "pfSense"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "pfSense",
+          "group_name": "pfSense Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "pfSense",
+          "group_name": "pfSense Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "pfSense",
+          "group_name": "pfSense Denied Traffic Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "pfSense",
+          "group_name": "pfSense IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 6,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "pfSense",
+          "group_name": "pfSense Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "pfSense",
+          "group_name": "pfSense Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "pfSense",
+          "group_name": "pfSense System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "pfSense",
+          "group_name": "pfSense Configuration Reports",
+          "display": "its.reportgroups.Configuration_Reports",
+          "report_count": 2,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "pfSense",
+          "group_name": "pfSense Events",
+          "display": "its.reportgroups.pfSense_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 42,
+      "report_count_by_section": {
+        "E13": 13,
+        "B9": 12,
+        "E10": 6,
+        "B4": 9,
+        "E12": 2
+      }
+    },
+    "ForcePoint": {
+      "slider": "device",
+      "itsf_dirs": [
+        "ForcePoint"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E8",
+        "E10"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint Events",
+          "display": "its.reportgroups.ForcePoint_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint Overview Reports",
+          "display": "its.reportgroups.ForcePoint_Overview",
+          "report_count": 4,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint Traffic Reports",
+          "display": "its.reportgroups.Traffic_Reports",
+          "report_count": 3,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint Web Security Reports",
+          "display": "its.reportgroups.Web_Security_Reports",
+          "report_count": 4,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint Web Security Traffic Reports",
+          "display": "its.reportgroups.Web_Security_Traffic_Reports",
+          "report_count": 3,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint Email Security Reports",
+          "display": "its.reportgroups.Email_Security_Reports",
+          "report_count": 3,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint Attack Reports",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 2,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 4,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ForcePoint",
+          "group_name": "ForcePoint Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 37,
+      "report_count_by_section": {
+        "E13": 14,
+        "B9": 10,
+        "B4": 4,
+        "E10": 9
+      }
+    },
+    "Sophos": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Sophos"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E10"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos Security Reports",
+          "display": "its.reportgroups.Firewall_Security_Reports",
+          "report_count": 4,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos Failed VPN Logon Reports",
+          "display": "its.reportgroups.Failed_VPN_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos Denied Traffic Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos FW Rule Management",
+          "display": "its.reportgroups.Rule_Management",
+          "report_count": 5,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos HeartBeat Status",
+          "display": "its.reportgroups.HeartBeat_Status",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos FW Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 8,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Sophos",
+          "group_name": "Sophos Events",
+          "display": "its.reportgroups.Sophos_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 72,
+      "report_count_by_section": {
+        "B4": 18,
+        "E10": 9,
+        "E13": 20,
+        "B9": 12,
+        "E12": 5,
+        "B5": 8
+      }
+    },
+    "Topsec": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Topsec"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E10"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec Events",
+          "display": "its.reportgroups.Topsec_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec Firewall Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec Firewall Denied Connections Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec Firewall IDS/IPS Reports",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 2,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec Policy Management",
+          "display": "its.reportgroups.Policy_Management",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 8,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Topsec",
+          "group_name": "Topsec Interface Events",
+          "display": "its.reportgroups.Interface_Status",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 35,
+      "report_count_by_section": {
+        "E13": 14,
+        "B9": 4,
+        "E10": 2,
+        "B4": 4,
+        "E12": 3,
+        "B5": 8
+      }
+    },
+    "Sangfor": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Sangfor"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E10"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Sangfor",
+          "group_name": "Sangfor Events",
+          "display": "its.reportgroups.Sangfor_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Sangfor",
+          "group_name": "Sangfor Firewall Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Sangfor",
+          "group_name": "Sangfor Firewall Denied Connections Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Sangfor",
+          "group_name": "Sangfor Firewall IDS/IPS Reports",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 2,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Sangfor",
+          "group_name": "Sangfor VPN Reports",
+          "display": "its.reportgroups.VPN_Reports",
+          "report_count": 6,
+          "section": "E11"
+        },
+        {
+          "itsf_dir": "Sangfor",
+          "group_name": "Sangfor System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 4,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Sangfor",
+          "group_name": "Sangfor Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Sangfor",
+          "group_name": "Sangfor Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 29,
+      "report_count_by_section": {
+        "E13": 14,
+        "B9": 4,
+        "E10": 2,
+        "E11": 6,
+        "B4": 3
+      }
+    },
+    "Stormshield": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Stormshield"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E10"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Stormshield",
+          "group_name": "Stormshield Events",
+          "display": "its.reportgroups.Stormshield_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Stormshield",
+          "group_name": "Stormshield Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Stormshield",
+          "group_name": "Stormshield Traffic Reports",
+          "display": "its.reportgroups.Traffic_Reports",
+          "report_count": 3,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Stormshield",
+          "group_name": "Stormshield Firewall Rule Management",
+          "display": "its.reportgroups.Rule_Management",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Stormshield",
+          "group_name": "Stormshield Firewall Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Stormshield",
+          "group_name": "Stormshield Firewall IDS/IPS Reports",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 1,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Stormshield",
+          "group_name": "Stormshield Firewall System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Stormshield",
+          "group_name": "Stormshield Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 26,
+      "report_count_by_section": {
+        "E13": 13,
+        "B4": 3,
+        "B9": 3,
+        "E12": 3,
+        "B5": 3,
+        "E10": 1
+      }
+    },
+    "Arista": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Arista"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E12",
+        "E13"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Arista",
+          "group_name": "Arista Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Arista",
+          "group_name": "Arista Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Arista",
+          "group_name": "Arista Traffic Allowed Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Arista",
+          "group_name": "Arista Traffic Denied Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Arista",
+          "group_name": "Arista Interface Status",
+          "display": "its.reportgroups.Interface_Status",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Arista",
+          "group_name": "Arista System Report",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Arista",
+          "group_name": "Arista Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Arista",
+          "group_name": "Arista Events",
+          "display": "its.reportgroups.Arista_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 29,
+      "report_count_by_section": {
+        "B4": 5,
+        "B9": 4,
+        "E13": 20
+      }
+    },
+    "Dell": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Dell"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E12",
+        "E13"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Dell",
+          "group_name": "Dell Events",
+          "display": "its.reportgroups.Dell_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Dell",
+          "group_name": "Dell Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Dell",
+          "group_name": "Dell Interface Status Reports",
+          "display": "its.reportgroups.Interface_Status",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Dell",
+          "group_name": "Dell Port Status Reports",
+          "display": "its.reportgroups.Port_Status",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Dell",
+          "group_name": "Dell System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 3,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Dell",
+          "group_name": "Dell Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 21,
+      "report_count_by_section": {
+        "E13": 17,
+        "B4": 4
+      }
+    },
+    "F5": {
+      "slider": "device",
+      "itsf_dirs": [
+        "F5"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E8",
+        "E12"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Firewall Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Firewall Denied Connections Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 2,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Interface Events",
+          "display": "its.reportgroups.Interface_Status",
+          "report_count": 4,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Firewall Policy Changes",
+          "display": "its.reportgroups.Policy_Changes",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 LTM Health Monitoring",
+          "display": "its.reportgroups.LTM_Health_Monitoring",
+          "report_count": 5,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Connection Monitoring",
+          "display": "its.reportgroups.Connection_Monitoring",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 10,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Firewall IDS/IPS Reports",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 2,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Events",
+          "display": "its.reportgroups.F5_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "F5",
+          "group_name": "F5 Application Security Reports",
+          "display": "its.reportgroups.Application_Security_Reports",
+          "report_count": 4,
+          "section": "E10"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 49,
+      "report_count_by_section": {
+        "B4": 5,
+        "B9": 4,
+        "E13": 31,
+        "E12": 3,
+        "E10": 6
+      }
+    },
+    "H3C": {
+      "slider": "device",
+      "itsf_dirs": [
+        "H3C"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E12",
+        "E13"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 4,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C Denied Connections Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 4,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C FW Rules Management",
+          "display": "its.reportgroups.Rule_Management",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C FW DHCP Report",
+          "display": "its.reportgroups.DHCP_Report",
+          "report_count": 3,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C FW Interface Status",
+          "display": "its.reportgroups.Interface_Status",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 2,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C Successful VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C Failed VPN Logon Reports",
+          "display": "its.reportgroups.Failed_VPN_Logon_Reports",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C FW Security Reports",
+          "display": "its.reportgroups.Firewall_Security_Reports",
+          "report_count": 2,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 9,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "H3C",
+          "group_name": "H3C Events",
+          "display": "its.reportgroups.H3C_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 48,
+      "report_count_by_section": {
+        "B9": 11,
+        "B4": 9,
+        "E12": 3,
+        "E13": 21,
+        "E10": 4
+      }
+    },
+    "HP": {
+      "slider": "device",
+      "itsf_dirs": [
+        "HP"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E12",
+        "E13"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "HP",
+          "group_name": "HP Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "HP",
+          "group_name": "HP Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "HP",
+          "group_name": "HP Interface Status",
+          "display": "its.reportgroups.Interface_Status",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "HP",
+          "group_name": "HP Configuration Report",
+          "display": "its.reportgroups.Configuration_Reports",
+          "report_count": 4,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "HP",
+          "group_name": "HP System Report",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "HP",
+          "group_name": "HP Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "HP",
+          "group_name": "HP Events",
+          "display": "its.reportgroups.HP_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 37,
+      "report_count_by_section": {
+        "B4": 9,
+        "E13": 24,
+        "E12": 4
+      }
+    },
+    "Huawei": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Huawei"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E9",
+        "E12",
+        "E13"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei Failed VPN Logon Reports",
+          "display": "its.reportgroups.Failed_VPN_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei Security Reports",
+          "display": "its.reportgroups.Firewall_Security_Reports",
+          "report_count": 5,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei System Events",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 7,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei FW Policy Management",
+          "display": "its.reportgroups.Policy_Management",
+          "report_count": 5,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 4,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei FW Account Management",
+          "display": "its.reportgroups.Account_Management",
+          "report_count": 5,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei Denied Traffic Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei Failed Logon Reports",
+          "display": "its.reportgroups.Failed_Logon_Reports",
+          "report_count": 4,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Huawei",
+          "group_name": "Huawei Events",
+          "display": "its.reportgroups.Huawei_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 64,
+      "report_count_by_section": {
+        "E13": 17,
+        "B4": 16,
+        "B9": 12,
+        "E10": 9,
+        "E12": 5,
+        "B5": 5
+      }
+    },
+    "Meraki": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Meraki"
+      ],
+      "spec_baseline": [
+        "B9"
+      ],
+      "spec_enriched": [
+        "E8",
+        "E9",
+        "E12"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Meraki",
+          "group_name": "Meraki Allowed Traffic Reports",
+          "display": "its.reportgroups.Allowed_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Meraki",
+          "group_name": "Meraki Denied Traffic Reports",
+          "display": "its.reportgroups.Denied_Traffic_Reports",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Meraki",
+          "group_name": "Meraki Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Meraki",
+          "group_name": "Meraki FW Website Traffic",
+          "display": "its.reportgroups.Website_Traffic_Reports",
+          "report_count": 5,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "Meraki",
+          "group_name": "Meraki IDS",
+          "display": "its.reportgroups.IDS/IPS",
+          "report_count": 4,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Meraki",
+          "group_name": "Meraki Security Reports",
+          "display": "its.reportgroups.Firewall_Security_Reports",
+          "report_count": 1,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "Meraki",
+          "group_name": "Meraki VPN Logon Reports",
+          "display": "its.reportgroups.VPN_Logon_Reports",
+          "report_count": 5,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "Meraki",
+          "group_name": "Meraki Device Severity Reports",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "Meraki",
+          "group_name": "Meraki Events",
+          "display": "its.reportgroups.Meraki_Events",
+          "report_count": 2,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 40,
+      "report_count_by_section": {
+        "B9": 17,
+        "B4": 8,
+        "E10": 5,
+        "E13": 10
+      }
+    },
+    "EMC Isilon": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Linux"
+      ],
+      "spec_baseline": [
+        "B10"
+      ],
+      "spec_enriched": [
+        "E15"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Linux",
+          "group_name": "File Monitoring",
+          "display": "its.reportgroups.File_Monitoring",
+          "report_count": 10,
+          "section": "E18"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 10,
+      "report_count_by_section": {
+        "E18": 10
+      }
+    },
+    "QNAP NAS": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Linux"
+      ],
+      "spec_baseline": [
+        "B10"
+      ],
+      "spec_enriched": [
+        "E15"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Linux",
+          "group_name": "File Monitoring",
+          "display": "its.reportgroups.File_Monitoring",
+          "report_count": 10,
+          "section": "E18"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 10,
+      "report_count_by_section": {
+        "E18": 10
+      }
+    },
+    "SynologyNAS": {
+      "slider": "device",
+      "itsf_dirs": [
+        "Linux"
+      ],
+      "spec_baseline": [
+        "B10"
+      ],
+      "spec_enriched": [
+        "E15"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Linux",
+          "group_name": "File Monitoring",
+          "display": "its.reportgroups.File_Monitoring",
+          "report_count": 10,
+          "section": "E18"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 10,
+      "report_count_by_section": {
+        "E18": 10
+      }
+    },
+    "AWS": {
+      "slider": "other",
+      "itsf_dirs": [
+        "AWS"
+      ],
+      "spec_baseline": [
+        "OB1",
+        "OB2",
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2",
+        "OE3"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "AWS",
+          "group_name": "User Login Activity",
+          "display": "its.aws.reportgroup.userloginactivity",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "Failed/Unauthorized Activity",
+          "display": "its.aws.reportgroup.failedunauthorisedactivity",
+          "report_count": 3,
+          "section": "B8"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "IAM Activity",
+          "display": "its.aws.reportgroup.iamactivity",
+          "report_count": 9,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "User Activity",
+          "display": "its.aws.reportgroup.useractivity",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "Network Security Groups",
+          "display": "its.aws.reportgroup.networksecuritygroups",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "VPC Activity",
+          "display": "its.aws.reportgroup.vpcactivity",
+          "report_count": 6,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "S3 Bucket Activity Reports",
+          "display": "its.aws.reportgroup.s3bucketactivity",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "WAF Reports",
+          "display": "its.aws.reportgroup.wafreport",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "Security Token Service",
+          "display": "its.aws.reportgroup.securitytokenservice",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "AWS Config Reports",
+          "display": "its.aws.reportgroup.awsconfigreport",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "EC2 Reports",
+          "display": "its.aws.reportgroup.ec2report",
+          "report_count": 6,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "Amazon Auto Scaling Reports",
+          "display": "its.aws.reportgroup.amazonautoscalingreport",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "Amazon ELB Reports",
+          "display": "its.aws.reportgroup.amazonelbreport",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "RDS Reports",
+          "display": "its.aws.reportgroup.rdsreport",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "Route 53",
+          "display": "its.aws.reportgroup.route53",
+          "report_count": 7,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "S3 File Changes Audit",
+          "display": "its.aws.reportgroup.s3filechangesaudit",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "S3 Traffic Analysis Reports",
+          "display": "its.aws.reportgroup.s3trafficanalysis",
+          "report_count": 6,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "ELB Traffic Analysis Reports",
+          "display": "its.aws.reportgroup.elbtrafficanalysis",
+          "report_count": 4,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "AWS Overview",
+          "display": "AWS Overview",
+          "report_count": 14,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "AWS",
+          "group_name": "For AWS UI Table",
+          "display": null,
+          "report_count": 3,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 97,
+      "report_count_by_section": {
+        "B4": 3,
+        "B8": 3,
+        "OB3": 78,
+        "E12": 3,
+        "B9": 10
+      }
+    },
+    "azure_active_directory": {
+      "slider": "other",
+      "itsf_dirs": [
+        "EntraID"
+      ],
+      "spec_baseline": [
+        "OB2",
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2",
+        "OE3"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "Overview",
+          "display": "its.reportgroup.overview",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "User Logon",
+          "display": "its.reportgroup.user_logon",
+          "report_count": 21,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "Logon Activity by MFA",
+          "display": "its.reportgroup.logon_activity_by_mfa",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "Risky Sign in",
+          "display": "its.reportgroup.risky_sign_in",
+          "report_count": 9,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "User Management",
+          "display": "its.reportgroup.user_management",
+          "report_count": 13,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "Role Management",
+          "display": "its.reportgroup.role_management",
+          "report_count": 6,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "Group Management",
+          "display": "its.reportgroup.group_management",
+          "report_count": 9,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "Application Management",
+          "display": "its.reportgroup.application_management",
+          "report_count": 12,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "Device Management",
+          "display": "its.reportgroup.device_management",
+          "report_count": 12,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "License Management",
+          "display": "its.reportgroup.license_management",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "Directory Management",
+          "display": "its.reportgroup.directory_management",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "Policy Management",
+          "display": "its.reportgroup.policy_management",
+          "report_count": 6,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "EntraID",
+          "group_name": "AAD Dashboard Graphs",
+          "display": "its.reportgroup.aad_dashboard_graphs",
+          "report_count": 11,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 110,
+      "report_count_by_section": {
+        "OB3": 55,
+        "B4": 21,
+        "B5": 22,
+        "B7": 6,
+        "E12": 6
+      }
+    },
+    "exchange_online": {
+      "slider": "other",
+      "itsf_dirs": [
+        "ExchangeOnline"
+      ],
+      "spec_baseline": [
+        "OB2",
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2",
+        "OE3"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Overview",
+          "display": "its.reportgroup.overview",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Mailbox Activities based on Sign-In",
+          "display": "its.reportgroup.mailbox_activities_based_on_sign_in",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Mailbox Events",
+          "display": "its.reportgroup.mailbox_events",
+          "report_count": 4,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Mailbox Management Events",
+          "display": "its.reportgroup.mailbox_management_events",
+          "report_count": 8,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Mailbox Permission Changes",
+          "display": "its.reportgroup.mailbox_permission_changes",
+          "report_count": 3,
+          "section": "E18"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Mailflow Events",
+          "display": "its.reportgroup.mailflow_events",
+          "report_count": 7,
+          "section": "B9"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Mailbox Move Activity",
+          "display": "its.reportgroup.mailbox_move_activity",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Mail Trace Events",
+          "display": "its.reportgroup.mail_trace_events",
+          "report_count": 9,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Public Folder Events",
+          "display": "its.reportgroup.public_folder_events",
+          "report_count": 4,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Role Changes",
+          "display": "its.reportgroup.role_changes",
+          "report_count": 6,
+          "section": "B7"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Recipient Events",
+          "display": "its.reportgroup.recipient_events",
+          "report_count": 6,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Threat Protection Policy Events",
+          "display": "its.reportgroup.microsoft_defender_events",
+          "report_count": 7,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Calendar Events",
+          "display": "its.reportgroup.calendar_events",
+          "report_count": 1,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ExchangeOnline",
+          "group_name": "Exchange Online Graph",
+          "display": "its.reportgroup.exchange_online_graph",
+          "report_count": 2,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 66,
+      "report_count_by_section": {
+        "OB3": 11,
+        "E13": 32,
+        "E18": 3,
+        "B9": 7,
+        "B7": 6,
+        "E10": 7
+      }
+    },
+    "m365_general": {
+      "slider": "other",
+      "itsf_dirs": [
+        "Onedrive",
+        "Teams"
+      ],
+      "spec_baseline": [
+        "OB2",
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Onedrive",
+          "group_name": "Overview",
+          "display": "its.reportgroup.overview",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Onedrive",
+          "group_name": "OneDrive File Activities",
+          "display": "its.reportgroup.onedrive_file_activities",
+          "report_count": 9,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Onedrive",
+          "group_name": "OneDrive Folder Activities",
+          "display": "its.reportgroup.onedrive_folder_activities",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Onedrive",
+          "group_name": "OneDrive Sync Activities",
+          "display": "its.reportgroup.onedrive_sync_activities",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Onedrive",
+          "group_name": "OneDrive Sharing Activities",
+          "display": "its.reportgroup.onedrive_sharing_activities",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Onedrive",
+          "group_name": "OneDrive Site Permission Activities",
+          "display": "its.reportgroup.onedrive_site_permission_activities",
+          "report_count": 3,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Teams",
+          "group_name": "Overview",
+          "display": "its.reportgroup.overview",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Teams",
+          "group_name": "Microsoft Teams General Activities",
+          "display": "its.reportgroup.microsoft_teams_general_activities",
+          "report_count": 3,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Teams",
+          "group_name": "Microsoft Teams Management Activities",
+          "display": "its.reportgroup.microsoft_teams_management_activities",
+          "report_count": 6,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Teams",
+          "group_name": "Microsoft Teams Membership Activities",
+          "display": "its.reportgroup.microsoft_teams_membership_activities",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Teams",
+          "group_name": "AddOn Activities",
+          "display": "its.reportgroup.addon_activities",
+          "report_count": 3,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Teams",
+          "group_name": "Teams Dashboard",
+          "display": "its.reportgroup.teams_dashboard",
+          "report_count": 1,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 39,
+      "report_count_by_section": {
+        "OB3": 39
+      }
+    },
+    "m365_mailtrace": {
+      "slider": "other",
+      "itsf_dirs": [],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [],
+      "unmapped_groups": [],
+      "report_count_total": 0,
+      "report_count_by_section": {}
+    },
+    "sharepoint_online": {
+      "slider": "other",
+      "itsf_dirs": [
+        "Sharepoint"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Sharepoint",
+          "group_name": "Overview",
+          "display": "its.reportgroup.overview",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Sharepoint",
+          "group_name": "Sharepoint File Activities",
+          "display": "its.reportgroup.sharepoint_file_activities",
+          "report_count": 9,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Sharepoint",
+          "group_name": "Sharepoint Folder Activities",
+          "display": "its.reportgroup.sharepoint_folder_activities",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Sharepoint",
+          "group_name": "Sharepoint Sync Activities",
+          "display": "its.reportgroup.sharepoint_sync_activities",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Sharepoint",
+          "group_name": "Sharepoint Sharing Activities",
+          "display": "its.reportgroup.sharepoint_sharing_activities",
+          "report_count": 6,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Sharepoint",
+          "group_name": "Sharepoint Site Administrator Activities",
+          "display": "its.reportgroup.sharepoint_site_administrator_activities",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Sharepoint",
+          "group_name": "Sharepoint Site Permission Activities",
+          "display": "its.reportgroup.sharepoint_site_permission_activities",
+          "report_count": 3,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Sharepoint",
+          "group_name": "Sharepoint Dashboard",
+          "display": "its.reportgroup.sharepoint_dashboard",
+          "report_count": 1,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 29,
+      "report_count_by_section": {
+        "OB3": 29
+      }
+    },
+    "Salesforce": {
+      "slider": "other",
+      "itsf_dirs": [
+        "Salesforce"
+      ],
+      "spec_baseline": [
+        "OB2",
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2",
+        "OE3"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Salesforce",
+          "group_name": "Salesforce Overview",
+          "display": "its.reportgroups.salesforce_overview",
+          "report_count": 3,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Salesforce",
+          "group_name": "Salesforce Login Activity",
+          "display": "its.reportgroups.salesforce_login_activity",
+          "report_count": 3,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Salesforce",
+          "group_name": "Salesforce Report Activity",
+          "display": "its.reportgroups.salesforce_report_activity",
+          "report_count": 3,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Salesforce",
+          "group_name": "Salesforce Content Activity",
+          "display": "its.reportgroups.salesforce_content_activity",
+          "report_count": 3,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Salesforce",
+          "group_name": "Salesforce Search Activity",
+          "display": "its.reportgroups.salesforce_search_activity",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Salesforce",
+          "group_name": "Salesforce Setup Audit Trail",
+          "display": "its.reportgroups.salesforce_setup_audit_trail",
+          "report_count": 6,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Salesforce",
+          "group_name": "Salesforce Dashboard",
+          "display": "its.reportgroups.salesforce_dashboard",
+          "report_count": 12,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 32,
+      "report_count_by_section": {
+        "OB3": 32
+      }
+    },
+    "ADAP": {
+      "slider": "other",
+      "itsf_dirs": [
+        "ADAP"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE3"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "ADAP",
+          "group_name": "ADAP Product Activity Report",
+          "display": "its.reportgroups.product_activity_report",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ADAP",
+          "group_name": "ADAP Debug Reports",
+          "display": "its.reportgroups.debug_reports",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ADAP",
+          "group_name": "ADAP Web Access Report",
+          "display": "its.reportgroups.web_access_reports",
+          "report_count": 18,
+          "section": "E8"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 24,
+      "report_count_by_section": {
+        "OB3": 6,
+        "E8": 18
+      }
+    },
+    "ADMP": {
+      "slider": "other",
+      "itsf_dirs": [
+        "ADMP"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE3"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "ADMP",
+          "group_name": "ADMP Product Activity Report",
+          "display": "its.reportgroups.product_activity_report",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ADMP",
+          "group_name": "ADMP Debug Reports",
+          "display": "its.reportgroups.debug_reports",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ADMP",
+          "group_name": "ADMP Web Access Report",
+          "display": "its.reportgroups.web_access_reports",
+          "report_count": 18,
+          "section": "E8"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 25,
+      "report_count_by_section": {
+        "OB3": 7,
+        "E8": 18
+      }
+    },
+    "ADSSP": {
+      "slider": "other",
+      "itsf_dirs": [
+        "ADSSP"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE3"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "ADSSP",
+          "group_name": "ADSSP Product Activity Report",
+          "display": "its.reportgroups.product_activity_report",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ADSSP",
+          "group_name": "ADSSP Debug Reports",
+          "display": "its.reportgroups.debug_reports",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ADSSP",
+          "group_name": "ADSSP Web Access Report",
+          "display": "its.reportgroups.web_access_reports",
+          "report_count": 18,
+          "section": "E8"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 24,
+      "report_count_by_section": {
+        "OB3": 6,
+        "E8": 18
+      }
+    },
+    "OPM": {
+      "slider": "other",
+      "itsf_dirs": [
+        "OPM"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "OPM",
+          "group_name": "OPM Product Activity Report",
+          "display": "its.reportgroups.product_activity_report",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "OPM",
+          "group_name": "OPM Debug Reports",
+          "display": "its.reportgroups.debug_reports",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "OPM",
+          "group_name": "OPM Web Access Report",
+          "display": "its.reportgroups.web_access_reports",
+          "report_count": 18,
+          "section": "E8"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 24,
+      "report_count_by_section": {
+        "OB3": 6,
+        "E8": 18
+      }
+    },
+    "PMP": {
+      "slider": "other",
+      "itsf_dirs": [],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [],
+      "unmapped_groups": [],
+      "report_count_total": 0,
+      "report_count_by_section": {}
+    },
+    "SDP": {
+      "slider": "other",
+      "itsf_dirs": [
+        "SDP"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "SDP",
+          "group_name": "SDP Product Activity Report",
+          "display": "its.reportgroups.product_activity_report",
+          "report_count": 1,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "SDP",
+          "group_name": "SDP Debug Reports",
+          "display": "its.reportgroups.debug_reports",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "SDP",
+          "group_name": "SDP Web Access Report",
+          "display": "its.reportgroups.web_access_reports",
+          "report_count": 18,
+          "section": "E8"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 24,
+      "report_count_by_section": {
+        "OB3": 6,
+        "E8": 18
+      }
+    },
+    "UEM": {
+      "slider": "other",
+      "itsf_dirs": [
+        "UEM"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "UEM",
+          "group_name": "SOM Management",
+          "display": "its.reportgroups.som_management",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "UEM",
+          "group_name": "Remote Activity",
+          "display": "its.reportgroups.remote_activity",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "UEM",
+          "group_name": "Patch Management",
+          "display": "its.reportgroups.patch_management",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "UEM",
+          "group_name": "Device Control Management",
+          "display": "its.reportgroups.device_management",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "UEM",
+          "group_name": "Inventory Management",
+          "display": "its.reportgroups.inventory_management",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "UEM",
+          "group_name": "BitLocker Reports",
+          "display": "its.reportgroups.bitlocker",
+          "report_count": 3,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "UEM",
+          "group_name": "User Management",
+          "display": "its.reportgroups.user_management",
+          "report_count": 5,
+          "section": "B5"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 24,
+      "report_count_by_section": {
+        "OB3": 19,
+        "B5": 5
+      }
+    },
+    "ERP": {
+      "slider": "other",
+      "itsf_dirs": [
+        "ERP"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "ERP",
+          "group_name": "ERP Events",
+          "display": "its.reportgroups.erp_events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "ERP",
+          "group_name": "Mailbox Audit Logging",
+          "display": "its.reportgroups.mailbox_audit_logging",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ERP",
+          "group_name": "Admin Audit Logging",
+          "display": "its.reportgroups.admin_audit_logging",
+          "report_count": 18,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ERP",
+          "group_name": "Mailbox Import Export Changes",
+          "display": "its.reportgroups.mailbox_import_export_changes",
+          "report_count": 2,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "ERP",
+          "group_name": "Folder Access Permission Changes",
+          "display": "its.reportgroups.folder_access_permission_changes",
+          "report_count": 2,
+          "section": "E18"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 29,
+      "report_count_by_section": {
+        "E13": 2,
+        "OB3": 25,
+        "E18": 2
+      }
+    },
+    "IBM_Maximo": {
+      "slider": "other",
+      "itsf_dirs": [],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1"
+      ],
+      "matched_groups": [],
+      "unmapped_groups": [],
+      "report_count_total": 0,
+      "report_count_by_section": {}
+    },
+    "SAP": {
+      "slider": "other",
+      "itsf_dirs": [
+        "SAP"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE3"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "SAP",
+          "group_name": "SAP Events",
+          "display": "its.reportgroups.Sap_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "SAP",
+          "group_name": "Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 3,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "SAP",
+          "group_name": "User Management",
+          "display": "its.reportgroups.User_Account_Management",
+          "report_count": 5,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "SAP",
+          "group_name": "Configuration Report",
+          "display": "its.reportgroups.Configuration_Reports",
+          "report_count": 1,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "SAP",
+          "group_name": "System Event",
+          "display": "its.reportgroups.System_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "SAP",
+          "group_name": "Attack Reports",
+          "display": "its.reportgroups.Attack_Reports",
+          "report_count": 1,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "SAP",
+          "group_name": "Severity Report",
+          "display": "its.reportgroups.Device_Severity_Reports",
+          "report_count": 4,
+          "section": "E13"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 18,
+      "report_count_by_section": {
+        "E13": 8,
+        "B4": 3,
+        "B5": 5,
+        "E12": 1,
+        "E10": 1
+      }
+    },
+    "McAfee": {
+      "slider": "other",
+      "itsf_dirs": [
+        "McAfee"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "McAfee",
+          "group_name": "McAfee Events",
+          "display": "its.reportgroups.McAfee_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "McAfee",
+          "group_name": "McAfee Threat Reports",
+          "display": "its.reportgroups.McAfee_Threat_Reports",
+          "report_count": 1,
+          "section": "E10"
+        },
+        {
+          "itsf_dir": "McAfee",
+          "group_name": "McAfee Virus Reports",
+          "display": "its.reportgroups.McAfee_Virus_Reports",
+          "report_count": 1,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 4,
+      "report_count_by_section": {
+        "E13": 2,
+        "E10": 1,
+        "OB3": 1
+      }
+    },
+    "Symantec_Endpoint_Protection": {
+      "slider": "other",
+      "itsf_dirs": [
+        "SymantecEndpointProtection"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "SymantecEndpointProtection",
+          "group_name": "Symantec Reports",
+          "display": "its.reportgroups.Symantec_Reports",
+          "report_count": 17,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 17,
+      "report_count_by_section": {
+        "OB3": 17
+      }
+    },
+    "Symantec_DLP": {
+      "slider": "other",
+      "itsf_dirs": [
+        "SymantecDLP"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE2",
+        "OE3"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "SymantecDLP",
+          "group_name": "Symantec DLP Reports",
+          "display": "its.reportgroups.Symantec_DLP_Reports",
+          "report_count": 8,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 8,
+      "report_count_by_section": {
+        "OB3": 8
+      }
+    },
+    "Trend_Micro": {
+      "slider": "other",
+      "itsf_dirs": [
+        "TrendMicro"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "TrendMicro",
+          "group_name": "Trend Micro Events",
+          "display": "its.reportgroups.Trend_Micro_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "TrendMicro",
+          "group_name": "Trend Micro Logon Reports",
+          "display": "its.reportgroups.Logon_Reports",
+          "report_count": 2,
+          "section": "B4"
+        },
+        {
+          "itsf_dir": "TrendMicro",
+          "group_name": "Trend Micro Policy Management Reports",
+          "display": "its.reportgroups.Policy_Management_Report",
+          "report_count": 3,
+          "section": "E12"
+        },
+        {
+          "itsf_dir": "TrendMicro",
+          "group_name": "Trend Micro User Management Reports",
+          "display": "its.reportgroups.User_Account_Management",
+          "report_count": 3,
+          "section": "B5"
+        },
+        {
+          "itsf_dir": "TrendMicro",
+          "group_name": "Trend Micro Security Reports",
+          "display": "its.reportgroups.Security_Reports",
+          "report_count": 7,
+          "section": "E10"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 17,
+      "report_count_by_section": {
+        "E13": 2,
+        "B4": 2,
+        "E12": 3,
+        "B5": 3,
+        "E10": 7
+      }
+    },
+    "FireEye": {
+      "slider": "other",
+      "itsf_dirs": [
+        "FireEye"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "FireEye",
+          "group_name": "FireEye Reports",
+          "display": "its.reportgroups.FireEye_Reports",
+          "report_count": 12,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 12,
+      "report_count_by_section": {
+        "OB3": 12
+      }
+    },
+    "MalwareBytes": {
+      "slider": "other",
+      "itsf_dirs": [
+        "Malwarebytes"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Malwarebytes",
+          "group_name": "Malwarebytes Reports",
+          "display": "its.reportgroups.Malwarebytes_Reports",
+          "report_count": 16,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 16,
+      "report_count_by_section": {
+        "OB3": 16
+      }
+    },
+    "CEF_Format": {
+      "slider": "other",
+      "itsf_dirs": [
+        "CEF_Format"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "CEF_Format",
+          "group_name": "CEF Format Reports",
+          "display": "its.reportgroups.CEF_Format_Reports",
+          "report_count": 8,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 8,
+      "report_count_by_section": {
+        "OB3": 8
+      }
+    },
+    "ThreatAnalytics": {
+      "slider": "other",
+      "itsf_dirs": [
+        "ThreatAnalytics"
+      ],
+      "spec_baseline": [
+        "OB1",
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE4"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "ThreatAnalytics",
+          "group_name": "Threat Analytics",
+          "display": "its.reportgroups.Threat_Analytics",
+          "report_count": 5,
+          "section": "E10"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 5,
+      "report_count_by_section": {
+        "E10": 5
+      }
+    },
+    "Qualys": {
+      "slider": "other",
+      "itsf_dirs": [
+        "Qualys"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Qualys",
+          "group_name": "Qualys Vulnerability Reports",
+          "display": "its.reportgroups.Qualys_Vulnerability_Reports",
+          "report_count": 7,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Qualys",
+          "group_name": "Qualys Reports",
+          "display": "its.reportgroups.Qualys_Reports",
+          "report_count": 9,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 16,
+      "report_count_by_section": {
+        "OB3": 16
+      }
+    },
+    "Nessus": {
+      "slider": "other",
+      "itsf_dirs": [
+        "Nessus"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Nessus",
+          "group_name": "Nessus Compliance Reports",
+          "display": "its.reportgroups.Nessus_Compliance_Reports",
+          "report_count": 18,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Nessus",
+          "group_name": "Nessus Vulnerability Reports",
+          "display": "its.reportgroups.Nessus_Vulnerability_Reports",
+          "report_count": 9,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Nessus",
+          "group_name": "Nessus Reports",
+          "display": "its.reportgroups.Nessus_Reports",
+          "report_count": 10,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 37,
+      "report_count_by_section": {
+        "OB3": 37
+      }
+    },
+    "Nexpose": {
+      "slider": "other",
+      "itsf_dirs": [
+        "Nexpose"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "Nexpose",
+          "group_name": "Nexpose Reports",
+          "display": "its.reportgroups.Nexpose_Reports",
+          "report_count": 7,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "Nexpose",
+          "group_name": "Nexpose Vulnerability Reports",
+          "display": "its.reportgroups.Nexpose_Vulnerability_Reports",
+          "report_count": 11,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 18,
+      "report_count_by_section": {
+        "OB3": 18
+      }
+    },
+    "OpenVas": {
+      "slider": "other",
+      "itsf_dirs": [
+        "OpenVas"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "OpenVas",
+          "group_name": "OpenVas Reports",
+          "display": "its.reportgroups.OpenVas_Reports",
+          "report_count": 4,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "OpenVas",
+          "group_name": "Openvas Vulnerability Reports",
+          "display": "its.reportgroups.OpenVas_Vulnerability_Reports",
+          "report_count": 5,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 9,
+      "report_count_by_section": {
+        "OB3": 9
+      }
+    },
+    "NMAP": {
+      "slider": "other",
+      "itsf_dirs": [
+        "NMAP"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "NMAP",
+          "group_name": "NMAP Reports",
+          "display": "its.reportgroups.NMAP_Reports",
+          "report_count": 5,
+          "section": "OB3"
+        },
+        {
+          "itsf_dir": "NMAP",
+          "group_name": "NMAP Vulnerability Reports",
+          "display": "its.reportgroups.NMAP_Vulnerability_Reports",
+          "report_count": 8,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 13,
+      "report_count_by_section": {
+        "OB3": 13
+      }
+    },
+    "DHCP_Linux": {
+      "slider": "other",
+      "itsf_dirs": [
+        "DHCP_Linux"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "DHCP_Linux",
+          "group_name": "DHCP Linux Events",
+          "display": "its.reportgroups.DHCP_Linux_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "DHCP_Linux",
+          "group_name": "DHCP Linux Based Server Reports",
+          "display": "its.reportgroups.DHCP_Server_Reports",
+          "report_count": 12,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 14,
+      "report_count_by_section": {
+        "E13": 2,
+        "OB3": 12
+      }
+    },
+    "DHCP_Windows": {
+      "slider": "other",
+      "itsf_dirs": [
+        "DHCP_Windows"
+      ],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1"
+      ],
+      "matched_groups": [
+        {
+          "itsf_dir": "DHCP_Windows",
+          "group_name": "DHCP Windows Events",
+          "display": "its.reportgroups.DHCP_Windows_Events",
+          "report_count": 2,
+          "section": "E13"
+        },
+        {
+          "itsf_dir": "DHCP_Windows",
+          "group_name": "DHCP Windows Based Server Reports",
+          "display": "its.reportgroups.DHCP_Server_Reports",
+          "report_count": 28,
+          "section": "OB3"
+        }
+      ],
+      "unmapped_groups": [],
+      "report_count_total": 30,
+      "report_count_by_section": {
+        "E13": 2,
+        "OB3": 28
+      }
+    },
+    "SyslogApp": {
+      "slider": "other",
+      "itsf_dirs": [],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1"
+      ],
+      "matched_groups": [],
+      "unmapped_groups": [],
+      "report_count_total": 0,
+      "report_count_by_section": {}
+    },
+    "Gateway_Server": {
+      "slider": "other",
+      "itsf_dirs": [],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1",
+        "OE2"
+      ],
+      "matched_groups": [],
+      "unmapped_groups": [],
+      "report_count_total": 0,
+      "report_count_by_section": {}
+    },
+    "audit": {
+      "slider": "other",
+      "itsf_dirs": [],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1"
+      ],
+      "matched_groups": [],
+      "unmapped_groups": [],
+      "report_count_total": 0,
+      "report_count_by_section": {}
+    },
+    "alerts": {
+      "slider": "other",
+      "itsf_dirs": [],
+      "spec_baseline": [
+        "OB3"
+      ],
+      "spec_enriched": [
+        "OE1"
+      ],
+      "matched_groups": [],
+      "unmapped_groups": [],
+      "report_count_total": 0,
+      "report_count_by_section": {}
+    }
+  }
+}

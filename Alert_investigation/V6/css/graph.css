@@ -203,6 +203,62 @@ body:has(#panel-attack-vector.active) .dv-tabs-row { margin-bottom: 0; }
 .gcb-option:hover { background:#f0f5ff; color:var(--text-primary); }
 .gcb-option.active { color:var(--blue); font-weight:700; background:#eef4ff; }
 .gcb-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* ── Investigation time window (Before · trigger · After) ───────────── */
+.gcb-timewin {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 8px; border-radius:8px;
+  background:var(--surface); border:1px solid var(--border);
+}
+.gcb-timewin .gcb-icon { color:var(--text-dim); }
+.gcb-twchip { padding:3px 8px; }
+.gcb-tw-pre { font-size:10px; font-weight:700; letter-spacing:.02em; color:var(--text-dim); text-transform:uppercase; }
+.gcb-tw-trigger {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:6px;
+  background:#fff4ec; border:1px solid #f6c69b;
+  color:#c2410c; font-size:11px; font-weight:700; white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.gcb-tw-flag { font-size:11px; line-height:1; }
+.gcb-tw-range {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; color:var(--text-secondary); white-space:nowrap;
+  font-variant-numeric:tabular-nums; padding-left:2px;
+}
+.gcb-tw-range-k { font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-dim); letter-spacing:.02em; }
+.gcb-tw-range-arrow { color:var(--text-dim); }
+.gcb-tw-live { color:#16a34a; font-weight:700; font-size:10px; }
+
+/* "Analyze" button — only shown after the window is changed */
+.gcb-tw-analyze {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 12px; border-radius:6px; cursor:pointer;
+  font-size:11px; font-weight:700; white-space:nowrap;
+  color:#fff; background:var(--blue); border:1px solid var(--blue);
+  transition:background .15s, opacity .15s;
+}
+.gcb-tw-analyze:hover { background:#1d4ed8; border-color:#1d4ed8; }
+.gcb-tw-analyze.loading { cursor:default; opacity:.85; }
+.gcb-tw-analyze-spin { display:none; width:11px; height:11px; flex-shrink:0;
+  border:2px solid rgba(255,255,255,.45); border-top-color:#fff; border-radius:50%;
+  animation:gcb-tw-spin .7s linear infinite; }
+.gcb-tw-analyze.loading .gcb-tw-analyze-spin { display:inline-block; }
+@keyframes gcb-tw-spin { to { transform:rotate(360deg); } }
+
+/* Graph loading overlay — shown while the investigation window re-pulls */
+.graph-load-overlay {
+  position:absolute; inset:0; z-index:40;
+  display:none; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  background:rgba(15,23,42,.55); backdrop-filter:blur(2px);
+}
+.graph-load-overlay.show { display:flex; }
+.graph-load-spin {
+  width:40px; height:40px; border-radius:50%;
+  border:3px solid rgba(255,255,255,.25); border-top-color:var(--blue);
+  animation:gcb-tw-spin .8s linear infinite;
+}
+.graph-load-text { color:#e2e8f0; font-size:12px; font-weight:600; letter-spacing:.01em; }
 .gcb-count { margin-left:auto; font-size:10px; color:var(--text-dim); font-weight:400; }
 .gcb-sep { width:1px; height:18px; background:var(--border); flex-shrink:0; }
 .canvas-edge-tag {
@@ -235,65 +291,6 @@ body:has(#panel-attack-vector.active) .dv-tabs-row { margin-bottom: 0; }
 .graph-node:hover .expand-indicator { opacity:1; }
 .graph-edge-mal { stroke:#ef4444; stroke-width:1.5; stroke-dasharray:6 3; opacity:.7; }
 .graph-edge-norm { stroke:#3b82f6; stroke-width:1.2; opacity:.5; }
-
-/* ── AI-correlated provenance (OBSERVED) ───────────────────────────────
-   Entities and edges surfaced after "Start Investigation" are real
-   observations the AI joined from logs. We mark them with a small ✨
-   glyph only — keeping the node outline clean so the graph stays
-   readable. The legend chip explains what the sparkle means. */
-.graph-node[data-ai="1"] .ai-spark-glyph {
-  fill: #7c3aed;
-  font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;
-  paint-order: stroke;
-  stroke: #ffffff;
-  stroke-width: 2.5px;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-/* ── AI-predicted (NOT YET OBSERVED) ───────────────────────────────────
-   Nodes and edges the AI projects as the likely next attack step,
-   based on TTP patterns. Visually distinct so users never confuse
-   them with observed events: dashed amber outline, ghost fill, ⏱
-   glyph, and a "PREDICTED" sub-label. Edges use dashed amber. */
-.graph-node[data-predicted="1"] circle {
-  stroke: #d97706 !important;
-  fill: #fffbeb !important;
-  opacity: 0.92;
-}
-.graph-node[data-predicted="1"] .predicted-glyph {
-  fill: #d97706;
-  font-size: 12px;
-  paint-order: stroke;
-  stroke: #ffffff;
-  stroke-width: 2.5px;
-  font-weight: 700;
-}
-.graph-node[data-predicted="1"] .predicted-sublabel {
-  fill: #d97706;
-  font-family: Inter, sans-serif;
-  font-size: 7.5px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-}
-line[data-predicted="1"] {
-  stroke: #d97706;
-  stroke-width: 1.6;
-  stroke-dasharray: 7 4;
-  opacity: 0.85;
-}
-g.edge-info-btn[data-predicted="1"] circle {
-  stroke: #d97706 !important;
-  fill: #fffbeb !important;
-}
-
-/* Legend chips only show once the AI has run */
-#legendAiCorrelated,
-#legendPredicted { display: none; align-items: center; gap: 6px; }
-.inv-graph-container.av-ai-investigated #legendAiCorrelated,
-.inv-graph-container.av-ai-investigated #legendPredicted { display: inline-flex; }
-.legend-ai-spark { color: #7c3aed; font-size: 12px; line-height: 1; }
-.legend-predicted-glyph { color: #d97706; font-size: 12px; line-height: 1; }
 
 .graph-ctx {
   position:fixed; z-index:300;
@@ -345,6 +342,12 @@ g.edge-info-btn[data-predicted="1"] circle {
 .ctx-badge-count.has-data { color:var(--blue); }
 .ctx-badge-count.critical { color:#dc2626; }
 .ctx-sep { border-top:1px solid var(--border); }
+.ctx-subhdr {
+  padding:5px 12px 2px; font-size:9.5px; font-weight:700; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--text-dim);
+}
+/* Blast-radius reachability highlight */
+.graph-node.blast-reach { filter:drop-shadow(0 0 3px rgba(220,38,38,.55)); }
 /* -- More Actions expandable -- */
 .ctx-more-toggle {
   padding:6px 12px; font-size:11px; color:var(--text-dim);

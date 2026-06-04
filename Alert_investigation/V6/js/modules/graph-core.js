@@ -38,7 +38,7 @@ function findFreePosition(srcCx, srcCy, index, total, baseAngle) {
   const minDist = 85;       // minimum distance between any two nodes
   const baseDist = 130;     // starting radius from parent
   const angleSpan = Math.PI * 0.9;
-  const startAngle = baseAngle - angleSpan / 2;
+  const startAngle = total > 1 ? baseAngle - angleSpan / 2 : baseAngle;
   const step = total > 1 ? angleSpan / (total - 1) : 0;
   const angle = startAngle + step * index;
 
@@ -272,6 +272,16 @@ function resetGraphView() {
     for (const category of Object.keys(groups)) {
       if (groups[category] && groups[category].length > 0) {
         collapseCategory(parentEid, category);
+      }
+    }
+  }
+  // Remove any remaining collapse hubs / grouped count nodes
+  if (typeof groupHubs !== 'undefined') {
+    for (const parentEid of Object.keys(groupHubs)) {
+      const cats = groupHubs[parentEid];
+      if (!cats) continue;
+      for (const category of Object.keys(cats)) {
+        if (typeof _removeHub === 'function') _removeHub(parentEid, category);
       }
     }
   }

@@ -42,6 +42,22 @@ function buildActionContent(action, eid, name, type, entity) {
   const ts = '11 May 2026';
   switch (action) {
 
+  // ═══════════════ BLAST RADIUS & ASSET EXPOSURE ═══════════════
+  case 'blastRadius': {
+    const sec = entity && entity.sections && entity.sections.blastRadius;
+    if (!sec || !sec.blastRadius) return null;
+    // Blast Radius is gated behind the AI investigation (Start Investigation).
+    if (typeof isAiInvestigated === 'function' && !isAiInvestigated()) return null;
+    const html = (typeof renderBlastRadius === 'function')
+      ? renderBlastRadius(sec.blastRadius, eid)
+      : '<div class="em-blast-empty">Blast-radius renderer unavailable.</div>';
+    return {
+      title: 'Blast Radius — ' + name,
+      badge: { text: 'AD Attack Graph', cls: 'ap-tag-crit' },
+      html
+    };
+  }
+
   // ═══════════════ SEARCH IN LOGS ═══════════════
   case 'searchLogs': {
     const logsByType = {

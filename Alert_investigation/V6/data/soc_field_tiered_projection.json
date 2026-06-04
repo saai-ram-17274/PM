@@ -1,0 +1,5605 @@
+{
+  "ADAP": {
+    "E8": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "CATEGORY",
+        "IENAME"
+      ],
+      "sub": [
+        "USERAGENT",
+        "HOSTNAME",
+        "DESCRIPTION",
+        "RESPONSE_TYPE",
+        "RISK_LEVEL",
+        "MESSAGE"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME",
+        "REMOTEIP",
+        "OBJECTNAME"
+      ],
+      "sub": [
+        "RISK_LEVEL",
+        "DESCRIPTION",
+        "MESSAGE",
+        "HOSTNAME",
+        "CATEGORY",
+        "SEVERITY"
+      ]
+    }
+  },
+  "ADMP": {
+    "E8": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "HOSTNAME",
+        "DESCRIPTION",
+        "RESPONSE_TYPE",
+        "REQUEST_TYPE",
+        "MESSAGE"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "DESCRIPTION"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTNAME"
+      ]
+    }
+  },
+  "ADSSP": {
+    "E8": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "DESCRIPTION",
+        "RESPONSE_TYPE",
+        "MESSAGE"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME",
+        "DESCRIPTION"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTNAME"
+      ]
+    }
+  },
+  "AS400": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "SEVERITY",
+        "HOSTID"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "HOSTID",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "SERVICE"
+      ],
+      "sub": [
+        "USERNAME",
+        "SOURCE",
+        "HOSTID",
+        "FACILITY"
+      ]
+    }
+  },
+  "AWS": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "sub": [
+        "SEVERITY"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "FAILUREREASON",
+        "REASON"
+      ],
+      "sub": [
+        "DOMAIN",
+        "HOSTNAME",
+        "ERRORCODE",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    },
+    "B8": {
+      "top": [
+        "TIME",
+        "IPADDRESS",
+        "USERNAME",
+        "HTTPMETHOD",
+        "USERAGENT"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "HTTPSTATUS",
+        "REQUEST",
+        "TIMETAKEN_I",
+        "referrer",
+        "PROTOCOL_APP"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "IPADDRESS",
+        "ACTION",
+        "PROTOCOL",
+        "POLICY_NAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "USERNAME",
+        "PROTOCOL_APP",
+        "MESSAGE"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "PATH",
+        "POLICY_NAME"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "LOG_EVENT_NAME",
+        "EVENTSOURCE",
+        "IPADDRESS",
+        "ERRORCODE"
+      ],
+      "sub": [
+        "ACTION",
+        "SEVERITY",
+        "MESSAGE",
+        "HOSTNAME",
+        "CALLER",
+        "SOURCE_REGION",
+        "USERAGENT",
+        "EVENT_TYPE",
+        "ERRORMESSAGE",
+        "REQUESTPARAMETERS",
+        "BUCKETNAME",
+        "ROLE"
+      ]
+    }
+  },
+  "ApacheAccessLogs": {
+    "B8": {
+      "top": [
+        "TIME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "RESPONSE_TYPE",
+        "referrer",
+        "RISK_LEVEL",
+        "DESCRIPTION"
+      ]
+    },
+    "E8": {
+      "top": [
+        "TIME",
+        "referrer"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "DESCRIPTION",
+        "RESPONSE_TYPE",
+        "REQUEST_TYPE",
+        "RISK_LEVEL",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "RISK_LEVEL"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "DESCRIPTION"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "RISK_LEVEL",
+        "MESSAGE",
+        "DESCRIPTION"
+      ],
+      "sub": []
+    }
+  },
+  "Arista": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "sub": [
+        "MODE",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "STATUS",
+        "REASON"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "MODE",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "RULENAME",
+        "PROTOCOL_TR",
+        "HOSTNAME",
+        "MESSAGE",
+        "USERNAME",
+        "HOSTID"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "SOURCE_IP",
+        "USERNAME",
+        "COMMAND",
+        "MODE",
+        "HOSTID",
+        "SOURCE",
+        "STATUS",
+        "REASON",
+        "TYPE",
+        "FACILITY"
+      ]
+    }
+  },
+  "Barracuda": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "EVENTID",
+        "MESSAGE",
+        "DESCRIPTION",
+        "HOSTID",
+        "SEVERITY",
+        "MODE",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "REASON",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "USERNAME",
+        "DURATION",
+        "MESSAGE",
+        "DESCRIPTION",
+        "MODE",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "GROUPNAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "EVENTID",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "MESSAGE",
+        "OBJECT",
+        "DESCRIPTION",
+        "NOTES",
+        "TYPE",
+        "CONF_OBJECT"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "POLICY_NAME",
+        "URL_SITE",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "RULENAME",
+        "USERNAME",
+        "DURATION",
+        "RECEIVED_BYTES",
+        "SENT_BYTES",
+        "HOSTID",
+        "SOURCE_INTERFACE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "POLICY_NAME",
+        "RULENAME",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "EVENTID",
+        "DESCRIPTION"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "OBJECT"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "COMMANDEXECUTED",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE",
+        "OPERATION",
+        "EVENTID",
+        "CONF_OBJECT",
+        "CONF_ATTR",
+        "POLICY_NAME"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "ACTION",
+        "DESCRIPTION",
+        "NEW_STATUS",
+        "NOTES",
+        "HOSTID",
+        "USERNAME",
+        "SOURCE",
+        "REASON",
+        "TYPE",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "CEF_Format": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "ACTION",
+        "IENAME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITYLEVEL"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "HOSTNAME",
+        "PRODUCT_NAME",
+        "DEST_USER",
+        "FILENAME",
+        "PROTOCOL_APP",
+        "DEST_PORT",
+        "REMOTEHOST",
+        "MESSAGE"
+      ]
+    }
+  },
+  "CheckPoint": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "sub": [
+        "MESSAGE",
+        "REASON",
+        "MODE",
+        "PRIVATE_IP",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "REASON",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "MESSAGE",
+        "MODE",
+        "PRIVATE_IP",
+        "DURATION",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "DESCRIPTION"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "GROUPNAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "SOURCE_IP",
+        "HOSTID",
+        "DESCRIPTION",
+        "TYPE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "PROTOCOL",
+        "RULENAME",
+        "HOSTNAME",
+        "MESSAGE",
+        "USERNAME",
+        "DURATION",
+        "HOSTID",
+        "SOURCE_ZONE",
+        "DEST_ZONE",
+        "SOURCE_INTERFACE",
+        "DEST_INTERFACE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "RULENAME",
+        "HOSTNAME",
+        "ATTACK",
+        "DESCRIPTION",
+        "HOSTID",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DIRECTION"
+      ],
+      "sub": [
+        "VALUE",
+        "STAGE",
+        "COMMAND",
+        "HOSTID",
+        "FIELD3",
+        "INTERFACE",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "SERVICENAME",
+        "ACTION",
+        "DESCRIPTION",
+        "HOSTID",
+        "USERNAME",
+        "SOURCE",
+        "REASON",
+        "TYPE",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "Cisco": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "sub": [
+        "REMOTEHOST",
+        "PORT",
+        "DESTINATION_IP",
+        "FIELD4",
+        "INTERFACE",
+        "SEVERITY",
+        "HOSTID",
+        "PRIVATE_IP"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "RESULT",
+        "REASON"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "REMOTEHOST",
+        "PORT",
+        "DESTINATION_IP",
+        "FIELD4",
+        "HOSTID",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "RESULT"
+      ],
+      "sub": [
+        "GROUPNAME",
+        "HOSTNAME",
+        "PRIVILEGE",
+        "PASSWORD",
+        "NAME",
+        "TYPE",
+        "SOURCE_IP"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "DESTINATION_IP",
+        "PROTOCOL",
+        "RULENAME",
+        "HOSTNAME",
+        "REMOTEHOST",
+        "MESSAGE",
+        "USERNAME",
+        "URL_SITE",
+        "DURATION",
+        "HOSTID",
+        "PROTOCOL_APP"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "DESTINATION_IP",
+        "INTELLIGENCE",
+        "RISK_LEVEL",
+        "RULENAME",
+        "HOSTNAME",
+        "IENAME",
+        "REMOTEHOST",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT"
+      ]
+    },
+    "E11": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "DURATION",
+        "RESULT"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "REMOTEHOST",
+        "MESSAGE",
+        "FIELD5",
+        "FIELD3",
+        "PRIVATE_IP",
+        "HOSTID",
+        "REASON",
+        "IENAME",
+        "TYPE"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "RESULT",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "INTERFACE",
+        "MESSAGE",
+        "HOSTID",
+        "COMMANDEXECUTED",
+        "IENAME"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "RISK_LEVEL",
+        "ACTION",
+        "USERNAME",
+        "REMOTEHOST",
+        "SOURCE",
+        "COMMANDEXECUTED",
+        "HOSTID",
+        "REASON",
+        "TYPE",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "DB2": {
+    "B3": {
+      "top": [
+        "TIME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "WORKSTATION_NAME",
+        "PROCESSNAME"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "STATUSCODE"
+      ],
+      "sub": [
+        "PROCESSNAME",
+        "WORKSTATION_NAME",
+        "MESSAGE"
+      ]
+    },
+    "B7": {
+      "top": [
+        "TIME",
+        "DATABASENAME",
+        "IENAME",
+        "STATUSCODE",
+        "OBJECTNAME"
+      ],
+      "sub": [
+        "SCHEMANAME",
+        "USERID",
+        "STATEMENT",
+        "INSTANCENAME",
+        "PRIVILEGE",
+        "WORKSTATION_NAME",
+        "OBJECTTYPE"
+      ]
+    },
+    "E7": {
+      "top": [
+        "TIME",
+        "DATABASENAME",
+        "IENAME",
+        "STATEMENT",
+        "STATUSCODE"
+      ],
+      "sub": [
+        "OBJECTNAME",
+        "SCHEMANAME",
+        "USERID",
+        "INSTANCENAME",
+        "ROWS_MODIFIED",
+        "ROWS_RETURNED",
+        "WORKSTATION_NAME",
+        "PROCESSID",
+        "OBJECTTYPE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": []
+    }
+  },
+  "DHCP_Linux": {
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "MESSAGE",
+        "DESCRIPTION"
+      ],
+      "sub": []
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "DESCRIPTION",
+        "MESSAGE"
+      ],
+      "sub": [
+        "HOSTNAME"
+      ]
+    }
+  },
+  "DHCP_Windows": {
+    "E13": {
+      "top": [
+        "TIME",
+        "MESSAGE",
+        "hostname"
+      ],
+      "sub": []
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "MESSAGE"
+      ],
+      "sub": []
+    }
+  },
+  "Dell": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "MESSAGE",
+        "HOSTID",
+        "MODE",
+        "CONNECTION_TYPE",
+        "SEVERITY"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "STATUS",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "DOMAIN",
+        "IPADDRESS",
+        "MESSAGE",
+        "HOSTID",
+        "MODE",
+        "CONNECTION_TYPE",
+        "SEVERITY"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "TYPE",
+        "FAN_ID",
+        "STATUS",
+        "ID",
+        "NEW_STATUS",
+        "USERNAME",
+        "DOMAIN",
+        "SOURCE",
+        "HOSTID",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "EMC Isilon": {
+    "E18": {
+      "top": [
+        "TIME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    }
+  },
+  "ERP": {
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "OPERATION"
+      ],
+      "sub": [
+        "SOURCE",
+        "FACILITY"
+      ]
+    },
+    "E18": {
+      "top": [
+        "TIME",
+        "OPERATION"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "OPERATION",
+        "SEVERITY",
+        "MESSAGE"
+      ],
+      "sub": [
+        "HOSTNAME"
+      ]
+    }
+  },
+  "F5": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "STARTTIME"
+      ],
+      "sub": [
+        "ACCESS_RIGHT",
+        "ENDTIME",
+        "REASON",
+        "SEVERITY",
+        "MSG_ID",
+        "HOSTID",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "STATUS",
+        "REASON"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "ERROR",
+        "STARTTIME",
+        "ACCESS_RIGHT",
+        "ENDTIME",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "POLICY_NAME",
+        "RULENAME",
+        "MESSAGE",
+        "HOSTNAME",
+        "USERNAME",
+        "HOSTID",
+        "SOURCE_ZONE",
+        "DEST_ZONE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "SIGNATURE_ID",
+        "INTELLIGENCE",
+        "POLICY_NAME",
+        "IDS_NAME",
+        "ATTACK_ID",
+        "RULENAME",
+        "HOSTNAME",
+        "ATTACK",
+        "MESSAGE",
+        "VIRUS_NAME",
+        "DEST_PORT",
+        "SOURCE_PORT"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "OBJECTNAME",
+        "STATUS"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "SEVERITY",
+        "TRANSACTION",
+        "INTERFACE",
+        "COMMAND",
+        "IENAME",
+        "MESSAGE",
+        "VLAN_ID"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "DESCRIPTION",
+        "MODULE",
+        "OBJECTNAME",
+        "COMMAND",
+        "USERNAME",
+        "MSG_ID",
+        "SOURCE",
+        "HOSTID",
+        "NEW_STATUS",
+        "STATUS",
+        "REASON"
+      ]
+    }
+  },
+  "FIM": {
+    "E18": {
+      "top": [
+        "TIME",
+        "NAME",
+        "IENAME",
+        "CHANGETYPE"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "FILETYPE",
+        "LOCATION",
+        "PLATFORM",
+        "FILESIZE",
+        "ACCESSMASK",
+        "SHAREPATH",
+        "OPERATIONID",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    }
+  },
+  "FireEye": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "MALWARETYPE",
+        "ACTION",
+        "SEVERITY",
+        "DESTINATION_IP",
+        "SNAME"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTNAME",
+        "FILEHASH",
+        "FILETYPE",
+        "ALERTTYPE",
+        "CNCHOST",
+        "OBJURL",
+        "PORT",
+        "LOCATION",
+        "OS",
+        "REMOTEHOST"
+      ]
+    }
+  },
+  "FirePower": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTID",
+        "MESSAGE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "REASON",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "IENAME",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "SOURCE_IP"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "POLICY",
+        "HOSTNAME",
+        "URL_SITE",
+        "PROTOCOL_TR",
+        "RULENAME",
+        "USERNAME",
+        "RECEIVED_BYTES",
+        "SENT_BYTES",
+        "HOSTID",
+        "SOURCE_ZONE",
+        "DEST_ZONE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "PRIORITY",
+        "POLICY",
+        "RULENAME",
+        "HOSTNAME",
+        "IDS_NAME",
+        "ATTACK",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "CLASSIFICATION"
+      ]
+    },
+    "E11": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "HOSTID",
+        "REASON",
+        "IENAME"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "PRIORITY",
+        "ACTION",
+        "HOSTID",
+        "USERNAME",
+        "SOURCE",
+        "REASON",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "ForcePoint": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "HOSTID"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "MODE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY",
+        "REMOTEHOST",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "HOSTID"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "MODE",
+        "SOURCE",
+        "FACILITY",
+        "SEVERITY",
+        "REMOTEHOST",
+        "SOURCE_PORT",
+        "MESSAGE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "POLICY_NAME",
+        "HOSTID",
+        "CATEGORY",
+        "RULE_ID",
+        "HOSTNAME",
+        "USERNAME",
+        "PROTOCOL_APP",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "CATEGORY",
+        "POLICY_NAME",
+        "HOSTID",
+        "RULE_ID",
+        "DEST_SERVICE",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "DESCRIPTION"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "DESCRIPTION",
+        "HOSTID",
+        "SOURCE",
+        "PRODUCT_NAME",
+        "REMOTEHOST",
+        "USERNAME",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "Fortinet": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "sub": [
+        "DURATION",
+        "EVENTID",
+        "REMOTE_IP",
+        "USER_INTERFACE",
+        "REASON",
+        "SEVERITY",
+        "HOSTID",
+        "PRIVATE_IP",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "STATUS",
+        "REASON"
+      ],
+      "sub": [
+        "DOMAIN",
+        "HOSTNAME",
+        "EVENTID",
+        "REMOTE_IP",
+        "USER_INTERFACE",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "STATUS"
+      ],
+      "sub": [
+        "DOMAIN",
+        "EVENTID",
+        "HOSTNAME",
+        "CONF_OBJECT",
+        "DESCRIPTION",
+        "CONF_ATTR",
+        "SOURCE_IP",
+        "NOTES",
+        "TYPE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "DURATION",
+        "HOSTID",
+        "USERNAME",
+        "URL_SITE",
+        "RECEIVED_BYTES",
+        "SENT_BYTES",
+        "SOURCE_INTERFACE",
+        "DEST_INTERFACE",
+        "PROTOCOL_APP"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "VIRUS_NAME",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "EVENTID",
+        "DESCRIPTION",
+        "CLASSIFICATION"
+      ]
+    },
+    "E11": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "DURATION",
+        "STATUS"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "REMOTE_IP",
+        "PRIVATE_IP",
+        "HOSTID",
+        "MESSAGE",
+        "REASON",
+        "VPN_NAME",
+        "IENAME",
+        "DESCRIPTION",
+        "TYPE"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "STATUS"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE",
+        "EVENTID",
+        "CONF_OBJECT",
+        "CONF_ATTR"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "SERVICENAME",
+        "ACTION",
+        "DESCRIPTION",
+        "USERNAME",
+        "HOSTID",
+        "DOMAIN",
+        "SOURCE",
+        "NOTES",
+        "NEW_STATUS",
+        "STATUS",
+        "REASON"
+      ]
+    }
+  },
+  "H3C": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAINNAME"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "REMOTE_IP",
+        "HOSTID",
+        "MESSAGE",
+        "SEVERITY",
+        "MODE",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "STATUS",
+        "REASON"
+      ],
+      "sub": [
+        "DOMAINNAME",
+        "IPADDRESS",
+        "HOSTNAME",
+        "REMOTE_IP",
+        "HOSTID",
+        "MODE",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "MESSAGE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "SOURCE_PORT",
+        "POLICY_NAME",
+        "PROTOCOL_TR",
+        "HOSTNAME",
+        "RULENAME",
+        "USERNAME",
+        "URL_SITE",
+        "HOSTID",
+        "SOURCE_ZONE",
+        "DEST_ZONE",
+        "APPLICATION"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "CATEGORY",
+        "CVE",
+        "POLICY_NAME",
+        "RULENAME",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "STATUS"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "HOSTNAME",
+        "INTERFACE",
+        "CATEGORY",
+        "IENAME",
+        "MESSAGE",
+        "POLICY_NAME"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "SERVICENAME",
+        "ACTION",
+        "NEW_TIME",
+        "OLD_TIME",
+        "SOURCE_IP",
+        "USERNAME",
+        "SOURCE",
+        "HOSTID",
+        "COUNT",
+        "STATUS",
+        "REASON",
+        "TYPE"
+      ]
+    }
+  },
+  "HP": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "sub": [
+        "AUTH_MECHANISM",
+        "HOSTID",
+        "SEVERITY"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "REASON",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "MESSAGE",
+        "AUTH_MECHANISM",
+        "HOSTID",
+        "SEVERITY"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "MESSAGE",
+        "COMMANDEXECUTED"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "VLAN_ID",
+        "HOSTID",
+        "INTERFACE",
+        "IENAME"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "NOTES",
+        "COUNT",
+        "NAME",
+        "REASON",
+        "NEW_STATUS",
+        "USERNAME",
+        "SOURCE",
+        "HOSTID",
+        "TYPE",
+        "FACILITY",
+        "SOURCE_IP",
+        "COMMANDEXECUTED"
+      ]
+    }
+  },
+  "Huawei": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "ROLE",
+        "DESCRIPTION",
+        "SERVICE_TYPE",
+        "MESSAGE",
+        "SEVERITY",
+        "REMOTEHOST",
+        "HOSTID",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "STATUS",
+        "REASON"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "ROLE",
+        "USERNAME",
+        "DESCRIPTION",
+        "SERVICE_TYPE",
+        "REMOTEHOST",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "STATUS"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "MESSAGE",
+        "VPN_NAME",
+        "TYPE",
+        "DESCRIPTION",
+        "ROLE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "POLICY_NAME",
+        "PROTOCOL_TR",
+        "HOSTNAME",
+        "MESSAGE",
+        "RULENAME",
+        "USERNAME",
+        "URL_SITE",
+        "DURATION",
+        "HOSTID",
+        "SOURCE_ZONE",
+        "DEST_ZONE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "SIGNATURE_ID",
+        "VIRUS_NAME",
+        "CATEGORY",
+        "RULENAME",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "DESCRIPTION"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "TARGET",
+        "STATUS"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "INTERFACE",
+        "COMMAND",
+        "CATEGORY",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE",
+        "POLICY_NAME"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "DESCRIPTION",
+        "STATUS",
+        "COMMAND",
+        "SOURCE_IP",
+        "USERNAME",
+        "REMOTEHOST",
+        "SOURCE",
+        "HOSTID",
+        "COUNT",
+        "REASON",
+        "TYPE"
+      ]
+    }
+  },
+  "Hypervisor": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "LOGONTYPE",
+        "HOSTNAME",
+        "LOGONID"
+      ],
+      "sub": [
+        "DOMAIN",
+        "SEVERITY",
+        "REMOTEHOST",
+        "HOSTID"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "RESULT",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "sub": [
+        "LOGONTYPE",
+        "REMOTEHOST",
+        "ERRORCODE",
+        "HOSTID",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    },
+    "B11": {
+      "top": [
+        "TIME",
+        "VMNAME",
+        "USERNAME",
+        "IENAME",
+        "STATUS"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "REMOTEHOST",
+        "MESSAGE",
+        "HOSTID",
+        "SEVERITY",
+        "RESULT",
+        "DOMAIN",
+        "LOGONTYPE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "SERVICE_NAME",
+        "USERNAME",
+        "REMOTEHOST",
+        "DOMAIN",
+        "SOURCE",
+        "HOSTID",
+        "STATUS",
+        "FACILITY",
+        "COMMANDEXECUTED"
+      ]
+    }
+  },
+  "IIS_W3C_ftp": {
+    "E12": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "sub": []
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "sub": []
+    },
+    "E15": {
+      "top": [
+        "TIME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE"
+      ]
+    }
+  },
+  "IIS_W3C_web": {
+    "B8": {
+      "top": [
+        "TIME",
+        "USERNAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "RISK_LEVEL"
+      ]
+    },
+    "E8": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "RISK_LEVEL",
+        "OPERATION",
+        "MESSAGE"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "MESSAGE",
+        "IENAME",
+        "OPERATION",
+        "CONF_ATTR"
+      ]
+    }
+  },
+  "Juniper": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "CLASSNAME"
+      ],
+      "sub": [
+        "MODE",
+        "HOSTID",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "DEST_PORT",
+        "SEVERITY"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "REASON",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "CLASSNAME",
+        "MODE",
+        "HOSTID",
+        "SOURCE_PORT",
+        "DEST_IP",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "RULE",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID",
+        "USERNAME",
+        "SOURCE_ZONE",
+        "DEST_ZONE",
+        "APPLICATION",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "RULE",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "INTERFACE"
+      ],
+      "sub": [
+        "ADMIN_STATUS",
+        "OPERATOR_STATUS",
+        "COMMAND",
+        "PROCESS",
+        "PATH",
+        "IENAME",
+        "MESSAGE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "SERVICE_NAME",
+        "ACTION",
+        "USERNAME",
+        "PROCESS",
+        "ZONE",
+        "REASON",
+        "SOURCE",
+        "HOSTID",
+        "TYPE",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "MSSQL": {
+    "B3": {
+      "top": [
+        "TIME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "SEVERITY"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "SEVERITY",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "DESCRIPTION"
+      ]
+    },
+    "B7": {
+      "top": [
+        "TIME",
+        "IENAME"
+      ],
+      "sub": []
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SEVERITY",
+        "IENAME",
+        "RULENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "DESCRIPTION"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "DESCRIPTION"
+      ]
+    }
+  },
+  "MalwareBytes": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "RISK_NAME",
+        "ACTION",
+        "USERNAME",
+        "SEVERITY",
+        "FILENAME"
+      ],
+      "sub": [
+        "SOURCE_IP",
+        "STATUS",
+        "DESCRIPTION",
+        "HOSTNAME",
+        "CATEGORY",
+        "RISK_CATEGORY",
+        "FILEPATH",
+        "OBJECT_SCANNED",
+        "APPLICATION",
+        "PARENT_PROCESS",
+        "URL_SITE",
+        "IENAME"
+      ]
+    }
+  },
+  "McAfee": {
+    "E10": {
+      "top": [
+        "TIME",
+        "SEVERITY",
+        "IENAME",
+        "VIRUS_NAME",
+        "CATEGORY"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "EVENTID"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "USERNAME",
+        "SOURCE",
+        "HOSTID",
+        "TYPE",
+        "FACILITY"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "VIRUS_NAME",
+        "SEVERITY",
+        "FILENAME",
+        "USERNAME",
+        "IENAME"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTNAME",
+        "ENDPOINT_IP",
+        "ENDPOINT_NAME",
+        "CATEGORY",
+        "PRIMARY_ACTION",
+        "SECONDARY_ACTION",
+        "RISK_NAME",
+        "VIRUS_FILENAME",
+        "SCAN_TIME",
+        "OS_NAME"
+      ]
+    }
+  },
+  "Meraki": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "MESSAGE",
+        "REMOTEHOST",
+        "HOSTID",
+        "PRIVATE_IP",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "REMOTEHOST",
+        "HOSTID",
+        "PRIVATE_IP",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "DESCRIPTION"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "SOURCE_PORT",
+        "PROTOCOL",
+        "USERNAME",
+        "HOSTNAME",
+        "URL_SITE",
+        "DURATION",
+        "HOSTID",
+        "PROTOCOL_APP",
+        "MESSAGE",
+        "DIRECTION"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "SIGNATURE_ID",
+        "CATEGORY",
+        "PRIORITY",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "DESCRIPTION"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "PRIORITY",
+        "ACTION",
+        "DESCRIPTION",
+        "HOSTID",
+        "USERNAME",
+        "REMOTEHOST",
+        "SOURCE",
+        "TYPE",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "MySQL": {
+    "B3": {
+      "top": [
+        "TIME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "SEVERITY"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "ERRORCODE",
+        "SEVERITY",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B7": {
+      "top": [
+        "TIME",
+        "DATABASENAME",
+        "IENAME"
+      ],
+      "sub": [
+        "STATEMENT"
+      ]
+    },
+    "E7": {
+      "top": [
+        "TIME",
+        "DATABASENAME",
+        "IENAME",
+        "STATEMENT"
+      ],
+      "sub": []
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "TYPE"
+      ]
+    }
+  },
+  "NMAP": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "PORT",
+        "SERVICENAME",
+        "STATUS",
+        "PROTOCOL"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTNAME",
+        "REASON"
+      ]
+    }
+  },
+  "Nessus": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "VULNNAME",
+        "SEVERITYLEVEL",
+        "CVE",
+        "PORT",
+        "RISKFACTOR"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "HOSTNAME",
+        "OS",
+        "PROTOCOL",
+        "EXPLOITAVAIL",
+        "SERVICENAME",
+        "HOSTIP",
+        "PLUGINID",
+        "GROUP",
+        "MESSAGE"
+      ]
+    }
+  },
+  "NetScreen": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "EVENTID"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "MODE",
+        "HOSTID",
+        "SOURCE_PORT",
+        "MESSAGE",
+        "SEVERITY"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "STATUS",
+        "REASON"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "EVENTID",
+        "USERNAME",
+        "MODE",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "STATUS"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "EVENTID",
+        "HOSTNAME",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCE_IP",
+        "NOTES"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID",
+        "USERNAME",
+        "SOURCE_INTERFACE",
+        "DEST_INTERFACE",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "CATEGORY",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "EVENTID"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "STATUS"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "CATEGORY",
+        "IENAME",
+        "MESSAGE",
+        "EVENTID"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "ACTION",
+        "USERNAME",
+        "CENTIGRADE",
+        "NOTES",
+        "COUNT",
+        "SOURCE",
+        "HOSTID",
+        "STATUS",
+        "REASON",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "Nexpose": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "VULNNAME",
+        "SEVERITYLEVEL",
+        "RISKSCORE",
+        "STATUS",
+        "PORT"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTNAME",
+        "OS",
+        "RISKFACTOR",
+        "PROTOCOL",
+        "SERVICENAME",
+        "EXPLOITS",
+        "VULNSTATUS",
+        "KEY"
+      ]
+    }
+  },
+  "OPM": {
+    "E8": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "DESCRIPTION",
+        "RESPONSE_TYPE",
+        "REQUEST_TYPE",
+        "MESSAGE"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME",
+        "SEVERITY",
+        "IPADDRESS"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "MESSAGE",
+        "HOSTNAME"
+      ]
+    }
+  },
+  "OpenVas": {
+    "OB3": {
+      "top": [
+        "MESSAGE"
+      ],
+      "sub": []
+    }
+  },
+  "Oracle": {
+    "B5": {
+      "top": [
+        "TIME",
+        "ACTION",
+        "STATUS"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "OBJECT",
+        "TYPE"
+      ]
+    },
+    "B7": {
+      "top": [
+        "TIME",
+        "ACTION",
+        "STATUS",
+        "OBJECT"
+      ],
+      "sub": [
+        "USERID",
+        "STATEMENT",
+        "PRIVILEGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "ACTION"
+      ],
+      "sub": [
+        "SOURCE",
+        "STATUS",
+        "TYPE"
+      ]
+    }
+  },
+  "PGSQL": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "REMOTEHOST",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "STATUS",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "REMOTEHOST",
+        "SOURCE_PORT",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "STATUS"
+      ],
+      "sub": [
+        "HOSTNAME"
+      ]
+    },
+    "B7": {
+      "top": [
+        "TIME",
+        "DATABASENAME",
+        "IENAME",
+        "STATUS",
+        "USERNAME"
+      ],
+      "sub": [
+        "ACTION",
+        "STATEMENT"
+      ]
+    },
+    "E7": {
+      "top": [
+        "TIME",
+        "DATABASENAME",
+        "IENAME",
+        "STATEMENT",
+        "STATUS"
+      ],
+      "sub": [
+        "USERNAME",
+        "ACTION",
+        "PROCESSID",
+        "COMMAND_TAG",
+        "TRANSACTIONID"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "USERNAME",
+        "REMOTEHOST",
+        "STATUS"
+      ]
+    }
+  },
+  "PaloAlto": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "REMOTEHOST"
+      ],
+      "sub": [
+        "REASON",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCEHOST",
+        "SEVERITY",
+        "PRIVATE_IP",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "RESULT",
+        "REASON"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "REMOTEHOST",
+        "HOSTID",
+        "MESSAGE",
+        "SOURCEHOST",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "DESCRIPTION"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "RULENAME",
+        "HOSTNAME",
+        "USERNAME",
+        "PROTOCOL_TR",
+        "URL_SITE",
+        "RECEIVED_BYTES",
+        "SENT_BYTES",
+        "HOSTID",
+        "SOURCE_ZONE",
+        "DEST_ZONE",
+        "SOURCE_INTERFACE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "CATEGORY",
+        "RULENAME",
+        "HOSTNAME",
+        "USERNAME",
+        "DEST_PORT",
+        "IDS_NAME",
+        "MESSAGE",
+        "SOURCE_PORT",
+        "DESCRIPTION",
+        "THREAT_ID"
+      ]
+    },
+    "E11": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "RESULT",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "REASON",
+        "PRIVATE_IP",
+        "SOURCEHOST",
+        "MESSAGE",
+        "HOSTID",
+        "REMOTEHOST",
+        "IENAME",
+        "DESCRIPTION",
+        "TYPE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "DESCRIPTION",
+        "PACKAGE_NAME",
+        "NEW_VERSION",
+        "SOURCEHOST",
+        "USERNAME",
+        "REMOTEHOST",
+        "SOURCE",
+        "HOSTID",
+        "COUNT",
+        "STATUS",
+        "REASON"
+      ]
+    }
+  },
+  "Printer_Windows": {
+    "E19": {
+      "top": [
+        "TIME",
+        "DOCNAME",
+        "PRINTER",
+        "OWNEDBY"
+      ],
+      "sub": [
+        "SIZE",
+        "PAGESPRINTED",
+        "PORT",
+        "SPOOLERTIME",
+        "HOSTNAME",
+        "DOCID",
+        "OWNEDON",
+        "SEVERITY",
+        "MESSAGE",
+        "TYPE"
+      ]
+    }
+  },
+  "QNAP NAS": {
+    "E18": {
+      "top": [
+        "TIME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    }
+  },
+  "Qualys": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "VULNNAME",
+        "SEVERITYLEVEL",
+        "CVE",
+        "RESULT",
+        "RISKFACTOR"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTNAME",
+        "OS",
+        "PORT",
+        "PROTOCOL",
+        "EXPLOITS",
+        "MALWARE",
+        "STATUS",
+        "HOSTIP",
+        "QUALYSTYPE",
+        "GROUP"
+      ]
+    }
+  },
+  "SAP": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "PROCESSNAME"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "PROCESSNAME",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "DESCRIPTION",
+        "TYPE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "DESCRIPTION"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "MESSAGE",
+        "IENAME",
+        "DESCRIPTION"
+      ],
+      "sub": [
+        "USERNAME",
+        "TYPE"
+      ]
+    }
+  },
+  "SDP": {
+    "E8": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME",
+        "referrer"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "DESCRIPTION",
+        "RESPONSE_TYPE",
+        "REQUEST_TYPE",
+        "MESSAGE"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME",
+        "DESCRIPTION"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTNAME"
+      ]
+    }
+  },
+  "SNMP": {
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE"
+      ],
+      "sub": [
+        "SOURCE",
+        "HOSTID"
+      ]
+    },
+    "E14": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE"
+      ],
+      "sub": [
+        "SOURCE",
+        "HOSTID"
+      ]
+    }
+  },
+  "Salesforce": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "OBJECT",
+        "IPADDRESS",
+        "STATUS"
+      ],
+      "sub": [
+        "SEVERITY",
+        "DESCRIPTION",
+        "OBJECTNAME",
+        "CATEGORY",
+        "ENTITYNAME",
+        "TRANSACTION",
+        "EVENT_TYPE",
+        "HOSTNAME"
+      ]
+    }
+  },
+  "Sangfor": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "HOSTID"
+      ],
+      "sub": [
+        "MESSAGE",
+        "DESCRIPTION",
+        "SOURCE",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "HOSTID"
+      ],
+      "sub": [
+        "MESSAGE",
+        "DESCRIPTION",
+        "SOURCE",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "SOURCE",
+        "TYPE",
+        "USERNAME",
+        "URL_SITE",
+        "HOSTID",
+        "APPLICATION",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "POLICY_NAME",
+        "HOSTNAME",
+        "SOURCE",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "DESCRIPTION"
+      ]
+    },
+    "E11": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DESCRIPTION"
+      ],
+      "sub": [
+        "HOSTID",
+        "IENAME",
+        "MESSAGE",
+        "SOURCE",
+        "TYPE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "DESCRIPTION",
+        "SOURCE",
+        "TYPE",
+        "FACILITY",
+        "SOURCE_IP",
+        "USERNAME",
+        "HOSTID"
+      ]
+    }
+  },
+  "SonicWall": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "DURATION",
+        "EVENTID",
+        "DEST_IP",
+        "DEST_PORT",
+        "SEVERITY",
+        "HOSTID",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "REASON",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "DOMAIN",
+        "EVENTID",
+        "USERNAME",
+        "DEST_IP",
+        "DEST_PORT",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME",
+        "DOMAIN",
+        "EVENTID"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "ACCOUNT_TYPE",
+        "DESCRIPTION",
+        "NOTES",
+        "SOURCE_IP"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "IENAME",
+        "PROTOCOL"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "RULENAME",
+        "HOSTNAME",
+        "USERNAME",
+        "URL_SITE",
+        "DURATION",
+        "RECEIVED_BYTES",
+        "SENT_BYTES",
+        "HOSTID",
+        "SOURCE_INTERFACE",
+        "DEST_INTERFACE",
+        "PROTOCOL_APP"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "IENAME"
+      ],
+      "sub": [
+        "SIGNATURE_ID",
+        "INTELLIGENCE",
+        "RISK_LEVEL",
+        "RULENAME",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "EVENTID",
+        "DESCRIPTION"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE",
+        "EVENTID"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "RISK_LEVEL",
+        "DESCRIPTION",
+        "USERNAME",
+        "DEST_IP",
+        "DEST_PORT",
+        "SOURCE_IP",
+        "DOMAIN",
+        "SOURCE",
+        "HOSTID",
+        "NOTES",
+        "REASON"
+      ]
+    }
+  },
+  "Sophos": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "GROUPNAME",
+        "HOSTID",
+        "AUTH_MECHANISM",
+        "AUTH_CLIENT",
+        "SEVERITY",
+        "MODE",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "STATUS",
+        "REASON"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "USERNAME",
+        "GROUPNAME",
+        "HOSTID",
+        "AUTH_MECHANISM",
+        "MODE",
+        "SEVERITY",
+        "SOURCE_PORT",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "STATUS"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "GROUPNAME",
+        "HOSTNAME",
+        "SOURCE_IP",
+        "HOSTID",
+        "DESCRIPTION",
+        "TYPE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID",
+        "RULENAME",
+        "USERNAME",
+        "URL_SITE",
+        "DURATION",
+        "RECEIVED_BYTES",
+        "SENT_BYTES",
+        "SOURCE_INTERFACE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "SIGNATURE_ID",
+        "VIRUS_NAME",
+        "CATEGORY",
+        "RULENAME",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "DESCRIPTION",
+        "CLASSIFICATION"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "STATUS"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "CATEGORY",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE",
+        "OPERATION",
+        "PROCESS",
+        "POLICY_NAME"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "DESCRIPTION",
+        "USERNAME",
+        "SOURCE_IP",
+        "PROCESS",
+        "OPERATION",
+        "SOURCE",
+        "HOSTID",
+        "NEW_STATUS",
+        "STATUS",
+        "REASON",
+        "TYPE"
+      ]
+    }
+  },
+  "Stormshield": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAINNAME"
+      ],
+      "sub": [
+        "DURATION",
+        "DESCRIPTION",
+        "HOSTID",
+        "SESSIONID",
+        "MESSAGE",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAINNAME"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "HOSTID",
+        "SESSIONID",
+        "MESSAGE",
+        "SOURCE",
+        "ERRORCODE",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "DOMAINNAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "SOURCE_IP",
+        "CONF_OBJECT",
+        "HOSTID",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "RULENAME",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "HOSTID",
+        "USERNAME",
+        "URL_SITE",
+        "DURATION",
+        "RECEIVED_BYTES",
+        "SENT_BYTES",
+        "SOURCE_INTERFACE",
+        "DEST_INTERFACE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "RULENAME",
+        "HOSTNAME",
+        "SOURCE_PORT",
+        "DEST_PORT",
+        "PROTOCOL_TR",
+        "IDS_NAME",
+        "MESSAGE",
+        "DESCRIPTION",
+        "CLASSIFICATION"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "TARGET",
+        "OLDVALUE"
+      ],
+      "sub": [
+        "NEWVALUE",
+        "HOSTNAME",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE",
+        "CONF_OBJECT"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "ACTION",
+        "DESCRIPTION",
+        "SOURCE_IP",
+        "USERNAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "SOURCE",
+        "HOSTID",
+        "FACILITY"
+      ]
+    }
+  },
+  "Symantec_DLP": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "POLICY",
+        "SEVERITY",
+        "FILENAME",
+        "BLOCKED",
+        "SENDER"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTNAME",
+        "DATAOWNER",
+        "PATH",
+        "PARENT_PATH",
+        "SUBJECT",
+        "RECIPENTS",
+        "PROTOCOL",
+        "INCIDENT_ID",
+        "RULES",
+        "ENDPOINT_DEVICE",
+        "DESTINATION_IP"
+      ]
+    }
+  },
+  "Symantec_Endpoint_Protection": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "RISK_NAME",
+        "ACTION",
+        "USERNAME",
+        "REMOTEIP",
+        "IENAME"
+      ],
+      "sub": [
+        "OBJECT",
+        "STATUS",
+        "DESCRIPTION",
+        "HOSTNAME",
+        "ATTACK",
+        "APPLICATION",
+        "ACTUAL_ACTION",
+        "DOMAIN",
+        "CATEGORY_ID",
+        "LOCATION",
+        "APPLICATION_HASH",
+        "POLICY_NAME"
+      ]
+    }
+  },
+  "SynologyNAS": {
+    "E18": {
+      "top": [
+        "TIME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    }
+  },
+  "Sys_Archive": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "LOGONTYPE",
+        "HOSTNAME",
+        "LOGONID"
+      ],
+      "sub": [
+        "DOMAIN",
+        "SEVERITY",
+        "REMOTEHOST",
+        "HOSTID"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "RESULT",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "sub": [
+        "LOGONTYPE",
+        "REMOTEHOST",
+        "ERRORCODE",
+        "HOSTID",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "TARGETUSER",
+        "IENAME",
+        "RESULT"
+      ],
+      "sub": [
+        "GROUPNAME",
+        "DOMAIN",
+        "HOSTNAME",
+        "TARGETDOMAIN"
+      ]
+    },
+    "E3": {
+      "top": [
+        "TIME",
+        "USERNAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "DOMAIN",
+        "PROCESSID",
+        "LOGONID",
+        "SEVERITY"
+      ]
+    },
+    "E6": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "DOMAIN",
+        "LOGONID",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SEVERITY",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "SERVICE_NAME",
+        "USERNAME",
+        "REMOTEHOST",
+        "DOMAIN",
+        "SOURCE",
+        "HOSTID",
+        "STATUS",
+        "FACILITY",
+        "COMMANDEXECUTED"
+      ]
+    },
+    "E15": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "FILE_NAME",
+        "IENAME",
+        "RESULT"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "DOMAIN",
+        "MESSAGE",
+        "SEVERITY"
+      ]
+    }
+  },
+  "Sysmon": {
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "IENAME",
+        "PROTOCOL"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "HOSTNAME",
+        "USERNAME",
+        "MESSAGE"
+      ]
+    },
+    "E3": {
+      "top": [
+        "TIME",
+        "PROCESSNAME",
+        "COMMANDLINE",
+        "USERNAME",
+        "PARENTPROCESSNAME"
+      ],
+      "sub": [
+        "INTEGRITYLEVEL",
+        "HASHES",
+        "SIGNATURESTATUS",
+        "HOSTNAME",
+        "DOMAIN",
+        "PROCESSID",
+        "PARENTPROCESSID",
+        "PARENTPROCESSCOMMANDLINE",
+        "LOGONID",
+        "EVENTID",
+        "SEVERITY",
+        "ORIGINALFILENAME"
+      ]
+    },
+    "E4": {
+      "top": [
+        "TIME",
+        "RESULT",
+        "HOSTNAME",
+        "EVENTID"
+      ],
+      "sub": [
+        "OBJECTNAME",
+        "USERNAME",
+        "MESSAGE",
+        "DOMAIN",
+        "PROCESSID",
+        "PROCESSNAME"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "OBJECTNAME",
+        "RESULT"
+      ],
+      "sub": [
+        "STATUS",
+        "HOSTNAME",
+        "ACCESSRIGHT",
+        "IENAME",
+        "MESSAGE",
+        "EVENTID"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "USERNAME",
+        "DOMAIN",
+        "SOURCE",
+        "STATUS",
+        "TYPE",
+        "SOURCE_IP"
+      ]
+    },
+    "E18": {
+      "top": [
+        "TIME",
+        "FILENAME",
+        "IENAME",
+        "USERNAME",
+        "PROCESSNAME"
+      ],
+      "sub": [
+        "HASHES",
+        "HOSTNAME",
+        "FILETYPE",
+        "PREVVAL",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    }
+  },
+  "Terminal_Windows": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "HOSTNAME",
+        "EVENTID"
+      ],
+      "sub": [
+        "SEVERITY",
+        "REMOTEHOST"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "HOSTNAME",
+        "EVENTID"
+      ],
+      "sub": [
+        "REMOTEHOST",
+        "ERRORCODE",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    }
+  },
+  "ThreatAnalytics": {
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "CATEGORY"
+      ],
+      "sub": [
+        "IPADDRESS",
+        "DESTINATION_IP",
+        "HOSTNAME",
+        "MESSAGE",
+        "DESCRIPTION"
+      ]
+    }
+  },
+  "Topsec": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DURATION"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "OPERATION",
+        "HOSTID",
+        "DESCRIPTION",
+        "MESSAGE",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "RESULT",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "USERNAME",
+        "OPERATION",
+        "HOSTID",
+        "DESCRIPTION",
+        "MESSAGE",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "RESULT"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "ROLE",
+        "HOSTID",
+        "TYPE",
+        "SOURCE_IP",
+        "DESCRIPTION"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "HOSTNAME",
+        "SOURCE",
+        "CONNECTION",
+        "HOSTID",
+        "USERNAME",
+        "DURATION",
+        "RECEIVED_BYTES",
+        "SENT_BYTES",
+        "SOURCE_INTERFACE",
+        "DEST_INTERFACE",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "PRIORITY",
+        "HOSTNAME",
+        "SOURCE",
+        "DESCRIPTION",
+        "HOSTID",
+        "TYPE",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "RESULT"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "INTERFACE",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE",
+        "OPERATION"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "PRIORITY",
+        "ACTION",
+        "DESCRIPTION",
+        "TYPE",
+        "SOURCE",
+        "USERNAME",
+        "HOSTID",
+        "COUNT",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "Trend_Micro": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "REMOTEHOST",
+        "HOSTID",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "REMOTEHOST",
+        "HOSTID",
+        "SOURCE_PORT",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "SOURCE_IP",
+        "DESCRIPTION",
+        "CONF_OBJECT"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "DESTINATION_IP",
+        "CATEGORY",
+        "HOSTNAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "DESCRIPTION"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "OLDVALUE"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "CATEGORY",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE",
+        "CONF_OBJECT"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "MESSAGE",
+        "IENAME",
+        "DESCRIPTION"
+      ],
+      "sub": [
+        "ACTION",
+        "USERNAME",
+        "REMOTEHOST",
+        "SOURCE",
+        "HOSTID",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "UEM": {
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "DOMAINNAME",
+        "EVENTID"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "SOURCE_IP"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "HOSTNAME",
+        "SOURCE_IP",
+        "SEVERITY"
+      ],
+      "sub": [
+        "MESSAGE"
+      ]
+    }
+  },
+  "Unix": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "LOGONTYPE",
+        "HOSTNAME",
+        "LOGONID"
+      ],
+      "sub": [
+        "SEVERITY",
+        "REMOTEHOST",
+        "MODE",
+        "HOSTID"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "RESULT",
+        "HOSTNAME",
+        "LOGONTYPE"
+      ],
+      "sub": [
+        "REMOTEHOST",
+        "ERRORCODE",
+        "MODE",
+        "HOSTID",
+        "SEVERITY",
+        "DESCRIPTION",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "TARGETUSER",
+        "IENAME",
+        "RESULT"
+      ],
+      "sub": [
+        "GROUPNAME",
+        "HOSTNAME",
+        "TARGETDOMAIN",
+        "DESCRIPTION",
+        "TYPE"
+      ]
+    },
+    "E3": {
+      "top": [
+        "TIME",
+        "USERNAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "PROCESSID",
+        "LOGONID",
+        "SEVERITY"
+      ]
+    },
+    "E6": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "LOGONID",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SEVERITY",
+        "IENAME"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "DESCRIPTION"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "SERVICE_NAME",
+        "DESCRIPTION",
+        "USERNAME",
+        "REMOTEHOST",
+        "SOURCE",
+        "HOSTID",
+        "STATUS",
+        "TYPE",
+        "FACILITY",
+        "COMMANDEXECUTED"
+      ]
+    },
+    "E15": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "FILENAME",
+        "IENAME",
+        "RESULT"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "SEVERITY"
+      ]
+    }
+  },
+  "WatchGuard": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTID",
+        "SOURCE_PORT",
+        "MESSAGE",
+        "PRIVATE_IP",
+        "SEVERITY"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "SOURCE_IP",
+        "REASON",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "DOMAIN",
+        "ERROR",
+        "USERNAME",
+        "HOSTID",
+        "SOURCE_PORT",
+        "MESSAGE",
+        "SEVERITY",
+        "DESCRIPTION"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "DOMAIN"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "HOSTID",
+        "SERVER",
+        "MESSAGE",
+        "SOURCE_IP",
+        "OBJECT",
+        "DESCRIPTION",
+        "NOTES"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "RULENAME",
+        "HOSTNAME",
+        "PROTOCOL_TR",
+        "URL_SITE",
+        "USERNAME",
+        "HOSTID",
+        "SOURCE_INTERFACE",
+        "DEST_INTERFACE",
+        "PROTOCOL_APP",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "SIGNATURE_ID",
+        "VIRUS_NAME",
+        "RULENAME",
+        "HOSTNAME",
+        "IDS_NAME",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "DESCRIPTION"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "OBJECT"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "DESCRIPTION",
+        "IENAME",
+        "MESSAGE",
+        "OPERATION"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "SERVICE_NAME",
+        "ACTION",
+        "DESCRIPTION",
+        "USERNAME",
+        "OPERATION",
+        "OBJECT",
+        "DOMAIN",
+        "SOURCE",
+        "HOSTID",
+        "NOTES",
+        "REASON",
+        "FACILITY"
+      ]
+    }
+  },
+  "Win_Archive": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "LOGONTYPE",
+        "REMOTEIP",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "LOGONID",
+        "DOMAIN",
+        "EVENTID",
+        "SEVERITY",
+        "PROCESSNAME",
+        "SESSIONTYPE",
+        "WORKSTATION_NAME",
+        "AUTHENTICATION",
+        "REMOTEHOST",
+        "HOSTID"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "FAILUREREASON",
+        "REASON"
+      ],
+      "sub": [
+        "DOMAIN",
+        "HOSTNAME",
+        "LOGONTYPE",
+        "EVENTID",
+        "PROCESSNAME",
+        "REMOTEHOST",
+        "WORKSTATION_NAME",
+        "ENCRYPTIONTYPE",
+        "ERRORCODE",
+        "HOSTID",
+        "SEVERITY",
+        "AUTHENTICATION"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "TARGETUSER",
+        "IENAME",
+        "GROUPNAME"
+      ],
+      "sub": [
+        "DOMAIN",
+        "EVENTID",
+        "HOSTNAME",
+        "MACHINENAME",
+        "TARGETDOMAIN",
+        "SAMACCOUNTNAME",
+        "MEMBERSID",
+        "DISPLAYNAME",
+        "USERPRINCIPALNAME",
+        "OBJECT",
+        "TYPE"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "REMOTEIP",
+        "TARGETIP",
+        "IENAME",
+        "SOURCEPORT",
+        "POLICY"
+      ],
+      "sub": [
+        "RULENAME",
+        "HOSTNAME",
+        "USERNAME",
+        "HOSTID",
+        "MESSAGE"
+      ]
+    },
+    "B10": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SHARENAME",
+        "ACCESSES",
+        "REMOTEIP"
+      ],
+      "sub": [
+        "OBJECTNAME",
+        "IENAME",
+        "HOSTNAME",
+        "REMOTEHOST",
+        "SHAREPATH",
+        "RELATIVETARGETNAME",
+        "FILETYPE",
+        "PROCESSNAME",
+        "DOMAIN"
+      ]
+    },
+    "E2": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "OBJECT",
+        "HOSTNAME",
+        "IENAME"
+      ],
+      "sub": [
+        "DN",
+        "OBJECTNAME",
+        "GUID",
+        "DISPLAYNAME",
+        "ACCESSES",
+        "OBJECTTYPE",
+        "CATEGORY",
+        "SUBCATEGORY",
+        "EVENTID",
+        "CHANGES",
+        "PREVVAL"
+      ]
+    },
+    "E3": {
+      "top": [
+        "TIME",
+        "PROCESSNAME",
+        "USERNAME",
+        "HOSTNAME",
+        "DOMAIN"
+      ],
+      "sub": [
+        "SERVICENAME",
+        "EVENTID",
+        "SEVERITY",
+        "LOGONID",
+        "PROCESSID"
+      ]
+    },
+    "E4": {
+      "top": [
+        "TIME",
+        "SERVICENAME",
+        "SERVICEACCOUNT",
+        "HOSTNAME",
+        "EVENTID"
+      ],
+      "sub": [
+        "SERVICETYPE",
+        "OBJECTNAME",
+        "USERNAME",
+        "MESSAGE",
+        "DOMAIN",
+        "SERVICESTARTTYPE",
+        "PROCESSID",
+        "PROCESSNAME"
+      ]
+    },
+    "E5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IENAME",
+        "SERVICEACCOUNT"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "EVENTID",
+        "TASKCATEGORY",
+        "DOMAIN",
+        "PROCESSNAME"
+      ]
+    },
+    "E6": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "VENDORNAME",
+        "IENAME",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "DOMAIN",
+        "OBJECTNAME",
+        "EVENTID",
+        "LOGONID",
+        "MESSAGE",
+        "PHYTYPE",
+        "PROCESSNAME"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "REMOTEIP",
+        "TARGETIP",
+        "SEVERITY",
+        "IENAME"
+      ],
+      "sub": [
+        "INTELLIGENCE",
+        "CATEGORY",
+        "RISK_LEVEL",
+        "POLICY",
+        "MESSAGE",
+        "EVENTID",
+        "RULENAME",
+        "HOSTNAME"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "OBJECT",
+        "OLDVALUE"
+      ],
+      "sub": [
+        "NEWVALUE",
+        "HOSTNAME",
+        "TARGETUSER",
+        "ACCESSRIGHT",
+        "CATEGORY",
+        "IENAME",
+        "MESSAGE",
+        "EVENTID"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "RISK_LEVEL",
+        "SERVICENAME",
+        "USERNAME",
+        "REMOTEHOST",
+        "DOMAIN",
+        "SOURCE",
+        "HOSTID",
+        "REASON",
+        "TYPE"
+      ]
+    },
+    "E18": {
+      "top": [
+        "TIME",
+        "OBJECTNAME",
+        "IENAME",
+        "USERNAME",
+        "PROCESSNAME"
+      ],
+      "sub": [
+        "OLDVALUE",
+        "NEWVALUE",
+        "HOSTNAME",
+        "FILETYPE",
+        "PREVVAL",
+        "SHAREPATH",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    }
+  },
+  "Windows": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "LOGONTYPE",
+        "REMOTEIP",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "LOGONID",
+        "DOMAIN",
+        "EVENTID",
+        "SEVERITY",
+        "SESSIONTYPE",
+        "WORKSTATION_NAME",
+        "PROCESSNAME",
+        "AUTHENTICATION",
+        "REMOTEHOST",
+        "MODE",
+        "HOSTID"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "ACCOUNT_NAME",
+        "REMOTEIP",
+        "RESULT",
+        "FAILUREREASON"
+      ],
+      "sub": [
+        "DOMAIN",
+        "HOSTNAME",
+        "LOGONTYPE",
+        "USERNAME",
+        "PROCESSNAME",
+        "EVENTID",
+        "REMOTEHOST",
+        "WORKSTATION_NAME",
+        "ENCRYPTIONTYPE",
+        "ERRORCODE",
+        "MODE",
+        "HOSTID"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "TARGETUSER",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "GROUP",
+        "DOMAIN",
+        "RESULT",
+        "EVENTID",
+        "HOSTNAME",
+        "GROUPNAME",
+        "MACHINENAME",
+        "TARGETDOMAIN",
+        "SAMACCOUNTNAME",
+        "MEMBERSID",
+        "DISPLAYNAME"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "REMOTEIP",
+        "TARGETIP",
+        "ACTION",
+        "IENAME",
+        "PROTOCOL"
+      ],
+      "sub": [
+        "SOURCEPORT",
+        "POLICY",
+        "RULENAME",
+        "POLICY_NAME",
+        "HOSTNAME",
+        "USERNAME",
+        "HOSTID",
+        "APPLICATION",
+        "MESSAGE"
+      ]
+    },
+    "B10": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SHARENAME",
+        "ACCESSES",
+        "ACTION"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "REMOTEIP",
+        "FILENAME",
+        "RESULT",
+        "HOSTNAME",
+        "OBJECTNAME",
+        "SHAREPATH",
+        "IENAME",
+        "REMOTEHOST",
+        "RELATIVETARGETNAME",
+        "FILETYPE",
+        "PROCESSNAME"
+      ]
+    },
+    "E2": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "OBJECT",
+        "ACTION",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "RESULT",
+        "DN",
+        "OBJECTNAME",
+        "GUID",
+        "IENAME",
+        "DISPLAYNAME",
+        "ACCESSES",
+        "OBJECTTYPE",
+        "CATEGORY",
+        "SUBCATEGORY",
+        "EVENTID"
+      ]
+    },
+    "E3": {
+      "top": [
+        "TIME",
+        "PROCESSNAME",
+        "COMMANDLINE",
+        "USERNAME",
+        "PARENTPROCESSNAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "DOMAIN",
+        "SERVICENAME",
+        "EVENTID",
+        "PROCESSID",
+        "PARENTPROCESSID",
+        "PARENTPROCESSCOMMANDLINE",
+        "LOGONID",
+        "SEVERITY"
+      ]
+    },
+    "E4": {
+      "top": [
+        "TIME",
+        "SERVICENAME",
+        "SERVICEACCOUNT",
+        "RESULT",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "SERVICETYPE",
+        "OBJECTNAME",
+        "USERNAME",
+        "MESSAGE",
+        "DOMAIN",
+        "SERVICESTARTTYPE",
+        "PROCESSID",
+        "PROCESSNAME"
+      ]
+    },
+    "E5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "ACTION",
+        "IENAME",
+        "COMMANDLINE"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "SERVICEACCOUNT",
+        "HOSTNAME",
+        "EVENTID",
+        "TASKCONTENTNEW",
+        "TASKCATEGORY",
+        "DOMAIN",
+        "PROCESSNAME"
+      ]
+    },
+    "E6": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "VENDORNAME",
+        "ACTION",
+        "IENAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "HOSTNAME",
+        "DOMAIN",
+        "OBJECTNAME",
+        "EVENTID",
+        "LOGONID",
+        "MESSAGE",
+        "PHYTYPE",
+        "PROCESSNAME"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "REMOTEIP",
+        "TARGETIP",
+        "SEVERITY",
+        "ACTION"
+      ],
+      "sub": [
+        "INTELLIGENCE",
+        "CATEGORY",
+        "RISK_LEVEL",
+        "POLICY",
+        "MESSAGE",
+        "EVENTID",
+        "RULENAME",
+        "POLICY_NAME",
+        "HOSTNAME"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "OBJECT",
+        "TARGET"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "RESULT",
+        "HOSTNAME",
+        "TARGETUSER",
+        "COMMANDEXECUTED",
+        "CATEGORY",
+        "ACCESSRIGHT",
+        "IENAME",
+        "MESSAGE",
+        "PATH"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "EVENTID",
+        "RISK_LEVEL",
+        "SERVICENAME",
+        "ACTION",
+        "USERNAME",
+        "REMOTEHOST",
+        "DOMAIN",
+        "SOURCE",
+        "HOSTID",
+        "REASON",
+        "TYPE",
+        "COMMANDEXECUTED"
+      ]
+    },
+    "E18": {
+      "top": [
+        "TIME",
+        "FILENAME",
+        "ACTION",
+        "IENAME",
+        "USERNAME"
+      ],
+      "sub": [
+        "ACCOUNT_NAME",
+        "PROCESSNAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "HOSTNAME",
+        "OBJECTNAME",
+        "FILETYPE",
+        "PLATFORM",
+        "ACCESSMASK",
+        "SHAREPATH",
+        "PREVVAL",
+        "SEVERITY"
+      ]
+    }
+  },
+  "azure_active_directory": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "HOSTID"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "RESULT",
+        "FAILUREREASON"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "ERRORCODE",
+        "HOSTID",
+        "MESSAGE"
+      ]
+    },
+    "B5": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "RESULT",
+        "OPERATION"
+      ],
+      "sub": [
+        "HOSTNAME"
+      ]
+    },
+    "B7": {
+      "top": [
+        "TIME",
+        "STATUS",
+        "USERNAME",
+        "IPADDRESS",
+        "OPERATION"
+      ],
+      "sub": [
+        "RESULT"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "IPADDRESS",
+        "RESULT"
+      ],
+      "sub": [
+        "STATUS",
+        "HOSTNAME",
+        "MESSAGE",
+        "OPERATION"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "OPERATION",
+        "RESULT",
+        "IPADDRESS",
+        "APPLICATIONNAME"
+      ],
+      "sub": [
+        "RISK_LEVEL",
+        "MESSAGE",
+        "FAILUREREASON",
+        "ERRORCODE",
+        "CITY",
+        "COUNTRY",
+        "STATUS",
+        "CALLER",
+        "SOURCE",
+        "HOSTNAME",
+        "LOCATION",
+        "LOGON_TYPE_TEXT"
+      ]
+    }
+  },
+  "exchange_online": {
+    "B7": {
+      "top": [
+        "TIME",
+        "IPADDRESS",
+        "OPERATION",
+        "TARGET",
+        "RESULT"
+      ],
+      "sub": []
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "IPADDRESS",
+        "OPERATION"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "IPADDRESS",
+        "OPERATION"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE",
+        "DESCRIPTION"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "MESSAGE",
+        "SERVICENAME",
+        "OPERATION"
+      ],
+      "sub": [
+        "DESCRIPTION"
+      ]
+    },
+    "E18": {
+      "top": [
+        "TIME",
+        "OPERATION"
+      ],
+      "sub": [
+        "HOSTNAME",
+        "MESSAGE"
+      ]
+    },
+    "OB3": {
+      "top": [
+        "TIME",
+        "CALLER",
+        "OPERATION",
+        "RESULT",
+        "IPADDRESS",
+        "TARGET"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "HOSTNAME",
+        "SERVICENAME",
+        "AUDITTYPE",
+        "ROLE",
+        "MODIFIED_PROPERTIES_GD",
+        "MESSAGE"
+      ]
+    }
+  },
+  "m365_general": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "CALLER",
+        "OPERATION",
+        "RESULT",
+        "IPADDRESS",
+        "TARGET"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "HOSTNAME",
+        "SERVICENAME",
+        "AUDITTYPE",
+        "ROLE",
+        "MODIFIED_PROPERTIES_GD",
+        "MESSAGE"
+      ]
+    }
+  },
+  "pfSense": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "MESSAGE"
+      ],
+      "sub": [
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "REASON",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTID",
+        "SEVERITY",
+        "SOURCE_PORT"
+      ]
+    },
+    "B9": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "DEST_PORT",
+        "IENAME",
+        "PROTOCOL_TR"
+      ],
+      "sub": [
+        "SOURCE_PORT",
+        "HOSTNAME",
+        "PACK_LEN",
+        "TRACKER_ID",
+        "USERNAME",
+        "HOSTID",
+        "MESSAGE"
+      ]
+    },
+    "E10": {
+      "top": [
+        "TIME",
+        "SOURCE_IP",
+        "DEST_IP",
+        "SEVERITY",
+        "IENAME"
+      ],
+      "sub": [
+        "PRIORITY",
+        "HOSTNAME",
+        "IDS_NAME",
+        "ATTACK",
+        "MESSAGE",
+        "DEST_PORT",
+        "SOURCE_PORT",
+        "CLASSIFICATION"
+      ]
+    },
+    "E12": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "SOURCE_IP",
+        "HOSTNAME",
+        "INTERFACE"
+      ],
+      "sub": [
+        "MESSAGE",
+        "HOSTID",
+        "IENAME"
+      ]
+    },
+    "E13": {
+      "top": [
+        "TIME",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE",
+        "IENAME"
+      ],
+      "sub": [
+        "PRIORITY",
+        "USERNAME",
+        "HOSTID",
+        "FW_DIRECTION",
+        "INTERFACE",
+        "PROTOCOL_TR",
+        "SOURCE",
+        "REASON",
+        "FACILITY",
+        "SOURCE_IP"
+      ]
+    }
+  },
+  "sharepoint_online": {
+    "OB3": {
+      "top": [
+        "TIME",
+        "CALLER",
+        "OPERATION",
+        "RESULT",
+        "IPADDRESS",
+        "TARGET"
+      ],
+      "sub": [
+        "DESCRIPTION",
+        "HOSTNAME",
+        "SERVICENAME",
+        "AUDITTYPE",
+        "ROLE",
+        "MODIFIED_PROPERTIES_GD",
+        "MESSAGE"
+      ]
+    }
+  },
+  "vCenter": {
+    "B3": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "SEVERITY",
+        "HOSTID"
+      ]
+    },
+    "B4": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "REASON",
+        "HOSTNAME"
+      ],
+      "sub": [
+        "HOSTID",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    },
+    "B7": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "REMOTEIP",
+        "EVENTNAME",
+        "TARGET"
+      ],
+      "sub": [
+        "OBJECTTYPE"
+      ]
+    },
+    "E16": {
+      "top": [
+        "TIME",
+        "USERNAME",
+        "EVENTNAME",
+        "TARGET",
+        "DATACENTER"
+      ],
+      "sub": [
+        "REMOTEIP",
+        "HOSTNAME",
+        "OLDVALUE",
+        "NEWVALUE",
+        "DATASTORE",
+        "DISK",
+        "SOURCEHOST",
+        "DESTINATIONHOST",
+        "RESOURCEPOOL",
+        "NETWORK",
+        "FILE",
+        "SEVERITY"
+      ]
+    },
+    "E18": {
+      "top": [
+        "TIME",
+        "FILE",
+        "USERNAME",
+        "EVENTNAME",
+        "OLDVALUE"
+      ],
+      "sub": [
+        "NEWVALUE",
+        "HOSTNAME",
+        "SEVERITY",
+        "MESSAGE"
+      ]
+    }
+  }
+}

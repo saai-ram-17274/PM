@@ -1,0 +1,181 @@
+{
+  "$schema_version": "1.0",
+  "doc_version": "derived from device_and_other_entity_spec.md v2.2 (27 May 2026)",
+  "description": "Per-log-type binding to entity slider, sub-class, tabs, Baseline sub-sections, Enriched sub-sections. The Baseline/Enriched ids are the V5 + extended-V5 stable handles defined in V6/device_and_other_entity_spec.md (B1-B11, E1-E16, E18-E19 for Device; OB1-OB4, OE1-OE4 for Other). Tab placement is derived from spec sections 3.2/3.3/3.4 (Device) and 5.2/5.3 (Other).",
+  "provenance": {
+    "spec": "../device_and_other_entity_spec.md",
+    "registry": "../../../REPOS/itsf/product_package/conf/itsf/common/ai/nlq/data/nlq_event_field_mapping.json",
+    "field_inventory": "../device_activity_tab_field_inventory.md",
+    "v5_anchor": "../../V5/entity_constant_vs_dynamic.md (section 4.5)",
+    "report_catalog_status": "NOT empirically validated against ELA per-logtype report definitions \u2014 those live in dynamic adapters (report-classloader.properties \u2192 OuterFrameAdapter / InnerFrameAdapter) backed by the indexed matching_reports field in z-logs, not present as static config in log360_cloud / log360cloudcommon workspace folders."
+  },
+  "section_catalog": {
+    "device": {
+      "tabs": ["Overview", "Host Activity", "Device Activity", "Recent Alerts"],
+      "baseline": {
+        "B1":  {"name": "Risk Summary",                              "tab": "Overview"},
+        "B2":  {"name": "Device Details",                            "tab": "Overview"},
+        "B3":  {"name": "Users Logged On",                           "tab": "Host Activity"},
+        "B4":  {"name": "Login Activity",                            "tab": "Host Activity"},
+        "B5":  {"name": "Local Account Lifecycle",                   "tab": "Device Activity"},
+        "B6":  {"name": "Recent Alerts",                             "tab": "Recent Alerts"},
+        "B7":  {"name": "DB Server Auth & Privileged Ops",           "tab": "Host Activity"},
+        "B8":  {"name": "Web Server Activity (5xx + auth failures)", "tab": "Host Activity"},
+        "B9":  {"name": "Traffic Flow Summary",                      "tab": "Device Activity"},
+        "B10": {"name": "NAS Share Access Summary",                  "tab": "Device Activity"},
+        "B11": {"name": "VM / Cluster Inventory",                    "tab": "Overview"}
+      },
+      "enriched": {
+        "E1":  {"name": "Agent Status & Health",                    "tab": "Overview"},
+        "E2":  {"name": "GPO Applied",                              "tab": "Overview"},
+        "E3":  {"name": "Processes Started on Host",                "tab": "Host Activity"},
+        "E4":  {"name": "Services Installed on Host",               "tab": "Host Activity"},
+        "E5":  {"name": "Scheduled Task Events",                    "tab": "Device Activity"},
+        "E6":  {"name": "USB Device Events",                        "tab": "Device Activity"},
+        "E7":  {"name": "Full DB Query Audit",                      "tab": "Host Activity"},
+        "E8":  {"name": "URL / Category Breakdown",                 "tab": "context-dependent",
+                "tab_rule": "Web/FTP server log-types \u2192 Host Activity; Network-security-appliance & Network-infrastructure log-types \u2192 Device Activity"},
+        "E9":  {"name": "Per-flow Firewall Lookup",                 "tab": "Device Activity"},
+        "E10": {"name": "Threat / IPS Event Detail",                "tab": "Device Activity"},
+        "E11": {"name": "VPN Session Detail",                       "tab": "Device Activity"},
+        "E12": {"name": "Admin / Config Changes on Appliance",      "tab": "Device Activity"},
+        "E13": {"name": "System & Service Events",                "tab": "Device Activity",
+                "tab_rule": "Windows/Unix/DB host → Host Activity; appliance/infrastructure → Device Activity. Covers OS health, eventlog, severity, startup/shutdown/backup, app crashes, DNS server, Unix mail/NFS/services, interface/port/connection status, and generic <vendor> Events / System Reports."},
+        "E14": {"name": "SNMP Trap Stream",                         "tab": "Device Activity"},
+        "E15": {"name": "NAS / FTP File-level Access Detail",       "tab": "Device Activity"},
+        "E16": {"name": "Hypervisor Management Plane",              "tab": "Device Activity"},
+        "E18": {"name": "File Integrity & Permission Changes",       "tab": "Device Activity",
+                "tab_rule": "Windows FIM (Sysmon EID 11/15, File Audit), Linux File Monitoring agent, and ACL/Permission Changes on Windows/vCenter/ERP mailbox."},
+        "E19": {"name": "Print Queue Activity",                     "tab": "Device Activity"}
+      }
+    },
+    "other": {
+      "tabs": ["Overview", "Activity", "Recent Alerts"],
+      "baseline": {
+        "OB1": {"name": "Risk Summary",      "tab": "Overview"},
+        "OB2": {"name": "Entity Details",    "tab": "Overview"},
+        "OB3": {"name": "Recent Activity",   "tab": "Activity"},
+        "OB4": {"name": "Recent Alerts",     "tab": "Recent Alerts"}
+      },
+      "enriched": {
+        "OE1": {"name": "Full Audit Trail",          "tab": "Activity"},
+        "OE2": {"name": "Top Targets",               "tab": "Activity"},
+        "OE3": {"name": "Configuration Changes",     "tab": "Activity"},
+        "OE4": {"name": "Cross-Entity Correlations", "tab": "Activity"}
+      }
+    }
+  },
+  "logtype_count": {"device": 47, "other": 36, "total": 83},
+  "logtypes": {
+    "Windows":                       {"slider": "device", "sub_class": "Windows-family endpoints",   "baseline": ["B1","B3","B4","B5"], "enriched": ["E3","E4","E5","E6"], "notes": "Primary feed. EID 4624/4625\u2192B4; 4720/4722/4724/4725/4726/4732/4733\u2192B5; 4688\u2192E3; 7045\u2192E4; 4698-4702\u2192E5; 6416\u2192E6."},
+    "Sysmon":                        {"slider": "device", "sub_class": "Windows-family endpoints",   "baseline": [],                    "enriched": ["E3","E18"],          "notes": "EID 1 richer process detail (parent, hash, signature); EID 11/15\u2192E18 file-write events."},
+    "Win_Archive":                   {"slider": "device", "sub_class": "Windows-family endpoints",   "baseline": ["B4","B5"],           "enriched": ["E3","E4","E5","E6"], "notes": "Same EID set as Windows, archive index."},
+    "Terminal_Windows":              {"slider": "device", "sub_class": "Windows-family endpoints",   "baseline": ["B3","B4"],           "enriched": [],                    "notes": "RDP-specific 4624 logon-type=10 + session reconnect/disconnect 4778/4779."},
+    "FIM":                           {"slider": "device", "sub_class": "Windows-family endpoints",   "baseline": [],                    "enriched": ["E18"],               "notes": "Windows FIM agent only. NAS file events route to E15, not E18."},
+    "Printer_Windows":               {"slider": "device", "sub_class": "Windows-family endpoints",   "baseline": [],                    "enriched": ["E19"],               "notes": "Spooler EID 307/805. Renders only when device sub-class = print server."},
+
+    "Unix":                          {"slider": "device", "sub_class": "Unix-family endpoints",      "baseline": ["B1","B3","B4","B5"], "enriched": ["E3","E4"],           "notes": "sshd/login auth, useradd/usermod local accounts, sudo/execve process."},
+    "Syslog":                        {"slider": "device", "sub_class": "Network device (generic syslog)", "baseline": ["B4","B9"],     "enriched": ["E10","E12","E13"],   "notes": "Generic syslog \u2014 treated as a network device per SOC convention (no vendor-specific ITSF report tree). Auth\u2192B4; traffic\u2192B9; threats\u2192E10; admin/config\u2192E12; system events\u2192E13."},
+    "Sys_Archive":                   {"slider": "device", "sub_class": "Unix-family endpoints",      "baseline": ["B4","B5"],           "enriched": ["E3","E4"],           "notes": "Archive variant of Unix/Syslog."},
+    "AS400":                         {"slider": "device", "sub_class": "Unix-family endpoints",      "baseline": ["B4","B5"],           "enriched": [],                    "notes": "QAUDJRN audit-journal logon + object events."},
+
+    "MSSQL":                         {"slider": "device", "sub_class": "Database servers",          "baseline": ["B4","B7"],           "enriched": ["E7"],                "notes": "Auth\u2192B4; GRANT/REVOKE/DDL\u2192B7; SELECT/DML query audit\u2192E7."},
+    "Oracle":                        {"slider": "device", "sub_class": "Database servers",          "baseline": ["B4","B7"],           "enriched": ["E7"],                "notes": "Audit-trail vs unified-audit-trail handled by parser."},
+    "MySQL":                         {"slider": "device", "sub_class": "Database servers",          "baseline": ["B4","B7"],           "enriched": ["E7"],                "notes": ""},
+    "PGSQL":                         {"slider": "device", "sub_class": "Database servers",          "baseline": ["B4","B7"],           "enriched": ["E7"],                "notes": ""},
+    "DB2":                           {"slider": "device", "sub_class": "Database servers",          "baseline": ["B4","B7"],           "enriched": ["E7"],                "notes": ""},
+
+    "ApacheAccessLogs":              {"slider": "device", "sub_class": "Web / app / FTP servers",   "baseline": ["B8"],                "enriched": ["E8"],                "e8_tab": "Host Activity", "notes": "5xx + 4xx auth failures\u2192B8; full URL/category\u2192E8."},
+    "IIS_W3C_web":                   {"slider": "device", "sub_class": "Web / app / FTP servers",   "baseline": ["B8"],                "enriched": ["E8"],                "e8_tab": "Host Activity", "notes": ""},
+    "IIS_W3C_ftp":                   {"slider": "device", "sub_class": "Web / app / FTP servers",   "baseline": ["B8"],                "enriched": ["E15"],               "notes": "FTP commands STOR/RETR/DELE \u2192 E15 file-level access."},
+
+    "Hypervisor":                    {"slider": "device", "sub_class": "Hypervisor / virtualisation","baseline":["B1","B11"],          "enriched": ["E16"],               "notes": "ESXi host-side: VM lifecycle\u2192B11; host config/network\u2192E16."},
+    "vCenter":                       {"slider": "device", "sub_class": "Hypervisor / virtualisation","baseline":["B11"],               "enriched": ["E16"],               "notes": "vCenter management plane: vMotion, permission changes, cluster reconfig."},
+
+    "SNMP":                          {"slider": "device", "sub_class": "SNMP-managed device",       "baseline": ["B9"],                "enriched": ["E14"],               "notes": "Aggregated trap counts\u2192B9 (severity-rolled); per-trap\u2192E14."},
+
+    "Cisco":                         {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E11","E12","E13"], "notes": "ASA traffic+VPN; IOS switch/router events."},
+    "FirePower":                     {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E10"],          "notes": "Strong IPS/threat fields (IENAME=Attacks)."},
+    "PaloAlto":                      {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E8","E9","E10","E11"], "e8_tab": "Device Activity", "notes": "URL + threat + VPN + traffic; widest fan-out."},
+    "Fortinet":                      {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E8","E9","E10","E11"], "e8_tab": "Device Activity", "notes": "Same fan-out as PaloAlto."},
+    "CheckPoint":                    {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E11","E12"],    "notes": "Traffic + VPN + admin."},
+    "Juniper":                       {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E11","E13"],    "notes": "SRX firewall + EX/MX switch (dual-role)."},
+    "SonicWall":                     {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E10","E11"],    "notes": "Traffic + threat + VPN."},
+    "WatchGuard":                    {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E10","E11"],    "notes": "Firebox traffic + threat + VPN."},
+    "NetScreen":                     {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E12"],          "notes": "Traffic + admin (no VPN fields)."},
+    "Barracuda":                     {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E10"],          "notes": "Traffic + threat."},
+    "pfSense":                       {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9"],                "notes": "Traffic-focused; no auth/VPN fields in JSON."},
+    "ForcePoint":                    {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E8","E10"],          "e8_tab": "Device Activity", "notes": "Web filter: URL + threat."},
+    "Sophos":                        {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E10"],          "notes": "XG/UTM traffic + threat."},
+    "Topsec":                        {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E10"],          "notes": "Traffic + threat."},
+    "Sangfor":                       {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E10"],          "notes": "NGAF traffic + threat."},
+    "Stormshield":                   {"slider": "device", "sub_class": "Network security appliance","baseline": ["B9"],                "enriched": ["E9","E10"],          "notes": "Traffic + threat."},
+
+    "Arista":                        {"slider": "device", "sub_class": "Network infrastructure",    "baseline": ["B9"],                "enriched": ["E12","E13"],         "notes": "EOS switch/router admin + interface events."},
+    "Dell":                          {"slider": "device", "sub_class": "Network infrastructure",    "baseline": ["B9"],                "enriched": ["E12","E13"],         "notes": "Dell switch / iDRAC."},
+    "F5":                            {"slider": "device", "sub_class": "Network infrastructure",    "baseline": ["B9"],                "enriched": ["E8","E12"],          "e8_tab": "Device Activity", "notes": "BIG-IP LTM/APM URL + admin (dual-role NSA via ASM)."},
+    "H3C":                           {"slider": "device", "sub_class": "Network infrastructure",    "baseline": ["B9"],                "enriched": ["E9","E12","E13"],    "notes": "Switch + firewall (dual-role)."},
+    "HP":                            {"slider": "device", "sub_class": "Network infrastructure",    "baseline": ["B9"],                "enriched": ["E12","E13"],         "notes": "Switch / Aruba."},
+    "Huawei":                        {"slider": "device", "sub_class": "Network infrastructure",    "baseline": ["B9"],                "enriched": ["E9","E12","E13"],    "notes": "Switch + firewall (dual-role)."},
+    "Meraki":                        {"slider": "device", "sub_class": "Network infrastructure",    "baseline": ["B9"],                "enriched": ["E8","E9","E12"],     "e8_tab": "Device Activity", "notes": "Cloud-managed; URL + traffic."},
+
+    "EMC Isilon":                    {"slider": "device", "sub_class": "File / NAS appliance",      "baseline": ["B10"],               "enriched": ["E15"],               "notes": "Share-level\u2192B10; per-file detail\u2192E15. NAS file events NOT routed to E18 \u2014 E18 is Windows-host FIM only."},
+    "QNAP NAS":                      {"slider": "device", "sub_class": "File / NAS appliance",      "baseline": ["B10"],               "enriched": ["E15"],               "notes": ""},
+    "SynologyNAS":                   {"slider": "device", "sub_class": "File / NAS appliance",      "baseline": ["B10"],               "enriched": ["E15"],               "notes": ""},
+
+    "AWS":                           {"slider": "other",  "sub_class": "Cloud / SaaS tenant audit", "baseline": ["OB1","OB2","OB3"],   "enriched": ["OE1","OE2","OE3"],   "notes": "CloudTrail: IAM/S3/EC2/AccessKey. OE2=top targeted resources/accounts; OE3=IAM policy/SCP changes."},
+    "azure_active_directory":        {"slider": "other",  "sub_class": "Cloud / SaaS tenant audit", "baseline": ["OB2","OB3"],         "enriched": ["OE1","OE2","OE3"],   "notes": "Sign-in audit + directory changes; OE3=role/app-registration changes."},
+    "exchange_online":               {"slider": "other",  "sub_class": "Cloud / SaaS tenant audit", "baseline": ["OB2","OB3"],         "enriched": ["OE1","OE2","OE3"],   "notes": "Mailbox + admin audit; OE3=transport-rule/mailbox-permission changes."},
+    "m365_general":                  {"slider": "other",  "sub_class": "Cloud / SaaS tenant audit", "baseline": ["OB2","OB3"],         "enriched": ["OE1","OE2"],         "notes": "Unified audit log (SharePoint, OneDrive, Teams, admin)."},
+    "m365_mailtrace":                {"slider": "other",  "sub_class": "Cloud / SaaS tenant audit", "baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": "Message-trace records (sender/recipient/disposition)."},
+    "sharepoint_online":             {"slider": "other",  "sub_class": "Cloud / SaaS tenant audit", "baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": "Site/file/permission events."},
+    "Salesforce":                    {"slider": "other",  "sub_class": "Cloud / SaaS tenant audit", "baseline": ["OB2","OB3"],         "enriched": ["OE1","OE2","OE3"],   "notes": "Login history + setup audit-trail + API; OE3=profile/permission-set/sharing-rule changes."},
+
+    "ADAP":                          {"slider": "other",  "sub_class": "ManageEngine product audit","baseline": ["OB3"],               "enriched": ["OE1","OE3"],         "notes": "ADAudit Plus product audit."},
+    "ADMP":                          {"slider": "other",  "sub_class": "ManageEngine product audit","baseline": ["OB3"],               "enriched": ["OE1","OE3"],         "notes": "ADManager Plus."},
+    "ADSSP":                         {"slider": "other",  "sub_class": "ManageEngine product audit","baseline": ["OB3"],               "enriched": ["OE1","OE3"],         "notes": "ADSelfService Plus."},
+    "OPM":                           {"slider": "other",  "sub_class": "ManageEngine product audit","baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": "OpManager \u2014 top monitored devices\u2192OE2."},
+    "PMP":                           {"slider": "other",  "sub_class": "ManageEngine product audit","baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": "PasswordManager \u2014 top credential accesses\u2192OE2."},
+    "SDP":                           {"slider": "other",  "sub_class": "ManageEngine product audit","baseline": ["OB3"],               "enriched": ["OE1"],               "notes": "ServiceDesk Plus \u2014 ticket events."},
+    "UEM":                           {"slider": "other",  "sub_class": "ManageEngine product audit","baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": "Endpoint Central/UEM \u2014 top managed endpoints\u2192OE2."},
+    "ERP":                           {"slider": "other",  "sub_class": "ManageEngine product audit","baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": "ManageEngine ERP transactions."},
+
+    "IBM_Maximo":                    {"slider": "other",  "sub_class": "Enterprise application audit","baseline":["OB3"],              "enriched": ["OE1"],               "notes": "Asset-management audit."},
+    "SAP":                           {"slider": "other",  "sub_class": "Enterprise application audit","baseline":["OB3"],              "enriched": ["OE1","OE3"],         "notes": "Transaction + config audit."},
+
+    "McAfee":                        {"slider": "other",  "sub_class": "Endpoint protection / EDR", "baseline": ["OB3"],               "enriched": ["OE2"],               "notes": "ePO / endpoint AV."},
+    "Symantec_Endpoint_Protection":  {"slider": "other",  "sub_class": "Endpoint protection / EDR", "baseline": ["OB3"],               "enriched": ["OE2"],               "notes": "SEP virus + intrusion + device-control."},
+    "Symantec_DLP":                  {"slider": "other",  "sub_class": "Endpoint protection / EDR", "baseline": ["OB3"],               "enriched": ["OE2","OE3"],         "notes": "DLP policy hits + config changes."},
+    "Trend_Micro":                   {"slider": "other",  "sub_class": "Endpoint protection / EDR", "baseline": ["OB3"],               "enriched": ["OE2"],               "notes": "OfficeScan / Deep Security."},
+    "FireEye":                       {"slider": "other",  "sub_class": "Endpoint protection / EDR", "baseline": ["OB3"],               "enriched": ["OE2"],               "notes": "NX / HX malware detection."},
+    "MalwareBytes":                  {"slider": "other",  "sub_class": "Endpoint protection / EDR", "baseline": ["OB3"],               "enriched": ["OE2"],               "notes": "Endpoint detection."},
+    "CEF_Format":                    {"slider": "other",  "sub_class": "Endpoint protection / EDR", "baseline": ["OB3"],               "enriched": ["OE2"],               "notes": "Generic vendor CEF \u2014 heuristic mapping by vendor field."},
+
+    "ThreatAnalytics":               {"slider": "other",  "sub_class": "Threat analytics rollup",   "baseline": ["OB1","OB3"],         "enriched": ["OE4"],               "notes": "Correlation rollup; OE4 lists every Device/User entity touched."},
+
+    "Qualys":                        {"slider": "other",  "sub_class": "Vulnerability findings",    "baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": "Top affected hosts\u2192OE2."},
+    "Nessus":                        {"slider": "other",  "sub_class": "Vulnerability findings",    "baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": ""},
+    "Nexpose":                       {"slider": "other",  "sub_class": "Vulnerability findings",    "baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": ""},
+    "OpenVas":                       {"slider": "other",  "sub_class": "Vulnerability findings",    "baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": ""},
+    "NMAP":                          {"slider": "other",  "sub_class": "Vulnerability findings",    "baseline": ["OB3"],               "enriched": ["OE1"],               "notes": "Network scan results (ports + service banners)."},
+
+    "DHCP_Linux":                    {"slider": "other",  "sub_class": "DHCP service activity",     "baseline": ["OB3"],               "enriched": ["OE1"],               "notes": "Lease grant / renew / deny."},
+    "DHCP_Windows":                  {"slider": "other",  "sub_class": "DHCP service activity",     "baseline": ["OB3"],               "enriched": ["OE1"],               "notes": ""},
+
+    "SyslogApp":                     {"slider": "other",  "sub_class": "Generic wrapper / gateway", "baseline": ["OB3"],               "enriched": ["OE1"],               "notes": "Generic syslog wrapper; pass-through projection."},
+    "Gateway_Server":                {"slider": "other",  "sub_class": "Generic wrapper / gateway", "baseline": ["OB3"],               "enriched": ["OE1","OE2"],         "notes": "CASB / cloud gateway; top targets\u2192OE2."},
+
+    "audit":                         {"slider": "other",  "sub_class": "System metadata",           "baseline": ["OB3"],               "enriched": ["OE1"],               "notes": "Log360 self-audit (platform config changes, admin actions)."},
+    "alerts":                        {"slider": "other",  "sub_class": "System metadata",           "baseline": ["OB3"],               "enriched": ["OE1"],               "notes": "Internal alert-metadata events."}
+  },
+  "implicit_baseline_per_device": {
+    "comment": "Per spec section 3.2, B2 (Device Details) and B6 (Recent Alerts) always render on EVERY device-slider entity (B2 = identity card; B6 = correlated alerts) regardless of which log-types the device emits. Per-log-type 'baseline' arrays above list ONLY the data-driven sub-sections that the specific log-type can feed; the always-on B2 and B6 are added by the slider at render time.",
+    "always_on_for_device": ["B2", "B6"],
+    "always_on_for_other":  ["OB2", "OB4"]
+  },
+  "implicit_enriched_per_device": {
+    "comment": "Per spec section 3.3, E1 (Agent Status & Health) and E2 (GPO Applied) are derived from agent-registry + GPO-discovery joins, not from the per-log-type event stream. They render after Investigate Entity for any Windows-family device with an agent / GPO scope, independent of whether the listed enriched array includes them.",
+    "agent_health_for_device":     "E1",
+    "gpo_for_windows_family":      "E2"
+  }
+}
