@@ -273,15 +273,6 @@
     var s = e.sections || {};
     var chips = [];
 
-    // ── Blast radius: anchor chip (with live reachable-node count) ───
-    var brData  = s.blastRadius && s.blastRadius.blastRadius;
-    var brCount = brData && brData.reachNodes ? brData.reachNodes.length : 0;
-    if (e.type !== 'alert') {
-      chips.push(brCount > 0
-        ? { icon: '💥', text: 'Show blast radius (' + brCount + ' reachable nodes)' }
-        : { icon: '💥', text: 'Show blast radius' });
-    }
-
     switch (e.type) {
 
       // ── USER — blast = every system they can authenticate to / access ─
