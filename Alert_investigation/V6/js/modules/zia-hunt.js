@@ -43,7 +43,7 @@
     _typing = false;
 
     _renderInitialPreview(entityId, e);
-    _renderSuggestions(e.type);
+    _renderSuggestions(entityId, e);
 
     document.getElementById('graphContainer').classList.add('zia-hunt-open');
     panel.classList.add('open');
@@ -256,69 +256,154 @@
     return [];
   }
 
-  // ── Suggestion Chips ───────────────────────────────────────────────
-  var SUGGESTIONS = {
-    user: [
-      { icon: '🔐', text: 'Show failed login attempts' },
-      { icon: '📊', text: 'UEBA risk profile' },
-      { icon: '📁', text: 'What files were accessed?' },
-      { icon: '🌑', text: 'Dark web exposure' },
-      { icon: '📨', text: 'Is mailbox forwarding set?' },
-      { icon: '🔑', text: "What's their privileged access?" },
-      { icon: '👥', text: 'Any group membership changes?' },
-      { icon: '🚨', text: 'List triggered alerts' },
-      { icon: '🛠', text: 'What should I do?' }
-    ],
-    device: [
-      { icon: '🔍', text: 'Show vulnerabilities' },
-      { icon: '🌐', text: 'Recent network connections' },
-      { icon: '💾', text: 'USB device activity' },
-      { icon: '⚙', text: 'What processes were running?' },
-      { icon: '📅', text: 'Show scheduled tasks' },
-      { icon: '🚨', text: 'List triggered alerts' },
-      { icon: '🛠', text: 'What should I do?' }
-    ],
-    ip: [
-      { icon: '🛡', text: 'Is this IP malicious?' },
-      { icon: '🌐', text: 'Show connection history' },
-      { icon: '🔎', text: 'DNS lookup history' },
-      { icon: '👤', text: 'Who connected to this IP?' },
-      { icon: '🚦', text: 'IDS / IPS alerts' },
-      { icon: '🚨', text: 'List triggered alerts' },
-      { icon: '🛠', text: 'What should I do?' }
-    ],
-    service: [
-      { icon: '📋', text: 'Show audit logs' },
-      { icon: '💥', text: 'Show blast radius' },
-      { icon: '🔐', text: 'OAuth consent grants' },
-      { icon: '🚨', text: 'List triggered alerts' },
-      { icon: '🛠', text: 'What should I do?' }
-    ],
-    process: [
-      { icon: '🌲', text: 'Show process tree' },
-      { icon: '📝', text: 'Registry modifications' },
-      { icon: '🛡', text: 'AMSI / AV detections' },
-      { icon: '📂', text: 'File operations' },
-      { icon: '💥', text: 'Show blast radius' },
-      { icon: '🚨', text: 'List triggered alerts' }
-    ],
-    alert: [
-      { icon: '⚡', text: 'Why did this alert fire?' },
-      { icon: '🎯', text: 'What entities are affected?' },
-      { icon: '🔗', text: 'Show correlated alerts' },
-      { icon: '📝', text: 'Summarize this incident' },
-      { icon: '🛠', text: 'What should I do?' }
-    ]
-  };
+  // ── Suggestion Chips — blast-radius-centric, data-driven ──────────
+  /*
+   * SOC blast-radius philosophy:
+   *   1. Scope      — what can this entity reach / access?
+   *   2. Propagation — what lateral-movement paths exist?
+   *   3. Persistence — how can an attacker maintain a foothold?
+   *   4. Exfil risk  — what data is in danger?
+   *   5. Containment — what needs to be isolated?
+   *
+   * Chips are built dynamically: a chip only appears when the entity
+   * actually has data backing it, keeping the panel signal-not-noise.
+   * All entity types always get a blast-radius chip + remediation chip.
+   */
+  function _buildBlastRadiusSuggestions(entityId, e) {
+    var s = e.sections || {};
+    var chips = [];
 
-  function _renderSuggestions(type) {
+    // ── Blast radius: anchor chip (with live reachable-node count) ───
+    var brData  = s.blastRadius && s.blastRadius.blastRadius;
+    var brCount = brData && brData.reachNodes ? brData.reachNodes.length : 0;
+    if (e.type !== 'alert') {
+      chips.push(brCount > 0
+        ? { icon: '💥', text: 'Show blast radius (' + brCount + ' reachable nodes)' }
+        : { icon: '💥', text: 'Show blast radius' });
+    }
+
+    switch (e.type) {
+
+      // ── USER — blast = every system they can authenticate to / access ─
+      case 'user':
+        // Scope: what privileged resources does their credential unlock?
+        if (_secItems(s.privilegedSurface || s.effectiveGroups, ['kv','items']).length)
+          chips.push({ icon: '🔑', text: 'What privileged resources can they reach?' });
+        // Entry-point risk: credential already compromised?
+        if (_secItems(s.darkWebExposure, ['kv','items']).length)
+          chips.push({ icon: '🌑', text: 'Are credentials exposed on dark web?' });
+        // Exfil vector: is mail silently leaving the org?
+        if (_secItems(s.mailboxForwarding, ['kv','rules','items']).length)
+          chips.push({ icon: '📨', text: 'Is mailbox forwarding active?' });
+        // Propagation: group memberships amplify access
+        if (_secItems(s.groupMembershipChanges, ['kv','items','timeline']).length)
+          chips.push({ icon: '👥', text: 'What groups propagate their access?' });
+        // Lateral reach: which devices carry their session token?
+        chips.push({ icon: '💻', text: 'Which devices has this user accessed?' });
+        chips.push({ icon: '🚨', text: 'List triggered alerts' });
+        break;
+
+      // ── DEVICE — blast = network neighbours + processes that can spread
+      case 'device':
+        // Propagation: suspicious processes = potential lateral movers
+        if (_secItems(s.processesOnHost || s.processes, ['kv','items','list']).length)
+          chips.push({ icon: '⚙', text: 'What processes could spread laterally?' });
+        // Persistence: scheduled tasks = attacker footholds
+        if (_secItems(s.scheduledTasks, ['kv','items','tasks']).length)
+          chips.push({ icon: '📅', text: 'Any persistence mechanisms? (scheduled tasks)' });
+        // Exfil: USB as data-out channel
+        if (_secItems(s.usbDeviceEvents, ['kv','items','timeline']).length)
+          chips.push({ icon: '💾', text: 'USB-based data exfiltration risk?' });
+        // Scope: which network neighbours are already in the blast zone?
+        chips.push({ icon: '🌐', text: 'What network neighbours are at risk?' });
+        // Entry point: unpatched CVEs = how attacker got in
+        if (_secItems(s.vulnerabilities, ['kv','timeline']).length)
+          chips.push({ icon: '🔍', text: 'Active exploitable vulnerabilities?' });
+        chips.push({ icon: '🚨', text: 'List triggered alerts' });
+        break;
+
+      // ── IP — blast = all internal hosts communicating with this IP ───
+      case 'ip':
+        // Scope: which hosts are already in the blast zone?
+        if (_secItems(s.associatedUsers, ['kv','items']).length ||
+            _secItems(s.associatedDevices, ['kv','items']).length)
+          chips.push({ icon: '🖥', text: 'Which internal hosts are communicating here?' });
+        // Lateral movement: IDS/IPS caught anything mid-path?
+        if (_secItems(s.idsAlerts, ['kv','items','alerts']).length)
+          chips.push({ icon: '🚦', text: 'Any lateral movement detected? (IDS/IPS)' });
+        // Containment scope: firewall allow/block posture
+        if (_secItems(s.firewallSummary, ['kv','items']).length)
+          chips.push({ icon: '🔥', text: "What's the firewall exposure?" });
+        // C2 channel: DNS tunnelling / beaconing?
+        if (_secItems(s.dnsHistory, ['kv','items','queries']).length)
+          chips.push({ icon: '🔎', text: 'DNS-based C2 activity?' });
+        // Reputation: is this in threat intel feeds?
+        chips.push({ icon: '🛡', text: 'Is this IP in threat intelligence feeds?' });
+        chips.push({ icon: '🚨', text: 'List triggered alerts' });
+        break;
+
+      // ── SERVICE — blast = all data accessible via OAuth / admin scope
+      case 'service':
+        // Scope: OAuth permissions define the data blast radius
+        if (_secItems(s.oauthConsentGrants || s.conditionalAccess, ['kv','items','grants']).length)
+          chips.push({ icon: '🔐', text: 'What data can be reached via OAuth?' });
+        // Propagation: admin actions already performed in blast zone
+        if (_secItems(s.adminActivity, ['kv','timeline']).length)
+          chips.push({ icon: '⚙', text: 'What admin actions were performed?' });
+        // Scope: who authenticates here = users in blast zone
+        if (_secItems(s.signInAudit, ['kv','timeline']).length)
+          chips.push({ icon: '👤', text: 'What users/devices authenticate here?' });
+        // Containment: full audit trail
+        chips.push({ icon: '📋', text: 'Show full audit trail' });
+        chips.push({ icon: '🚨', text: 'List triggered alerts' });
+        break;
+
+      // ── PROCESS — blast = spawned children + files/registry touched ─
+      case 'process':
+        // Propagation: what did this process spawn?
+        if (_secItems(s.processTree || s.childProcesses, ['kv','items','tree','children']).length)
+          chips.push({ icon: '🌲', text: 'What did this process spawn?' });
+        // Exfil/staging: files touched
+        if (_secItems(s.fileOperations, ['kv','items']).length)
+          chips.push({ icon: '📂', text: 'What files were touched? (data staging)' });
+        // Persistence: registry run keys / startup entries
+        if (_secItems(s.registryModifications, ['kv','items']).length)
+          chips.push({ icon: '📝', text: 'Persistence via registry modifications?' });
+        // Detection: did AV/AMSI catch anything?
+        if (_secItems(s.amsiEvents, ['kv','items','detections']).length)
+          chips.push({ icon: '🛡', text: 'Any AV/AMSI detections?' });
+        // C2 channel: outbound network connections
+        chips.push({ icon: '🌐', text: 'Network connections (C2 beaconing)?' });
+        break;
+
+      // ── ALERT — blast = all entities in scope + campaign correlation ─
+      case 'alert':
+        // Scope: how many entities are inside the blast zone?
+        chips.push({ icon: '🎯', text: 'What entities are at immediate risk?' });
+        // Campaign scope: are these part of a broader attack?
+        chips.push({ icon: '🔗', text: 'Are there related alerts in this campaign?' });
+        // Root cause
+        chips.push({ icon: '⚡', text: 'Why did this alert fire?' });
+        // Summary
+        chips.push({ icon: '📝', text: 'Summarize this incident' });
+        break;
+
+      default:
+        chips.push({ icon: '🔐', text: 'Show logon activity' });
+        chips.push({ icon: '🌐', text: 'Show network connections' });
+        chips.push({ icon: '🚨', text: 'List triggered alerts' });
+    }
+
+    // Always last: remediation = containment playbook
+    chips.push({ icon: '🛠', text: 'What should I do?' });
+
+    return chips.slice(0, 8); // max 8 to avoid chip overflow
+  }
+
+  function _renderSuggestions(entityId, e) {
     var el = document.getElementById('zhpSuggestions');
     if (!el) return;
-    var items = SUGGESTIONS[type] || [
-      { icon: '🔍', text: 'Search in logs' },
-      { icon: '🚨', text: 'List triggered alerts' },
-      { icon: '🛠', text: 'What should I do?' }
-    ];
+    var items = _buildBlastRadiusSuggestions(entityId, e);
     el.innerHTML = items.map(function (s) {
       return '<button class="zhp-chip" onclick="zhpSend(\'' + _esc(s.text) + '\')">' + s.icon + ' ' + s.text + '</button>';
     }).join('');
@@ -358,9 +443,9 @@
       // ── Alert-specific ──
       } else if (/why.did|trigger|rule.fire|condition|what.caused/.test(ql)) {
         r = _rTriggerConditions(e);
-      } else if (/affect|impacted.entit|which.entit/.test(ql)) {
+      } else if (/affect|impacted.entit|which.entit|entit.*risk|immediate.risk|entit.*at.risk/.test(ql)) {
         r = _rAffectedEntities(e);
-      } else if (/correlat|related.alert|same.incident/.test(ql)) {
+      } else if (/correlat|related.alert|same.incident|campaign/.test(ql)) {
         r = _rCorrelatedAlerts(e);
       } else if (/summari|incident.summary|overview|brief|tldr/.test(ql)) {
         r = _rIncidentSummary(e);
@@ -368,46 +453,55 @@
       // ── User-specific ──
       } else if (/mail.*forward|forward.*mail|inbox.rule/.test(ql)) {
         r = _rMailboxForwarding(e);
-      } else if (/dark.web|credential.leak|paste|breach/.test(ql)) {
+      } else if (/dark.web|credential.leak|paste|breach|credential.*expos/.test(ql)) {
         r = _rDarkWeb(e);
-      } else if (/privileg|admin.role|role.access|elevated/.test(ql)) {
+      } else if (/privileg|admin.role|role.access|elevated|resource.*reach|reach.*resource/.test(ql)) {
         r = _rPrivilegedAccess(e);
-      } else if (/group.member|ad.group|membership.change/.test(ql)) {
+      } else if (/group.member|ad.group|membership.change|group.*propagat|propagat.*access/.test(ql)) {
         r = _rGroupChanges(e);
       } else if (/account.lock|lockout/.test(ql)) {
         r = _rAccountLockouts(e);
+      // user devices — logon activity reveals device footprint
+      } else if (/which.device|devices.*access|accessed.*device/.test(ql)) {
+        r = _rLogon(e);
 
       // ── Device-specific ──
-      } else if (/usb|removable|storage.device/.test(ql)) {
+      } else if (/usb|removable|storage.device|exfil.*risk/.test(ql)) {
         r = _rUsbActivity(e);
-      } else if (/process.*run|running.*process|what.process/.test(ql)) {
+      } else if (/process.*run|running.*process|what.process|spread.lateral|lateral.*process|processes.*spread/.test(ql)) {
         r = _rProcessesOnHost(e);
-      } else if (/scheduled.task|task.sched/.test(ql)) {
+      } else if (/scheduled.task|task.sched|persistence.mech/.test(ql)) {
         r = _rScheduledTasks(e);
+      // network neighbours (device context)
+      } else if (/neighbour|neighbor/.test(ql)) {
+        r = _rNetwork(e);
 
       // ── IP-specific ──
-      } else if (/dns|lookup|resolv/.test(ql)) {
+      } else if (/dns|lookup|resolv|c2.activ|dns.*c2/.test(ql)) {
         r = _rDnsHistory(e);
-      } else if (/who.connect|connect.*to.this.ip|assoc.user|associated.device/.test(ql)) {
+      } else if (/who.connect|connect.*to.this.ip|assoc.user|associated.device|internal.host|communicat.*here/.test(ql)) {
         r = _rAssociatedEntities(e);
-      } else if (/ids|ips|intrusion|snort|suricata/.test(ql)) {
+      } else if (/ids|ips|intrusion|snort|suricata|lateral.*detect/.test(ql)) {
         r = _rIdsAlerts(e);
-      } else if (/firewall|blocked.traffic|allowed.traffic/.test(ql)) {
+      } else if (/firewall|blocked.traffic|allowed.traffic|block.*allow|firewall.*expos/.test(ql)) {
         r = _rFirewallSummary(e);
 
       // ── Process-specific ──
-      } else if (/process.tree|parent.process|child.process|spawn/.test(ql)) {
+      } else if (/process.tree|parent.process|child.process|spawn|what.did.*process/.test(ql)) {
         r = _rProcessTree(e);
-      } else if (/registry|regedit|hklm|hkcu/.test(ql)) {
+      } else if (/registry|regedit|hklm|hkcu|persist.*registry/.test(ql)) {
         r = _rRegistryMods(e);
       } else if (/amsi|antivirus|av.detect|defender/.test(ql)) {
         r = _rAmsiEvents(e);
-      } else if (/file.oper|file.creat|file.delet|file.writ/.test(ql)) {
+      } else if (/file.oper|file.creat|file.delet|file.writ|file.*touch|data.*stag/.test(ql)) {
         r = _rFileOperations(e);
 
       // ── Service ──
-      } else if (/oauth|consent|grant|app.permission/.test(ql)) {
+      } else if (/oauth|consent|grant|app.permission|data.*oauth|oauth.*reach/.test(ql)) {
         r = _rOauthGrants(e);
+      // service: who authenticates here = audit/sign-in logs
+      } else if (/admin.activ|admin.action|users.*authenticat|authenticat.*here/.test(ql)) {
+        r = _rAuditLogs(e);
 
       // ── General ──
       } else if (/fail|wrong.pass|bad.login|invalid.cred/.test(ql)) {
@@ -420,11 +514,11 @@
         r = _rUeba(e);
       } else if (/file|access|sharepoint|document|download/.test(ql)) {
         r = _rFileAccess(e);
-      } else if (/network|connect|traffic|ip.addr|port/.test(ql)) {
+      } else if (/network|connect|traffic|ip.addr|port|beaconing/.test(ql)) {
         r = _rNetwork(e);
       } else if (/vulner|cve|patch|exploit/.test(ql)) {
         r = _rVulnerabilities(e);
-      } else if (/blast|impact|spread|lateral|reach/.test(ql)) {
+      } else if (/blast|impact|spread|lateral|reach|reachable/.test(ql)) {
         r = _rBlastRadius(e);
       } else if (/malicious|threat|bad.actor|reputation|intel/.test(ql)) {
         r = _rThreatIntel(e);
@@ -966,7 +1060,8 @@
   /* ── Fallback ── */
   function _rFallback(e, q) {
     var shortName = (e.modalTitle || '').split('·').pop().trim() || _huntEntityId;
-    var hints = (SUGGESTIONS[e.type] || []).slice(0, 3).map(function (s) { return s.icon + ' ' + s.text; }).join(', ');
+    var hints = _buildBlastRadiusSuggestions(_huntEntityId, e).slice(0, 3)
+      .map(function (s) { return s.icon + ' ' + s.text; }).join(', ');
     return {
       text: 'I searched for "<strong>' + _escHtml(q) + '</strong>" in ' + _escHtml(shortName) + '\'s data. ' +
         'Try: ' + hints + ' — or open Entity Details for the full profile.',
