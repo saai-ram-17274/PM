@@ -220,6 +220,31 @@ function attackVectorHTML(){
           </div>
         </div>
 
+        <!-- Ask Zia — Guided Investigation / Go Hunt chat panel -->
+        <div class="zia-hunt-panel" id="ziaHuntPanel">
+          <div class="zhp-hdr">
+            <div class="zhp-zia-logo">✦</div>
+            <div class="zhp-hdr-info">
+              <div class="zhp-hdr-title">Ask Zia <span class="zhp-hdr-badge">Guided Investigation</span></div>
+              <div class="zhp-hdr-entity" id="zhpEntityName"></div>
+            </div>
+            <button class="zhp-close" onclick="closeZiaHuntPanel()" title="Close">✕</button>
+          </div>
+          <div class="zhp-chat" id="zhpChat"></div>
+          <div class="zhp-suggestions" id="zhpSuggestions"></div>
+          <div class="zhp-input-bar">
+            <input type="text" class="zhp-input" id="zhpInput"
+              placeholder="Ask about this entity…"
+              autocomplete="off"
+              onkeydown="if(event.key==='Enter')zhpSend()">
+            <button class="zhp-send-btn" onclick="zhpSend()" title="Send">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <path d="M2 8h12M10 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
         <div class="graph-ctx" id="graphCtxMenu"></div>
         <div class="eqc-overlay" id="eqcOverlay">
           <div class="eqc-card" id="eqcCard"></div>
