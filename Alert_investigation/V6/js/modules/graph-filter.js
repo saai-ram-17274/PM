@@ -311,6 +311,7 @@ function toggleGraphSummary() {
 /* ENTITY_DISPLAY and CRITICAL_REASONS are defined in js/data/display-config.js */
 
 let activePillPopup = null;
+let threatPopupSearchTerm = '';
 
 function getEntityChip(entityId) {
   const d = ENTITY_DISPLAY[entityId] || { icon:'●', name:entityId, color:'#555', bg:'#f5f7fa' };
@@ -320,15 +321,20 @@ function getEntityChip(entityId) {
   </span>`;
 }
 
-function buildMaliciousPopup() {
+function buildMaliciousPopup(searchTerm = '', includeHeader = true) {
   const edges = Array.from(document.querySelectorAll('#graphSvg line.graph-edge-mal'))
     .filter(e => e.style.display !== 'none');
+  const q = (searchTerm || '').toLowerCase();
   let items = '';
   edges.forEach(e => {
     const src = e.getAttribute('data-source');
     const tgt = e.getAttribute('data-target');
     const lbl = e.getAttribute('data-label') || '';
     if (!src || !tgt) return;
+    const srcName = (ENTITY_DISPLAY[src] || {}).name || src;
+    const tgtName = (ENTITY_DISPLAY[tgt] || {}).name || tgt;
+    const haystack = `${srcName} ${tgtName} ${lbl}`.toLowerCase();
+    if (q && !haystack.includes(q)) return;
     items += `<div class="cpp-item" onclick="openEntitySlider('${tgt}');closeCmdPillPopup();" title="Click to investigate ${(ENTITY_DISPLAY[tgt]||{}).name||tgt}">
       <div class="cpp-edge-row">
         ${getEntityChip(src)}
@@ -339,12 +345,18 @@ function buildMaliciousPopup() {
       <div class="cpp-action-hint">Click to investigate →</div>
     </div>`;
   });
-  return `<div class="cpp-header"><span class="cpp-header-icon">🔴</span> Malicious Connections</div>${items || '<div style="padding:12px;color:#8a94a6;font-size:11px;">No malicious connections detected</div>'}`;
+  const emptyMsg = q
+    ? 'No malicious connections match your search'
+    : 'No malicious connections detected';
+  const body = items || `<div style="padding:12px;color:#8a94a6;font-size:11px;">${emptyMsg}</div>`;
+  if (!includeHeader) return body;
+  return `<div class="cpp-header"><span class="cpp-header-icon">🔴</span> Malicious Connections</div>${body}`;
 }
 
-function buildCriticalPopup() {
+function buildCriticalPopup(searchTerm = '', includeHeader = true) {
   const nodes = Array.from(document.querySelectorAll('#graphSvg g.graph-node'))
     .filter(n => n.style.display !== 'none');
+  const q = (searchTerm || '').toLowerCase();
   let items = '';
   nodes.forEach(n => {
     const circle = n.querySelector('circle:not(.expand-indicator)');
@@ -353,6 +365,8 @@ function buildCriticalPopup() {
     const eid = n.getAttribute('data-entity');
     const d = ENTITY_DISPLAY[eid] || { icon:'●', name:eid, color:'#ef4444', bg:'#fef2f2' };
     const reason = CRITICAL_REASONS[eid] || 'High-risk entity requiring immediate attention';
+    const haystack = `${d.name} ${reason} ${eid}`.toLowerCase();
+    if (q && !haystack.includes(q)) return;
     items += `<div class="cpp-item" onclick="openEntitySlider('${eid}');closeCmdPillPopup();" title="Click to investigate ${d.name}">
       <div class="cpp-entity-row">
         <span class="cpp-entity-badge" style="background:${d.bg};border:2px solid ${d.color};">${d.icon}</span>
@@ -362,7 +376,61 @@ function buildCriticalPopup() {
       <div class="cpp-action-hint">Click to investigate →</div>
     </div>`;
   });
-  return `<div class="cpp-header"><span class="cpp-header-icon">🟡</span> Critical Entities</div>${items || '<div style="padding:12px;color:#8a94a6;font-size:11px;">No critical entities detected</div>'}`;
+  const emptyMsg = q
+    ? 'No critical entities match your search'
+    : 'No critical entities detected';
+  const body = items || `<div style="padding:12px;color:#8a94a6;font-size:11px;">${emptyMsg}</div>`;
+  if (!includeHeader) return body;
+  return `<div class="cpp-header"><span class="cpp-header-icon">🟡</span> Critical Entities</div>${body}`;
+}
+
+function buildThreatIndicatorsPopup(searchTerm = '') {
+  const q = (searchTerm || '').replace(/"/g, '&quot;');
+  return `
+    <div class="cpp-ti-title"><span class="cpp-header-icon">📈</span> Threat Indicators</div>
+    <div class="cpp-ti-search-wrap">
+      <input
+        id="cppThreatSearch"
+        class="cpp-ti-search"
+        type="text"
+        placeholder="Search"
+        value="${q}"
+        oninput="filterThreatIndicatorsPopup(this.value)"
+      />
+    </div>
+    <div class="cpp-ti-section">
+      <button class="cpp-ti-section-hdr" onclick="toggleThreatIndicatorSection('cppThreatMalBody', this)">
+        <span class="cpp-ti-chev">▾</span>
+        <span>Malicious Connections</span>
+      </button>
+      <div class="cpp-ti-section-body" id="cppThreatMalBody">${buildMaliciousPopup(searchTerm, false)}</div>
+    </div>
+    <div class="cpp-ti-section">
+      <button class="cpp-ti-section-hdr" onclick="toggleThreatIndicatorSection('cppThreatCritBody', this)">
+        <span class="cpp-ti-chev">▾</span>
+        <span>Critical Entities</span>
+      </button>
+      <div class="cpp-ti-section-body" id="cppThreatCritBody">${buildCriticalPopup(searchTerm, false)}</div>
+    </div>`;
+}
+
+function filterThreatIndicatorsPopup(value) {
+  threatPopupSearchTerm = (value || '').trim();
+  const malBody = document.getElementById('cppThreatMalBody');
+  const critBody = document.getElementById('cppThreatCritBody');
+  if (malBody) malBody.innerHTML = buildMaliciousPopup(threatPopupSearchTerm, false);
+  if (critBody) critBody.innerHTML = buildCriticalPopup(threatPopupSearchTerm, false);
+}
+
+function toggleThreatIndicatorSection(bodyId, btn) {
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  const collapsed = body.style.display === 'none';
+  body.style.display = collapsed ? 'block' : 'none';
+  if (btn) {
+    const chev = btn.querySelector('.cpp-ti-chev');
+    if (chev) chev.textContent = collapsed ? '▾' : '▸';
+  }
 }
 
 function toggleCmdPillPopup(event, type) {
@@ -380,7 +448,9 @@ function toggleCmdPillPopup(event, type) {
   }
 
   // Build content
-  popup.innerHTML = type === 'malicious' ? buildMaliciousPopup() : buildCriticalPopup();
+  popup.innerHTML = type === 'threatIndicators'
+    ? buildThreatIndicatorsPopup(threatPopupSearchTerm)
+    : (type === 'malicious' ? buildMaliciousPopup() : buildCriticalPopup());
 
   // Position below the clicked pill (fixed positioning)
   const pill = event.currentTarget;
@@ -390,6 +460,15 @@ function toggleCmdPillPopup(event, type) {
 
   popup.classList.add('active');
   activePillPopup = type;
+
+  if (type === 'threatIndicators') {
+    const searchEl = document.getElementById('cppThreatSearch');
+    if (searchEl) {
+      searchEl.focus();
+      const len = searchEl.value.length;
+      searchEl.setSelectionRange(len, len);
+    }
+  }
 
   // Close when clicking outside
   setTimeout(() => {

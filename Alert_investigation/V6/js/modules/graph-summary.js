@@ -54,6 +54,7 @@ function updateGraphSummary() {
 
   // Update command bar pills in-place (don't wipe entityChip dropdown)
   const setNum = (id, n) => { const el = document.querySelector('#' + id + ' .cmd-pill-num'); if (el) el.textContent = n; };
+  setNum('cmdPillThreatIndicators', malCount + critCount);
   setNum('cmdPillMalCount', malCount);
   setNum('cmdPillCritCount', critCount);
 

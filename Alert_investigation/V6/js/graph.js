@@ -52,8 +52,12 @@ function attackVectorHTML(){
                   <div class="gcb-option" data-val="other" onclick="pickEntityChip(this,'other','Others')"><span class="gcb-dot" style="background:#64748b;"></span> Others <span class="gcb-count">0</span></div>
                 </div>
               </div>
-              <span class="cmd-pill cmd-pill-danger cmd-pill-clickable" id="cmdPillMalCount" onclick="toggleCmdPillPopup(event,'malicious')"><span class="cmd-pill-dot" style="background:#DD1616;"></span><span class="cmd-pill-num">0</span> Malicious<span class="cmd-pill-caret">▾</span></span>
-              <span class="cmd-pill cmd-pill-warn cmd-pill-clickable" id="cmdPillCritCount" onclick="toggleCmdPillPopup(event,'critical')"><span class="cmd-pill-dot" style="background:#FABB34;"></span><span class="cmd-pill-num">0</span> Critical<span class="cmd-pill-caret">▾</span></span>
+              <span class="cmd-pill cmd-pill-threat cmd-pill-clickable" id="cmdPillThreatIndicators" onclick="toggleCmdPillPopup(event,'threatIndicators')" title="View malicious connections and critical entities">
+                <span class="cmd-pill-dot" style="background:#DD1616;"></span>
+                <span class="cmd-pill-num">0</span>
+                Threat Indicators
+                <span class="cmd-pill-caret">▾</span>
+              </span>
             </div>
             <div class="cmd-pill-popup" id="cmdPillPopup"></div>
             <div class="cmd-spacer"></div>
@@ -271,16 +275,15 @@ function initGraphChips() {
   graphViewActive = true;
   const visibleLines = [...document.querySelectorAll('#graphSvg line.graph-edge-mal')]
     .filter(l => l.style.display !== 'none');
-  const malChip = document.querySelector('#cmdPillMalCount .cmd-pill-num');
-  if (malChip) malChip.textContent = visibleLines.length;
+  const malCount = visibleLines.length;
   let critNodes = 0;
   document.querySelectorAll('#graphSvg g.graph-node').forEach(n => {
     if (n.style.display === 'none') return;
     const c = n.querySelector('circle:not(.expand-indicator)');
     if (c && (c.getAttribute('filter') || '').includes('glow-r')) critNodes++;
   });
-  const critChip = document.querySelector('#cmdPillCritCount .cmd-pill-num');
-  if (critChip) critChip.textContent = critNodes;
+  const threatChip = document.querySelector('#cmdPillThreatIndicators .cmd-pill-num');
+  if (threatChip) threatChip.textContent = malCount + critNodes;
 
   /* Update entity-type dropdown counts based on currently visible nodes */
   // Bucket nodes into the 7 dropdown categories (per device_and_other_entity_spec.md):

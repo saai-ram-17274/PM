@@ -1814,8 +1814,8 @@
   }
 
   function renderV6Bar() {
-    const critPill = document.getElementById('cmdPillCritCount');
-    if (!critPill || !critPill.parentNode) return;
+    const anchorPill = document.getElementById('cmdPillThreatIndicators') || document.getElementById('cmdPillCritCount');
+    if (!anchorPill || !anchorPill.parentNode) return;
     const existing = document.getElementById('v6Bar');
     if (existing) existing.remove();
 
@@ -1836,7 +1836,7 @@
           <span class="cmd-pill-dot" style="background:#7c3aed;"></span>
           <span>⚡ Analyze choke points</span>
         </button>`;
-      critPill.parentNode.insertBefore(wrap, critPill.nextSibling);
+      anchorPill.parentNode.insertBefore(wrap, anchorPill.nextSibling);
       return;
     }
 
@@ -1847,7 +1847,7 @@
           <span class="v6-choke-spinner"></span>
           <span>Analyzing graph\u2026</span>
         </button>`;
-      critPill.parentNode.insertBefore(wrap, critPill.nextSibling);
+      anchorPill.parentNode.insertBefore(wrap, anchorPill.nextSibling);
       return;
     }
 
@@ -1897,7 +1897,7 @@
           </div>
         </div>
       </div>`;
-    critPill.parentNode.insertBefore(wrap, critPill.nextSibling);
+    anchorPill.parentNode.insertBefore(wrap, anchorPill.nextSibling);
     if (v6ChokeOn) { applyChokePoints(); markChokeToggle(true); }
   }
 

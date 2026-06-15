@@ -51,6 +51,7 @@ body:has(#panel-attack-vector.active) .dv-tabs-row { margin-bottom: 0; }
 }
 .cmd-pill-danger { background:#fef2f2; color:#dc2626; border-color:#fecaca; }
 .cmd-pill-warn { background:#fffbeb; color:#b45309; border-color:#fde68a; }
+.cmd-pill-threat { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }
 .cmd-pill-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
 .cmd-pill-clickable { cursor:pointer; position:relative; transition:all .15s; }
 .cmd-pill-clickable:hover { filter:brightness(.95); transform:translateY(-1px); box-shadow:0 2px 6px rgba(0,0,0,.08); }
@@ -61,10 +62,32 @@ body:has(#panel-attack-vector.active) .dv-tabs-row { margin-bottom: 0; }
   position:fixed; z-index:9000;
   background:var(--surface); border:1px solid var(--border);
   border-radius:10px; box-shadow:0 8px 28px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
-  min-width:320px; max-height:380px; overflow-y:auto;
+  min-width:320px; max-width:460px; max-height:380px; overflow-y:auto;
   font-family:var(--font); display:none;
 }
 .cmd-pill-popup.active { display:block; }
+.cpp-ti-title {
+  padding:10px 14px 8px; font-size:10px; font-weight:700;
+  color:var(--text-secondary); border-bottom:1px solid var(--border);
+  text-transform:uppercase; letter-spacing:.6px;
+  display:flex; align-items:center; gap:6px;
+}
+.cpp-ti-search-wrap { padding:10px 12px; border-bottom:1px solid var(--border); }
+.cpp-ti-search {
+  width:100%; border:1px solid var(--border); border-radius:4px;
+  padding:6px 8px; font-size:12px; font-family:var(--font); color:var(--text-primary);
+  background:#fff;
+}
+.cpp-ti-search:focus { outline:none; border-color:#93c5fd; box-shadow:0 0 0 2px rgba(59,130,246,.12); }
+.cpp-ti-section { border-bottom:1px solid #eef2f7; }
+.cpp-ti-section:last-child { border-bottom:none; }
+.cpp-ti-section-hdr {
+  width:100%; border:none; background:transparent; text-align:left; cursor:pointer;
+  display:flex; align-items:center; gap:7px; padding:10px 12px; font-size:12px;
+  font-weight:700; color:var(--text-primary); font-family:var(--font);
+}
+.cpp-ti-section-hdr:hover { background:#f8fafc; }
+.cpp-ti-chev { width:12px; color:#6b7280; text-align:center; }
 .cpp-header {
   padding:10px 14px 8px; font-size:10px; font-weight:700;
   color:var(--text-secondary); border-bottom:1px solid var(--border);
