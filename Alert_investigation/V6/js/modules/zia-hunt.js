@@ -16,7 +16,9 @@
   // ── Open / Close ───────────────────────────────────────────────────
   window.openZiaHuntPanel = function (entityId) {
     if (!entityId) return;
-    var e = (window.ENTITIES || {})[entityId];
+    /* entities.js uses `const ENTITIES` (not window.ENTITIES) — access both */
+    var _ent = (typeof ENTITIES !== 'undefined' ? ENTITIES : null) || window.ENTITIES || {};
+    var e = _ent[entityId];
     if (!e) return;
 
     _huntEntityId = entityId;
@@ -233,7 +235,8 @@
 
   function _respond(q) {
     if (!_huntEntityId) return;
-    var e = (window.ENTITIES || {})[_huntEntityId];
+    var _ent = (typeof ENTITIES !== 'undefined' ? ENTITIES : null) || window.ENTITIES || {};
+    var e = _ent[_huntEntityId];
     if (!e) return;
 
     _typing = true;
