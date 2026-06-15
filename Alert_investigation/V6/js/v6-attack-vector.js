@@ -1005,6 +1005,89 @@
     window.showGraphCtx.__v6Wrapped = true;
   }
 
+  // Returns entity-type-specific investigation options that map to
+  // existing V6 action panels, using Log360 product terminology.
+  function goHuntOptions(type) {
+    const byType = {
+      user: [
+        { key: 'uebaProfile',     icon: '👤', label: 'UEBA Profile' },
+        { key: 'logonActivity',   icon: '🔐', label: 'Logon Activity' },
+        { key: 'triggeredAlerts', icon: '🚨', label: 'Triggered Alerts' }
+      ],
+      device: [
+        { key: 'vulnerabilities', icon: '🔍', label: 'Vulnerability Scan' },
+        { key: 'networkActivity', icon: '🌐', label: 'Network Activity' },
+        { key: 'triggeredAlerts', icon: '🚨', label: 'Triggered Alerts' }
+      ],
+      ip: [
+        { key: 'networkActivity', icon: '🌐', label: 'Network Activity' },
+        { key: 'triggeredAlerts', icon: '🚨', label: 'Triggered Alerts' }
+      ],
+      service: [
+        { key: 'auditLogs',       icon: '📋', label: 'Audit Logs' },
+        { key: 'blastRadius',     icon: '💥', label: 'Blast Radius' },
+        { key: 'triggeredAlerts', icon: '🚨', label: 'Triggered Alerts' }
+      ],
+      process: [
+        { key: 'blastRadius',     icon: '💥', label: 'Blast Radius' },
+        { key: 'triggeredAlerts', icon: '🚨', label: 'Triggered Alerts' }
+      ]
+    };
+    return byType[type] || [
+      { key: 'searchLogs',      icon: '📋', label: 'Search in Logs' },
+      { key: 'triggeredAlerts', icon: '🚨', label: 'Triggered Alerts' }
+    ];
+  }
+
+  function toggleGoHuntMenu(toggleEl) {
+    if (!toggleEl) return;
+    toggleEl.classList.toggle('expanded');
+    const body = toggleEl.nextElementSibling;
+    if (body) body.classList.toggle('expanded');
+    if (typeof window.reclampCtxMenu === 'function') {
+      try { window.reclampCtxMenu(); } catch (_) {}
+    }
+  }
+
+  function runGoHunt(entityId, huntKey) {
+    if (!entityId) return;
+    if (typeof hideGraphCtx === 'function') hideGraphCtx();
+
+    // "Triggered Alerts" / "Related Alerts" — expand graph alert nodes directly
+    if (huntKey === 'triggeredAlerts' || huntKey === 'relatedAlerts') {
+      window.ctxEntityId = entityId;
+      if (typeof ctxRelatedAlerts === 'function') {
+        ctxRelatedAlerts();
+      } else {
+        showToast('🚨', 'Triggered alerts expansion is unavailable for this entity');
+      }
+      return;
+    }
+
+    // "Blast Radius" — opens lateral-spread sub-graph (no slider needed)
+    if (huntKey === 'blastRadius') {
+      window.ctxEntityId = entityId;
+      if (typeof ctxBlastRadiusGraph === 'function') ctxBlastRadiusGraph();
+      return;
+    }
+
+    // All other keys open the entity slider and route to the matching panel
+    if (typeof openEntitySlider === 'function') openEntitySlider(entityId);
+
+    const panelMap = {
+      uebaProfile:    'uebaTimeline',
+      logonActivity:  'loginActivity',
+      vulnerabilities:'vulnerabilities',
+      networkActivity:'networkActivity',
+      auditLogs:      'auditLogs',
+      searchLogs:     'searchLogs'
+    };
+    const panel = panelMap[huntKey];
+    if (panel && typeof showActionPanel === 'function') {
+      showActionPanel(panel, entityId);
+    }
+  }
+
   function injectV6CtxActions(entityId) {
     const ctx = document.getElementById('graphCtxMenu');
     if (!ctx) return;
@@ -1019,6 +1102,25 @@
 
     // Don't double-inject if user re-opens menu on same node
     if (ctx.querySelector('.v6-ctx-section')) return;
+
+    // Insert entity-type-aware "Go Hunt" investigation branch.
+    const opts = goHuntOptions(e.type);
+    const optHtml = opts.map(o =>
+      `<div class="ctx-item v6-gohunt-item" onclick="V6AV.runGoHunt('${esc(entityId)}','${o.key}')">${o.icon} ${o.label}</div>`
+    ).join('\n        ');
+    const goHuntHtml = `<div class="ctx-sep v6-gohunt-sep"></div>
+      <div class="ctx-more-toggle v6-gohunt-toggle" onclick="V6AV.toggleGoHuntMenu(this)">
+        <span>🧭 Go Hunt</span><span class="ctx-chevron">▸</span>
+      </div>
+      <div class="ctx-more-body v6-gohunt-body">
+        ${optHtml}
+      </div>`;
+    const afterSearchLogs = ctx.querySelector('.ctx-item[onclick="ctxSearchLogs()"]');
+    if (afterSearchLogs) {
+      afterSearchLogs.insertAdjacentHTML('afterend', goHuntHtml);
+    } else {
+      ctx.insertAdjacentHTML('beforeend', goHuntHtml);
+    }
 
     let gated = false;
     try {
@@ -2141,6 +2243,8 @@
     closeWorkflow,
     openWorkflowModule,
     runEntityAction,
+    toggleGoHuntMenu,
+    runGoHunt,
     toggleSliderActions,
     closeSliderActions,
     investigateCurrentEntity,

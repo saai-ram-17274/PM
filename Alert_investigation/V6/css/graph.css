@@ -385,6 +385,13 @@ body:has(#panel-attack-vector.active) .dv-tabs-row { margin-bottom: 0; }
   display:none;
 }
 .ctx-more-body.expanded { display:block; }
+.v6-gohunt-toggle { font-weight:600; color:var(--text-secondary); }
+.v6-gohunt-body { background:var(--surface-2); }
+.v6-gohunt-body .v6-gohunt-item {
+  padding-left:24px;
+  font-size:11px;
+}
+.v6-gohunt-body .v6-gohunt-item:hover { background:var(--surface-3); }
 /* ── Entity Details Slider (absolute overlay on the right of the canvas) ── */
 /* Adapted for V5: instead of resizing the canvas (which caused the SVG to
    reflow and nodes to visually jump), the slider now floats on top of the
