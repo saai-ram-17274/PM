@@ -61,44 +61,6 @@ function attackVectorHTML(){
             </div>
             <div class="cmd-pill-popup" id="cmdPillPopup"></div>
             <div class="cmd-spacer"></div>
-            <div class="gcb-timewin" id="timeWindowCtl" title="Investigation window — anchored on the alert trigger time. Pick how far Before and After the trigger to pull events.">
-              <span class="gcb-icon">⏱</span>
-              <div style="position:relative;display:inline-block;">
-                <div class="gcb-chip gcb-twchip" id="beforeChip" onclick="toggleGraphChipMenu('beforeChipMenu',this)">
-                  <span class="gcb-tw-pre">Before</span>
-                  <span class="gcb-label" id="beforeChipLabel">1 Hr</span>
-                  <span class="gcb-caret">▾</span>
-                </div>
-                <div class="gcb-menu" id="beforeChipMenu">
-                  <div class="gcb-option" onclick="pickBeforeChip(this,'30 Min',0.5)">30 Min</div>
-                  <div class="gcb-option active" onclick="pickBeforeChip(this,'1 Hr',1)">1 Hr</div>
-                  <div class="gcb-option" onclick="pickBeforeChip(this,'2 Hrs',2)">2 Hrs</div>
-                  <div class="gcb-option" onclick="pickBeforeChip(this,'4 Hrs',4)">4 Hrs</div>
-                  <div class="gcb-option" onclick="pickBeforeChip(this,'8 Hrs',8)">8 Hrs</div>
-                  <div class="gcb-option" onclick="pickBeforeChip(this,'24 Hrs',24)">24 Hrs</div>
-                </div>
-              </div>
-              <span class="gcb-tw-trigger" id="twTriggerPill" title="Alert trigger time (anchor)"><span class="gcb-tw-flag">⚑</span><span id="twTriggerTime">—</span></span>
-              <div style="position:relative;display:inline-block;">
-                <div class="gcb-chip gcb-twchip" id="afterChip" onclick="toggleGraphChipMenu('afterChipMenu',this)">
-                  <span class="gcb-tw-pre">After</span>
-                  <span class="gcb-label" id="afterChipLabel">1 Hr</span>
-                  <span class="gcb-caret">▾</span>
-                </div>
-                <div class="gcb-menu" id="afterChipMenu">
-                  <div class="gcb-option" onclick="pickAfterChip(this,'30 Min',0.5)">30 Min</div>
-                  <div class="gcb-option active" onclick="pickAfterChip(this,'1 Hr',1)">1 Hr</div>
-                  <div class="gcb-option" onclick="pickAfterChip(this,'2 Hrs',2)">2 Hrs</div>
-                  <div class="gcb-option" onclick="pickAfterChip(this,'4 Hrs',4)">4 Hrs</div>
-                  <div class="gcb-option" onclick="pickAfterChip(this,'8 Hrs',8)">8 Hrs</div>
-                  <div class="gcb-option" onclick="pickAfterChip(this,'Until now',null)">Until now</div>
-                </div>
-              </div>
-              <button class="gcb-tw-analyze" id="twAnalyzeBtn" style="display:none;" onclick="analyzeTimeWindow()" title="Re-pull events for the updated investigation window">
-                <span class="gcb-tw-analyze-spin" id="twAnalyzeSpin"></span>
-                <span class="gcb-tw-analyze-label" id="twAnalyzeLabel">Analyze</span>
-              </button>
-            </div>
             <div class="gcb-chip gcb-chip-action" id="tlPlayBtn" style="display:none;" onclick="openTimelinePlayer()" title="Play the attack chronologically">
               <span class="gcb-icon">▶</span>
               <span class="gcb-label">Attack Story</span>
@@ -332,7 +294,6 @@ function initGraphChips() {
       if (cEl && countMap.hasOwnProperty(v)) cEl.textContent = countMap[v];
     });
   }
-  if (typeof refreshTimeWindow === 'function') refreshTimeWindow();
 }
 function openInvestigationGraph() { initGraphChips(); }
 
