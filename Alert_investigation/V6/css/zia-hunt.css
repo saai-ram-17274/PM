@@ -236,3 +236,48 @@
 }
 .zhp-send-btn:hover { background: #4338ca; }
 .zhp-send-btn svg { pointer-events: none; }
+
+/* ── Zia Alert Bridge card ─────────────────────────────────────────── */
+.zhp-card-zia-bridge {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  border: none;
+}
+.zhp-card-zia-bridge .zhp-card-ttl {
+  color: #c4b5fd;
+}
+.zhp-card-zia-bridge .zhp-list-row { border-color: rgba(255,255,255,.06); }
+.zhp-card-zia-bridge .zhp-list-label,
+.zhp-card-zia-bridge .zhp-list-val { color: #e2e8f0; }
+.zhp-bridge-summary {
+  font-size: 11.5px; color: #cbd5e1; line-height: 1.55;
+  margin: 4px 0 8px;
+}
+
+/* ── Warning card (mailbox forwarding, dark web) ───────────────────── */
+.zhp-card-warn {
+  background: #fff7f7;
+  border-left: 3px solid #dc2626;
+}
+.zhp-card-warn .zhp-list-label { color: #7f1d1d; }
+
+/* ── Remediation card ──────────────────────────────────────────────── */
+.zhp-card-remediation { background: #f0fdf4; border-left: 3px solid #16a34a; }
+.zhp-card-remediation .zhp-card-ttl { color: #15803d; }
+.zhp-rec-row {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 6px 0; border-top: 1px solid #dcfce7;
+  font-size: 11.5px;
+}
+.zhp-rec-body { flex: 1; min-width: 0; }
+.zhp-rec-body strong { font-size: 11.5px; color: #166534; display: block; }
+.zhp-rec-desc { color: #4b5563; margin-top: 2px; font-size: 11px; }
+.zhp-bridge-mitig { padding: 4px 0; }
+.zhp-bullet {
+  display: flex; gap: 6px; align-items: flex-start;
+  padding: 3px 0; font-size: 11.5px; color: #374151;
+}
+.zhp-bullet-icon { color: #a78bfa; flex-shrink: 0; margin-top: 1px; }
+.zhp-bullet-text { flex: 1; line-height: 1.4; }
+
+/* ── Green status dot ──────────────────────────────────────────────── */
+.zhp-dot-green { background: #16a34a; }

@@ -1,5 +1,5 @@
 /* zia-hunt.js — Ask Zia Guided Investigation / Go Hunt chat panel
- * Depends on: entities.js, graph.js (panel mount), utils.js
+ * Depends on: entities.js, data.js (ALERT_DETAIL), graph.js (panel mount)
  *
  * Public API (on window):
  *   openZiaHuntPanel(entityId)   — open chat panel for an entity
@@ -13,44 +13,41 @@
   var _huntEntityId = null;
   var _typing = false;
 
+  // ── Entity lookup helper ───────────────────────────────────────────
+  function _getEnt() {
+    return (typeof ENTITIES !== 'undefined' ? ENTITIES : null) || window.ENTITIES || {};
+  }
+
   // ── Open / Close ───────────────────────────────────────────────────
   window.openZiaHuntPanel = function (entityId) {
     if (!entityId) return;
-    /* entities.js uses `const ENTITIES` (not window.ENTITIES) — access both */
-    var _ent = (typeof ENTITIES !== 'undefined' ? ENTITIES : null) || window.ENTITIES || {};
-    var e = _ent[entityId];
+    var e = _getEnt()[entityId];
     if (!e) return;
 
     _huntEntityId = entityId;
 
-    // Close entity slider if open so the two panels don't overlap
     if (typeof closeEntitySlider === 'function') closeEntitySlider();
 
     var panel = document.getElementById('ziaHuntPanel');
     if (!panel) return;
 
-    // Populate entity name in header
     var nameEl = document.getElementById('zhpEntityName');
     if (nameEl) {
-      var typeIcons = { user: '👤', device: '💻', ip: '🌐', service: '⚙', process: '🔧', alert: '🔔' };
+      var TYPE_ICONS = { user:'👤', device:'💻', ip:'🌐', service:'⚙', process:'🔧', alert:'🔔' };
       var shortName = (e.modalTitle || '').split('·').pop().trim() || entityId;
-      nameEl.textContent = (typeIcons[e.type] || '◇') + ' ' + shortName;
+      nameEl.textContent = (TYPE_ICONS[e.type] || '◇') + ' ' + shortName;
     }
 
-    // Reset chat and render welcome + preview cards
     var chat = document.getElementById('zhpChat');
     if (chat) chat.innerHTML = '';
     _typing = false;
-    _renderInitialPreview(entityId, e);
 
-    // Render suggestion chips
+    _renderInitialPreview(entityId, e);
     _renderSuggestions(e.type);
 
-    // Slide panel open
     document.getElementById('graphContainer').classList.add('zia-hunt-open');
     panel.classList.add('open');
 
-    // Focus input
     setTimeout(function () {
       var inp = document.getElementById('zhpInput');
       if (inp) inp.focus();
@@ -68,31 +65,95 @@
   // ── Initial Preview ────────────────────────────────────────────────
   function _renderInitialPreview(entityId, e) {
     var shortName = (e.modalTitle || '').split('·').pop().trim() || entityId;
+
+    // 1 — Zia alert-level analysis bridge (if AI investigation has run)
+    _renderZiaAlertBridge(e);
+
+    // 2 — entity data preview cards
     var cards = _buildPreviewCards(entityId, e);
     _addBotMessage(
       'Here\'s a quick overview of <strong>' + _escHtml(shortName) + '</strong>. ' +
-      'Tap a suggestion or ask me anything about this entity.',
+      'Tap a suggestion below or ask me anything.',
       cards
     );
   }
 
+  /* Pull investSummary + keyFindings from the active ALERT_DETAIL when
+     the analyst has already run "Start Investigation" on the alert. */
+  function _renderZiaAlertBridge(e) {
+    var aid = (typeof currentAlertId !== 'undefined') ? currentAlertId : null;
+    if (!aid) return;
+    var det = ((typeof ALERT_DETAIL !== 'undefined') ? ALERT_DETAIL : (window.ALERT_DETAIL || {}))[aid];
+    if (!det || !det.aiInvestigatedRuntime) return;
+
+    var html = '<div class="zhp-card zhp-card-zia-bridge">';
+    html += '<div class="zhp-card-ttl">✦ Zia Alert Analysis</div>';
+    if (det.investSummary) {
+      html += '<p class="zhp-bridge-summary">' + _escHtml(det.investSummary) + '</p>';
+    }
+    if (det.keyFindings && det.keyFindings.length) {
+      html += '<div class="zhp-card-list">';
+      det.keyFindings.slice(0, 3).forEach(function (k) {
+        html += '<div class="zhp-list-row"><span class="zhp-list-dot zhp-dot-red"></span>' +
+          '<span class="zhp-list-label">' + _escHtml(k.title || '') + '</span>' +
+          '<span class="zhp-list-val"></span></div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+
+    _addBotMessage('Alert-level Zia analysis is available for this investigation.', html);
+  }
+
+  // ── Preview Cards (auto-rendered on panel open) ────────────────────
   function _buildPreviewCards(entityId, e) {
+    var s = e.sections || {};
     var html = '';
 
-    // Risk / Summary card
-    var rs = e.sections && e.sections.riskSummary && e.sections.riskSummary.summaryCard;
+    /* ── ALERT entity ── */
+    if (e.type === 'alert') {
+      var ad = s.alertDetails;
+      if (ad && ad.kv && ad.kv.length) {
+        html += '<div class="zhp-card zhp-card-risk"><div class="zhp-card-ttl">🔔 Alert Details</div><div class="zhp-card-kv">';
+        ad.kv.slice(0, 6).forEach(function (item) {
+          html += '<span class="zhp-kv-k">' + _escHtml(item.label || item.key || '') + '</span>' +
+                  '<span class="zhp-kv-v">' + _escHtml(String(item.value || '')) + '</span>';
+        });
+        html += '</div></div>';
+      }
+      var tc = s.triggerConditions;
+      if (tc) {
+        var tcItems = tc.kv || tc.items || [];
+        if (tcItems.length) html += _listCardHtml('⚡ Trigger Conditions', tcItems.slice(0, 4), function (i) {
+          return { dot: 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+        });
+      }
+      var ae = s.affectedEntities;
+      if (ae) {
+        var aeItems = ae.kv || ae.items || ae.list || [];
+        if (aeItems.length) html += _listCardHtml('🎯 Affected Entities', aeItems.slice(0, 4), function (i) {
+          return { dot: 'red', label: String(i.label || i.key || i.name || ''), val: String(i.value || i.type || '') };
+        });
+      }
+      return html;
+    }
+
+    /* ── Risk Summary (all non-alert types) ── */
+    var rs = s.riskSummary && s.riskSummary.summaryCard;
     if (rs) {
-      html += '<div class="zhp-card zhp-card-risk">';
-      html += '<div class="zhp-card-ttl">🛡 Risk Summary</div>';
-      html += '<div class="zhp-card-kv">';
+      html += '<div class="zhp-card zhp-card-risk"><div class="zhp-card-ttl">🛡 Risk Summary</div><div class="zhp-card-kv">';
       var score = rs.riskScore !== undefined ? rs.riskScore : rs.score;
       if (score !== undefined) {
         html += '<span class="zhp-kv-k">Risk Score</span>' +
           '<span class="zhp-kv-v zhp-risk-score" data-score="' + score + '">' + score + ' / ' + (rs.maxScore || 100) + '</span>';
       }
-      if (rs.severity) html += '<span class="zhp-kv-k">Severity</span><span class="zhp-kv-v">' + _escHtml(rs.severity) + '</span>';
-      if (rs.statusBadge) html += '<span class="zhp-kv-k">Status</span><span class="zhp-kv-v">' + _escHtml(rs.statusBadge) + '</span>';
-      if (rs.metrics) {
+      if (rs.severity)    html += '<span class="zhp-kv-k">Severity</span><span class="zhp-kv-v">'    + _escHtml(rs.severity)    + '</span>';
+      if (rs.statusBadge) html += '<span class="zhp-kv-k">Status</span><span class="zhp-kv-v">'      + _escHtml(rs.statusBadge) + '</span>';
+      if (rs.heroChips) {
+        rs.heroChips.slice(0, 3).forEach(function (c) {
+          html += '<span class="zhp-kv-k">' + _escHtml(c.label) + '</span><span class="zhp-kv-v">' + _escHtml(String(c.value)) + '</span>';
+        });
+      } else if (rs.metrics) {
         rs.metrics.slice(0, 3).forEach(function (m) {
           html += '<span class="zhp-kv-k">' + _escHtml(m.label) + '</span><span class="zhp-kv-v">' + _escHtml(String(m.value)) + '</span>';
         });
@@ -100,83 +161,99 @@
       html += '</div></div>';
     }
 
-    // Recent alerts card
-    var alertsSec = e.sections && e.sections.recentAlerts;
-    var alertItems = alertsSec ? (alertsSec.kv || alertsSec.timeline || []) : [];
-    if (alertItems.length) {
-      html += '<div class="zhp-card zhp-card-alerts">';
-      html += '<div class="zhp-card-ttl">🚨 Recent Alerts</div>';
-      html += '<div class="zhp-card-list">';
-      alertItems.slice(0, 3).forEach(function (item) {
-        var label = item.label || item.key || item.event || item.name || '';
-        var val = item.value || item.time || item.severity || '';
-        html += '<div class="zhp-list-row"><span class="zhp-list-dot zhp-dot-red"></span>' +
-          '<span class="zhp-list-label">' + _escHtml(String(label)) + '</span>' +
-          '<span class="zhp-list-val">' + _escHtml(String(val)) + '</span></div>';
+    /* ── USER — critical flags in preview ── */
+    if (e.type === 'user') {
+      var mfItems = _secItems(s.mailboxForwarding, ['kv', 'rules', 'items']);
+      if (mfItems.length) {
+        html += '<div class="zhp-card zhp-card-warn"><div class="zhp-card-ttl" style="color:#dc2626">⚠ Mailbox Forwarding Active</div>';
+        html += _listBody(mfItems.slice(0, 3), function (i) {
+          return { dot: 'red', label: String(i.label || i.key || ''), val: String(i.value || '') };
+        }) + '</div>';
+      }
+      var dwItems = _secItems(s.darkWebExposure, ['kv', 'items']);
+      if (dwItems.length) {
+        html += '<div class="zhp-card zhp-card-warn"><div class="zhp-card-ttl" style="color:#9333ea">🌑 Dark Web Exposure</div>';
+        html += _listBody(dwItems.slice(0, 3), function (i) {
+          return { dot: 'red', label: String(i.label || i.key || ''), val: String(i.value || '') };
+        }) + '</div>';
+      }
+    }
+
+    /* ── Recent Alerts ── */
+    var alertItems = _secItems(s.recentAlerts, ['kv', 'timeline']);
+    if (alertItems.length) html += _listCardHtml('🚨 Recent Alerts', alertItems.slice(0, 3), function (i) {
+      return { dot: 'red', label: String(i.label || i.key || i.event || i.name || ''), val: String(i.value || i.time || i.severity || '') };
+    });
+
+    /* ── Logon Activity (user / device) ── */
+    if (e.type === 'user' || e.type === 'device') {
+      var logonItems = _secItems(s.logonActivity || s.loginStatistics || s.loginActivity, ['timeline', 'kv']);
+      if (logonItems.length) html += _listCardHtml('🔐 Recent Logon Activity', logonItems.slice(0, 4), function (i) {
+        var label = i.event || i.label || i.key || '';
+        var isFail = i.malicious || /fail/i.test(String(label));
+        return { dot: isFail ? 'red' : 'blue', label: String(label), val: String(i.time || i.value || '') };
       });
-      html += '</div></div>';
     }
 
-    // Logon activity card (user / device)
-    if (['user', 'device'].includes(e.type)) {
-      var logonSec = (e.sections && (e.sections.logonActivity || e.sections.loginStatistics)) || null;
-      var logonItems = logonSec ? (logonSec.timeline || logonSec.kv || []) : [];
-      if (logonItems.length) {
-        html += '<div class="zhp-card zhp-card-logon">';
-        html += '<div class="zhp-card-ttl">🔐 Recent Logon Activity</div>';
-        html += '<div class="zhp-card-list">';
-        logonItems.slice(0, 4).forEach(function (item) {
-          var label = item.event || item.label || item.key || '';
-          var time = item.time || item.value || '';
-          var isFail = item.malicious || /fail/i.test(String(label));
-          var dot = isFail ? 'zhp-dot-red' : 'zhp-dot-blue';
-          html += '<div class="zhp-list-row"><span class="zhp-list-dot ' + dot + '"></span>' +
-            '<span class="zhp-list-label">' + _escHtml(String(label)) + '</span>' +
-            '<span class="zhp-list-val">' + _escHtml(String(time)) + '</span></div>';
+    /* ── Network / Connection (ip / device) ── */
+    if (e.type === 'ip' || e.type === 'device') {
+      var netItems = _secItems(s.networkActivity || s.connectionHistory || s.trafficSummary, ['kv', 'timeline', 'items']);
+      if (netItems.length) html += _listCardHtml('🌐 Network Activity', netItems.slice(0, 3), function (i) {
+        return { dot: i.malicious ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      });
+      if (e.type === 'ip' && s.geoContext) {
+        var gcItems = _secItems(s.geoContext, ['kv', 'items']);
+        if (gcItems.length) {
+          html += '<div class="zhp-card"><div class="zhp-card-ttl">🗺 Geo Context</div><div class="zhp-card-kv">';
+          gcItems.slice(0, 4).forEach(function (i) {
+            html += '<span class="zhp-kv-k">' + _escHtml(String(i.label || i.key || '')) + '</span>' +
+                    '<span class="zhp-kv-v">' + _escHtml(String(i.value || '')) + '</span>';
+          });
+          html += '</div></div>';
+        }
+      }
+    }
+
+    /* ── Device — security event summary ── */
+    if (e.type === 'device') {
+      var sesItems = _secItems(s.securityEventSummary, ['kv', 'items']);
+      if (sesItems.length) {
+        html += '<div class="zhp-card"><div class="zhp-card-ttl">🖥 Security Event Summary</div><div class="zhp-card-kv">';
+        sesItems.slice(0, 6).forEach(function (i) {
+          html += '<span class="zhp-kv-k">' + _escHtml(String(i.label || i.key || '')) + '</span>' +
+                  '<span class="zhp-kv-v">' + _escHtml(String(i.value || '')) + '</span>';
         });
         html += '</div></div>';
       }
     }
 
-    // Network activity card (ip / device)
-    if (['ip', 'device'].includes(e.type)) {
-      var netSec = e.sections && e.sections.networkActivity;
-      var netItems = netSec ? (netSec.kv || netSec.timeline || []) : [];
-      if (netItems.length) {
-        html += '<div class="zhp-card zhp-card-net">';
-        html += '<div class="zhp-card-ttl">🌐 Network Activity</div>';
-        html += '<div class="zhp-card-list">';
-        netItems.slice(0, 3).forEach(function (item) {
-          var label = item.label || item.key || '';
-          var val = item.value || '';
-          html += '<div class="zhp-list-row"><span class="zhp-list-dot zhp-dot-orange"></span>' +
-            '<span class="zhp-list-label">' + _escHtml(String(label)) + '</span>' +
-            '<span class="zhp-list-val">' + _escHtml(String(val)) + '</span></div>';
-        });
-        html += '</div></div>';
-      }
+    /* ── Process — process tree ── */
+    if (e.type === 'process') {
+      var ptItems = _secItems(s.processTree || s.processDetails, ['kv', 'items', 'tree']);
+      if (ptItems.length) html += _listCardHtml('🌲 Process Tree', ptItems.slice(0, 5), function (i) {
+        return { dot: i.malicious ? 'red' : 'blue', label: String(i.label || i.name || i.key || ''), val: String(i.value || i.pid || '') };
+      });
     }
 
-    // Audit log card (service)
+    /* ── Service — audit / sign-in ── */
     if (e.type === 'service') {
-      var auditSec = e.sections && e.sections.auditLogs;
-      var auditItems = auditSec ? (auditSec.kv || auditSec.timeline || []) : [];
-      if (auditItems.length) {
-        html += '<div class="zhp-card zhp-card-audit">';
-        html += '<div class="zhp-card-ttl">📋 Audit Log Summary</div>';
-        html += '<div class="zhp-card-list">';
-        auditItems.slice(0, 3).forEach(function (item) {
-          var label = item.label || item.key || '';
-          var val = item.value || item.time || '';
-          html += '<div class="zhp-list-row"><span class="zhp-list-dot zhp-dot-blue"></span>' +
-            '<span class="zhp-list-label">' + _escHtml(String(label)) + '</span>' +
-            '<span class="zhp-list-val">' + _escHtml(String(val)) + '</span></div>';
-        });
-        html += '</div></div>';
-      }
+      var auditItems = _secItems(s.auditLogs || s.signInAudit || s.adminActivity, ['kv', 'timeline']);
+      if (auditItems.length) html += _listCardHtml('📋 Audit Log Summary', auditItems.slice(0, 3), function (i) {
+        return { dot: 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
+      });
     }
 
     return html;
+  }
+
+  /* Helper — extract items from the first matching key in a section obj */
+  function _secItems(sec, keys) {
+    if (!sec) return [];
+    for (var k = 0; k < keys.length; k++) {
+      var arr = sec[keys[k]];
+      if (arr && arr.length) return arr;
+    }
+    return [];
   }
 
   // ── Suggestion Chips ───────────────────────────────────────────────
@@ -185,29 +262,52 @@
       { icon: '🔐', text: 'Show failed login attempts' },
       { icon: '📊', text: 'UEBA risk profile' },
       { icon: '📁', text: 'What files were accessed?' },
+      { icon: '🌑', text: 'Dark web exposure' },
+      { icon: '📨', text: 'Is mailbox forwarding set?' },
+      { icon: '🔑', text: "What's their privileged access?" },
+      { icon: '👥', text: 'Any group membership changes?' },
       { icon: '🚨', text: 'List triggered alerts' },
-      { icon: '🌐', text: 'Network connections' }
+      { icon: '🛠', text: 'What should I do?' }
     ],
     device: [
       { icon: '🔍', text: 'Show vulnerabilities' },
       { icon: '🌐', text: 'Recent network connections' },
+      { icon: '💾', text: 'USB device activity' },
+      { icon: '⚙', text: 'What processes were running?' },
+      { icon: '📅', text: 'Show scheduled tasks' },
       { icon: '🚨', text: 'List triggered alerts' },
-      { icon: '⚙', text: 'Check misconfigurations' }
+      { icon: '🛠', text: 'What should I do?' }
     ],
     ip: [
       { icon: '🛡', text: 'Is this IP malicious?' },
       { icon: '🌐', text: 'Show connection history' },
-      { icon: '🚨', text: 'List triggered alerts' }
+      { icon: '🔎', text: 'DNS lookup history' },
+      { icon: '👤', text: 'Who connected to this IP?' },
+      { icon: '🚦', text: 'IDS / IPS alerts' },
+      { icon: '🚨', text: 'List triggered alerts' },
+      { icon: '🛠', text: 'What should I do?' }
     ],
     service: [
       { icon: '📋', text: 'Show audit logs' },
       { icon: '💥', text: 'Show blast radius' },
-      { icon: '🚨', text: 'List triggered alerts' }
+      { icon: '🔐', text: 'OAuth consent grants' },
+      { icon: '🚨', text: 'List triggered alerts' },
+      { icon: '🛠', text: 'What should I do?' }
     ],
     process: [
+      { icon: '🌲', text: 'Show process tree' },
+      { icon: '📝', text: 'Registry modifications' },
+      { icon: '🛡', text: 'AMSI / AV detections' },
+      { icon: '📂', text: 'File operations' },
       { icon: '💥', text: 'Show blast radius' },
-      { icon: '🚨', text: 'List triggered alerts' },
-      { icon: '🔍', text: 'Is this process malicious?' }
+      { icon: '🚨', text: 'List triggered alerts' }
+    ],
+    alert: [
+      { icon: '⚡', text: 'Why did this alert fire?' },
+      { icon: '🎯', text: 'What entities are affected?' },
+      { icon: '🔗', text: 'Show correlated alerts' },
+      { icon: '📝', text: 'Summarize this incident' },
+      { icon: '🛠', text: 'What should I do?' }
     ]
   };
 
@@ -216,7 +316,8 @@
     if (!el) return;
     var items = SUGGESTIONS[type] || [
       { icon: '🔍', text: 'Search in logs' },
-      { icon: '🚨', text: 'List triggered alerts' }
+      { icon: '🚨', text: 'List triggered alerts' },
+      { icon: '🛠', text: 'What should I do?' }
     ];
     el.innerHTML = items.map(function (s) {
       return '<button class="zhp-chip" onclick="zhpSend(\'' + _esc(s.text) + '\')">' + s.icon + ' ' + s.text + '</button>';
@@ -235,8 +336,7 @@
 
   function _respond(q) {
     if (!_huntEntityId) return;
-    var _ent = (typeof ENTITIES !== 'undefined' ? ENTITIES : null) || window.ENTITIES || {};
-    var e = _ent[_huntEntityId];
+    var e = _getEnt()[_huntEntityId];
     if (!e) return;
 
     _typing = true;
@@ -249,119 +349,537 @@
       _typing = false;
 
       var ql = q.toLowerCase();
-      var response = null;
+      var r = null;
 
-      if (/fail|wrong.pass|bad.login|invalid.cred/.test(ql)) {
-        response = _rFailedLogin(e);
+      // ── Remediation (highest priority) ──
+      if (/what.should|remediat|fix|action|next.step|how.to.respond|contain|what.do.i/.test(ql)) {
+        r = _rRemediation(e);
+
+      // ── Alert-specific ──
+      } else if (/why.did|trigger|rule.fire|condition|what.caused/.test(ql)) {
+        r = _rTriggerConditions(e);
+      } else if (/affect|impacted.entit|which.entit/.test(ql)) {
+        r = _rAffectedEntities(e);
+      } else if (/correlat|related.alert|same.incident/.test(ql)) {
+        r = _rCorrelatedAlerts(e);
+      } else if (/summari|incident.summary|overview|brief|tldr/.test(ql)) {
+        r = _rIncidentSummary(e);
+
+      // ── User-specific ──
+      } else if (/mail.*forward|forward.*mail|inbox.rule/.test(ql)) {
+        r = _rMailboxForwarding(e);
+      } else if (/dark.web|credential.leak|paste|breach/.test(ql)) {
+        r = _rDarkWeb(e);
+      } else if (/privileg|admin.role|role.access|elevated/.test(ql)) {
+        r = _rPrivilegedAccess(e);
+      } else if (/group.member|ad.group|membership.change/.test(ql)) {
+        r = _rGroupChanges(e);
+      } else if (/account.lock|lockout/.test(ql)) {
+        r = _rAccountLockouts(e);
+
+      // ── Device-specific ──
+      } else if (/usb|removable|storage.device/.test(ql)) {
+        r = _rUsbActivity(e);
+      } else if (/process.*run|running.*process|what.process/.test(ql)) {
+        r = _rProcessesOnHost(e);
+      } else if (/scheduled.task|task.sched/.test(ql)) {
+        r = _rScheduledTasks(e);
+
+      // ── IP-specific ──
+      } else if (/dns|lookup|resolv/.test(ql)) {
+        r = _rDnsHistory(e);
+      } else if (/who.connect|connect.*to.this.ip|assoc.user|associated.device/.test(ql)) {
+        r = _rAssociatedEntities(e);
+      } else if (/ids|ips|intrusion|snort|suricata/.test(ql)) {
+        r = _rIdsAlerts(e);
+      } else if (/firewall|blocked.traffic|allowed.traffic/.test(ql)) {
+        r = _rFirewallSummary(e);
+
+      // ── Process-specific ──
+      } else if (/process.tree|parent.process|child.process|spawn/.test(ql)) {
+        r = _rProcessTree(e);
+      } else if (/registry|regedit|hklm|hkcu/.test(ql)) {
+        r = _rRegistryMods(e);
+      } else if (/amsi|antivirus|av.detect|defender/.test(ql)) {
+        r = _rAmsiEvents(e);
+      } else if (/file.oper|file.creat|file.delet|file.writ/.test(ql)) {
+        r = _rFileOperations(e);
+
+      // ── Service ──
+      } else if (/oauth|consent|grant|app.permission/.test(ql)) {
+        r = _rOauthGrants(e);
+
+      // ── General ──
+      } else if (/fail|wrong.pass|bad.login|invalid.cred/.test(ql)) {
+        r = _rFailedLogin(e);
       } else if (/logon|login|sign.in|auth/.test(ql)) {
-        response = _rLogon(e);
-      } else if (/alert|alarm|trigger/.test(ql)) {
-        response = _rAlerts(e);
+        r = _rLogon(e);
+      } else if (/alert|alarm/.test(ql)) {
+        r = _rAlerts(e);
       } else if (/ueba|anomal|risk|behavior|unusual/.test(ql)) {
-        response = _rUeba(e);
+        r = _rUeba(e);
       } else if (/file|access|sharepoint|document|download/.test(ql)) {
-        response = _rFileAccess(e);
+        r = _rFileAccess(e);
       } else if (/network|connect|traffic|ip.addr|port/.test(ql)) {
-        response = _rNetwork(e);
+        r = _rNetwork(e);
       } else if (/vulner|cve|patch|exploit/.test(ql)) {
-        response = _rVulnerabilities(e);
+        r = _rVulnerabilities(e);
       } else if (/blast|impact|spread|lateral|reach/.test(ql)) {
-        response = _rBlastRadius(e);
+        r = _rBlastRadius(e);
       } else if (/malicious|threat|bad.actor|reputation|intel/.test(ql)) {
-        response = _rThreatIntel(e);
+        r = _rThreatIntel(e);
       } else if (/misconfig|setting|config/.test(ql)) {
-        response = _rMisconfig(e);
+        r = _rMisconfig(e);
       } else if (/audit|log.event/.test(ql)) {
-        response = _rAuditLogs(e);
+        r = _rAuditLogs(e);
       } else {
-        response = _rFallback(e, q);
+        r = _rFallback(e, q);
       }
 
-      if (response) {
-        _addBotMessage(response.text, response.card || '');
-        if (response.action) {
-          try { response.action(); } catch (_) {}
-        }
+      if (r) {
+        _addBotMessage(r.text, r.card || '');
+        if (r.action) { try { r.action(); } catch (_) {} }
       }
       _scrollBottom();
     }, 700 + Math.random() * 500);
   }
 
-  // ── Response Builders ──────────────────────────────────────────────
-  function _rLogon(e) {
-    var sec = (e.sections && (e.sections.logonActivity || e.sections.loginStatistics)) || null;
-    var items = sec ? (sec.timeline || sec.kv || []) : [];
-    if (!items.length) return { text: 'No logon activity data is available for this entity in the current window.' };
-    var card = _listCard('🔐 Logon Activity', items, function (i) {
-      var label = i.event || i.label || i.key || '';
-      var time = i.time || i.value || '';
-      var isFail = i.malicious || /fail/i.test(String(label));
-      return { dot: isFail ? 'red' : 'blue', label: String(label), val: String(time) };
+  // ══════════════════════════════════════════════════════════════════
+  // ── Response Builders ─────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════
+
+  /* ── REMEDIATION — "What should I do?" ── */
+  function _rRemediation(e) {
+    var rg = e.sections && e.sections.remediationGuide;
+    var steps = _secItems(rg, ['steps', 'items', 'kv']);
+    var aid = (typeof currentAlertId !== 'undefined') ? currentAlertId : null;
+    var det = aid && ((typeof ALERT_DETAIL !== 'undefined') ? ALERT_DETAIL : (window.ALERT_DETAIL || {}))[aid];
+    var mitigSteps = (det && det.mitigationSteps) || [];
+    var recCards   = (det && det.recommendations)  || [];
+
+    if (!steps.length && !mitigSteps.length && !recCards.length) {
+      return { text: 'No remediation guide available. Open the <strong>Investigation</strong> tab and click "Start Investigation" to generate AI-powered steps.' };
+    }
+
+    var html = '<div class="zhp-card zhp-card-remediation"><div class="zhp-card-ttl">🛠 Recommended Actions</div>';
+
+    if (steps.length) {
+      html += '<div class="zhp-card-list">';
+      steps.forEach(function (item, idx) {
+        var label = item.label || item.title || item.key || ('Step ' + (idx + 1));
+        var val   = item.value || item.desc || '';
+        html += '<div class="zhp-list-row"><span class="zhp-list-dot zhp-dot-green"></span>' +
+          '<span class="zhp-list-label">' + _escHtml(String(label)) + '</span>' +
+          '<span class="zhp-list-val">' + _escHtml(String(val)) + '</span></div>';
+      });
+      html += '</div>';
+    }
+
+    if (mitigSteps.length) {
+      html += '<div class="zhp-bridge-mitig">';
+      mitigSteps.slice(0, 4).forEach(function (t) {
+        html += '<div class="zhp-bullet"><span class="zhp-bullet-icon">✨</span><div class="zhp-bullet-text">' + _escHtml(t) + '</div></div>';
+      });
+      html += '</div>';
+    }
+
+    recCards.slice(0, 2).forEach(function (r) {
+      html += '<div class="zhp-rec-row"><span>' + _escHtml(r.icon || '⚡') + '</span>' +
+        '<div class="zhp-rec-body"><strong>' + _escHtml(r.title || '') + '</strong>' +
+        '<div class="zhp-rec-desc">' + _escHtml(r.desc || '') + '</div></div></div>';
     });
-    return { text: 'Found <strong>' + items.length + ' logon event' + (items.length !== 1 ? 's' : '') + '</strong> for this entity.', card: card };
+
+    html += '</div>';
+    return { text: 'Here are the recommended remediation actions.', card: html };
   }
 
+  /* ── ALERT — trigger conditions ── */
+  function _rTriggerConditions(e) {
+    var items = _secItems(e.sections && e.sections.triggerConditions, ['kv', 'items']);
+    if (!items.length) return { text: 'No trigger condition data available for this entity.' };
+    return { text: 'This alert fired based on the following conditions:',
+      card: _listCard('⚡ Trigger Conditions', items, function (i) {
+        return { dot: 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── ALERT — affected entities ── */
+  function _rAffectedEntities(e) {
+    var ae = e.sections && e.sections.affectedEntities;
+    var items = _secItems(ae, ['kv', 'items', 'list']);
+    if (!items.length) return { text: 'No affected entity data available for this alert.' };
+    return {
+      text: '<strong>' + items.length + ' entit' + (items.length !== 1 ? 'ies are' : 'y is') + '</strong> affected by this alert.',
+      card: _listCard('🎯 Affected Entities', items, function (i) {
+        return { dot: 'red', label: String(i.label || i.key || i.name || ''), val: String(i.value || i.type || '') };
+      })
+    };
+  }
+
+  /* ── ALERT — correlated alerts ── */
+  function _rCorrelatedAlerts(e) {
+    var s = e.sections || {};
+    var items = _secItems(s.correlatedAlerts || s.recentAlerts, ['kv', 'items', 'timeline']);
+    if (!items.length) return { text: 'No correlated alerts found for this entity.' };
+    return {
+      text: 'Found <strong>' + items.length + ' correlated alert' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('🔗 Correlated Alerts', items, function (i) {
+        return { dot: 'red', label: String(i.label || i.key || i.event || ''), val: String(i.value || i.time || i.severity || '') };
+      })
+    };
+  }
+
+  /* ── INCIDENT SUMMARY — bridges to Zia alert analysis ── */
+  function _rIncidentSummary(e) {
+    var aid = (typeof currentAlertId !== 'undefined') ? currentAlertId : null;
+    var det = aid && ((typeof ALERT_DETAIL !== 'undefined') ? ALERT_DETAIL : (window.ALERT_DETAIL || {}))[aid];
+
+    var html = '<div class="zhp-card zhp-card-zia-bridge"><div class="zhp-card-ttl">✦ Incident Summary</div>';
+
+    if (det && det.investSummary) {
+      html += '<p class="zhp-bridge-summary">' + _escHtml(det.investSummary) + '</p>';
+      if (det.keyFindings && det.keyFindings.length) {
+        html += '<div class="zhp-card-list">';
+        det.keyFindings.forEach(function (k) {
+          html += '<div class="zhp-list-row"><span class="zhp-list-dot zhp-dot-red"></span>' +
+            '<span class="zhp-list-label">' + _escHtml(k.title || '') + '</span>' +
+            '<span class="zhp-list-val">' + _escHtml((k.text || '').substring(0, 60) + ((k.text || '').length > 60 ? '…' : '')) + '</span></div>';
+        });
+        html += '</div>';
+      }
+    } else {
+      var rs = e.sections && e.sections.riskSummary && e.sections.riskSummary.summaryCard;
+      var score = rs ? (rs.riskScore !== undefined ? rs.riskScore : rs.score) : '—';
+      html += '<p class="zhp-bridge-summary">Risk score: ' + score + '. Click <strong>Start Investigation</strong> in the Investigation tab to generate a full AI-powered summary.</p>';
+    }
+    html += '</div>';
+
+    return {
+      text: (det && det.investSummary)
+        ? 'Here\'s the current incident summary from Zia\'s alert analysis.'
+        : 'No AI summary yet — run "Start Investigation" first.',
+      card: html
+    };
+  }
+
+  /* ── USER — mailbox forwarding ── */
+  function _rMailboxForwarding(e) {
+    var items = _secItems(e.sections && e.sections.mailboxForwarding, ['kv', 'rules', 'items']);
+    if (!items.length) return { text: 'No mailbox forwarding rules detected for this user. ✓' };
+    return {
+      text: '⚠ <strong>' + items.length + ' forwarding rule' + (items.length !== 1 ? 's' : '') + ' detected</strong> — common data exfiltration technique.',
+      card: _listCard('📨 Mailbox Forwarding Rules', items, function (i) {
+        return { dot: 'red', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── USER — dark web exposure ── */
+  function _rDarkWeb(e) {
+    var items = _secItems(e.sections && e.sections.darkWebExposure, ['kv', 'items']);
+    if (!items.length) return { text: 'No dark web exposure found in configured threat intelligence feeds. ✓' };
+    return {
+      text: '🌑 <strong>' + items.length + ' dark web record' + (items.length !== 1 ? 's' : '') + '</strong> found — credentials may be compromised.',
+      card: _listCard('🌑 Dark Web Exposure', items, function (i) {
+        return { dot: 'red', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── USER — privileged access ── */
+  function _rPrivilegedAccess(e) {
+    var s = e.sections || {};
+    var items = _secItems(s.privilegedSurface || s.effectiveGroups, ['kv', 'items']);
+    if (!items.length) return { text: 'No privileged access data found for this user.' };
+    return {
+      text: 'This user has access to <strong>' + items.length + ' privileged resource' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('🔑 Privileged Access', items, function (i) {
+        var isHigh = /admin|domain|global|owner|root/i.test(String(i.value || i.label || ''));
+        return { dot: isHigh ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── USER — group membership changes ── */
+  function _rGroupChanges(e) {
+    var items = _secItems(e.sections && e.sections.groupMembershipChanges, ['kv', 'items', 'timeline']);
+    if (!items.length) return { text: 'No group membership changes detected in the investigation window.' };
+    return {
+      text: 'Found <strong>' + items.length + ' group change' + (items.length !== 1 ? 's' : '') + '</strong> for this user.',
+      card: _listCard('👥 Group Membership Changes', items, function (i) {
+        var isAdd = /add|join/i.test(String(i.value || i.action || ''));
+        return { dot: isAdd ? 'orange' : 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
+      })
+    };
+  }
+
+  /* ── USER — account lockouts ── */
+  function _rAccountLockouts(e) {
+    var items = _secItems(e.sections && e.sections.accountLockouts, ['kv', 'items', 'timeline']);
+    if (!items.length) return { text: 'No account lockout events found for this user.' };
+    return {
+      text: 'Found <strong>' + items.length + ' lockout event' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('🔒 Account Lockouts', items, function (i) {
+        return { dot: 'red', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
+      })
+    };
+  }
+
+  /* ── DEVICE — USB activity ── */
+  function _rUsbActivity(e) {
+    var items = _secItems(e.sections && e.sections.usbDeviceEvents, ['kv', 'items', 'timeline']);
+    if (!items.length) return { text: 'No USB device activity recorded in the investigation window.' };
+    return {
+      text: 'Found <strong>' + items.length + ' USB event' + (items.length !== 1 ? 's' : '') + '</strong> on this device.',
+      card: _listCard('💾 USB Device Events', items, function (i) {
+        var isPlug = /plug|insert|connect|attach/i.test(String(i.value || i.event || ''));
+        return { dot: isPlug ? 'orange' : 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
+      })
+    };
+  }
+
+  /* ── DEVICE — processes on host ── */
+  function _rProcessesOnHost(e) {
+    var s = e.sections || {};
+    var items = _secItems(s.processesOnHost || s.processes, ['kv', 'items', 'list']);
+    if (!items.length) return { text: 'No process data available for this device in the investigation window.' };
+    return {
+      text: 'Found <strong>' + items.length + ' process' + (items.length !== 1 ? 'es' : '') + '</strong> active on this host.',
+      card: _listCard('⚙ Processes on Host', items, function (i) {
+        var isSus = i.malicious || /powershell|cmd|wscript|mshta|rundll/i.test(String(i.label || i.key || ''));
+        return { dot: isSus ? 'red' : 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.pid || '') };
+      })
+    };
+  }
+
+  /* ── DEVICE — scheduled tasks ── */
+  function _rScheduledTasks(e) {
+    var items = _secItems(e.sections && e.sections.scheduledTasks, ['kv', 'items', 'tasks']);
+    if (!items.length) return { text: 'No scheduled tasks found for this device.' };
+    return {
+      text: 'Found <strong>' + items.length + ' scheduled task' + (items.length !== 1 ? 's' : '') + '</strong> — review suspicious entries.',
+      card: _listCard('📅 Scheduled Tasks', items, function (i) {
+        var isSus = i.malicious || /powershell|cmd|wscript|base64|hidden/i.test(String(i.value || i.label || ''));
+        return { dot: isSus ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── IP — DNS history ── */
+  function _rDnsHistory(e) {
+    var items = _secItems(e.sections && e.sections.dnsHistory, ['kv', 'items', 'queries']);
+    if (!items.length) return { text: 'No DNS query history found for this IP.' };
+    return {
+      text: 'Found <strong>' + items.length + ' DNS record' + (items.length !== 1 ? 's' : '') + '</strong> associated with this IP.',
+      card: _listCard('🔎 DNS Lookup History', items, function (i) {
+        return { dot: i.malicious ? 'red' : 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
+      })
+    };
+  }
+
+  /* ── IP — associated users / devices ── */
+  function _rAssociatedEntities(e) {
+    var s = e.sections || {};
+    var usrs = _secItems(s.associatedUsers,   ['kv', 'items']);
+    var devs = _secItems(s.associatedDevices, ['kv', 'items']);
+    if (!usrs.length && !devs.length) return { text: 'No associated users or devices found for this IP.' };
+    var html = '';
+    if (usrs.length) html += _listCardHtml('👤 Associated Users',   usrs.slice(0, 5), function (i) {
+      return { dot: 'blue',   label: String(i.label || i.key || ''), val: String(i.value || '') };
+    });
+    if (devs.length) html += _listCardHtml('💻 Associated Devices', devs.slice(0, 5), function (i) {
+      return { dot: 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+    });
+    var total = usrs.length + devs.length;
+    return { text: '<strong>' + total + ' entity connection' + (total !== 1 ? 's' : '') + '</strong> linked to this IP.', card: html };
+  }
+
+  /* ── IP — IDS alerts ── */
+  function _rIdsAlerts(e) {
+    var items = _secItems(e.sections && e.sections.idsAlerts, ['kv', 'items', 'alerts']);
+    if (!items.length) return { text: 'No IDS / IPS alerts found for this IP.' };
+    return {
+      text: 'Found <strong>' + items.length + ' IDS/IPS alert' + (items.length !== 1 ? 's' : '') + '</strong> for this IP.',
+      card: _listCard('🚦 IDS / IPS Alerts', items, function (i) {
+        return { dot: 'red', label: String(i.label || i.key || ''), val: String(i.value || i.rule || i.time || '') };
+      })
+    };
+  }
+
+  /* ── IP — firewall summary ── */
+  function _rFirewallSummary(e) {
+    var items = _secItems(e.sections && e.sections.firewallSummary, ['kv', 'items']);
+    if (!items.length) return { text: 'No firewall data available for this IP.' };
+    return {
+      text: 'Firewall activity summary for this IP:',
+      card: _listCard('🔥 Firewall Summary', items, function (i) {
+        var isBlock = /block|deny|drop/i.test(String(i.value || ''));
+        return { dot: isBlock ? 'red' : 'green', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── PROCESS — process tree ── */
+  function _rProcessTree(e) {
+    var s = e.sections || {};
+    var items = _secItems(s.processTree || s.childProcesses || s.processDetails, ['kv', 'items', 'tree', 'children']);
+    if (!items.length) return { text: 'No process tree data available for this process.' };
+    return {
+      text: 'Process execution chain:',
+      card: _listCard('🌲 Process Tree', items, function (i) {
+        var isSus = i.malicious || /powershell|cmd|wscript|mshta|rundll|base64/i.test(String(i.label || i.key || ''));
+        return { dot: isSus ? 'red' : 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.pid || '') };
+      })
+    };
+  }
+
+  /* ── PROCESS — registry modifications ── */
+  function _rRegistryMods(e) {
+    var items = _secItems(e.sections && e.sections.registryModifications, ['kv', 'items']);
+    if (!items.length) return { text: 'No registry modification data found for this process.' };
+    return {
+      text: 'Found <strong>' + items.length + ' registry modification' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('📝 Registry Modifications', items, function (i) {
+        var isSus = /run|startup|currentversion|policies|winlogon/i.test(String(i.label || i.key || ''));
+        return { dot: isSus ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── PROCESS — AMSI / AV detections ── */
+  function _rAmsiEvents(e) {
+    var items = _secItems(e.sections && e.sections.amsiEvents, ['kv', 'items', 'detections']);
+    if (!items.length) return { text: 'No AMSI / antivirus detection events found for this process. ✓' };
+    return {
+      text: '⚠ <strong>' + items.length + ' AMSI/AV detection' + (items.length !== 1 ? 's' : '') + '</strong> triggered.',
+      card: _listCard('🛡 AMSI / AV Detections', items, function (i) {
+        return { dot: 'red', label: String(i.label || i.key || ''), val: String(i.value || i.verdict || '') };
+      })
+    };
+  }
+
+  /* ── PROCESS — file operations ── */
+  function _rFileOperations(e) {
+    var items = _secItems(e.sections && e.sections.fileOperations, ['kv', 'items']);
+    if (!items.length) return { text: 'No file operation data found for this process.' };
+    return {
+      text: 'Found <strong>' + items.length + ' file operation' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('📂 File Operations', items, function (i) {
+        var isDel = /delet|remov/i.test(String(i.value || i.action || ''));
+        return { dot: isDel ? 'red' : 'blue', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── SERVICE — OAuth consent grants ── */
+  function _rOauthGrants(e) {
+    var s = e.sections || {};
+    var items = _secItems(s.oauthConsentGrants || s.conditionalAccess, ['kv', 'items', 'grants']);
+    if (!items.length) return { text: 'No OAuth consent or conditional access data found for this service.' };
+    return {
+      text: 'Found <strong>' + items.length + ' OAuth permission' + (items.length !== 1 ? 's' : '') + '</strong> for this service.',
+      card: _listCard('🔐 OAuth Consent Grants', items, function (i) {
+        var isDanger = /Files\.ReadWrite|Mail\.|User\.ReadWrite|Group\.|RoleManagement/i.test(String(i.value || i.label || ''));
+        return { dot: isDanger ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── Logon ── */
+  function _rLogon(e) {
+    var s = e.sections || {};
+    var items = _secItems(s.logonActivity || s.loginStatistics || s.loginActivity, ['timeline', 'kv']);
+    if (!items.length) return { text: 'No logon activity data available in the current window.' };
+    return {
+      text: 'Found <strong>' + items.length + ' logon event' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('🔐 Logon Activity', items, function (i) {
+        var label = i.event || i.label || i.key || '';
+        return { dot: (i.malicious || /fail/i.test(String(label))) ? 'red' : 'blue', label: String(label), val: String(i.time || i.value || '') };
+      })
+    };
+  }
+
+  /* ── Failed login ── */
   function _rFailedLogin(e) {
     var sec = e.sections && e.sections.logonActivity;
-    var all = (sec && sec.timeline) || [];
+    var all = _secItems(sec, ['timeline', 'kv']);
     var fails = all.filter(function (i) { return i.malicious || /fail/i.test(String(i.event || i.label || '')); });
     var rs = e.sections && e.sections.riskSummary && e.sections.riskSummary.summaryCard;
     var metricFail = rs && rs.metrics && rs.metrics.find(function (m) { return /failed/i.test(m.label || ''); });
     var count = fails.length || (metricFail && metricFail.value) || '—';
     var displayItems = fails.length ? fails : [{ event: 'Failed login events detected', value: String(count) }];
-    var card = _listCard('⚠ Failed Login Attempts', displayItems, function (i) {
-      return { dot: 'red', label: String(i.event || i.label || 'Failed Login'), val: String(i.time || i.value || '') };
-    });
-    return { text: 'Detected <strong>' + count + ' failed login attempt' + (count !== 1 ? 's' : '') + '</strong> in the investigation window.', card: card };
+    return {
+      text: 'Detected <strong>' + count + ' failed login attempt' + (count !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('⚠ Failed Login Attempts', displayItems, function (i) {
+        return { dot: 'red', label: String(i.event || i.label || 'Failed Login'), val: String(i.time || i.value || '') };
+      })
+    };
   }
 
+  /* ── Alerts ── */
   function _rAlerts(e) {
-    var sec = e.sections && e.sections.recentAlerts;
-    var items = sec ? (sec.kv || sec.timeline || []) : [];
+    var items = _secItems(e.sections && e.sections.recentAlerts, ['kv', 'timeline']);
     if (!items.length) return { text: 'No triggered alerts found for this entity in the current period.' };
-    var card = _listCard('🚨 Triggered Alerts', items, function (i) {
-      return { dot: 'red', label: String(i.label || i.key || i.event || i.name || ''), val: String(i.value || i.time || i.severity || '') };
-    });
-    return { text: '<strong>' + items.length + ' alert' + (items.length !== 1 ? 's' : '') + '</strong> have been triggered by this entity.', card: card };
+    return {
+      text: '<strong>' + items.length + ' alert' + (items.length !== 1 ? 's' : '') + '</strong> triggered by this entity.',
+      card: _listCard('🚨 Triggered Alerts', items, function (i) {
+        return { dot: 'red', label: String(i.label || i.key || i.event || i.name || ''), val: String(i.value || i.time || i.severity || '') };
+      })
+    };
   }
 
+  /* ── UEBA ── */
   function _rUeba(e) {
     var rs = e.sections && e.sections.riskSummary && e.sections.riskSummary.summaryCard;
-    if (!rs) return { text: 'No UEBA profile data available for this entity.' };
+    var ub = e.sections && e.sections.uebaProfile;
+    if (!rs && !ub) return { text: 'No UEBA profile data available for this entity.' };
     var html = '<div class="zhp-card zhp-card-risk"><div class="zhp-card-ttl">📊 UEBA Risk Profile</div><div class="zhp-card-kv">';
-    var score = rs.riskScore !== undefined ? rs.riskScore : rs.score;
-    if (score !== undefined) html += '<span class="zhp-kv-k">Risk Score</span><span class="zhp-kv-v zhp-risk-score" data-score="' + score + '">' + score + ' / ' + (rs.maxScore || 100) + '</span>';
-    if (rs.severity) html += '<span class="zhp-kv-k">Severity</span><span class="zhp-kv-v">' + _escHtml(rs.severity) + '</span>';
-    if (rs.heroChips) rs.heroChips.forEach(function (c) {
-      html += '<span class="zhp-kv-k">' + _escHtml(c.label) + '</span><span class="zhp-kv-v">' + _escHtml(String(c.value)) + '</span>';
+    if (rs) {
+      var score = rs.riskScore !== undefined ? rs.riskScore : rs.score;
+      if (score !== undefined) html += '<span class="zhp-kv-k">Risk Score</span><span class="zhp-kv-v zhp-risk-score" data-score="' + score + '">' + score + ' / ' + (rs.maxScore || 100) + '</span>';
+      if (rs.severity) html += '<span class="zhp-kv-k">Severity</span><span class="zhp-kv-v">' + _escHtml(rs.severity) + '</span>';
+      if (rs.heroChips) rs.heroChips.slice(0, 4).forEach(function (c) {
+        html += '<span class="zhp-kv-k">' + _escHtml(c.label) + '</span><span class="zhp-kv-v">' + _escHtml(String(c.value)) + '</span>';
+      });
+    }
+    if (ub) _secItems(ub, ['kv', 'items']).slice(0, 4).forEach(function (i) {
+      html += '<span class="zhp-kv-k">' + _escHtml(String(i.label || i.key || '')) + '</span><span class="zhp-kv-v">' + _escHtml(String(i.value || '')) + '</span>';
     });
     html += '</div></div>';
-    var sev = rs.severity || 'Unknown';
+    var sev = (rs && rs.severity) || 'Unknown';
     var tail = sev === 'High' ? 'significant anomalous behavior detected.' : sev === 'Medium' ? 'some elevated activity worth monitoring.' : 'behaviour within normal thresholds.';
-    return { text: 'Risk score: <strong>' + score + '</strong> (' + sev + '). ' + tail, card: html };
+    var sc2 = rs ? (rs.riskScore !== undefined ? rs.riskScore : rs.score) : '—';
+    return { text: 'Risk score: <strong>' + sc2 + '</strong> (' + sev + '). ' + tail, card: html };
   }
 
+  /* ── Network ── */
   function _rNetwork(e) {
-    var sec = e.sections && e.sections.networkActivity;
-    var items = sec ? (sec.kv || sec.timeline || []) : [];
+    var s = e.sections || {};
+    var items = _secItems(s.networkActivity || s.connectionHistory || s.trafficSummary, ['kv', 'timeline', 'items']);
     if (!items.length) return { text: 'No network activity data found for this entity.' };
-    var card = _listCard('🌐 Network Activity', items, function (i) {
-      return { dot: i.malicious ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
-    });
-    return { text: 'Found <strong>' + items.length + ' network connection' + (items.length !== 1 ? 's' : '') + '</strong> associated with this entity.', card: card };
+    return {
+      text: 'Found <strong>' + items.length + ' network connection' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('🌐 Network Activity', items, function (i) {
+        return { dot: i.malicious ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
   }
 
+  /* ── Vulnerabilities ── */
   function _rVulnerabilities(e) {
-    var sec = e.sections && e.sections.vulnerabilities;
-    var items = sec ? (sec.kv || sec.timeline || []) : [];
+    var items = _secItems(e.sections && e.sections.vulnerabilities, ['kv', 'timeline']);
     if (!items.length) return { text: 'No vulnerability data available for this entity.' };
-    var card = _listCard('🔍 Vulnerability Scan', items, function (i) {
-      var isCrit = /critical|high/i.test(String(i.value || ''));
-      return { dot: isCrit ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
-    });
-    return { text: 'Found <strong>' + items.length + ' vulnerabilit' + (items.length !== 1 ? 'ies' : 'y') + '</strong> on this entity.', card: card };
+    return {
+      text: 'Found <strong>' + items.length + ' vulnerabilit' + (items.length !== 1 ? 'ies' : 'y') + '</strong>.',
+      card: _listCard('🔍 Vulnerability Scan', items, function (i) {
+        var isCrit = /critical|high/i.test(String(i.value || ''));
+        return { dot: isCrit ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
   }
 
+  /* ── Blast radius ── */
   function _rBlastRadius(e) {
     var br = e.sections && e.sections.blastRadius && e.sections.blastRadius.blastRadius;
     var count = br && br.reachNodes ? br.reachNodes.length : 0;
@@ -377,80 +895,112 @@
     };
   }
 
+  /* ── Threat intel ── */
   function _rThreatIntel(e) {
+    var ti = e.sections && e.sections.threatIntelligence;
+    var tiItems = _secItems(ti, ['kv', 'items']);
     var isMal = e.type === 'ip' && (
       /tor|c2|malicious/i.test(e.modalTitle || '') ||
-      ((e.sections && e.sections.riskSummary && e.sections.riskSummary.summaryCard || {}).severity === 'High')
+      ((e.sections && e.sections.riskSummary && e.sections.riskSummary.summaryCard || {}).severity === 'High') ||
+      tiItems.some(function (i) { return /malicious|tor|c2|block/i.test(String(i.value || '')); })
     );
     var html = '<div class="zhp-card zhp-card-risk"><div class="zhp-card-ttl">🛡 Threat Intelligence</div><div class="zhp-card-kv">';
-    if (e.type === 'ip') {
+    if (tiItems.length) {
+      tiItems.slice(0, 5).forEach(function (i) {
+        var isFlag = /malicious|tor|c2|block|high/i.test(String(i.value || ''));
+        html += '<span class="zhp-kv-k">' + _escHtml(String(i.label || i.key || '')) + '</span>' +
+          '<span class="zhp-kv-v" style="color:' + (isFlag ? '#dc2626' : 'inherit') + '">' + _escHtml(String(i.value || '')) + '</span>';
+      });
+    } else if (e.type === 'ip') {
       html += '<span class="zhp-kv-k">IP Reputation</span><span class="zhp-kv-v" style="color:' + (isMal ? '#dc2626' : '#16a34a') + '">' + (isMal ? '⚠ Malicious' : '✓ Clean') + '</span>';
       html += '<span class="zhp-kv-k">Feed Match</span><span class="zhp-kv-v">' + (isMal ? 'Tor Exit Node / C2' : 'No match') + '</span>';
-      html += '<span class="zhp-kv-k">Source</span><span class="zhp-kv-v">STIX/TAXII Feed</span>';
     } else {
       html += '<span class="zhp-kv-k">Threat Feed</span><span class="zhp-kv-v">No known IOC match</span>';
     }
     html += '</div></div>';
     return {
-      text: isMal
-        ? 'This IP is <strong>flagged as malicious</strong> in the Log360 threat intelligence feeds (Tor exit node / C2 server).'
-        : 'No matches found in configured threat intelligence feeds for this entity.',
+      text: isMal ? 'This IP is <strong>flagged as malicious</strong> in Log360 threat intelligence feeds.' : 'No IOC matches found in configured threat feeds.',
       card: html
     };
   }
 
+  /* ── File access ── */
   function _rFileAccess(e) {
-    var sec = e.sections && (e.sections.recentFileAccess || e.sections.fileActivity);
-    var items = sec ? (sec.kv || sec.timeline || []) : [];
-    if (!items.length) return { text: 'No file access records found for this entity in the current investigation window.' };
-    var card = _listCard('📁 File Access', items, function (i) {
-      return { dot: 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
-    });
-    return { text: 'Found <strong>' + items.length + ' file access event' + (items.length !== 1 ? 's' : '') + '</strong>.', card: card };
+    var s = e.sections || {};
+    var items = _secItems(s.recentFileAccess || s.fileActivity || s.resourceFileAccess, ['kv', 'timeline']);
+    if (!items.length) return { text: 'No file access records found in the current investigation window.' };
+    return {
+      text: 'Found <strong>' + items.length + ' file access event' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('📁 File Access', items, function (i) {
+        return { dot: 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
+      })
+    };
   }
 
+  /* ── Misconfig ── */
   function _rMisconfig(e) {
-    var sec = e.sections && (e.sections.misconfigurations || e.sections.configIssues);
-    var items = sec ? (sec.kv || sec.timeline || []) : [];
+    var s = e.sections || {};
+    var items = _secItems(s.misconfigurations || s.configIssues || s.gpoApplied, ['kv', 'timeline']);
     if (!items.length) return { text: 'No misconfiguration data found for this entity.' };
-    var card = _listCard('⚙ Misconfigurations', items, function (i) {
-      return { dot: 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
-    });
-    return { text: 'Found <strong>' + items.length + ' misconfiguration' + (items.length !== 1 ? 's' : '') + '</strong>.', card: card };
+    return {
+      text: 'Found <strong>' + items.length + ' misconfiguration' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('⚙ Misconfigurations / Policy', items, function (i) {
+        return { dot: 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
   }
 
+  /* ── Audit logs ── */
   function _rAuditLogs(e) {
-    var sec = e.sections && e.sections.auditLogs;
-    var items = sec ? (sec.kv || sec.timeline || []) : [];
+    var s = e.sections || {};
+    var items = _secItems(s.auditLogs || s.signInAudit || s.adminActivity, ['kv', 'timeline']);
     if (!items.length) return { text: 'No audit log data available for this entity.' };
-    var card = _listCard('📋 Audit Logs', items, function (i) {
-      return { dot: 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
-    });
-    return { text: 'Found <strong>' + items.length + ' audit log event' + (items.length !== 1 ? 's' : '') + '</strong>.', card: card };
+    return {
+      text: 'Found <strong>' + items.length + ' audit log event' + (items.length !== 1 ? 's' : '') + '</strong>.',
+      card: _listCard('📋 Audit Logs', items, function (i) {
+        return { dot: 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
+      })
+    };
   }
 
+  /* ── Fallback ── */
   function _rFallback(e, q) {
     var shortName = (e.modalTitle || '').split('·').pop().trim() || _huntEntityId;
+    var hints = (SUGGESTIONS[e.type] || []).slice(0, 3).map(function (s) { return s.icon + ' ' + s.text; }).join(', ');
     return {
       text: 'I searched for "<strong>' + _escHtml(q) + '</strong>" in ' + _escHtml(shortName) + '\'s data. ' +
-        'Try one of the suggested questions for a structured view, or open Entity Details for the full profile.',
+        'Try: ' + hints + ' — or open Entity Details for the full profile.',
       card: ''
     };
   }
 
-  // ── Card builder helper ────────────────────────────────────────────
+  // ── Card builder helpers ───────────────────────────────────────────
   function _listCard(title, items, rowFn) {
+    return _listCardHtml(title, items, rowFn);
+  }
+
+  function _listCardHtml(title, items, rowFn) {
     var html = '<div class="zhp-card"><div class="zhp-card-ttl">' + title + '</div><div class="zhp-card-list">';
     items.forEach(function (item) {
       var r = rowFn(item);
       html += '<div class="zhp-list-row">' +
         '<span class="zhp-list-dot zhp-dot-' + r.dot + '"></span>' +
         '<span class="zhp-list-label">' + _escHtml(r.label) + '</span>' +
-        '<span class="zhp-list-val">' + _escHtml(r.val) + '</span>' +
-        '</div>';
+        '<span class="zhp-list-val">' + _escHtml(r.val) + '</span></div>';
     });
-    html += '</div></div>';
-    return html;
+    return html + '</div></div>';
+  }
+
+  function _listBody(items, rowFn) {
+    var html = '<div class="zhp-card-list">';
+    items.forEach(function (item) {
+      var r = rowFn(item);
+      html += '<div class="zhp-list-row">' +
+        '<span class="zhp-list-dot zhp-dot-' + r.dot + '"></span>' +
+        '<span class="zhp-list-label">' + _escHtml(r.label) + '</span>' +
+        '<span class="zhp-list-val">' + _escHtml(r.val) + '</span></div>';
+    });
+    return html + '</div>';
   }
 
   // ── Chat DOM helpers ───────────────────────────────────────────────
@@ -465,7 +1015,6 @@
         (cardHtml ? '<div class="zhp-msg-card">' + cardHtml + '</div>' : '') +
       '</div>';
     chat.appendChild(row);
-    // Apply risk-score colours after DOM insert
     row.querySelectorAll('.zhp-risk-score[data-score]').forEach(function (el) {
       var s = parseInt(el.getAttribute('data-score'), 10);
       el.style.color = s >= 70 ? '#dc2626' : s >= 40 ? '#ea580c' : '#16a34a';
@@ -504,11 +1053,7 @@
   // ── String utils ───────────────────────────────────────────────────
   function _esc(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
   function _escHtml(s) {
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
 })();
