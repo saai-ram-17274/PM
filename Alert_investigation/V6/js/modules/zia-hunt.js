@@ -182,16 +182,17 @@
     /* ── Recent Alerts ── */
     var alertItems = _secItems(s.recentAlerts, ['kv', 'timeline']);
     if (alertItems.length) html += _listCardHtml('🚨 Recent Alerts', alertItems.slice(0, 3), function (i) {
-      return { dot: 'red', label: String(i.label || i.key || i.event || i.name || ''), val: String(i.value || i.time || i.severity || '') };
+      return { dot: 'red', label: _alertLabel(i), val: _alertVal(i) };
     });
 
     /* ── Logon Activity (user / device) ── */
     if (e.type === 'user' || e.type === 'device') {
       var logonItems = _secItems(s.logonActivity || s.loginStatistics || s.loginActivity, ['timeline', 'kv']);
       if (logonItems.length) html += _listCardHtml('🔐 Recent Logon Activity', logonItems.slice(0, 4), function (i) {
-        var label = i.event || i.label || i.key || '';
-        var isFail = i.malicious || /fail/i.test(String(label));
-        return { dot: isFail ? 'red' : 'blue', label: String(label), val: String(i.time || i.value || '') };
+        var label = _logonLabel(i);
+        var val   = _logonVal(i);
+        var isFail = i.malicious || /fail/i.test(String(label + val));
+        return { dot: isFail ? 'red' : 'blue', label: label, val: val };
       });
     }
 
@@ -254,6 +255,42 @@
       if (arr && arr.length) return arr;
     }
     return [];
+  }
+
+  /* Helper — display label for a recentAlerts timeline item
+   * Data shape: { time, viewOnGraph: { label }, detailsGrid: [{ label, severity, value }] }
+   */
+  function _alertLabel(i) {
+    return String(
+      (i.viewOnGraph && i.viewOnGraph.label) ||
+      (i.detailsGrid && i.detailsGrid[0] && i.detailsGrid[0].label) ||
+      i.label || i.event || i.name || i.key || ''
+    );
+  }
+  function _alertVal(i) {
+    var dg = i.detailsGrid && i.detailsGrid[0];
+    return String(
+      (dg && (dg.severity || dg.value)) ||
+      i.severity || i.value || i.time || ''
+    );
+  }
+
+  /* Helper — display label / val for a logonActivity timeline item
+   * Data shape: { time, dot, malicious?, details: { 'Logon Type', 'Target Host', 'Status', 'Result' } }
+   */
+  function _logonLabel(i) {
+    var d = i.details || {};
+    return String(
+      i.event || i.label || i.key ||
+      d['Logon Type'] || d['Target Host'] || ''
+    );
+  }
+  function _logonVal(i) {
+    var d = i.details || {};
+    return String(
+      d['Status'] || d['Result'] ||
+      d['Target Host'] || i.value || i.time || ''
+    );
   }
 
   // ── Suggestion Chips — blast-radius-centric, data-driven ──────────
@@ -879,8 +916,10 @@
     return {
       text: 'Found <strong>' + items.length + ' logon event' + (items.length !== 1 ? 's' : '') + '</strong>.',
       card: _listCard('🔐 Logon Activity', items, function (i) {
-        var label = i.event || i.label || i.key || '';
-        return { dot: (i.malicious || /fail/i.test(String(label))) ? 'red' : 'blue', label: String(label), val: String(i.time || i.value || '') };
+        var label = _logonLabel(i);
+        var val   = _logonVal(i);
+        var isFail = i.malicious || /fail/i.test(String(label + val));
+        return { dot: isFail ? 'red' : 'blue', label: label, val: val };
       })
     };
   }
@@ -889,7 +928,10 @@
   function _rFailedLogin(e) {
     var sec = e.sections && e.sections.logonActivity;
     var all = _secItems(sec, ['timeline', 'kv']);
-    var fails = all.filter(function (i) { return i.malicious || /fail/i.test(String(i.event || i.label || '')); });
+    var fails = all.filter(function (i) {
+      var l = _logonLabel(i); var v = _logonVal(i);
+      return i.malicious || /fail/i.test(String(l + v));
+    });
     var rs = e.sections && e.sections.riskSummary && e.sections.riskSummary.summaryCard;
     var metricFail = rs && rs.metrics && rs.metrics.find(function (m) { return /failed/i.test(m.label || ''); });
     var count = fails.length || (metricFail && metricFail.value) || '—';
@@ -897,7 +939,9 @@
     return {
       text: 'Detected <strong>' + count + ' failed login attempt' + (count !== 1 ? 's' : '') + '</strong>.',
       card: _listCard('⚠ Failed Login Attempts', displayItems, function (i) {
-        return { dot: 'red', label: String(i.event || i.label || 'Failed Login'), val: String(i.time || i.value || '') };
+        var label = _logonLabel(i);
+        var val   = _logonVal(i);
+        return { dot: 'red', label: label || 'Failed Login', val: val || String(i.time || '') };
       })
     };
   }
@@ -909,7 +953,7 @@
     return {
       text: '<strong>' + items.length + ' alert' + (items.length !== 1 ? 's' : '') + '</strong> triggered by this entity.',
       card: _listCard('🚨 Triggered Alerts', items, function (i) {
-        return { dot: 'red', label: String(i.label || i.key || i.event || i.name || ''), val: String(i.value || i.time || i.severity || '') };
+        return { dot: 'red', label: _alertLabel(i), val: _alertVal(i) };
       })
     };
   }
