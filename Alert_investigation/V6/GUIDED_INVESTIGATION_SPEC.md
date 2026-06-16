@@ -61,75 +61,17 @@ Auto-generated cards summarising the entity's most critical data. Cards vary by 
 
 ## 5. Suggestion Chips
 
-Chips are **dynamically generated** — a chip only appears if the entity has actual data for that section. All entity types always end with **🛠 What should I do?**
+The same **7 chips** appear for every entity type, so the analyst always knows where to start regardless of what they right-clicked. All chips always appear (none are conditional).
 
-### 5a. User Entity Chips
-
-| Chip | Shown when |
+| Chip | Routes to |
 |------|-----------|
-| 🔑 What privileged resources can they reach? | `privilegedSurface` or `effectiveGroups` data exists |
-| 🌑 Are credentials exposed on dark web? | `darkWebExposure` data exists |
-| 📨 Is mailbox forwarding active? | `mailboxForwarding` data exists |
-| 👥 What groups propagate their access? | `groupMembershipChanges` data exists |
-| 💻 Which devices has this user accessed? | Always shown |
-| 🚨 List triggered alerts | Always shown |
-| 🛠 What should I do? | Always shown (last) |
-
-### 5b. Device Entity Chips
-
-| Chip | Shown when |
-|------|-----------|
-| ⚙ What processes could spread laterally? | `processesOnHost` data exists |
-| 📅 Any persistence mechanisms? (scheduled tasks) | `scheduledTasks` data exists |
-| 💾 USB-based data exfiltration risk? | `usbDeviceEvents` data exists |
-| 🌐 What network neighbours are at risk? | Always shown |
-| 🔍 Active exploitable vulnerabilities? | `vulnerabilities` data exists |
-| 🚨 List triggered alerts | Always shown |
-| 🛠 What should I do? | Always shown (last) |
-
-### 5c. IP Entity Chips
-
-| Chip | Shown when |
-|------|-----------|
-| 🖥 Which internal hosts are communicating here? | `associatedUsers` or `associatedDevices` data exists |
-| 🚦 Any lateral movement detected? (IDS/IPS) | `idsAlerts` data exists |
-| 🔥 What's the firewall exposure? | `firewallSummary` data exists |
-| 🔎 DNS-based C2 activity? | `dnsHistory` data exists |
-| 🛡 Is this IP in threat intelligence feeds? | Always shown |
-| 🚨 List triggered alerts | Always shown |
-| 🛠 What should I do? | Always shown (last) |
-
-### 5d. Service Entity Chips
-
-| Chip | Shown when |
-|------|-----------|
-| 🔐 What data can be reached via OAuth? | `oauthConsentGrants` or `conditionalAccess` data exists |
-| ⚙ What admin actions were performed? | `adminActivity` data exists |
-| 👤 What users/devices authenticate here? | `signInAudit` data exists |
-| 📋 Show full audit trail | Always shown |
-| 🚨 List triggered alerts | Always shown |
-| 🛠 What should I do? | Always shown (last) |
-
-### 5e. Process Entity Chips
-
-| Chip | Shown when |
-|------|-----------|
-| 🌲 What did this process spawn? | `processTree` or `childProcesses` data exists |
-| 📂 What files were touched? (data staging) | `fileOperations` data exists |
-| 📝 Persistence via registry modifications? | `registryModifications` data exists |
-| 🛡 Any AV/AMSI detections? | `amsiEvents` data exists |
-| 🌐 Network connections (C2 beaconing)? | Always shown |
-| 🛠 What should I do? | Always shown (last) |
-
-### 5f. Alert Entity Chips
-
-| Chip | Always shown |
-|------|-------------|
-| 🎯 What entities are at immediate risk? | ✓ |
-| 🔗 Are there related alerts in this campaign? | ✓ |
-| ⚡ Why did this alert fire? | ✓ |
-| 📝 Summarize this incident | ✓ |
-| 🛠 What should I do? | ✓ |
+| 🚨 List triggered alerts | Recent alerts for this entity |
+| 🔐 Show logon activity | Logon / sign-in timeline |
+| 🌐 Show network connections | Network activity / connection history |
+| 📊 UEBA risk profile | Risk score, severity, anomaly metrics |
+| 🛡 Is this entity malicious? | Threat intelligence feed lookup |
+| 📋 Show audit logs | Audit log events |
+| 🛠 What should I do? | Remediation guide + Zia mitigation steps |
 
 ---
 

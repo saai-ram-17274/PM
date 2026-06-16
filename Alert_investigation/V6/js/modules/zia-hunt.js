@@ -293,139 +293,17 @@
     );
   }
 
-  // ── Suggestion Chips — blast-radius-centric, data-driven ──────────
-  /*
-   * SOC blast-radius philosophy:
-   *   1. Scope      — what can this entity reach / access?
-   *   2. Propagation — what lateral-movement paths exist?
-   *   3. Persistence — how can an attacker maintain a foothold?
-   *   4. Exfil risk  — what data is in danger?
-   *   5. Containment — what needs to be isolated?
-   *
-   * Chips are built dynamically: a chip only appears when the entity
-   * actually has data backing it, keeping the panel signal-not-noise.
-   * All entity types always get a blast-radius chip + remediation chip.
-   */
+  // ── Suggestion Chips — common set for all entity types ───────────
   function _buildBlastRadiusSuggestions(entityId, e) {
-    var s = e.sections || {};
-    var chips = [];
-
-    switch (e.type) {
-
-      // ── USER — blast = every system they can authenticate to / access ─
-      case 'user':
-        // Scope: what privileged resources does their credential unlock?
-        if (_secItems(s.privilegedSurface || s.effectiveGroups, ['kv','items']).length)
-          chips.push({ icon: '🔑', text: 'What privileged resources can they reach?' });
-        // Entry-point risk: credential already compromised?
-        if (_secItems(s.darkWebExposure, ['kv','items']).length)
-          chips.push({ icon: '🌑', text: 'Are credentials exposed on dark web?' });
-        // Exfil vector: is mail silently leaving the org?
-        if (_secItems(s.mailboxForwarding, ['kv','rules','items']).length)
-          chips.push({ icon: '📨', text: 'Is mailbox forwarding active?' });
-        // Propagation: group memberships amplify access
-        if (_secItems(s.groupMembershipChanges, ['kv','items','timeline']).length)
-          chips.push({ icon: '👥', text: 'What groups propagate their access?' });
-        // Lateral reach: which devices carry their session token?
-        chips.push({ icon: '💻', text: 'Which devices has this user accessed?' });
-        chips.push({ icon: '🚨', text: 'List triggered alerts' });
-        break;
-
-      // ── DEVICE — blast = network neighbours + processes that can spread
-      case 'device':
-        // Propagation: suspicious processes = potential lateral movers
-        if (_secItems(s.processesOnHost || s.processes, ['kv','items','list']).length)
-          chips.push({ icon: '⚙', text: 'What processes could spread laterally?' });
-        // Persistence: scheduled tasks = attacker footholds
-        if (_secItems(s.scheduledTasks, ['kv','items','tasks']).length)
-          chips.push({ icon: '📅', text: 'Any persistence mechanisms? (scheduled tasks)' });
-        // Exfil: USB as data-out channel
-        if (_secItems(s.usbDeviceEvents, ['kv','items','timeline']).length)
-          chips.push({ icon: '💾', text: 'USB-based data exfiltration risk?' });
-        // Scope: which network neighbours are already in the blast zone?
-        chips.push({ icon: '🌐', text: 'What network neighbours are at risk?' });
-        // Entry point: unpatched CVEs = how attacker got in
-        if (_secItems(s.vulnerabilities, ['kv','timeline']).length)
-          chips.push({ icon: '🔍', text: 'Active exploitable vulnerabilities?' });
-        chips.push({ icon: '🚨', text: 'List triggered alerts' });
-        break;
-
-      // ── IP — blast = all internal hosts communicating with this IP ───
-      case 'ip':
-        // Scope: which hosts are already in the blast zone?
-        if (_secItems(s.associatedUsers, ['kv','items']).length ||
-            _secItems(s.associatedDevices, ['kv','items']).length)
-          chips.push({ icon: '🖥', text: 'Which internal hosts are communicating here?' });
-        // Lateral movement: IDS/IPS caught anything mid-path?
-        if (_secItems(s.idsAlerts, ['kv','items','alerts']).length)
-          chips.push({ icon: '🚦', text: 'Any lateral movement detected? (IDS/IPS)' });
-        // Containment scope: firewall allow/block posture
-        if (_secItems(s.firewallSummary, ['kv','items']).length)
-          chips.push({ icon: '🔥', text: "What's the firewall exposure?" });
-        // C2 channel: DNS tunnelling / beaconing?
-        if (_secItems(s.dnsHistory, ['kv','items','queries']).length)
-          chips.push({ icon: '🔎', text: 'DNS-based C2 activity?' });
-        // Reputation: is this in threat intel feeds?
-        chips.push({ icon: '🛡', text: 'Is this IP in threat intelligence feeds?' });
-        chips.push({ icon: '🚨', text: 'List triggered alerts' });
-        break;
-
-      // ── SERVICE — blast = all data accessible via OAuth / admin scope
-      case 'service':
-        // Scope: OAuth permissions define the data blast radius
-        if (_secItems(s.oauthConsentGrants || s.conditionalAccess, ['kv','items','grants']).length)
-          chips.push({ icon: '🔐', text: 'What data can be reached via OAuth?' });
-        // Propagation: admin actions already performed in blast zone
-        if (_secItems(s.adminActivity, ['kv','timeline']).length)
-          chips.push({ icon: '⚙', text: 'What admin actions were performed?' });
-        // Scope: who authenticates here = users in blast zone
-        if (_secItems(s.signInAudit, ['kv','timeline']).length)
-          chips.push({ icon: '👤', text: 'What users/devices authenticate here?' });
-        // Containment: full audit trail
-        chips.push({ icon: '📋', text: 'Show full audit trail' });
-        chips.push({ icon: '🚨', text: 'List triggered alerts' });
-        break;
-
-      // ── PROCESS — blast = spawned children + files/registry touched ─
-      case 'process':
-        // Propagation: what did this process spawn?
-        if (_secItems(s.processTree || s.childProcesses, ['kv','items','tree','children']).length)
-          chips.push({ icon: '🌲', text: 'What did this process spawn?' });
-        // Exfil/staging: files touched
-        if (_secItems(s.fileOperations, ['kv','items']).length)
-          chips.push({ icon: '📂', text: 'What files were touched? (data staging)' });
-        // Persistence: registry run keys / startup entries
-        if (_secItems(s.registryModifications, ['kv','items']).length)
-          chips.push({ icon: '📝', text: 'Persistence via registry modifications?' });
-        // Detection: did AV/AMSI catch anything?
-        if (_secItems(s.amsiEvents, ['kv','items','detections']).length)
-          chips.push({ icon: '🛡', text: 'Any AV/AMSI detections?' });
-        // C2 channel: outbound network connections
-        chips.push({ icon: '🌐', text: 'Network connections (C2 beaconing)?' });
-        break;
-
-      // ── ALERT — blast = all entities in scope + campaign correlation ─
-      case 'alert':
-        // Scope: how many entities are inside the blast zone?
-        chips.push({ icon: '🎯', text: 'What entities are at immediate risk?' });
-        // Campaign scope: are these part of a broader attack?
-        chips.push({ icon: '🔗', text: 'Are there related alerts in this campaign?' });
-        // Root cause
-        chips.push({ icon: '⚡', text: 'Why did this alert fire?' });
-        // Summary
-        chips.push({ icon: '📝', text: 'Summarize this incident' });
-        break;
-
-      default:
-        chips.push({ icon: '🔐', text: 'Show logon activity' });
-        chips.push({ icon: '🌐', text: 'Show network connections' });
-        chips.push({ icon: '🚨', text: 'List triggered alerts' });
-    }
-
-    // Always last: remediation = containment playbook
-    chips.push({ icon: '🛠', text: 'What should I do?' });
-
-    return chips.slice(0, 8); // max 8 to avoid chip overflow
+    return [
+      { icon: '🚨', text: 'List triggered alerts' },
+      { icon: '🔐', text: 'Show logon activity' },
+      { icon: '🌐', text: 'Show network connections' },
+      { icon: '📊', text: 'UEBA risk profile' },
+      { icon: '🛡', text: 'Is this entity malicious?' },
+      { icon: '📋', text: 'Show audit logs' },
+      { icon: '🛠', text: 'What should I do?' }
+    ];
   }
 
   function _renderSuggestions(entityId, e) {
@@ -548,7 +426,7 @@
         r = _rVulnerabilities(e);
       } else if (/blast|impact|spread|lateral|reach|reachable/.test(ql)) {
         r = _rBlastRadius(e);
-      } else if (/malicious|threat|bad.actor|reputation|intel/.test(ql)) {
+      } else if (/malicious|threat|bad.actor|reputation|intel|entity.malicious/.test(ql)) {
         r = _rThreatIntel(e);
       } else if (/misconfig|setting|config/.test(ql)) {
         r = _rMisconfig(e);
