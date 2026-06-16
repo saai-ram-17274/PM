@@ -177,9 +177,15 @@
     });
 
     /* ── Network Activity (all entities) ── */
-    var netItems = _secItems(s.networkActivity || s.connectionHistory || s.trafficSummary, ['kv', 'timeline', 'items']);
+    var netItems = _secItems(
+      s.networkActivity || s.connectionHistory || s.networkConnections || s.trafficSummary,
+      ['timeline', 'kv', 'items']
+    );
     if (netItems.length) html += _listCardHtml('🌐 Network Activity', netItems.slice(0, 3), function (i) {
-      return { dot: i.malicious ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      var d = i.details || {};
+      var label = String(i.label || i.key || d.Type || d.Direction || d.Destination || (Object.keys(d)[0] || '') || i.time || '');
+      var val   = String(i.value || d.Destination || d.Domain || d.URL || (Object.values(d)[0] || '') || '');
+      return { dot: i.malicious ? 'red' : 'orange', label: label, val: val };
     });
 
     return html;
@@ -811,12 +817,18 @@
   /* ── Network ── */
   function _rNetwork(e) {
     var s = e.sections || {};
-    var items = _secItems(s.networkActivity || s.connectionHistory || s.trafficSummary, ['kv', 'timeline', 'items']);
+    var items = _secItems(
+      s.networkActivity || s.connectionHistory || s.networkConnections || s.trafficSummary,
+      ['timeline', 'kv', 'items']
+    );
     if (!items.length) return { text: 'No network activity data found for this entity.' };
     return {
       text: 'Found <strong>' + items.length + ' network connection' + (items.length !== 1 ? 's' : '') + '</strong>.',
       card: _listCard('🌐 Network Activity', items, function (i) {
-        return { dot: i.malicious ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+        var d = i.details || {};
+        var label = String(i.label || i.key || d.Type || d.Direction || d.Destination || (Object.keys(d)[0] || '') || i.time || '');
+        var val   = String(i.value || d.Destination || d.Domain || d.URL || (Object.values(d)[0] || '') || '');
+        return { dot: i.malicious ? 'red' : 'orange', label: label, val: val };
       })
     };
   }
