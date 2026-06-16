@@ -280,12 +280,4 @@ Every bot response consists of:
 | 🔵 Blue | Informational / normal |
 | 🟢 Green | Clean / success / remediation step |
 
----
 
-## 7. Out of Scope (current version)
-
-- Free-form log search / ZCQL queries entered in the chat
-- Creating or modifying alerts from the panel
-- Cross-entity pivoting (e.g. "show me all users on this device") — follow-up via Entity Details panel
-- Real-time streaming responses
-- Chat history persistence across sessions
