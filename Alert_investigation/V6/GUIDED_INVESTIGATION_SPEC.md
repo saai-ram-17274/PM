@@ -282,19 +282,7 @@ Every bot response consists of:
 
 ---
 
-## 8. Zia Alert Analysis Bridge
-
-When a SOC analyst has run **Start Investigation** on the alert detail panel, the Zia chat panel automatically bridges the AI-generated analysis:
-
-- **On panel open:** First bot message shows the AI-generated alert summary and top key findings
-- **"Summarize this incident" chip:** Always shows the full summary and all key findings
-- **"What should I do?" chip:** Merges entity-level remediation guidance with alert-level mitigation steps into a single unified action list
-
-If the investigation has **not** been run yet, "Summarize this incident" shows a prompt to run it first.
-
----
-
-## 9. Out of Scope (current version)
+## 8. Out of Scope (current version)
 
 - Free-form log search / ZCQL queries entered in the chat
 - Creating or modifying alerts from the panel
