@@ -33,7 +33,7 @@
 
     var nameEl = document.getElementById('zhpEntityName');
     if (nameEl) {
-      var TYPE_ICONS = { user:'👤', device:'💻', ip:'🌐', service:'⚙', process:'🔧', alert:'🔔' };
+      var TYPE_ICONS = { user:'👤', device:'💻', ip:'🌐', service:'⚙', process:'🔧', alert:'🔔', other:'🏗' };
       var shortName = (e.modalTitle || '').split('·').pop().trim() || entityId;
       nameEl.textContent = (TYPE_ICONS[e.type] || '◇') + ' ' + shortName;
     }
@@ -346,6 +346,16 @@
       // service: who authenticates here = audit/sign-in logs
       } else if (/admin.activ|admin.action|users.*authenticat|authenticat.*here/.test(ql)) {
         r = _rAuditLogs(e);
+
+      // ── Other (AD groups, OUs, GPOs, Azure AD objects) ──
+      } else if (/member.*group|who.*member|group.*member.*list|members.*of/.test(ql)) {
+        r = _rGroupMembers(e);
+      } else if (/recent.change|change.*object|object.*change|modif.*object/.test(ql)) {
+        r = _rObjectChanges(e);
+      } else if (/permission.*grant|what.*permission|grant.*permission|access.*policy/.test(ql)) {
+        r = _rObjectPermissions(e);
+      } else if (/gpo|group.policy|applied.policy|policy.setting/.test(ql)) {
+        r = _rGpoSettings(e);
 
       // ── General ──
       } else if (/fail|wrong.pass|bad.login|invalid.cred/.test(ql)) {
@@ -904,6 +914,67 @@
       text: 'Found <strong>' + items.length + ' audit log event' + (items.length !== 1 ? 's' : '') + '</strong>.',
       card: _listCard('📋 Audit Logs', items, function (i) {
         return { dot: 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
+      })
+    };
+  }
+
+  /* ── OTHER — group members ── */
+  function _rGroupMembers(e) {
+    var s = e.sections || {};
+    var items = _secItems(s.groupMembers || s.members, ['kv', 'items', 'list']);
+    if (!items.length) return { text: 'No membership data available for this object.' };
+    return {
+      text: '<strong>' + items.length + ' member' + (items.length !== 1 ? 's' : '') + '</strong> found in this group.',
+      card: _listCard('👥 Group Members', items, function (i) {
+        var isNew = i.malicious || /new|recent|anomal/i.test(String(i.value || ''));
+        return { dot: isNew ? 'red' : 'blue', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── OTHER — recent object changes ── */
+  function _rObjectChanges(e) {
+    var s = e.sections || {};
+    var items = _secItems(
+      s.objectChanges || s.changeHistory || s.groupMembershipChanges || s.adminActivity,
+      ['kv', 'timeline', 'items']
+    );
+    if (!items.length) return { text: 'No recent changes recorded for this object.' };
+    return {
+      text: '<strong>' + items.length + ' change' + (items.length !== 1 ? 's' : '') + '</strong> found for this object.',
+      card: _listCard('📝 Recent Changes', items, function (i) {
+        var isHigh = i.malicious || /add|creat|escalat/i.test(String(i.label || i.value || ''));
+        return { dot: isHigh ? 'red' : 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
+      })
+    };
+  }
+
+  /* ── OTHER — permissions / access policy ── */
+  function _rObjectPermissions(e) {
+    var s = e.sections || {};
+    var items = _secItems(
+      s.permissions || s.accessPolicy || s.privilegedSurface || s.effectiveGroups,
+      ['kv', 'items', 'list']
+    );
+    if (!items.length) return { text: 'No permission data available for this object.' };
+    return {
+      text: 'This object grants <strong>' + items.length + ' permission' + (items.length !== 1 ? 's' : '') + '</strong>. High-risk rights are highlighted.',
+      card: _listCard('🔐 Permissions', items, function (i) {
+        var isHigh = i.malicious || /write|admin|full.control|all/i.test(String(i.label || i.value || ''));
+        return { dot: isHigh ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+      })
+    };
+  }
+
+  /* ── OTHER — GPO settings ── */
+  function _rGpoSettings(e) {
+    var s = e.sections || {};
+    var items = _secItems(s.gpoApplied || s.gpoSettings || s.policySettings, ['kv', 'items', 'list']);
+    if (!items.length) return { text: 'No GPO / policy settings available for this object.' };
+    return {
+      text: 'Found <strong>' + items.length + ' policy setting' + (items.length !== 1 ? 's' : '') + '</strong> applied via this GPO.',
+      card: _listCard('📋 GPO Settings', items, function (i) {
+        return { dot: 'blue', label: String(i.label || i.key || ''), val: String(i.value || '') };
       })
     };
   }
