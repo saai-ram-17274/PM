@@ -161,88 +161,26 @@
       html += '</div></div>';
     }
 
-    /* ── USER — critical flags in preview ── */
-    if (e.type === 'user') {
-      var mfItems = _secItems(s.mailboxForwarding, ['kv', 'rules', 'items']);
-      if (mfItems.length) {
-        html += '<div class="zhp-card zhp-card-warn"><div class="zhp-card-ttl" style="color:#dc2626">⚠ Mailbox Forwarding Active</div>';
-        html += _listBody(mfItems.slice(0, 3), function (i) {
-          return { dot: 'red', label: String(i.label || i.key || ''), val: String(i.value || '') };
-        }) + '</div>';
-      }
-      var dwItems = _secItems(s.darkWebExposure, ['kv', 'items']);
-      if (dwItems.length) {
-        html += '<div class="zhp-card zhp-card-warn"><div class="zhp-card-ttl" style="color:#9333ea">🌑 Dark Web Exposure</div>';
-        html += _listBody(dwItems.slice(0, 3), function (i) {
-          return { dot: 'red', label: String(i.label || i.key || ''), val: String(i.value || '') };
-        }) + '</div>';
-      }
-    }
-
     /* ── Recent Alerts ── */
     var alertItems = _secItems(s.recentAlerts, ['kv', 'timeline']);
     if (alertItems.length) html += _listCardHtml('🚨 Recent Alerts', alertItems.slice(0, 3), function (i) {
       return { dot: 'red', label: _alertLabel(i), val: _alertVal(i) };
     });
 
-    /* ── Logon Activity (user / device) ── */
-    if (e.type === 'user' || e.type === 'device') {
-      var logonItems = _secItems(s.logonActivity || s.loginStatistics || s.loginActivity, ['timeline', 'kv']);
-      if (logonItems.length) html += _listCardHtml('🔐 Recent Logon Activity', logonItems.slice(0, 4), function (i) {
-        var label = _logonLabel(i);
-        var val   = _logonVal(i);
-        var isFail = i.malicious || /fail/i.test(String(label + val));
-        return { dot: isFail ? 'red' : 'blue', label: label, val: val };
-      });
-    }
+    /* ── Recent Logon Activity (all entities) ── */
+    var logonItems = _secItems(s.logonActivity || s.loginStatistics || s.loginActivity, ['timeline', 'kv']);
+    if (logonItems.length) html += _listCardHtml('🔐 Recent Logon Activity', logonItems.slice(0, 4), function (i) {
+      var label = _logonLabel(i);
+      var val   = _logonVal(i);
+      var isFail = i.malicious || /fail/i.test(String(label + val));
+      return { dot: isFail ? 'red' : 'blue', label: label, val: val };
+    });
 
-    /* ── Network / Connection (ip / device) ── */
-    if (e.type === 'ip' || e.type === 'device') {
-      var netItems = _secItems(s.networkActivity || s.connectionHistory || s.trafficSummary, ['kv', 'timeline', 'items']);
-      if (netItems.length) html += _listCardHtml('🌐 Network Activity', netItems.slice(0, 3), function (i) {
-        return { dot: i.malicious ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
-      });
-      if (e.type === 'ip' && s.geoContext) {
-        var gcItems = _secItems(s.geoContext, ['kv', 'items']);
-        if (gcItems.length) {
-          html += '<div class="zhp-card"><div class="zhp-card-ttl">🗺 Geo Context</div><div class="zhp-card-kv">';
-          gcItems.slice(0, 4).forEach(function (i) {
-            html += '<span class="zhp-kv-k">' + _escHtml(String(i.label || i.key || '')) + '</span>' +
-                    '<span class="zhp-kv-v">' + _escHtml(String(i.value || '')) + '</span>';
-          });
-          html += '</div></div>';
-        }
-      }
-    }
-
-    /* ── Device — security event summary ── */
-    if (e.type === 'device') {
-      var sesItems = _secItems(s.securityEventSummary, ['kv', 'items']);
-      if (sesItems.length) {
-        html += '<div class="zhp-card"><div class="zhp-card-ttl">🖥 Security Event Summary</div><div class="zhp-card-kv">';
-        sesItems.slice(0, 6).forEach(function (i) {
-          html += '<span class="zhp-kv-k">' + _escHtml(String(i.label || i.key || '')) + '</span>' +
-                  '<span class="zhp-kv-v">' + _escHtml(String(i.value || '')) + '</span>';
-        });
-        html += '</div></div>';
-      }
-    }
-
-    /* ── Process — process tree ── */
-    if (e.type === 'process') {
-      var ptItems = _secItems(s.processTree || s.processDetails, ['kv', 'items', 'tree']);
-      if (ptItems.length) html += _listCardHtml('🌲 Process Tree', ptItems.slice(0, 5), function (i) {
-        return { dot: i.malicious ? 'red' : 'blue', label: String(i.label || i.name || i.key || ''), val: String(i.value || i.pid || '') };
-      });
-    }
-
-    /* ── Service — audit / sign-in ── */
-    if (e.type === 'service') {
-      var auditItems = _secItems(s.auditLogs || s.signInAudit || s.adminActivity, ['kv', 'timeline']);
-      if (auditItems.length) html += _listCardHtml('📋 Audit Log Summary', auditItems.slice(0, 3), function (i) {
-        return { dot: 'blue', label: String(i.label || i.key || ''), val: String(i.value || i.time || '') };
-      });
-    }
+    /* ── Network Activity (all entities) ── */
+    var netItems = _secItems(s.networkActivity || s.connectionHistory || s.trafficSummary, ['kv', 'timeline', 'items']);
+    if (netItems.length) html += _listCardHtml('🌐 Network Activity', netItems.slice(0, 3), function (i) {
+      return { dot: i.malicious ? 'red' : 'orange', label: String(i.label || i.key || ''), val: String(i.value || '') };
+    });
 
     return html;
   }

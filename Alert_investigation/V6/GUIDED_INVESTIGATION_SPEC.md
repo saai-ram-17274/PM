@@ -11,16 +11,6 @@
 
 ---
 
-## 2. Entry Point & Trigger
-
-| Trigger | Action |
-|---------|--------|
-| Right-click any node in the Attack Vector Graph | Context menu appears with **"Go Hunt with Zia ✦"** |
-| Click the menu item | Zia Hunt panel slides in from the right |
-| Click ✕ or click outside | Panel closes |
-
----
-
 ## 3. Supported Entity Types
 
 The panel supports **6 entity types**, each with its own auto-preview and suggestion set:
@@ -38,24 +28,19 @@ The panel supports **6 entity types**, each with its own auto-preview and sugges
 
 ## 4. Panel Behaviour on Open
 
-When the panel opens, **two actions happen automatically** before the analyst types anything:
+When the panel opens, **Entity Preview Cards** are auto-generated before the analyst types anything.
 
-### 4a. Zia Alert Bridge (conditional)
-If the analyst has already clicked **"Start Investigation"** on the alert detail panel, Zia will display the AI-generated alert summary and key findings as the **first message** in the chat.
+### 4a. Entity Preview Cards
+The same four cards appear for every entity type, giving the analyst a consistent starting point regardless of what they right-clicked:
 
-> **Condition:** `ALERT_DETAIL[currentAlertId].aiInvestigatedRuntime === true`
+| Card | Description |
+|------|-------------|
+| 🛡 Risk Summary | Risk score, severity, and status |
+| 🚨 Recent Alerts | Latest triggered alerts for this entity |
+| 🔐 Recent Logon Activity | Most recent sign-in / authentication events |
+| 🌐 Network Activity | Recent network connections |
 
-### 4b. Entity Preview Cards
-Auto-generated cards summarising the entity's most critical data. Cards vary by entity type:
-
-| Entity | Preview Cards Shown |
-|--------|---------------------|
-| User | Risk Summary · ⚠ Mailbox Forwarding Active (if set) · 🌑 Dark Web Exposure (if found) · Recent Alerts · Recent Logon Activity |
-| Device | Risk Summary · Network Activity · Security Event Summary · Recent Logon Activity |
-| IP | Risk Summary · Network Activity · 🗺 Geo Context |
-| Service | Risk Summary · Audit Log Summary |
-| Process | Risk Summary · 🌲 Process Tree |
-| Alert | Alert Details · Trigger Conditions · Affected Entities |
+> **Exception:** Alert entities show Alert Details · Trigger Conditions · Affected Entities instead.
 
 ---
 
