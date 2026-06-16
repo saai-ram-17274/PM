@@ -5,18 +5,9 @@
 
 ## 1. Overview
 
-**Go Hunt with Zia** is a contextual guided investigation panel embedded inside the Attack Vector Explorer in Log360. When a SOC analyst right-clicks any entity node on the attack graph, a Zia-powered chat panel slides in — scoped to that specific entity — and immediately surfaces the most relevant security data without requiring the analyst to navigate away.
+**Go Hunt with Zia** is a contextual guided investigation panel inside the Attack Vector Explorer. When a SOC analyst right-clicks any entity node on the attack graph and selects **Go Hunt with Zia**, a chat panel opens scoped to that entity — instantly surfacing relevant security intelligence and letting the analyst ask follow-up questions using natural language or one-click chips.
 
-**Problem it solves:** Incident investigation today requires analysts to manually correlate data across multiple product views — AD Audit Plus, Endpoint DLP, firewall logs, threat feeds — losing valuable time at the moment a threat is unfolding. Go Hunt with Zia eliminates that context-switching by bringing all entity intelligence into a single guided interface.
-
-**How it works:**
-1. Analyst right-clicks an entity node → selects **Go Hunt with Zia ✦**
-2. Panel opens and auto-loads four preview cards (Risk Summary, Recent Alerts, Logon Activity, Network Activity)
-3. Seven quick-action chips let the analyst start a line of investigation in one click
-4. A natural-language chat interface accepts any free-text question and returns structured, colour-coded data cards
-5. All six entity types — user, device, IP, service, process, alert — are supported with relevant operations for each
-
-**Primary benefit:** Reduces mean-time-to-investigate (MTTI) by surfacing entity intelligence instantly, in context, without requiring the analyst to run manual queries or open separate product modules.
+**Goal:** Reduce mean-time-to-investigate (MTTI) by bringing all entity intelligence into one place, at the moment it's needed.
 
 ---
 
