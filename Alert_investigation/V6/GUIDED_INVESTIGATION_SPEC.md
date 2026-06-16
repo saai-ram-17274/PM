@@ -5,13 +5,22 @@
 
 ## 1. Overview
 
-**Go Hunt with Zia** is a contextual, guided investigation panel embedded inside the Attack Vector Explorer. When a SOC analyst right-clicks any node on the attack graph, they can open a Zia chat panel scoped to that specific entity. The panel auto-loads relevant intelligence and lets the analyst ask follow-up questions using natural language or one-click suggestion chips.
+**Go Hunt with Zia** is a contextual guided investigation panel embedded inside the Attack Vector Explorer in Log360. When a SOC analyst right-clicks any entity node on the attack graph, a Zia-powered chat panel slides in — scoped to that specific entity — and immediately surfaces the most relevant security data without requiring the analyst to navigate away.
 
-**Goal:** Reduce mean-time-to-investigate (MTTI) by surfacing the most relevant security data for a given entity without the analyst needing to navigate to multiple product views or run manual queries.
+**Problem it solves:** Incident investigation today requires analysts to manually correlate data across multiple product views — AD Audit Plus, Endpoint DLP, firewall logs, threat feeds — losing valuable time at the moment a threat is unfolding. Go Hunt with Zia eliminates that context-switching by bringing all entity intelligence into a single guided interface.
+
+**How it works:**
+1. Analyst right-clicks an entity node → selects **Go Hunt with Zia ✦**
+2. Panel opens and auto-loads four preview cards (Risk Summary, Recent Alerts, Logon Activity, Network Activity)
+3. Seven quick-action chips let the analyst start a line of investigation in one click
+4. A natural-language chat interface accepts any free-text question and returns structured, colour-coded data cards
+5. All six entity types — user, device, IP, service, process, alert — are supported with relevant operations for each
+
+**Primary benefit:** Reduces mean-time-to-investigate (MTTI) by surfacing entity intelligence instantly, in context, without requiring the analyst to run manual queries or open separate product modules.
 
 ---
 
-## 3. Supported Entity Types
+## 2. Supported Entity Types
 
 The panel supports **6 entity types**, each with its own auto-preview and suggestion set:
 
@@ -26,7 +35,7 @@ The panel supports **6 entity types**, each with its own auto-preview and sugges
 
 ---
 
-## 4. Panel Behaviour on Open
+## 3. Panel Behaviour on Open
 
 When the panel opens, **Entity Preview Cards** are auto-generated before the analyst types anything.
 
@@ -44,7 +53,7 @@ The same four cards appear for every entity type, giving the analyst a consisten
 
 ---
 
-## 5. Suggestion Chips
+## 4. Suggestion Chips
 
 The same **7 chips** appear for every entity type, so the analyst always knows where to start regardless of what they right-clicked. All chips always appear (none are conditional).
 
@@ -60,11 +69,11 @@ The same **7 chips** appear for every entity type, so the analyst always knows w
 
 ---
 
-## 6. Supported Chat Operations — Full List
+## 5. Supported Chat Operations — Full List
 
 The following table lists every question the analyst can ask (by chip or free text) and a sample response.
 
-### 6.1 Remediation
+### 5.1 Remediation
 
 | Input (chip or free text) | Sample Output |
 |--------------------------|---------------|
@@ -86,7 +95,7 @@ The following table lists every question the analyst can ask (by chip or free te
 
 ---
 
-### 6.2 Alert-Specific Operations
+### 5.2 Alert-Specific Operations
 
 | Input | Sample Output |
 |-------|---------------|
@@ -122,7 +131,7 @@ Key Findings:
 
 ---
 
-### 6.3 User-Specific Operations
+### 5.3 User-Specific Operations
 
 | Input | Sample Output |
 |-------|---------------|
@@ -153,7 +162,7 @@ Key Findings:
 
 ---
 
-### 6.4 Device-Specific Operations
+### 5.4 Device-Specific Operations
 
 | Input | Sample Output |
 |-------|---------------|
@@ -176,7 +185,7 @@ Key Findings:
 
 ---
 
-### 6.5 IP-Specific Operations
+### 5.5 IP-Specific Operations
 
 | Input | Sample Output |
 |-------|---------------|
@@ -200,7 +209,7 @@ Key Findings:
 
 ---
 
-### 6.6 Process-Specific Operations
+### 5.6 Process-Specific Operations
 
 | Input | Sample Output |
 |-------|---------------|
@@ -221,7 +230,7 @@ Key Findings:
 
 ---
 
-### 6.7 Service-Specific Operations
+### 5.7 Service-Specific Operations
 
 | Input | Sample Output |
 |-------|---------------|
@@ -242,7 +251,7 @@ Key Findings:
 
 ---
 
-### 6.8 General Operations (all entity types)
+### 5.8 General Operations (all entity types)
 
 | Input | Sample Output |
 |-------|---------------|
@@ -259,7 +268,7 @@ Key Findings:
 
 ---
 
-## 7. Response Format
+## 6. Response Format
 
 Every bot response consists of:
 
@@ -282,7 +291,7 @@ Every bot response consists of:
 
 ---
 
-## 8. Out of Scope (current version)
+## 7. Out of Scope (current version)
 
 - Free-form log search / ZCQL queries entered in the chat
 - Creating or modifying alerts from the panel
