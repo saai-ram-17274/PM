@@ -13,16 +13,17 @@
 
 ## 2. Supported Entity Types
 
-The panel supports **6 entity types**, each with its own auto-preview and suggestion set:
+The panel supports **7 entity types**. The first six are the primary attack-graph node types; **other** covers identity infrastructure objects that appear on the graph but don't belong to the six main categories.
 
 | Entity Type | Icon | Examples |
-|-------------|------|---------|
-| `user` | 👤 | Domain accounts, cloud identities |
-| `device` | 💻 | Workstations, servers, endpoints |
-| `ip` | 🌐 | External IPs, internal hosts |
-| `service` | ⚙ | Cloud services, Azure AD, SharePoint |
-| `process` | 🔧 | Executables, scripts, child processes |
-| `alert` | 🔔 | Triggered alert nodes on the graph |
+|-------------|------|----------|
+| User | 👤 | Domain accounts, cloud identities |
+| Device | 💻 | Workstations, servers, endpoints |
+| IP | 🌐 | External IPs, internal hosts |
+| Service | ⚙ | Cloud services, Azure AD, SharePoint |
+| Process | 🔧 | Executables, scripts, child processes |
+| Alert | 🔔 | Triggered alert nodes on the graph |
+| Other | 🏗 | AD User Groups, Azure AD Portal, OUs, Security Groups, GPOs |
 
 ---
 
@@ -256,6 +257,41 @@ Key Findings:
 | "Show misconfigurations" | Misconfig list |
 | "Show audit logs" | Audit event list |
 | Unrecognised input | Fallback message with top 3 relevant chip suggestions |
+
+---
+
+### 5.9 Other Entity Operations (AD Groups, Azure AD Portal, OUs, GPOs, etc.)
+
+When the entity is an identity infrastructure object — such as an AD User Group, Azure AD Portal, Organisational Unit, Security Group, or GPO — the panel surfaces membership, configuration, and change-history data relevant to that object type.
+
+| Input | Sample Output |
+|-------|---------------|
+| "Who are the members of this group?" | Member list with usernames and last-seen timestamps |
+| "Show recent changes to this object" | Change history — additions, removals, renames, permission edits |
+| "What permissions does this object grant?" | Access policy / permission set, high-risk rights highlighted |
+| "Which users were added or removed recently?" | Membership change log with actor and timestamp |
+| "Show applied GPO settings" | List of policy settings applied via this GPO |
+| "Show audit trail" | Full audit log for this object |
+| "List triggered alerts" | Alerts associated with this object |
+
+**Sample — "Who are the members of this group?"**
+> Input: `Who are the members of this group?`
+```
+👥 6 members in Domain Admins
+🔴 m.henderson     Added: 10 May 2026 (anomalous — new addition)
+🔴 svc-backup      Added: 08 May 2026 (service account)
+🔵 j.smith         Member since: Jan 2024
+🔵 a.patel         Member since: Mar 2023
+```
+
+**Sample — "Show recent changes to this object"**
+> Input: `Show recent changes to this object`
+```
+📝 Change History — Domain Admins
+🔴 11 May 09:38   m.henderson added by svc-azure-ad
+🔴 08 May 14:21   svc-backup added by admin@corp.local
+🔵 02 Apr 10:05   Password policy updated
+```
 
 ---
 
