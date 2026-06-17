@@ -1,153 +1,117 @@
-# Threat Indicators and Choke Point Analysis
+# Threat Indicators and Choke Point Analysis in V6
 
-## Purpose
+## Scope
 
-This note explains how a SOC analyst should read **Threat Indicators** and **Choke Point Analysis** in the attack-investigation experience.
+This note describes what V6 actually supports today.
 
-These two surfaces may reference some of the same entities, but they do **not** answer the same question.
-
----
+It is intentionally limited to the current prototype behavior. It does not describe an ideal future SOC design.
 
 ## 1. Threat Indicators
 
-### What it means
+### What V6 currently means
 
-Threat Indicators answer this question:
+In V6, Threat Indicators is a graph-level risk summary.
 
-**"What evidence suggests that this entity, attribute, or related artifact is suspicious, malicious, or already known to be risky?"**
+It is derived from the current visible graph view using two signals:
+
+- visible malicious connections
+- visible critical nodes
+
+So in the current prototype, Threat Indicators should be read as:
+
+"How much clearly risky structure is visible in the graph right now?"
 
 ### Why it is shown
 
-Threat indicators are shown to help the analyst quickly understand whether there is a credible signal of compromise, abuse, or known malicious association.
+It helps the analyst quickly understand whether the visible graph contains suspicious or high-priority elements before opening deeper entity views.
 
-### Typical examples
+### What it is useful for
 
-- A user email appearing in dark-web or breach exposure data
-- An IP appearing in threat-intelligence or customer threat-feed matches
-- A domain, URL, or file hash receiving a malicious or suspicious verdict
-- Suspicious network, authentication, or process evidence that strengthens the threat assessment
+- quick graph triage
+- comparing one visible graph state to another
+- spotting whether expansion of the graph has exposed more risky nodes or edges
 
-### What the analyst should use it for
+### What it does not mean in V6
 
-- Validate whether the alert or entity has real threat context behind it
-- Decide whether escalation is justified
-- Identify the next pivot for investigation
-- Support a verdict such as malicious, suspicious, or requires further validation
+Threat Indicators in V6 is not, by itself:
 
-### What it does **not** tell you
+- a full threat-intelligence verdict
+- an IOC feed correlation summary
+- a breach-confirmation surface
+- a remediation-priority engine
 
-Threat indicators do **not** tell you which control, relationship, or privilege path should be removed first to contain the blast radius.
-
----
+Those ideas may appear elsewhere in entity details, but they are not what this graph summary number currently represents.
 
 ## 2. Choke Point Analysis
 
-### What it means
+### Current V6 status
 
-Choke Point Analysis answers this question:
+Choke Point Analysis is not currently implemented as a concrete V6 feature.
 
-**"Which single relationship, permission, group membership, or path segment gives the attacker disproportionate access, and what should be removed first to break the most attack paths?"**
+I could not verify any separate V6 choke-point data model, renderer, or computation that identifies a node, edge, permission, or relationship as a choke point.
 
-### Why it is shown
+### What that means for documentation
 
-Choke points are shown to help the analyst prioritize containment and remediation.
+If we document V6 accurately, Choke Point Analysis must be described only as:
 
-### Typical examples
+- a future analytical capability, or
+- a design concept not yet implemented in this prototype
 
-- A group membership that enables several attack paths to a crown-jewel asset
-- A delegated permission or access-control weakness that reduces hop count to high-value targets
-- A relationship whose removal collapses multiple viable attack paths at once
+It should not be described as an active V6 graph output.
 
-### What the analyst should use it for
+## 3. Are Threat Indicators and Choke Point Analysis showing the same data?
 
-- Prioritize the first containment step
-- Reduce attacker reach with the smallest high-impact change
-- Explain why a specific permission, group, or trust path matters operationally
-- Support remediation planning, not just threat confirmation
+In current V6, the answer is no.
 
-### What it does **not** tell you
+The reason is simple: only one of these surfaces is actually implemented in the graph today.
 
-Choke Point Analysis does **not** prove that the related entity is malicious by reputation, breached, or present in a threat feed.
+- Threat Indicators exists as a graph summary signal.
+- Choke Point Analysis does not yet exist as a verified V6 analysis surface.
 
----
+So we should not claim that V6 is showing the same data in both places.
 
-## 3. Key Difference
+## 4. Is there redundancy?
 
-| Area | Threat Indicators | Choke Point Analysis |
-|------|-------------------|----------------------|
-| Primary question | Is this suspicious or known-bad? | What should be broken first to reduce attacker reach? |
-| Evidence type | Reputation, breach, feed, anomaly, suspicious activity | Graph relationships, privilege paths, reachable targets, path concentration |
-| Analyst outcome | Triage and confidence building | Containment and remediation prioritization |
-| Time horizon | What is risky now or already known | What enables further movement if left unchanged |
-| Typical action | Investigate, enrich, confirm, escalate | Remove access, isolate path, change permissions, break the chain |
+In current V6, the main risk is not data redundancy. The main risk is inaccurate documentation.
 
----
+If we describe Threat Indicators as though it already includes path-priority or choke-point reasoning, the document overstates what the prototype can do.
 
-## 4. Why both are needed
+The correct separation for V6 is:
 
-Both surfaces are needed because they solve different SOC problems:
+- Threat Indicators = current graph-risk summary
+- Choke Point Analysis = not yet implemented in V6
 
-- **Threat Indicators** help answer whether the entity deserves attention.
-- **Choke Point Analysis** helps answer what change will reduce the attacker's options fastest.
+## 5. Proper SOC reading of V6 today
 
-An analyst may have strong threat evidence but weak containment guidance, or strong containment guidance without a public threat-intel hit. Both are valid scenarios.
+### Threat Indicators
 
----
+Read it as a fast visual signal that the currently visible graph contains malicious links, critical entities, or both.
 
-## 5. Is there redundant data?
+It is useful for triage, not as a complete explanation of why an entity is malicious.
 
-### Short answer
+### Choke Point Analysis
 
-**Some overlap is expected, but the two surfaces are not redundant.**
+Do not treat this as an active V6 feature today.
 
-### Why overlap happens
+If the term is used in discussions, it should mean a future capability that identifies which node or relationship should be removed first to reduce attacker reach.
 
-The same user, IP, domain, group, or host can appear in both places:
+## 6. Recommended wording for V6 docs
 
-- In **Threat Indicators**, it appears because it has suspicious or known-bad context.
-- In **Choke Point Analysis**, it appears because it is structurally important in one or more attack paths.
+Use wording close to this:
 
-### When the overlap is useful
+### Threat Indicators
 
-Overlap is useful when it tells the analyst two different things about the same object:
+"Shows the count of visible malicious connections and critical nodes in the current graph view. This helps the analyst quickly assess whether the visible investigation path contains high-risk entities or relationships."
 
-- **Threat meaning:** this object is risky
-- **Path meaning:** this object is important to attacker movement
+### Choke Point Analysis
 
-That combination is high-value because it supports both **verdict** and **action**.
+"Not currently implemented in V6. Intended future capability for identifying the highest-impact node or relationship to remediate in order to reduce attacker reach across the graph."
 
-### When it becomes redundant
+## 7. Final position
 
-It becomes redundant only if both sections repeat the same fact in the same form without changing analyst action.
+If the goal is to document current V6 behavior, then:
 
-The intended split is:
+- Threat Indicators can be documented
+- Choke Point Analysis should be documented only as not currently available
 
-- **Threat Indicators** should summarize why the entity is concerning.
-- **Choke Point Analysis** should summarize why changing that relationship or permission matters.
-
----
-
-## 6. Analyst Guidance
-
-### If Threat Indicators are present, but no strong choke point is visible
-
-Treat the entity as suspicious and continue pivot-based investigation, but containment may still require broader review.
-
-### If a choke point is present, but threat indicators are weak or absent
-
-Treat it as an exposure or escalation risk. Lack of threat-intel evidence does **not** make the path safe.
-
-### If both are present
-
-Prioritize the entity or relationship for rapid containment. This is the strongest operational case because it combines **threat confidence** with **remediation leverage**.
-
----
-
-## 7. Practical Reading Rule
-
-Use this mental model:
-
-- **Threat Indicators** = **Why should I worry?**
-- **Choke Point Analysis** = **What should I break first?**
-
-That distinction should remain clear even when both sections reference the same entity.
+If the goal is to document a future SOC design, that should be written as a separate design note rather than mixed into current V6 behavior.
