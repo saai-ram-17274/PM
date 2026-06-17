@@ -24,12 +24,6 @@ Threat Indicators exist to answer:
 - Which entities or links are driving the incident?
 - Does this look isolated or connected?
 
-### How to read it
-
-Read Threat Indicators as the **broad risk layer** of the graph.
-
-It helps the analyst understand the shape of the incident, confirm that there is meaningful suspicious activity, and identify where to pivot next.
-
 ### What it does not do
 
 Threat Indicators do not tell the analyst what to remediate first.
@@ -53,12 +47,6 @@ Choke Point Analysis exists to answer:
 - If I take one action now, where should it be?
 - Which entity has the highest containment value?
 - Which intervention will reduce attacker reach most effectively?
-
-### How to read it
-
-Read Choke Point Analysis as a **ranked response view**.
-
-It is there to help the analyst move from understanding the incident to containing it.
 
 ### What it does not do
 
