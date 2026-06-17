@@ -1,179 +1,105 @@
 # Threat Indicators and Choke Point Analysis
 
-## Scope
+## Purpose
 
-This note explains these two graph surfaces using the incident graph that is currently shown in V6.
+This note explains how a SOC analyst should read these two graph surfaces.
 
-The explanation below is based on the graph as given to the analyst: the alert, the user, the internal and external IPs, the workstation, Azure AD, OAuth tokens, SharePoint, the Administrator account, and the C2 domain.
+The graph is showing more than related entities. It is showing which parts of the incident are suspicious, how they connect, and where response action will have the highest impact.
 
-## 1. What the graph is showing
+## 1. Threat Indicators
 
-The graph is not just listing related entities. It is presenting a compromise story.
+### What it is
 
-At a high level, the graph shows this chain:
+Threat Indicators represent the risky parts of the graph.
 
-1. An impossible-travel alert is raised on the user account.
-2. The same user is associated with both an internal corporate IP and a Tor exit IP.
-3. The user authenticates to Azure AD and accesses SharePoint.
-4. The internal workstation communicates with the Tor-linked infrastructure.
-5. The workstation is associated with privilege escalation to Administrator.
-6. OAuth tokens and SharePoint access appear as the likely cloud access and data-access path.
-7. The C2 domain represents the external command-and-control or exfiltration side of the chain.
+They tell the analyst which nodes or relationships deserve attention because they contribute to the suspicious behavior shown in the investigation path.
 
-So the graph is giving the analyst a linked narrative of identity compromise, endpoint involvement, privilege escalation, cloud access, and external communication.
+### Why it is needed
 
-## 2. Threat Indicators
+An analyst looking at a graph first needs triage context.
 
-### What it means in this graph
+Threat Indicators exist to answer:
 
-Threat Indicators are the parts of the graph that tell the analyst:
+- What in this graph looks dangerous?
+- Which entities or links are driving the incident?
+- Does this look isolated or connected?
 
-**"These entities or relationships are risky, suspicious, or operationally important to the incident."**
+### How to read it
 
-In this graph, that includes items such as:
+Read Threat Indicators as the **broad risk layer** of the graph.
 
-- the impossible-travel alert
-- the Tor exit IP
-- the compromised user account
-- the workstation involved in the suspicious activity
-- the OAuth tokens issued after compromise
-- the SharePoint access path
-- the C2 domain
-- the malicious relationships connecting them
+It helps the analyst understand the shape of the incident, confirm that there is meaningful suspicious activity, and identify where to pivot next.
 
-### Why it is shown
+### What it does not do
 
-This surface helps the analyst quickly answer:
+Threat Indicators do not tell the analyst what to remediate first.
 
-- Where is the clearly suspicious activity?
-- Which parts of the graph deserve immediate attention?
-- Is this just an isolated alert, or a multi-stage compromise chain?
+They identify concern, not response priority.
 
-### What the analyst should take from it
+## 2. Choke Point Analysis
 
-Threat Indicators help the analyst understand the **shape and seriousness** of the incident.
+### What it is
 
-They are there to support triage, confidence, and investigative direction.
+Choke Point Analysis is the **response-priority layer** of the graph.
 
-They tell the analyst which nodes and relationships are concerning.
+It does not try to show every suspicious object. It narrows the graph to the few entities where action will break the most useful parts of the attack chain.
 
-They do **not** by themselves tell the analyst which action will reduce the attacker's reach most effectively.
+### Why it is needed
 
-## 3. Choke Point Analysis
+An analyst may understand that the graph is dangerous and still not know where to act first.
 
-### What it means in this graph
+Choke Point Analysis exists to answer:
 
-Choke Point Analysis is not trying to show every risky object.
+- If I take one action now, where should it be?
+- Which entity has the highest containment value?
+- Which intervention will reduce attacker reach most effectively?
 
-It is trying to answer a narrower question:
+### How to read it
 
-**"If I can act on only a small number of things, which ones will break the most useful parts of the attack chain?"**
+Read Choke Point Analysis as a **ranked response view**.
 
-In this graph, the choke-point view focuses on three entities:
+It is there to help the analyst move from understanding the incident to containing it.
 
-- **m.henderson**
-- **CORP-WS-045**
-- **185.220.101.42**
+### What it does not do
 
-### Why these three are singled out
+Choke Point Analysis does not replace investigation.
 
-#### 1. m.henderson
+It is not a full explanation of why the entity is suspicious. It is a prioritization aid for response.
 
-This is the identity foothold at the center of the incident.
-
-The user is tied to:
-
-- the impossible-travel alert
-- the suspicious external access point
-- the internal access point
-- Azure AD sign-in
-- SharePoint access
-- the workstation
-
-From an analyst perspective, disabling this account breaks the identity layer of the attack and cuts multiple downstream paths at once.
-
-#### 2. CORP-WS-045
-
-This is the strongest endpoint pivot in the graph.
-
-It sits between:
-
-- the internal IP
-- the Tor-linked communication
-- the Administrator escalation path
-- the SharePoint access path
-- the C2 domain communication
-
-From an analyst perspective, isolating this host disrupts the attacker’s active execution and lateral movement path.
-
-#### 3. 185.220.101.42
-
-This is the external access and communication origin in the graph.
-
-It is tied to:
-
-- the suspicious sign-in path
-- communication with the workstation
-- communication with the C2 domain
-
-From an analyst perspective, blocking this IP can immediately reduce external access pressure, even if it is less durable than disabling the user or isolating the host.
-
-## 4. Threat Indicators vs Choke Point Analysis
+## 3. Difference Between Them
 
 | Area | Threat Indicators | Choke Point Analysis |
 |------|-------------------|----------------------|
-| Main purpose | Show what looks dangerous in the graph | Show where action has the highest containment value |
-| Scope | Broad | Narrow and prioritized |
+| Main purpose | Show what is risky in the graph | Show where response will have the highest impact |
 | Analyst question | What is suspicious here? | What should I act on first? |
-| Output style | Risky nodes and malicious relationships | Ranked response targets |
-| Operational value | Triage and investigation | Containment and response prioritization |
+| Scope | Broad | Narrow and prioritized |
+| Operational use | Triage and investigation | Containment and remediation |
 
-## 5. Are they showing the same data?
+## 4. Are they redundant?
 
-Not exactly.
+No.
 
-They are using the same investigation graph, but they are not presenting it for the same purpose.
+They may refer to some of the same entities, but they are not saying the same thing.
 
-- **Threat Indicators** highlights the risky parts of the incident story.
-- **Choke Point Analysis** selects the few entities that give the best operational leverage if the analyst intervenes.
+- In **Threat Indicators**, an entity is highlighted because it is part of the suspicious incident story.
+- In **Choke Point Analysis**, an entity is highlighted because acting on it gives the best operational leverage.
 
-So the overlap is expected, because the most operationally useful choke points usually come from the risky part of the graph.
+So overlap is expected. It is useful overlap, not duplicate meaning.
 
-## 6. Is there redundancy?
+## 5. What a SOC analyst should do
 
-Some overlap is natural, but it is not useless duplication.
+Use this sequence:
 
-For example:
+1. Read **Threat Indicators** first to understand what in the graph is concerning.
+2. Confirm the attack shape, suspicious paths, and important pivots.
+3. Use **Choke Point Analysis** next to decide where immediate containment should begin.
 
-- **m.henderson** appears as a threat indicator because the account is central to the compromise.
-- The same **m.henderson** appears as a choke point because disabling it breaks multiple incident paths.
+In short:
 
-That is not redundant because the meaning changes:
+- **Threat Indicators** explain concern.
+- **Choke Point Analysis** explains action priority.
 
-- in **Threat Indicators**, the entity is being flagged as risky
-- in **Choke Point Analysis**, the entity is being flagged as a high-impact response target
+## 6. Practical Rule
 
-The same logic applies to **CORP-WS-045** and **185.220.101.42**.
-
-## 7. What a SOC analyst should conclude
-
-When reading this graph:
-
-- Use **Threat Indicators** to understand the incident structure and identify suspicious entities and relationships.
-- Use **Choke Point Analysis** to decide where immediate containment will have the highest impact.
-
-In this incident, the graph is effectively saying:
-
-- the account is compromised
-- the workstation is part of the active attack path
-- the external IP is part of the entry or control channel
-- the cloud path involves Azure AD, OAuth tokens, and SharePoint
-
-That is why the threat view is broad, while the choke-point view is deliberately limited to the user, the workstation, and the external IP.
-
-## 8. Practical reading rule
-
-Use this mental model:
-
-- **Threat Indicators** = what in this graph is dangerous
-- **Choke Point Analysis** = which dangerous entity is worth acting on first
+- **Threat Indicators** = what in the graph is dangerous
+- **Choke Point Analysis** = which dangerous point is worth acting on first
