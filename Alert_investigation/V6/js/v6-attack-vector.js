@@ -110,6 +110,259 @@
     }
   };
 
+  /* Blast radius metrics per action. Used to render impact tooltips & panels. */
+  const V6_BLAST_RADIUS_DATA = {
+    /* user-m-henderson actions */
+    disableUser: {
+      riskLevel: 'high',
+      riskLabel: 'HIGH IMPACT',
+      scope: {
+        users: 1,
+        hosts: 3,
+        services: 5,
+        apps: 8
+      },
+      impact: 'Complete account lockout. User cannot sign in anywhere. All sessions invalidated. All apps lose access. OAuth tokens revoked.',
+      affected: [
+        'Azure AD · user login',
+        'Microsoft 365 · email, Teams, SharePoint',
+        'GitHub · repo access',
+        'Slack · workspace access',
+        'Database tools · query tools',
+        'Dev VPN · remote access'
+      ],
+      reversible: true,
+      recoveryTime: '~5m after password reset by admin',
+      businessImpact: 'User loses all access; team loses delegation; automated tasks fail; meetings orphaned',
+      recommendation: 'Use only when confirmed compromise is certain and containment is urgent'
+    },
+    forcePasswordReset: {
+      riskLevel: 'med',
+      riskLabel: 'MEDIUM IMPACT',
+      scope: {
+        users: 1,
+        hosts: 3,
+        services: 5,
+        apps: 8
+      },
+      impact: 'User kicked out of all sessions. Must reset password to regain access. OAuth tokens revoked. Apps require re-authentication.',
+      affected: [
+        'Azure AD · current sessions',
+        'Microsoft 365 · re-auth required',
+        'GitHub · token refresh required',
+        'Slack · re-login needed',
+        'Database sessions · new auth needed'
+      ],
+      reversible: true,
+      recoveryTime: '~5-10m per app for user to re-authenticate',
+      businessImpact: 'Temporary service disruption; apps go offline until user re-authenticates; workflow interruption',
+      recommendation: 'Use when active threat is happening and temporary disruption is acceptable'
+    },
+    revokeTokens: {
+      riskLevel: 'low',
+      riskLabel: 'LOW IMPACT',
+      scope: {
+        users: 1,
+        hosts: 3,
+        services: 5,
+        apps: 8
+      },
+      impact: 'OAuth refresh tokens invalidated. Apps require re-authentication. User account remains active. No lockout.',
+      affected: [
+        'Microsoft 365 · token refresh',
+        'GitHub · API token refresh',
+        'Slack · session token refresh',
+        'Third-party integrations · re-auth'
+      ],
+      reversible: true,
+      recoveryTime: '~1-2m per app; user can remain logged in',
+      businessImpact: 'Minimal disruption; apps briefly offline; user can regain access immediately; attacker tokens killed',
+      recommendation: 'Use when token theft is suspected but account is not fully compromised'
+    },
+    notifyManager: {
+      riskLevel: 'low',
+      riskLabel: 'NO IMPACT',
+      scope: {
+        users: 2,
+        hosts: 0,
+        services: 0,
+        apps: 0
+      },
+      impact: 'Email + Teams DM sent. No system state change. No user lockout. No access revocation.',
+      affected: [
+        'Manager email · notification',
+        'Teams · DM notification',
+        'SOC channel · alert notification'
+      ],
+      reversible: true,
+      recoveryTime: 'None required',
+      businessImpact: 'None; informational only; escalation only',
+      recommendation: 'Safe to execute anytime during investigation; no containment action yet'
+    },
+    /* dev-ws045 actions */
+    isolateHost: {
+      riskLevel: 'high',
+      riskLabel: 'HIGH IMPACT',
+      scope: {
+        users: 5,
+        hosts: 1,
+        services: 3,
+        apps: 0
+      },
+      impact: 'Network isolation. Host can only reach EDR comms. No internet. No internal network access except EDR callback.',
+      affected: [
+        'All users on host · network blocked',
+        'Fileshare access · blocked',
+        'Database access · blocked',
+        'Internet · blocked',
+        'Internal services · blocked'
+      ],
+      reversible: true,
+      recoveryTime: '~5-10m after removal from network-contain policy',
+      businessImpact: '5 users on host lose all network access; workstations become unusable; workflow stops; potential productivity loss',
+      recommendation: 'Use when active C2 beacon is confirmed and stopping exfil is critical'
+    },
+    killProcess: {
+      riskLevel: 'med',
+      riskLabel: 'MEDIUM IMPACT',
+      scope: {
+        users: 1,
+        hosts: 1,
+        services: 1,
+        apps: 0
+      },
+      impact: 'Suspicious process and child processes terminated. May kill legitimate child processes if not carefully targeted.',
+      affected: [
+        'svchost_update.dll · terminated',
+        'Child processes · terminated',
+        'Related services · may be disrupted'
+      ],
+      reversible: false,
+      recoveryTime: 'Immediate; process restart may be automatic',
+      businessImpact: 'Active malware disrupted; attacker loses execution context; potential loss of legitimate child processes',
+      recommendation: 'Use when malicious process is confirmed and disruption is acceptable'
+    },
+    collectForensics: {
+      riskLevel: 'low',
+      riskLabel: 'NO IMPACT',
+      scope: {
+        users: 0,
+        hosts: 1,
+        services: 0,
+        apps: 0
+      },
+      impact: 'Read-only data collection. Memory dump, logs, file deltas exported. No system state change.',
+      affected: [
+        'Host memory · read-only',
+        'Sysmon logs · read-only',
+        'Recent files · read-only'
+      ],
+      reversible: true,
+      recoveryTime: 'None required',
+      businessImpact: 'None; evidence collection only; ~3m for data export',
+      recommendation: 'Safe to execute anytime; gathers evidence for investigation'
+    },
+    openIncident: {
+      riskLevel: 'low',
+      riskLabel: 'NO IMPACT',
+      scope: {
+        users: 0,
+        hosts: 0,
+        services: 1,
+        apps: 0
+      },
+      impact: 'ServiceNow ticket created. No system access change. Informational & tracking only.',
+      affected: [
+        'ServiceNow · incident created',
+        'SOC ticketing · Sev-1 logged'
+      ],
+      reversible: true,
+      recoveryTime: 'None required',
+      businessImpact: 'None; administrative/tracking only',
+      recommendation: 'Safe to execute anytime; creates formal incident record'
+    },
+    /* ip-tor actions */
+    blockIp: {
+      riskLevel: 'high',
+      riskLabel: 'HIGH IMPACT',
+      scope: {
+        users: 0,
+        hosts: 0,
+        services: 0,
+        apps: 1
+      },
+      impact: 'Source IP blocked at firewall perimeter. All traffic from 185.220.101.42 denied. No exceptions.',
+      affected: [
+        'Tor exit IP 185.220.101.42 · blocked',
+        'All inbound connections from IP · denied',
+        'Legitimate users from this IP · blocked if any'
+      ],
+      reversible: true,
+      recoveryTime: '~2m to remove firewall rule if false positive',
+      businessImpact: 'Attacker blocked from external access; may block legitimate VPN users if shared proxy; perimeter-only impact',
+      recommendation: 'Use when source IP is confirmed malicious and external block is acceptable'
+    },
+    blockAsn: {
+      riskLevel: 'med',
+      riskLabel: 'MEDIUM IMPACT',
+      scope: {
+        users: 0,
+        hosts: 0,
+        services: 0,
+        apps: 1
+      },
+      impact: 'Entire Tor ASN range blocked. Broader than single IP. Blocks all Tor exit nodes in known ASN.',
+      affected: [
+        'Tor exit ASN block · all IPs in range',
+        'Legitimate Tor users · may be blocked',
+        'Privacy tool users · affected'
+      ],
+      reversible: true,
+      recoveryTime: '~3m to remove firewall rule',
+      businessImpact: 'Blocks all Tor exit traffic; may block legitimate anonymous users; perimeter-only impact; prevents future Tor attacks from same ASN',
+      recommendation: 'Use when Tor-based attacks are recurring and blocking entire Tor exit is acceptable'
+    },
+    addToTiFeed: {
+      riskLevel: 'low',
+      riskLabel: 'NO IMPACT',
+      scope: {
+        users: 0,
+        hosts: 0,
+        services: 0,
+        apps: 0
+      },
+      impact: 'IP added to internal threat-intel feed. No immediate firewall change. Feed-based enforcement async.',
+      affected: [
+        'Threat-intel database · IP added',
+        'SIEM · future matches flagged',
+        'Proxy · future hits logged'
+      ],
+      reversible: true,
+      recoveryTime: 'None required',
+      businessImpact: 'None immediate; enables future detection; async enforcement via TI feed',
+      recommendation: 'Safe to execute anytime; adds IP to internal TI list for cross-product enforcement'
+    },
+    huntPastLogins: {
+      riskLevel: 'low',
+      riskLabel: 'NO IMPACT',
+      scope: {
+        users: 0,
+        hosts: 0,
+        services: 0,
+        apps: 0
+      },
+      impact: 'Historical auth log search. No system state change. Read-only query over last 30 days.',
+      affected: [
+        'Auth logs · queried for IP',
+        'Historical activity · read-only search'
+      ],
+      reversible: true,
+      recoveryTime: 'None required',
+      businessImpact: 'None; investigation only; finds other victims of same IP',
+      recommendation: 'Safe to execute anytime; discovers scope of IP attack across all users'
+    }
+  };
+
   /* Choke-point entity IDs (must have a matching V6_CUT_DATA entry). */
   const V6_CHOKE_POINTS = Object.keys(V6_CUT_DATA);
 
